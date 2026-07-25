@@ -16,6 +16,7 @@ else
     bashio::log.info "otbr-agent exited with code $e (by signal $2)."
 fi
 
+# shellcheck source=../../scripts/otbr-agent-common
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 

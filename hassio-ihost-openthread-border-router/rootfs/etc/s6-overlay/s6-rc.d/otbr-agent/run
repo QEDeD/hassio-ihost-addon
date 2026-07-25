@@ -5,8 +5,13 @@
 # OpenThread BorderRouter start script
 # ==============================================================================
 
+# shellcheck source=../../scripts/otbr-agent-common
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
+
+if ! otbr_netfilter_cleanup; then
+    bashio::exit.nok "Could not clean up stale OTBR firewall or NAT64 state."
+fi
 
 declare backbone_if
 declare device
@@ -74,10 +79,6 @@ if [[ -z "${backbone_if}" ]]; then
     backbone_if="eth0"
 fi
 
-if ! otbr_netfilter_cleanup "${backbone_if}"; then
-    bashio::exit.nok "Could not clean up stale OTBR firewall or NAT64 state."
-fi
-
 # shellcheck disable=SC2015
 mkdir -p /data/thread && ln -sft /var/lib /data/thread || bashio::exit.nok "Could not create directory /var/lib/thread to store Thread data."
 
@@ -95,7 +96,7 @@ fi
 
 if bashio::config.true 'nat64'; then
     if ! otbr_nat64_setup "${backbone_if}"; then
-        if ! otbr_netfilter_cleanup "${backbone_if}"; then
+        if ! otbr_netfilter_cleanup; then
             bashio::log.warning "OTBR firewall or NAT64 rollback was incomplete."
         fi
         bashio::exit.nok "Could not set up OTBR NAT64 firewall state."

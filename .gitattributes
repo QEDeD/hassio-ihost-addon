@@ -1,0 +1,10 @@
+# Linux entrypoints and build metadata must not inherit Windows CRLF endings.
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.cmake text eol=lf
+*.patch text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*/rootfs/etc/cont-init.d/** text eol=lf
+*/rootfs/etc/s6-overlay/s6-rc.d/** text eol=lf
+*/rootfs/etc/s6-overlay/scripts/** text eol=lf

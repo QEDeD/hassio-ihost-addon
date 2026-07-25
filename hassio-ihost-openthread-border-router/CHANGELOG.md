@@ -4,8 +4,10 @@
 
 - Replace legacy and host-wide IPv6 forwarding changes with scoped OTBR chains
 - Recover stale firewall state and bound netfilter cleanup retries
+- Treat absent owned chains as a clean state with nft-backed iptables
 - Scope NAT64 forwarding to marked Thread traffic and established return traffic
-- Remove stale NAT64 rules leaked by version 2.13.0 during upgrade
+- Safely migrate unambiguous stale NAT64 rules leaked by version 2.13.0
+- Restore armv7 builds when flasher dependencies require native Python extensions
 
 ## 2.13.0
 - Bump to OTBR POSIX version b067e5ac (2025-01-13 22:32:22 -0500)

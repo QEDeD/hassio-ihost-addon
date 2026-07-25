@@ -66,6 +66,12 @@ selected backbone interface. Return traffic is accepted only for established
 or related connections. NAT64 does not add unrestricted forwarding rules for
 all traffic on the backbone interface.
 
+During an upgrade from version 2.13.0, the add-on removes legacy unrestricted
+NAT64 rules only when their OTBR signature identifies a complete ingress and
+egress pair for one backbone interface. Incomplete or ambiguous host firewall
+rules are preserved and startup stops for manual review instead of deleting
+rules that may belong to another service.
+
 Only one OTBR implementation should manage `wpan0` and the globally named OTBR
 chains and ipsets at a time.
 

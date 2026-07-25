@@ -1,0 +1,204 @@
+name: Test standalone OTBR lifecycle
+
+on:
+  pull_request:
+    paths:
+      - ".gitattributes"
+      - ".github/workflows/test-standalone-otbr-lifecycle.yml"
+      - "hassio-ihost-openthread-border-router/**"
+  push:
+    branches:
+      - master
+    paths:
+      - ".gitattributes"
+      - ".github/workflows/test-standalone-otbr-lifecycle.yml"
+      - "hassio-ihost-openthread-border-router/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lifecycle:
+    name: Lifecycle regression tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Validate lifecycle shell scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+            hassio-ihost-openthread-border-router/tests/run.sh
+            hassio-ihost-openthread-border-router/tests/test-firewall.sh
+            hassio-ihost-openthread-border-router/tests/test-nat64.sh
+            hassio-ihost-openthread-border-router/tests/test-service-invariants.sh
+            hassio-ihost-openthread-border-router/tests/test-service-callers.sh
+          )
+
+          require_mode() {
+            local expected="$1"
+            local file="$2"
+            local actual
+            actual="$(git ls-files --stage -- "${file}" | awk '{print $1}')"
+            if [[ "${actual}" != "${expected}" ]]; then
+              printf '::error file=%s::expected Git mode %s, got %s\n' \
+                "${file}" "${expected}" "${actual:-untracked}"
+              return 1
+            fi
+          }
+
+          for file in "${files[@]}"; do
+            require_mode 100755 "${file}"
+          done
+          require_mode 100644 \
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
+
+          for file in "${files[@]}" \
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish; do
+            if grep -q $'\r' "${file}"; then
+              printf '::error file=%s::file contains CRLF line endings\n' "${file}"
+              exit 1
+            fi
+          done
+
+          bash -n "${files[@]}"
+          shellcheck --shell=bash --severity=warning -x -P SCRIPTDIR "${files[@]}"
+
+      - name: Validate add-on metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*" >&2; exit 1; }
+          addon=hassio-ihost-openthread-border-router
+          config="${addon}/config.yaml"
+          build="${addon}/build.yaml"
+          translation="${addon}/translations/en.yaml"
+
+          for yaml in "${config}" "${build}" "${translation}"; do
+            yq -e '.' "${yaml}" >/dev/null
+          done
+          yq -e '
+            (.name | type == "!!str" and length > 0) and
+            (.slug | type == "!!str" and length > 0) and
+            (.version | type == "!!str" and length > 0) and
+            (.description | type == "!!str" and length > 0) and
+            (.arch | type == "!!seq" and length > 0) and
+            (.image | type == "!!str" and length > 0) and
+            (.options | type == "!!map") and
+            (.schema | type == "!!map")
+          ' "${config}" >/dev/null
+          yq -e '(.build_from | type == "!!map" and length > 0)' \
+            "${build}" >/dev/null
+          yq -e '(.configuration | type == "!!map")' \
+            "${translation}" >/dev/null
+          yq -e \
+            '.host_network == true and (.privileged | any_c(. == "NET_ADMIN"))' \
+            "${config}" >/dev/null
+
+          version="$(yq -r '.version' "${config}")"
+          grep -Fqx "## ${version}" "${addon}/CHANGELOG.md" \
+            || fail "config version ${version} has no changelog heading"
+
+          config_arch="$(yq -o=json -I=0 '.arch | sort' "${config}")"
+          build_arch="$(yq -o=json -I=0 '.build_from | keys | sort' "${build}")"
+          [[ "${config_arch}" == "${build_arch}" ]] \
+            || fail "config.arch and build_from keys differ"
+
+          while IFS= read -r key; do
+            KEY="${key}" yq -e '.schema | has(strenv(KEY))' \
+              "${config}" >/dev/null \
+              || fail "option ${key} is absent from schema"
+          done < <(yq -r '.options | keys[]' "${config}")
+
+          while IFS= read -r key; do
+            KEY="${key}" yq -e '.configuration | has(strenv(KEY))' \
+              "${translation}" >/dev/null \
+              || fail "schema key ${key} has no English translation"
+          done < <(yq -r '.schema | keys[]' "${config}")
+
+          if (( $(yq -r '.arch | length' "${config}") > 1 )); then
+            [[ "$(yq -r '.image' "${config}")" == *'{arch}'* ]] \
+              || fail "multi-arch image is missing {arch}"
+          fi
+
+      - name: Run firewall and NAT64 lifecycle tests
+        run: bash hassio-ihost-openthread-border-router/tests/run.sh
+
+  addon-lint:
+    name: Add-on configuration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Run Home Assistant add-on lint
+        uses: frenck/action-addon-linter@f995494fd84fae6310d23617e66d0e37de4f14eb # v2.21
+        with:
+          path: "./hassio-ihost-openthread-border-router"
+
+  # The current Home Assistant builder no longer accepts --armv7.
+  image-build:
+    name: Build armv7 image
+    needs:
+      - lifecycle
+      - addon-lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Read build configuration
+        id: build-config
+        shell: bash
+        run: |
+          set -euo pipefail
+          build=hassio-ihost-openthread-border-router/build.yaml
+          {
+            echo "build_from=$(yq -r '.build_from.armv7' "${build}")"
+            echo "otbr_version=$(yq -r '.args.OTBR_VERSION' "${build}")"
+            echo "flasher_version=$(yq -r '.args.UNIVERSAL_SILABS_FLASHER' "${build}")"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
+        with:
+          image: docker.io/tonistiigi/binfmt@sha256:400a4873b838d1b89194d982c45e5fb3cda4593fbfd7e08a02e76b03b21166f0
+          platforms: arm
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+      - name: Build armv7 add-on image
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        with:
+          context: ./hassio-ihost-openthread-border-router
+          file: ./hassio-ihost-openthread-border-router/Dockerfile
+          platforms: linux/arm/v7
+          pull: true
+          outputs: type=cacheonly
+          cache-from: type=gha,scope=standalone-otbr-armv7
+          cache-to: type=gha,mode=min,scope=standalone-otbr-armv7,ignore-error=true
+          build-args: |
+            BUILD_ARCH=armv7
+            BUILD_FROM=${{ steps.build-config.outputs.build_from }}
+            OTBR_VERSION=${{ steps.build-config.outputs.otbr_version }}
+            UNIVERSAL_SILABS_FLASHER=${{ steps.build-config.outputs.flasher_version }}

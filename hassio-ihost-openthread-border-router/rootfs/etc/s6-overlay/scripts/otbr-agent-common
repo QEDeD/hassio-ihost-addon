@@ -17,21 +17,240 @@ otbr_iptables_wait_seconds=5
 otbr_cleanup_max_rule_deletes=64
 otbr_ipset_destroy_attempts=20
 otbr_ipset_destroy_delay_seconds=0.1
+otbr_cleanup_budget_milliseconds=4000
+otbr_cleanup_kill_grace_seconds=0.5
+
+otbr_cleanup_deadline_milliseconds=""
+otbr_cleanup_remaining_milliseconds=0
+otbr_now_milliseconds=0
+_otbr_legacy_rule_flags=()
+_otbr_legacy_rule_interfaces=()
+
+_otbr_now_milliseconds()
+{
+    local uptime
+    local uptime_seconds
+    local uptime_fraction
+
+    if ! IFS= read -r uptime < /proc/uptime; then
+        return 1
+    fi
+
+    if [[ ! "${uptime}" =~ ^([0-9]+)\.([0-9]+)[[:space:]] ]]; then
+        return 1
+    fi
+
+    uptime_seconds="${BASH_REMATCH[1]}"
+    uptime_fraction="${BASH_REMATCH[2]}"
+    uptime_fraction="${uptime_fraction}000"
+    otbr_now_milliseconds=$((
+        (10#${uptime_seconds} * 1000)
+        + 10#${uptime_fraction:0:3}
+    ))
+}
+
+_otbr_cleanup_scope_enter()
+{
+    if [[ -n "${otbr_cleanup_deadline_milliseconds}" ]]; then
+        return 1
+    fi
+
+    if ! _otbr_now_milliseconds; then
+        return 2
+    fi
+
+    otbr_cleanup_deadline_milliseconds=$((
+        otbr_now_milliseconds + otbr_cleanup_budget_milliseconds
+    ))
+    return 0
+}
+
+_otbr_cleanup_scope_leave()
+{
+    otbr_cleanup_deadline_milliseconds=""
+    otbr_cleanup_remaining_milliseconds=0
+}
+
+_otbr_cleanup_refresh_remaining()
+{
+    if [[ -z "${otbr_cleanup_deadline_milliseconds}" ]] \
+        || ! _otbr_now_milliseconds; then
+        return 1
+    fi
+
+    otbr_cleanup_remaining_milliseconds=$((
+        otbr_cleanup_deadline_milliseconds - otbr_now_milliseconds
+    ))
+    (( otbr_cleanup_remaining_milliseconds > 0 ))
+}
+
+_otbr_cleanup_run()
+{
+    local timeout_duration
+
+    if ! _otbr_cleanup_refresh_remaining; then
+        return 124
+    fi
+
+    printf -v timeout_duration '%d.%03ds' \
+        "$((otbr_cleanup_remaining_milliseconds / 1000))" \
+        "$((otbr_cleanup_remaining_milliseconds % 1000))"
+
+    timeout --foreground \
+        --kill-after="${otbr_cleanup_kill_grace_seconds}s" \
+        "${timeout_duration}" "$@"
+}
+
+_otbr_cleanup_xtables()
+{
+    local command_name="$1"
+    local wait_seconds
+    shift
+
+    if ! _otbr_cleanup_refresh_remaining; then
+        return 124
+    fi
+
+    wait_seconds=$((otbr_cleanup_remaining_milliseconds / 1000))
+    if (( wait_seconds < 1 )); then
+        wait_seconds=1
+    elif (( wait_seconds > otbr_iptables_wait_seconds )); then
+        wait_seconds="${otbr_iptables_wait_seconds}"
+    fi
+
+    _otbr_cleanup_run "${command_name}" -w "${wait_seconds}" "$@"
+}
+
+_otbr_normalize_probe_status()
+{
+    case "$1" in
+        0)
+            return 0
+            ;;
+        1)
+            return 1
+            ;;
+        *)
+            return 2
+            ;;
+    esac
+}
+
+_otbr_probe_ip6tables_rule()
+{
+    local status
+
+    if _otbr_cleanup_xtables ip6tables -C "$@" 2>/dev/null; then
+        return 0
+    else
+        status=$?
+    fi
+
+    _otbr_normalize_probe_status "${status}"
+}
+
+_otbr_probe_ip6tables_chain()
+{
+    local chain_name="$1"
+    local status
+
+    if _otbr_cleanup_xtables ip6tables \
+        -L "${chain_name}" -n >/dev/null 2>&1; then
+        return 0
+    else
+        status=$?
+    fi
+
+    _otbr_normalize_probe_status "${status}"
+}
+
+_otbr_probe_iptables_rule()
+{
+    local table_name="$1"
+    local chain_name="$2"
+    local status
+    shift 2
+
+    if _otbr_cleanup_xtables iptables \
+        -t "${table_name}" -C "${chain_name}" "$@" 2>/dev/null; then
+        return 0
+    else
+        status=$?
+    fi
+
+    _otbr_normalize_probe_status "${status}"
+}
+
+_otbr_probe_iptables_chain()
+{
+    local table_name="$1"
+    local chain_name="$2"
+    local status
+
+    if _otbr_cleanup_xtables iptables \
+        -t "${table_name}" -L "${chain_name}" -n >/dev/null 2>&1; then
+        return 0
+    else
+        status=$?
+    fi
+
+    _otbr_normalize_probe_status "${status}"
+}
+
+_otbr_ipset_exists()
+{
+    local ipset_name="$1"
+    local listed_name
+    local names
+
+    if ! names="$(_otbr_cleanup_run ipset list -n 2>/dev/null)"; then
+        # Listing every set is the only reliable way to distinguish absence
+        # from an ipset operational error.
+        return 2
+    fi
+
+    while IFS= read -r listed_name; do
+        if [[ "${listed_name}" == "${ipset_name}" ]]; then
+            return 0
+        fi
+    done <<< "${names}"
+
+    return 1
+}
 
 _otbr_remove_forward_jumps()
 {
     local interface_flag="$1"
     local chain_name="$2"
     local removed=0
+    local status
 
-    while (( removed < otbr_cleanup_max_rule_deletes )); do
-        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
-            -C FORWARD "${interface_flag}" "${thread_if}" \
-            -j "${chain_name}" 2>/dev/null; then
+    # iptables-nft exits 2 when -C references a custom jump target that does
+    # not exist. A dangling jump cannot outlive its target chain, so skip the
+    # rule probe when the owned chain is definitely absent.
+    if _otbr_probe_ip6tables_chain "${chain_name}"; then
+        :
+    else
+        status=$?
+        if (( status == 1 )); then
             return 0
         fi
+        return 1
+    fi
 
-        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+    while (( removed < otbr_cleanup_max_rule_deletes )); do
+        if _otbr_probe_ip6tables_rule FORWARD \
+            "${interface_flag}" "${thread_if}" -j "${chain_name}"; then
+            :
+        else
+            status=$?
+            if (( status == 1 )); then
+                return 0
+            fi
+            return 1
+        fi
+
+        if ! _otbr_cleanup_xtables ip6tables \
             -D FORWARD "${interface_flag}" "${thread_if}" \
             -j "${chain_name}"; then
             return 1
@@ -41,31 +260,37 @@ _otbr_remove_forward_jumps()
     done
 
     # Refuse to loop indefinitely if state is unexpectedly duplicated many times.
-    if ip6tables -w "${otbr_iptables_wait_seconds}" \
-        -C FORWARD "${interface_flag}" "${thread_if}" \
-        -j "${chain_name}" 2>/dev/null; then
+    if _otbr_probe_ip6tables_rule FORWARD \
+        "${interface_flag}" "${thread_if}" -j "${chain_name}"; then
         return 1
     fi
 
-    return 0
+    status=$?
+    (( status == 1 ))
 }
 
 _otbr_delete_chain_if_exist()
 {
     local chain_name="$1"
     local failed=0
+    local status
 
-    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
-        -L "${chain_name}" -n >/dev/null 2>&1; then
-        return 0
+    if _otbr_probe_ip6tables_chain "${chain_name}"; then
+        :
+    else
+        status=$?
+        if (( status == 1 )); then
+            return 0
+        fi
+        return 1
     fi
 
-    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+    if ! _otbr_cleanup_xtables ip6tables \
         -F "${chain_name}"; then
         failed=1
     fi
 
-    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+    if ! _otbr_cleanup_xtables ip6tables \
         -X "${chain_name}"; then
         failed=1
     fi
@@ -77,18 +302,37 @@ _otbr_ipset_destroy_if_exist()
 {
     local ipset_name="$1"
     local attempt=1
+    local status
 
     while (( attempt <= otbr_ipset_destroy_attempts )); do
-        if ! ipset list -n "${ipset_name}" >/dev/null 2>&1; then
-            return 0
+        if _otbr_ipset_exists "${ipset_name}"; then
+            :
+        else
+            status=$?
+            if (( status == 1 )); then
+                return 0
+            fi
+            return 1
         fi
 
-        if ipset destroy "${ipset_name}" >/dev/null 2>&1; then
+        if _otbr_cleanup_run ipset destroy \
+            "${ipset_name}" >/dev/null 2>&1; then
             return 0
+        else
+            status=$?
+        fi
+
+        # A failed destroy can mean that a kernel reference is still draining.
+        # Other failures (including the shared deadline) are not retryable.
+        if (( status != 1 )); then
+            return 1
         fi
 
         if (( attempt < otbr_ipset_destroy_attempts )); then
-            sleep "${otbr_ipset_destroy_delay_seconds}"
+            if ! _otbr_cleanup_run sleep \
+                "${otbr_ipset_destroy_delay_seconds}"; then
+                return 1
+            fi
         fi
 
         attempt=$((attempt + 1))
@@ -103,14 +347,21 @@ _otbr_remove_iptables_rules()
     local chain_name="$2"
     shift 2
     local removed=0
+    local status
 
     while (( removed < otbr_cleanup_max_rule_deletes )); do
-        if ! iptables -w "${otbr_iptables_wait_seconds}" \
-            -t "${table_name}" -C "${chain_name}" "$@" 2>/dev/null; then
-            return 0
+        if _otbr_probe_iptables_rule "${table_name}" \
+            "${chain_name}" "$@"; then
+            :
+        else
+            status=$?
+            if (( status == 1 )); then
+                return 0
+            fi
+            return 1
         fi
 
-        if ! iptables -w "${otbr_iptables_wait_seconds}" \
+        if ! _otbr_cleanup_xtables iptables \
             -t "${table_name}" -D "${chain_name}" "$@"; then
             return 1
         fi
@@ -118,12 +369,12 @@ _otbr_remove_iptables_rules()
         removed=$((removed + 1))
     done
 
-    if iptables -w "${otbr_iptables_wait_seconds}" \
-        -t "${table_name}" -C "${chain_name}" "$@" 2>/dev/null; then
+    if _otbr_probe_iptables_rule "${table_name}" "${chain_name}" "$@"; then
         return 1
     fi
 
-    return 0
+    status=$?
+    (( status == 1 ))
 }
 
 _otbr_delete_iptables_chain_if_exist()
@@ -131,18 +382,24 @@ _otbr_delete_iptables_chain_if_exist()
     local table_name="$1"
     local chain_name="$2"
     local failed=0
+    local status
 
-    if ! iptables -w "${otbr_iptables_wait_seconds}" \
-        -t "${table_name}" -L "${chain_name}" -n >/dev/null 2>&1; then
-        return 0
+    if _otbr_probe_iptables_chain "${table_name}" "${chain_name}"; then
+        :
+    else
+        status=$?
+        if (( status == 1 )); then
+            return 0
+        fi
+        return 1
     fi
 
-    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+    if ! _otbr_cleanup_xtables iptables \
         -t "${table_name}" -F "${chain_name}"; then
         failed=1
     fi
 
-    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+    if ! _otbr_cleanup_xtables iptables \
         -t "${table_name}" -X "${chain_name}"; then
         failed=1
     fi
@@ -150,40 +407,72 @@ _otbr_delete_iptables_chain_if_exist()
     return "${failed}"
 }
 
-_otbr_iptables_rule_exists()
+_otbr_list_legacy_broad_rules()
 {
-    local table_name="$1"
-    local chain_name="$2"
-    shift 2
+    local forward_rules
+    local interface_flag
+    local interface_name
+    local legacy_rule_pattern='^-A FORWARD -(i|o) ([^[:space:]]+) -j ACCEPT$'
+    local rule
+    local -A seen_rules=()
 
-    iptables -w "${otbr_iptables_wait_seconds}" \
-        -t "${table_name}" -C "${chain_name}" "$@" 2>/dev/null
-}
+    _otbr_legacy_rule_flags=()
+    _otbr_legacy_rule_interfaces=()
 
-_otbr_legacy_nat64_state_exists()
-{
-    local backbone_if="$1"
-
-    [[ -n "${backbone_if}" ]] || return 1
-
-    # Version 2.13.0 created this signature without a dedicated forwarding
-    # chain and never removed it. Keep recognizing a partial signature after a
-    # failed migration so the next startup can finish cleaning the residue.
-    if iptables -w "${otbr_iptables_wait_seconds}" \
-        -t filter -L "${otbr_forward_nat64_chain}" -n >/dev/null 2>&1; then
-        return 1
+    if ! forward_rules="$(
+        _otbr_cleanup_xtables iptables -t filter -S FORWARD 2>/dev/null
+    )"; then
+        return 2
     fi
 
-    _otbr_iptables_rule_exists mangle PREROUTING \
-        -i "${thread_if}" -j MARK --set-mark "${otbr_fw_mark}" \
-        && _otbr_iptables_rule_exists nat POSTROUTING \
-            -m mark --mark "${otbr_fw_mark}" -j MASQUERADE \
-        && { \
-            _otbr_iptables_rule_exists filter FORWARD \
-                -o "${backbone_if}" -j ACCEPT \
-            || _otbr_iptables_rule_exists filter FORWARD \
-                -i "${backbone_if}" -j ACCEPT; \
-        }
+    while IFS= read -r rule; do
+        if [[ "${rule}" =~ ${legacy_rule_pattern} ]]; then
+            interface_flag="-${BASH_REMATCH[1]}"
+            interface_name="${BASH_REMATCH[2]}"
+            if [[ -z "${seen_rules["${interface_flag}|${interface_name}"]+x}" ]]; then
+                seen_rules["${interface_flag}|${interface_name}"]=1
+                _otbr_legacy_rule_flags+=("${interface_flag}")
+                _otbr_legacy_rule_interfaces+=("${interface_name}")
+            fi
+        fi
+    done <<< "${forward_rules}"
+
+    return 0
+}
+
+_otbr_legacy_broad_rules_are_unambiguous()
+{
+    local candidate_interface=""
+    local has_ingress_rule=false
+    local has_egress_rule=false
+    local index
+
+    # Version 2.13.0 appended exactly one ingress and one egress ACCEPT for the
+    # same backbone interface. Require that complete signature; one direction
+    # alone is not sufficient proof that an otherwise broad host rule is ours.
+    (( ${#_otbr_legacy_rule_flags[@]} == 2 )) || return 1
+
+    for index in "${!_otbr_legacy_rule_interfaces[@]}"; do
+        if [[ "${_otbr_legacy_rule_interfaces[index]}" == "${thread_if}" ]]; then
+            return 1
+        fi
+
+        if [[ -z "${candidate_interface}" ]]; then
+            candidate_interface="${_otbr_legacy_rule_interfaces[index]}"
+        elif [[ "${_otbr_legacy_rule_interfaces[index]}" \
+            != "${candidate_interface}" ]]; then
+            return 1
+        fi
+
+        case "${_otbr_legacy_rule_flags[index]}" in
+            -i) has_ingress_rule=true ;;
+            -o) has_egress_rule=true ;;
+            *) return 1 ;;
+        esac
+    done
+
+    [[ "${has_ingress_rule}" == "true" \
+        && "${has_egress_rule}" == "true" ]]
 }
 
 _otbr_firewall_rollback()
@@ -348,19 +637,131 @@ otbr_nat64_setup()
 
 otbr_nat64_cleanup()
 {
-    local backbone_if="${1:-}"
+    local discovery_succeeded=false
     local failed=0
-    local legacy_cleanup_failed=0
-    local legacy_state=false
+    local index
+    local mark_present=false
+    local mark_status
+    local masquerade_present=false
+    local masquerade_status
+    local nat64_chain_present=false
+    local nat64_chain_status
+    local owns_cleanup_scope=false
+    local preserve_signature=false
+    local scope_status
 
-    if [[ -n "${backbone_if}" ]] \
-        && _otbr_legacy_nat64_state_exists "${backbone_if}"; then
-        legacy_state=true
+    if _otbr_cleanup_scope_enter; then
+        owns_cleanup_scope=true
+    else
+        scope_status=$?
+        if (( scope_status != 1 )); then
+            return 1
+        fi
     fi
 
-    if ! _otbr_remove_iptables_rules filter FORWARD \
-        -j "${otbr_forward_nat64_chain}"; then
-        failed=1
+    if _otbr_probe_iptables_chain filter "${otbr_forward_nat64_chain}"; then
+        nat64_chain_present=true
+        nat64_chain_status=0
+    else
+        nat64_chain_status=$?
+        if (( nat64_chain_status > 1 )); then
+            failed=1
+            preserve_signature=true
+        fi
+    fi
+
+    if _otbr_probe_iptables_rule mangle PREROUTING \
+        -i "${thread_if}" -j MARK --set-mark "${otbr_fw_mark}"; then
+        mark_present=true
+        mark_status=0
+    else
+        mark_status=$?
+        if (( mark_status > 1 )); then
+            failed=1
+            preserve_signature=true
+        fi
+    fi
+
+    if _otbr_probe_iptables_rule nat POSTROUTING \
+        -m mark --mark "${otbr_fw_mark}" -j MASQUERADE; then
+        masquerade_present=true
+        masquerade_status=0
+    else
+        masquerade_status=$?
+        if (( masquerade_status > 1 )); then
+            failed=1
+            preserve_signature=true
+        fi
+    fi
+
+    # Version 2.13.0 left unqualified FORWARD accepts behind and did not create
+    # the dedicated NAT64 chain. Only use its MARK+MASQUERADE signature to
+    # discover broad legacy rules when that chain is definitely absent.
+    #
+    # If the current chain exists, broad FORWARD accepts are not part of the
+    # current implementation and may belong to another service. Never infer
+    # ownership of them from a signature that current setup also creates.
+    if [[ "${nat64_chain_present}" != "true" ]] \
+        && (( nat64_chain_status == 1 )) \
+        && (( mark_status <= 1 && masquerade_status <= 1 )) \
+        && [[ "${mark_present}" == "true" \
+        || "${masquerade_present}" == "true" ]]; then
+        if _otbr_list_legacy_broad_rules; then
+            discovery_succeeded=true
+        else
+            failed=1
+            preserve_signature=true
+        fi
+    fi
+
+    if [[ "${discovery_succeeded}" == "true" ]]; then
+        if [[ "${mark_present}" == "true" \
+            && "${masquerade_present}" == "true" ]]; then
+            if (( ${#_otbr_legacy_rule_flags[@]} != 0 )); then
+                # The old release created both broad ACCEPT directions for one
+                # backbone interface. Refuse to infer ownership when the pair
+                # is incomplete, spans multiple interfaces, or names wpan0;
+                # deleting matching host rules would be unsafe.
+                if _otbr_legacy_broad_rules_are_unambiguous; then
+                    for index in "${!_otbr_legacy_rule_flags[@]}"; do
+                        if ! _otbr_remove_iptables_rules filter FORWARD \
+                            "${_otbr_legacy_rule_flags[index]}" \
+                            "${_otbr_legacy_rule_interfaces[index]}" \
+                            -j ACCEPT; then
+                            failed=1
+                            preserve_signature=true
+                        fi
+                    done
+                else
+                    failed=1
+                    preserve_signature=true
+                fi
+            fi
+
+            # Never erase the only identifying signature while a broad rule
+            # remains or while the verification listing is unavailable.
+            if ! _otbr_list_legacy_broad_rules; then
+                failed=1
+                preserve_signature=true
+            elif (( ${#_otbr_legacy_rule_flags[@]} != 0 )); then
+                failed=1
+                preserve_signature=true
+            fi
+        elif (( ${#_otbr_legacy_rule_flags[@]} != 0 )); then
+            # A partial signature is not enough proof that broad ACCEPT rules
+            # are ours. Preserve it and fail closed for a later/manual retry.
+            failed=1
+            preserve_signature=true
+        fi
+    fi
+
+    # The nft backend also exits 2 when probing a rule whose custom jump
+    # target is absent. The earlier chain probe proves no such rule can exist.
+    if [[ "${nat64_chain_present}" == "true" ]]; then
+        if ! _otbr_remove_iptables_rules filter FORWARD \
+            -j "${otbr_forward_nat64_chain}"; then
+            failed=1
+        fi
     fi
 
     if ! _otbr_delete_iptables_chain_if_exist filter \
@@ -368,35 +769,20 @@ otbr_nat64_cleanup()
         failed=1
     fi
 
-    if [[ "${legacy_state}" == "true" ]]; then
-        if ! _otbr_remove_iptables_rules filter FORWARD \
-            -o "${backbone_if}" -j ACCEPT; then
+    if [[ "${preserve_signature}" != "true" ]]; then
+        if ! _otbr_remove_iptables_rules mangle PREROUTING \
+            -i "${thread_if}" -j MARK --set-mark "${otbr_fw_mark}"; then
             failed=1
-            legacy_cleanup_failed=1
         fi
 
-        if ! _otbr_remove_iptables_rules filter FORWARD \
-            -i "${backbone_if}" -j ACCEPT; then
+        if ! _otbr_remove_iptables_rules nat POSTROUTING \
+            -m mark --mark "${otbr_fw_mark}" -j MASQUERADE; then
             failed=1
-            legacy_cleanup_failed=1
-        fi
-
-        # Preserve the legacy mark/MASQUERADE signature when a broad rule could
-        # not be deleted. This lets the next startup recognize and retry the
-        # partially migrated state rather than orphaning an ACCEPT rule.
-        if (( legacy_cleanup_failed != 0 )); then
-            return "${failed}"
         fi
     fi
 
-    if ! _otbr_remove_iptables_rules mangle PREROUTING \
-        -i "${thread_if}" -j MARK --set-mark "${otbr_fw_mark}"; then
-        failed=1
-    fi
-
-    if ! _otbr_remove_iptables_rules nat POSTROUTING \
-        -m mark --mark "${otbr_fw_mark}" -j MASQUERADE; then
-        failed=1
+    if [[ "${owns_cleanup_scope}" == "true" ]]; then
+        _otbr_cleanup_scope_leave
     fi
 
     return "${failed}"
@@ -404,15 +790,29 @@ otbr_nat64_cleanup()
 
 otbr_netfilter_cleanup()
 {
-    local backbone_if="${1:-}"
     local failed=0
+    local owns_cleanup_scope=false
+    local scope_status
+
+    if _otbr_cleanup_scope_enter; then
+        owns_cleanup_scope=true
+    else
+        scope_status=$?
+        if (( scope_status != 1 )); then
+            return 1
+        fi
+    fi
 
     if ! otbr_firewall_cleanup; then
         failed=1
     fi
 
-    if ! otbr_nat64_cleanup "${backbone_if}"; then
+    if ! otbr_nat64_cleanup; then
         failed=1
+    fi
+
+    if [[ "${owns_cleanup_scope}" == "true" ]]; then
+        _otbr_cleanup_scope_leave
     fi
 
     return "${failed}"
@@ -422,6 +822,17 @@ otbr_firewall_cleanup()
 {
     local ipset_name
     local failed=0
+    local owns_cleanup_scope=false
+    local scope_status
+
+    if _otbr_cleanup_scope_enter; then
+        owns_cleanup_scope=true
+    else
+        scope_status=$?
+        if (( scope_status != 1 )); then
+            return 1
+        fi
+    fi
 
     if ! _otbr_remove_forward_jumps -o "${otbr_forward_ingress_chain}"; then
         failed=1
@@ -444,6 +855,10 @@ otbr_firewall_cleanup()
             failed=1
         fi
     done
+
+    if [[ "${owns_cleanup_scope}" == "true" ]]; then
+        _otbr_cleanup_scope_leave
+    fi
 
     return "${failed}"
 }
