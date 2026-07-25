@@ -190,19 +190,25 @@ jobs:
     needs:
       - lifecycle
       - addon-lint
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         include:
           - arch: armv7
+            runner: ubuntu-24.04
             platform: linux/arm/v7
             qemu: arm
           - arch: aarch64
+            # Keep the target image native: QEMU aarch64 can intermittently
+            # crash while libc-bin runs ldconfig. The fixed amd64-only SLC and
+            # cross-builder stages still require x86 emulation on this runner.
+            runner: ubuntu-24.04-arm
             platform: linux/arm64
-            qemu: arm64
+            qemu: amd64
           - arch: amd64
+            runner: ubuntu-24.04
             platform: linux/amd64
             qemu: ""
     steps:
