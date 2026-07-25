@@ -6,6 +6,7 @@ readonly TEST_DIR
 ADDON_DIR="$(cd -- "${TEST_DIR}/.." && pwd)"
 readonly ADDON_DIR
 readonly COMMON_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
+readonly DOCKERFILE="${ADDON_DIR}/Dockerfile"
 readonly RUN_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run"
 readonly FINISH_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish"
 readonly TIMEOUT_FINISH_FILE="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish"
@@ -112,23 +113,31 @@ run_finish_script_fixture()
 
     script="$(sed \
         -e 's#^[[:space:]]*\. /etc/s6-overlay/scripts/otbr-agent-common.*$#    :#' \
-        -e 's#^[[:space:]]*echo "\$e" > /run/s6-linux-init-container-results/exitcode.*$#    otbr_test_written_exitcode="\$e"#' \
-        -e 's#^[[:space:]]*exec /run/s6/basedir/bin/halt.*$#    otbr_test_halt_called=1#' \
+        -e 's#^[[:space:]]*echo "\$e" > /run/s6-linux-init-container-results/exitcode.*$#    otbr_test_written_exitcode="\$e"; otbr_test_events+="exitcode;"#' \
+        -e 's#^[[:space:]]*/run/s6/basedir/bin/halt.*$#    otbr_test_halt_called=1; otbr_test_events+="halt;"#' \
+        -e 's#^[[:space:]]*exit 125.*$#    otbr_test_finish_status=125#' \
         "${FINISH_SCRIPT}")"
 
     (
         function bashio::log.info() { :; }
         function bashio::log.warning() { :; }
 
-        otbr_firewall_cleanup() { return "${cleanup_status}"; }
+        otbr_firewall_cleanup() {
+            otbr_test_events+="cleanup;"
+            return "${cleanup_status}"
+        }
         otbr_test_halt_called=0
         otbr_test_written_exitcode=""
+        otbr_test_finish_status=0
+        otbr_test_events=""
         set -- "${run_status}" "${run_signal}"
 
         eval "${script}"
-        printf '%s|%s\n' \
+        printf '%s|%s|%s|%s\n' \
             "${otbr_test_written_exitcode:-none}" \
-            "${otbr_test_halt_called}"
+            "${otbr_test_halt_called}" \
+            "${otbr_test_finish_status}" \
+            "${otbr_test_events}"
     )
 }
 
@@ -690,16 +699,16 @@ test_service_caller_failure_policies()
     assert_eq 42 "${fixture_status}" "run setup failure policy"
 
     fixture_result="$(run_finish_script_fixture 1 7 0)"
-    assert_eq '7|1' "${fixture_result}" \
-        "finish cleanup failure preserves process exit"
+    assert_eq '7|1|125|exitcode;halt;cleanup;' "${fixture_result}" \
+        "fatal process exit is persisted before cleanup"
 
     fixture_result="$(run_finish_script_fixture 1 256 15)"
-    assert_eq '143|1' "${fixture_result}" \
-        "finish cleanup failure preserves signal exit"
+    assert_eq '143|1|125|exitcode;halt;cleanup;' "${fixture_result}" \
+        "fatal signal exit is persisted before cleanup"
 
     fixture_result="$(run_finish_script_fixture 1 0 0)"
-    assert_eq 'none|0' "${fixture_result}" \
-        "successful process exit remains successful"
+    assert_eq 'none|0|0|cleanup;' "${fixture_result}" \
+        "successful process exit cleans up and remains restartable"
 }
 
 test_finish_timeout_has_cleanup_headroom()
@@ -791,6 +800,9 @@ test_service_script_invariants()
         || fail "disabled OTBR path does not guard a possible foreign owner"
     [[ -f "${TIMEOUT_FINISH_FILE}" ]] \
         || fail "otbr-agent has no explicit finish timeout"
+    grep -qE 'unzip[[:space:]]+-q[[:space:]]+slc_cli_linux\.zip' \
+        "${DOCKERFILE}" \
+        || fail "SLC extraction must remain quiet enough for CI logs"
 }
 
 main()

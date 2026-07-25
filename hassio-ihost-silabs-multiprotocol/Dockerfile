@@ -115,7 +115,7 @@ RUN \
        --connect-timeout 30 --max-time 300 \
        --output slc_cli_linux.zip \
        https://www.silabs.com/documents/login/software/slc_cli_linux.zip \
-    && unzip slc_cli_linux.zip \
+    && unzip -q slc_cli_linux.zip \
     && cd slc_cli/ && chmod +x slc
  
 ENV JAVA_HOME="/opt/java/openjdk"

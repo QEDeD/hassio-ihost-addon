@@ -26,7 +26,7 @@ jobs:
   lifecycle:
     name: Lifecycle regression tests
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Check out repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -42,6 +42,7 @@ jobs:
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
+            hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
             hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
           )
 
@@ -58,12 +59,14 @@ jobs:
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
+            hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
             hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
           )
-          text_files=(
-            "${executable_files[@]}"
+          regular_files=(
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
+            hassio-ihost-silabs-multiprotocol/tests/kernel/Dockerfile
           )
+          text_files=("${executable_files[@]}" "${regular_files[@]}")
 
           for file in "${executable_files[@]}"; do
             mode="$(git ls-files --stage -- "${file}" | awk '{ print $1 }')"
@@ -71,10 +74,11 @@ jobs:
               || fail "${file} must be committed with mode 100755 (found ${mode:-untracked})"
           done
 
-          timeout_file="${text_files[-1]}"
-          mode="$(git ls-files --stage -- "${timeout_file}" | awk '{ print $1 }')"
-          [[ "${mode}" == "100644" ]] \
-            || fail "${timeout_file} must be committed with mode 100644 (found ${mode:-untracked})"
+          for file in "${regular_files[@]}"; do
+            mode="$(git ls-files --stage -- "${file}" | awk '{ print $1 }')"
+            [[ "${mode}" == "100644" ]] \
+              || fail "${file} must be committed with mode 100644 (found ${mode:-untracked})"
+          done
 
           for file in "${text_files[@]}"; do
             if grep -q $'\r' "${file}"; then
@@ -141,6 +145,24 @@ jobs:
 
       - name: Run firewall lifecycle tests
         run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+
+      - name: Run real-kernel firewall smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          addon=hassio-ihost-silabs-multiprotocol
+          image="local/silabs-otbr-kernel-test:${GITHUB_SHA}"
+
+          docker build --pull --tag "${image}" \
+            --file "${addon}/tests/kernel/Dockerfile" "${addon}"
+          docker run --rm \
+            --privileged \
+            --network none \
+            --read-only \
+            --pids-limit 128 \
+            --tmpfs /run:rw,nosuid,nodev,noexec,size=1m \
+            --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
+            "${image}"
 
   addon-lint:
     name: Add-on configuration
