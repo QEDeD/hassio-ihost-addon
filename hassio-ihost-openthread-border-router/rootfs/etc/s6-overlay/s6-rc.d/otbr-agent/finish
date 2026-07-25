@@ -19,10 +19,10 @@ fi
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 
-if otbr_firewall_cleanup; then
-    bashio::log.info "OTBR firewall teardown completed."
+if otbr_netfilter_cleanup; then
+    bashio::log.info "OTBR firewall and NAT64 teardown completed."
 else
-    bashio::log.warning "OTBR firewall teardown was incomplete."
+    bashio::log.warning "OTBR firewall or NAT64 teardown was incomplete."
 fi
 
 if test "$e" -ne 0; then

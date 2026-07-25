@@ -4,6 +4,7 @@
 thread_if="wpan0"
 otbr_forward_ingress_chain="OTBR_FORWARD_INGRESS"
 otbr_forward_egress_chain="OTBR_FORWARD_EGRESS"
+otbr_forward_nat64_chain="OTBR_FORWARD_NAT64"
 otbr_fw_mark="0x1001"
 otbr_firewall_ipsets=(
     "otbr-ingress-deny-src"
@@ -94,6 +95,95 @@ _otbr_ipset_destroy_if_exist()
     done
 
     return 1
+}
+
+_otbr_remove_iptables_rules()
+{
+    local table_name="$1"
+    local chain_name="$2"
+    shift 2
+    local removed=0
+
+    while (( removed < otbr_cleanup_max_rule_deletes )); do
+        if ! iptables -w "${otbr_iptables_wait_seconds}" \
+            -t "${table_name}" -C "${chain_name}" "$@" 2>/dev/null; then
+            return 0
+        fi
+
+        if ! iptables -w "${otbr_iptables_wait_seconds}" \
+            -t "${table_name}" -D "${chain_name}" "$@"; then
+            return 1
+        fi
+
+        removed=$((removed + 1))
+    done
+
+    if iptables -w "${otbr_iptables_wait_seconds}" \
+        -t "${table_name}" -C "${chain_name}" "$@" 2>/dev/null; then
+        return 1
+    fi
+
+    return 0
+}
+
+_otbr_delete_iptables_chain_if_exist()
+{
+    local table_name="$1"
+    local chain_name="$2"
+    local failed=0
+
+    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+        -t "${table_name}" -L "${chain_name}" -n >/dev/null 2>&1; then
+        return 0
+    fi
+
+    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+        -t "${table_name}" -F "${chain_name}"; then
+        failed=1
+    fi
+
+    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+        -t "${table_name}" -X "${chain_name}"; then
+        failed=1
+    fi
+
+    return "${failed}"
+}
+
+_otbr_iptables_rule_exists()
+{
+    local table_name="$1"
+    local chain_name="$2"
+    shift 2
+
+    iptables -w "${otbr_iptables_wait_seconds}" \
+        -t "${table_name}" -C "${chain_name}" "$@" 2>/dev/null
+}
+
+_otbr_legacy_nat64_state_exists()
+{
+    local backbone_if="$1"
+
+    [[ -n "${backbone_if}" ]] || return 1
+
+    # Version 2.13.0 created this signature without a dedicated forwarding
+    # chain and never removed it. Keep recognizing a partial signature after a
+    # failed migration so the next startup can finish cleaning the residue.
+    if iptables -w "${otbr_iptables_wait_seconds}" \
+        -t filter -L "${otbr_forward_nat64_chain}" -n >/dev/null 2>&1; then
+        return 1
+    fi
+
+    _otbr_iptables_rule_exists mangle PREROUTING \
+        -i "${thread_if}" -j MARK --set-mark "${otbr_fw_mark}" \
+        && _otbr_iptables_rule_exists nat POSTROUTING \
+            -m mark --mark "${otbr_fw_mark}" -j MASQUERADE \
+        && { \
+            _otbr_iptables_rule_exists filter FORWARD \
+                -o "${backbone_if}" -j ACCEPT \
+            || _otbr_iptables_rule_exists filter FORWARD \
+                -i "${backbone_if}" -j ACCEPT; \
+        }
 }
 
 _otbr_firewall_rollback()
@@ -199,16 +289,133 @@ otbr_firewall_setup()
     fi
 }
 
+_otbr_nat64_rollback()
+{
+    if ! otbr_nat64_cleanup >/dev/null 2>&1; then
+        return 0
+    fi
+
+    return 0
+}
+
 otbr_nat64_setup()
 {
     local backbone_if="$1"
 
-    iptables -t mangle -A PREROUTING -i "${thread_if}" \
-        -j MARK --set-mark "${otbr_fw_mark}"
-    iptables -t nat -A POSTROUTING -m mark --mark "${otbr_fw_mark}" \
-        -j MASQUERADE
-    iptables -t filter -A FORWARD -o "${backbone_if}" -j ACCEPT
-    iptables -t filter -A FORWARD -i "${backbone_if}" -j ACCEPT
+    [[ -n "${backbone_if}" ]] || return 2
+
+    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+        -t mangle -A PREROUTING -i "${thread_if}" \
+        -j MARK --set-mark "${otbr_fw_mark}"; then
+        _otbr_nat64_rollback
+        return 1
+    fi
+
+    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+        -t nat -A POSTROUTING -m mark --mark "${otbr_fw_mark}" \
+        -j MASQUERADE; then
+        _otbr_nat64_rollback
+        return 1
+    fi
+
+    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+        -t filter -N "${otbr_forward_nat64_chain}"; then
+        _otbr_nat64_rollback
+        return 1
+    fi
+
+    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+        -t filter -I FORWARD 1 -j "${otbr_forward_nat64_chain}"; then
+        _otbr_nat64_rollback
+        return 1
+    fi
+
+    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+        -t filter -A "${otbr_forward_nat64_chain}" \
+        -m mark --mark "${otbr_fw_mark}" -o "${backbone_if}" -j ACCEPT; then
+        _otbr_nat64_rollback
+        return 1
+    fi
+
+    if ! iptables -w "${otbr_iptables_wait_seconds}" \
+        -t filter -A "${otbr_forward_nat64_chain}" \
+        -m conntrack --ctstate ESTABLISHED,RELATED \
+        -i "${backbone_if}" -o "${thread_if}" -j ACCEPT; then
+        _otbr_nat64_rollback
+        return 1
+    fi
+}
+
+otbr_nat64_cleanup()
+{
+    local backbone_if="${1:-}"
+    local failed=0
+    local legacy_cleanup_failed=0
+    local legacy_state=false
+
+    if [[ -n "${backbone_if}" ]] \
+        && _otbr_legacy_nat64_state_exists "${backbone_if}"; then
+        legacy_state=true
+    fi
+
+    if ! _otbr_remove_iptables_rules filter FORWARD \
+        -j "${otbr_forward_nat64_chain}"; then
+        failed=1
+    fi
+
+    if ! _otbr_delete_iptables_chain_if_exist filter \
+        "${otbr_forward_nat64_chain}"; then
+        failed=1
+    fi
+
+    if [[ "${legacy_state}" == "true" ]]; then
+        if ! _otbr_remove_iptables_rules filter FORWARD \
+            -o "${backbone_if}" -j ACCEPT; then
+            failed=1
+            legacy_cleanup_failed=1
+        fi
+
+        if ! _otbr_remove_iptables_rules filter FORWARD \
+            -i "${backbone_if}" -j ACCEPT; then
+            failed=1
+            legacy_cleanup_failed=1
+        fi
+
+        # Preserve the legacy mark/MASQUERADE signature when a broad rule could
+        # not be deleted. This lets the next startup recognize and retry the
+        # partially migrated state rather than orphaning an ACCEPT rule.
+        if (( legacy_cleanup_failed != 0 )); then
+            return "${failed}"
+        fi
+    fi
+
+    if ! _otbr_remove_iptables_rules mangle PREROUTING \
+        -i "${thread_if}" -j MARK --set-mark "${otbr_fw_mark}"; then
+        failed=1
+    fi
+
+    if ! _otbr_remove_iptables_rules nat POSTROUTING \
+        -m mark --mark "${otbr_fw_mark}" -j MASQUERADE; then
+        failed=1
+    fi
+
+    return "${failed}"
+}
+
+otbr_netfilter_cleanup()
+{
+    local backbone_if="${1:-}"
+    local failed=0
+
+    if ! otbr_firewall_cleanup; then
+        failed=1
+    fi
+
+    if ! otbr_nat64_cleanup "${backbone_if}"; then
+        failed=1
+    fi
+
+    return "${failed}"
 }
 
 otbr_firewall_cleanup()
