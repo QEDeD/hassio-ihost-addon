@@ -47,6 +47,28 @@ create a new integration named "Open Thread Border Router". With Home Assistant
 Core 2023.3 and newer the OTBR will get configured automatically. The Thread
 integration allows to inspect the network configuration.
 
+### Firewall and NAT64 behavior
+
+The `firewall` option controls OTBR ingress filtering. It does not control
+whether the add-on configures IPv6 forwarding rules:
+
+- When enabled, the add-on applies OTBR's ingress deny and allow rules.
+- When disabled, the add-on permits forwarding into and out of `wpan0` without
+  applying those ingress filters.
+
+In both modes, the add-on creates interface-scoped OTBR chains and the ipsets
+required by the compiled OTBR agent. It does not change the host-wide IPv6
+`FORWARD` policy. IPv6 forwarding must be enabled on the Home Assistant host.
+
+When `nat64` is enabled, the add-on marks traffic originating on `wpan0`,
+masquerades only that marked traffic, and permits it to leave through the
+selected backbone interface. Return traffic is accepted only for established
+or related connections. NAT64 does not add unrestricted forwarding rules for
+all traffic on the backbone interface.
+
+Only one OTBR implementation should manage `wpan0` and the globally named OTBR
+chains and ipsets at a time.
+
 ### Web interface (advanced)
 
 There is also a web interface provided by the OTBR. However, the web
@@ -69,8 +91,8 @@ Add-on configuration:
 | flow_control       | If hardware flow control should be enabled (depends on firmware) |
 | autoflash_firmware | Automatically install/update firmware (Home Assistant SkyConnect/Yellow) |
 | otbr_log_level     | Set the log level of the OpenThread BorderRouter Agent     |
-| firewall           | Enable OpenThread Border Router firewall to block unnecessary traffic |
-| nat64              | Enable NAT64 to allow Thread devices accessing IPv4 addresses |
+| firewall           | Apply OTBR ingress filtering; scoped `wpan0` forwarding remains enabled when disabled |
+| nat64              | Permit marked Thread-originated IPv4 flows and established return traffic |
 | network_device     | IP address and port to connect to a network-based RCP (see below) |
 
 > [!WARNING]
