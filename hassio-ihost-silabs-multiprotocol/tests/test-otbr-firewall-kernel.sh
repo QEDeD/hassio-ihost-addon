@@ -6,6 +6,7 @@ readonly TEST_DIR
 ADDON_DIR="$(cd -- "${TEST_DIR}/.." && pwd)"
 readonly ADDON_DIR
 readonly COMMON_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
+readonly LOCK_PROBE_PATH="/usr/local/libexec/otbr-lock-probe"
 readonly SYSTEM_PATH="${PATH}"
 
 # shellcheck source=../rootfs/etc/s6-overlay/scripts/otbr-agent-common
@@ -13,6 +14,7 @@ readonly SYSTEM_PATH="${PATH}"
 source "${COMMON_SCRIPT}"
 
 xtables_lock_pid=""
+original_path=""
 
 fail()
 {
@@ -35,7 +37,14 @@ release_xtables_lock()
 best_effort_cleanup()
 {
     release_xtables_lock
+    if [[ -n "${original_path}" ]]; then
+        PATH="${original_path}"
+        export PATH
+        original_path=""
+    fi
+    unset XTABLES_LOCKFILE
     PATH="${SYSTEM_PATH}"
+    otbr_cleanup_budget_milliseconds=4000
     otbr_firewall_cleanup >/dev/null 2>&1 || true
 }
 
@@ -85,10 +94,12 @@ forward_jump_count()
             'index($0, needle) { count++ } END { print count + 0 }'
 }
 
-for command_name in awk flock ip6tables ip6tables-legacy ipset timeout; do
+for command_name in awk flock ip6tables ipset timeout; do
     command -v "${command_name}" >/dev/null \
         || fail "required command ${command_name} is unavailable"
 done
+[[ -x "${LOCK_PROBE_PATH}/ip6tables" ]] \
+    || fail "required ip6tables lock probe is unavailable"
 
 [[ "$(ip6tables --version)" == *"nf_tables"* ]] \
     || fail "kernel smoke test requires the nft-backed iptables frontend"
@@ -148,29 +159,29 @@ ip6tables -w 1 -I FORWARD 1 -i "${thread_if}" \
 otbr_firewall_cleanup
 assert_absent
 
-# The nft frontend is atomic and treats -w as a no-op. Exercise the same cleanup
-# path through the installed legacy frontend here so a real xtables lock can
-# prove that the shared deadline bounds every blocking subprocess.
+# Some iptables-nft builds skip the historical global lock. Put a narrow probe
+# shim in PATH for this case so -w contention is deterministic while the real
+# ip6tables binary still performs every operation after acquiring the lock.
+# The outer timeout must bound the wait and return control promptly.
 otbr_firewall_setup true
-rm -f /tmp/xtables-lock-ready
-mkdir -p /tmp/otbr-legacy-bin
-ln -s "$(command -v ip6tables-legacy)" \
-    /tmp/otbr-legacy-bin/ip6tables
-PATH="/tmp/otbr-legacy-bin:${SYSTEM_PATH}"
+export XTABLES_LOCKFILE=/tmp/otbr-xtables-probe.lock
+rm -f "${XTABLES_LOCKFILE}" /tmp/otbr-xtables-lock-ready
+original_path="${PATH}"
+PATH="${LOCK_PROBE_PATH}:${PATH}"
+export PATH
 
-flock --exclusive /run/xtables.lock \
-    sh -c 'touch /tmp/xtables-lock-ready; exec sleep 30' &
+flock --exclusive --no-fork "${XTABLES_LOCKFILE}" \
+    sh -c 'touch /tmp/otbr-xtables-lock-ready; exec sleep 10' &
 xtables_lock_pid=$!
 
 for ((attempt = 0; attempt < 100; attempt++)); do
-    if [[ -e /tmp/xtables-lock-ready ]]; then
-        break
-    fi
+    [[ -e /tmp/otbr-xtables-lock-ready ]] && break
     sleep 0.01
 done
-[[ -e /tmp/xtables-lock-ready ]] \
-    || fail "could not acquire the xtables test lock"
+[[ -e /tmp/otbr-xtables-lock-ready ]] \
+    || fail "could not acquire the xtables lock for the bounded-wait test"
 
+otbr_cleanup_budget_milliseconds=500
 _otbr_clock_milliseconds \
     || fail "could not read the monotonic clock before lock test"
 lock_test_started="${REPLY}"
@@ -180,13 +191,20 @@ fi
 _otbr_clock_milliseconds \
     || fail "could not read the monotonic clock after lock test"
 lock_test_elapsed=$((REPLY - lock_test_started))
-lock_test_limit=$((otbr_cleanup_budget_milliseconds \
-    + otbr_cleanup_kill_grace_milliseconds + 2000))
-(( lock_test_elapsed <= lock_test_limit )) \
+(( lock_test_elapsed >= 300 )) \
+    || fail "xtables lock cleanup returned too early after ${lock_test_elapsed}ms"
+(( lock_test_elapsed < 2500 )) \
     || fail "xtables lock cleanup took ${lock_test_elapsed}ms"
 
 release_xtables_lock
-PATH="${SYSTEM_PATH}"
+PATH="${original_path}"
+export PATH
+original_path=""
+unset XTABLES_LOCKFILE
+ip6tables -w 1 -L "${otbr_forward_ingress_chain}" -n >/dev/null 2>&1 \
+    || fail "firewall state vanished while xtables was locked"
+
+otbr_cleanup_budget_milliseconds=4000
 otbr_firewall_cleanup
 assert_absent
 

@@ -20,6 +20,8 @@ WORKDIR /addon
 
 COPY rootfs/etc/s6-overlay/scripts/otbr-agent-common \
     rootfs/etc/s6-overlay/scripts/otbr-agent-common
+COPY --chmod=0755 tests/kernel/ip6tables-lock-probe \
+    /usr/local/libexec/otbr-lock-probe/ip6tables
 COPY tests/test-otbr-firewall-kernel.sh \
     tests/test-otbr-firewall-kernel.sh
 
