@@ -42,8 +42,10 @@ jobs:
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-agent-common
             hassio-ihost-openthread-border-router/tests/run.sh
+            hassio-ihost-openthread-border-router/tests/netfilter-smoke/iptables-lock-probe
             hassio-ihost-openthread-border-router/tests/test-firewall.sh
             hassio-ihost-openthread-border-router/tests/test-nat64.sh
+            hassio-ihost-openthread-border-router/tests/test-netfilter-kernel.sh
             hassio-ihost-openthread-border-router/tests/test-service-invariants.sh
             hassio-ihost-openthread-border-router/tests/test-service-callers.sh
           )
@@ -65,9 +67,12 @@ jobs:
           done
           require_mode 100644 \
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
+          require_mode 100644 \
+            hassio-ihost-openthread-border-router/tests/netfilter-smoke/Dockerfile
 
           for file in "${files[@]}" \
-            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish; do
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish \
+            hassio-ihost-openthread-border-router/tests/netfilter-smoke/Dockerfile; do
             if grep -q $'\r' "${file}"; then
               printf '::error file=%s::file contains CRLF line endings\n' "${file}"
               exit 1
@@ -136,6 +141,27 @@ jobs:
 
       - name: Run firewall and NAT64 lifecycle tests
         run: bash hassio-ihost-openthread-border-router/tests/run.sh
+
+      - name: Build netfilter smoke image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --pull \
+            --file hassio-ihost-openthread-border-router/tests/netfilter-smoke/Dockerfile \
+            --tag "local/otbr-netfilter-smoke:${GITHUB_SHA}" \
+            hassio-ihost-openthread-border-router
+
+      - name: Exercise the real kernel netfilter lifecycle
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            --cap-drop ALL \
+            --cap-add NET_ADMIN \
+            --cap-add NET_RAW \
+            --security-opt no-new-privileges \
+            --network none \
+            "local/otbr-netfilter-smoke:${GITHUB_SHA}"
 
   addon-lint:
     name: Add-on configuration

@@ -198,4 +198,30 @@ if otbr_firewall_cleanup; then exit 1; fi
 (( mock_now_ms <= otbr_cleanup_budget_milliseconds + command_advance_ms ))
 [[ ${jumps["-o|${otbr_forward_ingress_chain}"]} -gt 0 ]]
 
+# A kernel rule outside our owned chains can keep an ipset referenced. NAT64
+# teardown must run before retries for that busy set exhaust the shared budget.
+declare nat64_cleanup_completed=false
+declare -i nat64_cleanup_started_ms=-1
+original_cleanup_budget_milliseconds="${otbr_cleanup_budget_milliseconds}"
+otbr_nat64_cleanup()
+{
+    nat64_cleanup_started_ms="${mock_now_ms}"
+    if _otbr_cleanup_refresh_remaining; then
+        nat64_cleanup_completed=true
+        return 0
+    fi
+    return 1
+}
+
+reset_state
+otbr_cleanup_budget_milliseconds=500
+sets["otbr-ingress-deny-src"]=1
+destroy_failures["otbr-ingress-deny-src"]=999
+if otbr_netfilter_cleanup; then exit 1; fi
+[[ "${nat64_cleanup_completed}" == "true" ]]
+[[ ${nat64_cleanup_started_ms} -eq 0 ]]
+[[ ${sets["otbr-ingress-deny-src"]} -eq 1 ]]
+(( mock_now_ms <= otbr_cleanup_budget_milliseconds ))
+otbr_cleanup_budget_milliseconds="${original_cleanup_budget_milliseconds}"
+
 printf 'PASS: standalone OTBR IPv6 firewall lifecycle\n'

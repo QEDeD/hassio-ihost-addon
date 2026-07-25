@@ -192,6 +192,7 @@ caller_output="$(
         caller_finish_cleanup_result=1
         otbr_netfilter_cleanup()
         {
+            printf 'CLEANUP_CALLED\n'
             return "${caller_finish_cleanup_result}"
         }
         source_finish 7 0
@@ -202,12 +203,31 @@ set -e
 [[ ${caller_status} -eq 125 ]]
 grep -q '^RECORDED_EXIT=7$' <<< "${caller_output}"
 grep -q '^HALT_CALLED$' <<< "${caller_output}"
+[[ "${caller_output}" == *$'RECORDED_EXIT=7\nHALT_CALLED\nCLEANUP_CALLED'* ]]
+
+set +e
+caller_output="$(
+    (
+        caller_finish_cleanup_result=0
+        otbr_netfilter_cleanup()
+        {
+            printf 'CLEANUP_CALLED\n'
+            return "${caller_finish_cleanup_result}"
+        }
+        source_finish 256 15
+    ) 2>&1
+)"
+caller_status=$?
+set -e
+[[ ${caller_status} -eq 125 ]]
+[[ "${caller_output}" == *$'RECORDED_EXIT=143\nHALT_CALLED\nCLEANUP_CALLED'* ]]
 
 caller_output="$(
     (
         caller_finish_cleanup_result=1
         otbr_netfilter_cleanup()
         {
+            printf 'CLEANUP_CALLED\n'
             return "${caller_finish_cleanup_result}"
         }
         source_finish 0 0
@@ -215,5 +235,6 @@ caller_output="$(
 )"
 [[ "${caller_output}" != *"RECORDED_EXIT="* ]]
 [[ "${caller_output}" != *"HALT_CALLED"* ]]
+[[ "${caller_output}" == "CLEANUP_CALLED" ]]
 
 printf 'PASS: standalone OTBR run/finish caller behavior and config matrix\n'

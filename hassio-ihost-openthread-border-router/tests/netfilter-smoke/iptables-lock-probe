@@ -1,0 +1,29 @@
+#!/bin/bash
+set -euo pipefail
+
+declare -a arguments=("$@")
+declare -i index
+declare wait_seconds=""
+
+for ((index = 0; index < ${#arguments[@]}; index++)); do
+    case "${arguments[index]}" in
+        -w)
+            (( index + 1 < ${#arguments[@]} )) || exit 2
+            wait_seconds="${arguments[index + 1]}"
+            break
+            ;;
+        -w[0-9]*)
+            wait_seconds="${arguments[index]#-w}"
+            break
+            ;;
+    esac
+done
+
+[[ "${wait_seconds}" =~ ^[0-9]+$ ]] || exit 2
+: "${XTABLES_LOCKFILE:?XTABLES_LOCKFILE must name the probe lock}"
+
+# Execute in place so GNU timeout cannot leave a waiter behind. The real
+# iptables command uses its default lock after this deterministic probe lock.
+exec flock --exclusive --no-fork --timeout "${wait_seconds}" \
+    "${XTABLES_LOCKFILE}" env -u XTABLES_LOCKFILE \
+    /usr/sbin/iptables "$@"

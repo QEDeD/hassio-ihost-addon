@@ -803,11 +803,14 @@ otbr_netfilter_cleanup()
         fi
     fi
 
-    if ! otbr_firewall_cleanup; then
+    # Remove forwarding/NAT state before retry-heavy ipset destruction. A
+    # kernel reference can keep an ipset busy until the shared cleanup budget
+    # expires, but it must not strand the independently removable NAT64 state.
+    if ! otbr_nat64_cleanup; then
         failed=1
     fi
 
-    if ! otbr_nat64_cleanup; then
+    if ! otbr_firewall_cleanup; then
         failed=1
     fi
 
