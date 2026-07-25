@@ -95,35 +95,106 @@ _otbr_ipset_destroy_if_exist()
     return 1
 }
 
+_otbr_firewall_rollback()
+{
+    # Preserve the setup failure as the caller-facing result. Cleanup is best
+    # effort here; a subsequent startup will retry reconciliation before setup.
+    if ! otbr_firewall_cleanup >/dev/null 2>&1; then
+        return 0
+    fi
+
+    return 0
+}
+
 otbr_firewall_setup()
 {
     local firewall_enabled="$1"
+    local ipset_name
+
+    if [[ "${firewall_enabled}" != "true" \
+        && "${firewall_enabled}" != "false" ]]; then
+        return 2
+    fi
+
+    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
+        if ! ipset create -exist "${ipset_name}" hash:net family inet6; then
+            _otbr_firewall_rollback
+            return 1
+        fi
+    done
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -N "${otbr_forward_ingress_chain}"; then
+        _otbr_firewall_rollback
+        return 1
+    fi
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -I FORWARD 1 -o "${thread_if}" \
+        -j "${otbr_forward_ingress_chain}"; then
+        _otbr_firewall_rollback
+        return 1
+    fi
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -N "${otbr_forward_egress_chain}"; then
+        _otbr_firewall_rollback
+        return 1
+    fi
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -I FORWARD 2 -i "${thread_if}" \
+        -j "${otbr_forward_egress_chain}"; then
+        _otbr_firewall_rollback
+        return 1
+    fi
 
     if [[ "${firewall_enabled}" == "true" ]]; then
-        ipset create -exist otbr-ingress-deny-src hash:net family inet6
-        ipset create -exist otbr-ingress-deny-src-swap hash:net family inet6
-        ipset create -exist otbr-ingress-allow-dst hash:net family inet6
-        ipset create -exist otbr-ingress-allow-dst-swap hash:net family inet6
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" \
+            -m pkttype --pkt-type unicast -i "${thread_if}" -j DROP; then
+            _otbr_firewall_rollback
+            return 1
+        fi
 
-        ip6tables -N "${otbr_forward_ingress_chain}"
-        ip6tables -I FORWARD 1 -o "${thread_if}" -j "${otbr_forward_ingress_chain}"
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" \
+            -m set --match-set otbr-ingress-deny-src src -j DROP; then
+            _otbr_firewall_rollback
+            return 1
+        fi
 
-        ip6tables -A "${otbr_forward_ingress_chain}" -m pkttype --pkt-type unicast -i "${thread_if}" -j DROP
-        ip6tables -A "${otbr_forward_ingress_chain}" -m set --match-set otbr-ingress-deny-src src -j DROP
-        ip6tables -A "${otbr_forward_ingress_chain}" -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT
-        ip6tables -A "${otbr_forward_ingress_chain}" -m pkttype --pkt-type unicast -j DROP
-        ip6tables -A "${otbr_forward_ingress_chain}" -j ACCEPT
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" \
+            -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT; then
+            _otbr_firewall_rollback
+            return 1
+        fi
 
-        ip6tables -N "${otbr_forward_egress_chain}"
-        ip6tables -I FORWARD 2 -i "${thread_if}" -j "${otbr_forward_egress_chain}"
-        ip6tables -A "${otbr_forward_egress_chain}" -j ACCEPT
-    elif [[ "${firewall_enabled}" == "false" ]]; then
-        # Make sure ip6tables (as used by Docker) allows IP forwarding.
-        ip6tables -P FORWARD ACCEPT
-        # HAOS 9.3 and earlier (for 9.4 ACCEPT is the default, so this does nothing).
-        ip6tables-legacy -P FORWARD ACCEPT
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" \
+            -m pkttype --pkt-type unicast -j DROP; then
+            _otbr_firewall_rollback
+            return 1
+        fi
+
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" -j ACCEPT; then
+            _otbr_firewall_rollback
+            return 1
+        fi
     else
-        return 2
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" -j ACCEPT; then
+            _otbr_firewall_rollback
+            return 1
+        fi
+    fi
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -A "${otbr_forward_egress_chain}" -j ACCEPT; then
+        _otbr_firewall_rollback
+        return 1
     fi
 }
 
