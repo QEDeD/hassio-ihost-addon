@@ -33,7 +33,8 @@ configuration:
   otbr_firewall:
     name: OTBR firewall
     description: >-
-      Use OpenThread Border Router firewall to block unnecessary traffic.
+      Apply OTBR ingress filtering. When disabled, the add-on still permits
+      IPv6 forwarding through wpan0 using interface-scoped rules.
 network:
   9999/tcp: EmberZNet EZSP/ASH port
   8080/tcp: OpenThread Web port
