@@ -8,6 +8,10 @@
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 
+if ! otbr_firewall_cleanup; then
+    bashio::exit.nok "Could not clean up stale OTBR firewall state."
+fi
+
 declare backbone_if
 # shellcheck disable=SC2034
 declare device

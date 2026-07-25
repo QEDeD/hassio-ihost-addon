@@ -9,8 +9,11 @@ bashio::log.info "otbr-agent ended with exit code ${1} (signal ${2})..."
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 
-otbr_firewall_cleanup
-bashio::log.info "OTBR firewall teardown completed."
+if otbr_firewall_cleanup; then
+    bashio::log.info "OTBR firewall teardown completed."
+else
+    bashio::log.warning "OTBR firewall teardown was incomplete."
+fi
 
 if test "$1" -eq 256 ; then
   e=$((128 + $2))

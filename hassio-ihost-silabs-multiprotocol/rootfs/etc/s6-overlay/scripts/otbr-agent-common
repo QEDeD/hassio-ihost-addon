@@ -11,15 +11,88 @@ otbr_firewall_ipsets=(
     "otbr-ingress-allow-dst-swap"
 )
 
+otbr_iptables_wait_seconds=5
+otbr_cleanup_max_rule_deletes=64
+otbr_ipset_destroy_attempts=20
+otbr_ipset_destroy_delay_seconds=0.1
+
+_otbr_remove_forward_jumps()
+{
+    local interface_flag="$1"
+    local chain_name="$2"
+    local removed=0
+
+    while (( removed < otbr_cleanup_max_rule_deletes )); do
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -C FORWARD "${interface_flag}" "${thread_if}" \
+            -j "${chain_name}" 2>/dev/null; then
+            return 0
+        fi
+
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -D FORWARD "${interface_flag}" "${thread_if}" \
+            -j "${chain_name}"; then
+            return 1
+        fi
+
+        removed=$((removed + 1))
+    done
+
+    # Refuse to loop indefinitely if state is unexpectedly duplicated many times.
+    if ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -C FORWARD "${interface_flag}" "${thread_if}" \
+        -j "${chain_name}" 2>/dev/null; then
+        return 1
+    fi
+
+    return 0
+}
+
+_otbr_delete_chain_if_exist()
+{
+    local chain_name="$1"
+    local failed=0
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -L "${chain_name}" -n >/dev/null 2>&1; then
+        return 0
+    fi
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -F "${chain_name}"; then
+        failed=1
+    fi
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -X "${chain_name}"; then
+        failed=1
+    fi
+
+    return "${failed}"
+}
+
 _otbr_ipset_destroy_if_exist()
 {
     local ipset_name="$1"
+    local attempt=1
 
-    # The ipset seems to be in use by the kernel for a brief period,
-    # retry destroying it.
-    while ipset list -n "${ipset_name}" 2>/dev/null; do
-        ipset destroy "${ipset_name}" || true
+    while (( attempt <= otbr_ipset_destroy_attempts )); do
+        if ! ipset list -n "${ipset_name}" >/dev/null 2>&1; then
+            return 0
+        fi
+
+        if ipset destroy "${ipset_name}" >/dev/null 2>&1; then
+            return 0
+        fi
+
+        if (( attempt < otbr_ipset_destroy_attempts )); then
+            sleep "${otbr_ipset_destroy_delay_seconds}"
+        fi
+
+        attempt=$((attempt + 1))
     done
+
+    return 1
 }
 
 otbr_firewall_setup()
@@ -57,26 +130,29 @@ otbr_firewall_setup()
 otbr_firewall_cleanup()
 {
     local ipset_name
+    local failed=0
 
-    while ip6tables -C FORWARD -o "${thread_if}" -j "${otbr_forward_ingress_chain}" 2>/dev/null; do
-        ip6tables -D FORWARD -o "${thread_if}" -j "${otbr_forward_ingress_chain}"
-    done
+    if ! _otbr_remove_forward_jumps -o "${otbr_forward_ingress_chain}"; then
+        failed=1
+    fi
 
-    if ip6tables -L "${otbr_forward_ingress_chain}" 2>/dev/null; then
-        ip6tables -w -F "${otbr_forward_ingress_chain}"
-        ip6tables -w -X "${otbr_forward_ingress_chain}"
+    if ! _otbr_remove_forward_jumps -i "${otbr_forward_egress_chain}"; then
+        failed=1
+    fi
+
+    if ! _otbr_delete_chain_if_exist "${otbr_forward_ingress_chain}"; then
+        failed=1
+    fi
+
+    if ! _otbr_delete_chain_if_exist "${otbr_forward_egress_chain}"; then
+        failed=1
     fi
 
     for ipset_name in "${otbr_firewall_ipsets[@]}"; do
-        _otbr_ipset_destroy_if_exist "${ipset_name}"
+        if ! _otbr_ipset_destroy_if_exist "${ipset_name}"; then
+            failed=1
+        fi
     done
 
-    while ip6tables -C FORWARD -i "${thread_if}" -j "${otbr_forward_egress_chain}" 2>/dev/null; do
-        ip6tables -D FORWARD -i "${thread_if}" -j "${otbr_forward_egress_chain}"
-    done
-
-    if ip6tables -L "${otbr_forward_egress_chain}" 2>/dev/null; then
-        ip6tables -w -F "${otbr_forward_egress_chain}"
-        ip6tables -w -X "${otbr_forward_egress_chain}"
-    fi
+    return "${failed}"
 }
