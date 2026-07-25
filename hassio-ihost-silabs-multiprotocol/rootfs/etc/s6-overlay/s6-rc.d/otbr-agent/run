@@ -5,6 +5,7 @@
 # OpenThread BorderRouter start script
 # ==============================================================================
 
+# shellcheck source=../../scripts/otbr-agent-common
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 

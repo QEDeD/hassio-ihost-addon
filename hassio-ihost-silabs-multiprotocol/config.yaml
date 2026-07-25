@@ -14,8 +14,6 @@ gpio: true
 hassio_api: true
 discovery:
   - otbr
-# IPC is only used within the Add-on
-host_ipc: false
 host_network: true
 host_uts: true
 privileged:
@@ -48,5 +46,4 @@ schema:
   otbr_enable: bool
   otbr_log_level: list(debug|info|notice|warning|error|critical|alert|emergency)
   otbr_firewall: bool
-stage: stable
 startup: services

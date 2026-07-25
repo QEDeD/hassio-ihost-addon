@@ -90,6 +90,13 @@ required by the compiled OTBR agent. It does not change the host-wide IPv6
 Only one OTBR implementation should manage `wpan0` and the globally named OTBR
 chains and ipsets at a time.
 
+When OTBR is disabled, the add-on skips stale firewall cleanup if `wpan0`
+already exists, or if network interfaces cannot be inspected. This conservative
+guard avoids removing globally named rules from an active standalone OTBR.
+Because those rules do not record which add-on created them, an orphaned
+`wpan0` can also prevent automatic cleanup; stop every OTBR implementation
+before manually removing stale state or restarting the host.
+
 ### Web interface (advanced)
 
 There is also a web interface provided by the OTBR. However, the web

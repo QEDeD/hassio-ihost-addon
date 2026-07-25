@@ -6,6 +6,7 @@
 #==============================================================================
 bashio::log.info "otbr-agent ended with exit code ${1} (signal ${2})..."
 
+# shellcheck source=../../scripts/otbr-agent-common
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 

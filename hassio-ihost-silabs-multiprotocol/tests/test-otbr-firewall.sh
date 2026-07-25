@@ -1,15 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
-readonly TEST_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-readonly ADDON_DIR="$(cd -- "${TEST_DIR}/.." && pwd)"
+TEST_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+readonly TEST_DIR
+ADDON_DIR="$(cd -- "${TEST_DIR}/.." && pwd)"
+readonly ADDON_DIR
 readonly COMMON_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
 readonly RUN_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run"
 readonly FINISH_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish"
+readonly TIMEOUT_FINISH_FILE="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish"
 readonly ENABLE_CHECK_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh"
 
 # The test invokes the shared functions with stateful command mocks. The service
 # scripts themselves are checked for syntax and caller-level invariants below.
+# shellcheck source=../rootfs/etc/s6-overlay/scripts/otbr-agent-common
 # shellcheck disable=SC1090
 source "${COMMON_SCRIPT}"
 
@@ -18,11 +22,19 @@ declare -A mock_jump_counts
 declare -A mock_sets
 declare -A mock_set_destroy_failures
 declare -A mock_chain_rule_counts
+declare -A mock_ip6_operation_status
+declare -A mock_timeout_command_status
 declare -a mock_ingress_rules
 declare -a mock_egress_rules
 declare -a mock_command_log
 declare -i mock_ip6_call_count
 declare -i mock_fail_ip6_call
+declare -i mock_ip6_elapsed_milliseconds
+declare -i mock_ipset_destroy_calls
+declare -i mock_ipset_list_status
+declare -i mock_ip_link_status
+declare -i mock_thread_if_present
+declare -i mock_now_milliseconds
 declare -i mock_rule_delete_calls
 declare -i mock_sleep_calls
 declare -i mock_fail_rule_delete
@@ -64,6 +76,104 @@ assert_not_contains()
         || fail "${description}: unexpectedly contained '${needle}'"
 }
 
+run_start_script_fixture()
+{
+    local cleanup_status="$1"
+    local setup_status="$2"
+    local script
+
+    script="$(sed \
+        -e 's#^[[:space:]]*\. /etc/s6-overlay/scripts/otbr-agent-common.*$#    :#' \
+        -e 's#^mkdir -p /data/thread.*$#:#' \
+        "${RUN_SCRIPT}")"
+
+    (
+        function bashio::api.supervisor() { printf 'eth0'; }
+        function bashio::config() { printf 'notice'; }
+        function bashio::config.true() { return 1; }
+        function bashio::exit.nok() { exit 42; }
+        function bashio::log.info() { :; }
+        function bashio::log.warning() { :; }
+        function bashio::string.lower() { printf '%s' "$1"; }
+
+        otbr_firewall_cleanup() { return "${cleanup_status}"; }
+        otbr_firewall_setup() { return "${setup_status}"; }
+
+        eval "${script}"
+    )
+}
+
+run_finish_script_fixture()
+{
+    local cleanup_status="$1"
+    local run_status="$2"
+    local run_signal="$3"
+    local script
+
+    script="$(sed \
+        -e 's#^[[:space:]]*\. /etc/s6-overlay/scripts/otbr-agent-common.*$#    :#' \
+        -e 's#^[[:space:]]*echo "\$e" > /run/s6-linux-init-container-results/exitcode.*$#    otbr_test_written_exitcode="\$e"#' \
+        -e 's#^[[:space:]]*exec /run/s6/basedir/bin/halt.*$#    otbr_test_halt_called=1#' \
+        "${FINISH_SCRIPT}")"
+
+    (
+        function bashio::log.info() { :; }
+        function bashio::log.warning() { :; }
+
+        otbr_firewall_cleanup() { return "${cleanup_status}"; }
+        otbr_test_halt_called=0
+        otbr_test_written_exitcode=""
+        set -- "${run_status}" "${run_signal}"
+
+        eval "${script}"
+        printf '%s|%s\n' \
+            "${otbr_test_written_exitcode:-none}" \
+            "${otbr_test_halt_called}"
+    )
+}
+
+run_disabled_script_fixture()
+{
+    local guard_status="$1"
+    local cleanup_status="$2"
+    local script
+
+    script="$(sed \
+        -e 's#^[[:space:]]*\. /etc/s6-overlay/scripts/otbr-agent-common.*$#    :#' \
+        -e 's#^[[:space:]]*rm /etc/s6-overlay/.*$#    :#' \
+        -e 's#^[[:space:]]*bashio::exit.ok.*$#    return 0#' \
+        "${ENABLE_CHECK_SCRIPT}")"
+
+    (
+        function bashio::config.false() { return 0; }
+        function bashio::log.info() { :; }
+        function bashio::log.warning() {
+            otbr_test_warnings+="$*;"
+        }
+
+        otbr_disabled_cleanup_is_safe() {
+            otbr_cleanup_guard_reason="fixture guard"
+            return "${guard_status}"
+        }
+        otbr_firewall_cleanup() {
+            otbr_test_cleanup_calls=$((otbr_test_cleanup_calls + 1))
+            return "${cleanup_status}"
+        }
+
+        otbr_test_cleanup_calls=0
+        otbr_test_warnings=""
+
+        otbr_test_run_enable_check()
+        {
+            eval "${script}"
+        }
+
+        otbr_test_run_enable_check
+        printf '%s|%s\n' \
+            "${otbr_test_cleanup_calls}" "${otbr_test_warnings}"
+    )
+}
+
 mock_reset()
 {
     mock_chains=()
@@ -76,6 +186,8 @@ mock_reset()
 
     mock_sets=()
     mock_set_destroy_failures=()
+    mock_ip6_operation_status=()
+    mock_timeout_command_status=()
 
     mock_chain_rule_counts=()
     mock_chain_rule_counts["${otbr_forward_ingress_chain}"]=0
@@ -87,6 +199,12 @@ mock_reset()
 
     mock_ip6_call_count=0
     mock_fail_ip6_call=0
+    mock_ip6_elapsed_milliseconds=0
+    mock_ipset_destroy_calls=0
+    mock_ipset_list_status=0
+    mock_ip_link_status=0
+    mock_thread_if_present=0
+    mock_now_milliseconds=0
     mock_rule_delete_calls=0
     mock_sleep_calls=0
     mock_fail_rule_delete=0
@@ -98,16 +216,12 @@ ip6tables()
     mock_command_log+=("ip6tables $*")
     mock_ip6_call_count=$((mock_ip6_call_count + 1))
 
-    if (( mock_fail_ip6_call > 0 \
-        && mock_ip6_call_count == mock_fail_ip6_call )); then
-        return 1
-    fi
-
     local -a args=("$@")
-    if [[ "${args[0]:-}" != "-w" \
-        || "${args[1]:-}" != "${otbr_iptables_wait_seconds}" ]]; then
+    if [[ "${args[0]:-}" != "-w" ]] \
+        || ! [[ "${args[1]:-}" =~ ^[1-9][0-9]*$ ]]; then
         fail "ip6tables command did not use the configured xtables wait: $*"
     fi
+    local wait_seconds="${args[1]}"
     args=("${args[@]:2}")
 
     local operation="${args[0]:-}"
@@ -115,6 +229,33 @@ ip6tables()
     local interface_flag
     local jump_key
     local rule
+    local forced_status
+
+    case "${operation}" in
+        -N|-I|-A)
+            assert_eq "${otbr_iptables_wait_seconds}" "${wait_seconds}" \
+                "setup xtables wait"
+            ;;
+        *)
+            if (( wait_seconds > otbr_cleanup_iptables_wait_seconds )); then
+                fail "cleanup xtables wait exceeded its cap: $*"
+            fi
+            ;;
+    esac
+
+    mock_now_milliseconds=$((
+        mock_now_milliseconds + mock_ip6_elapsed_milliseconds
+    ))
+
+    if (( mock_fail_ip6_call > 0 \
+        && mock_ip6_call_count == mock_fail_ip6_call )); then
+        return 1
+    fi
+
+    forced_status="${mock_ip6_operation_status["${operation}"]:-0}"
+    if (( forced_status != 0 )); then
+        return "${forced_status}"
+    fi
 
     case "${operation}" in
         -N)
@@ -148,6 +289,9 @@ ip6tables()
             interface_flag="${args[2]:-}"
             chain_name="${args[5]:-}"
             jump_key="${interface_flag}|${chain_name}"
+            # iptables-nft reports a missing custom jump target as an
+            # operational error, not as an ordinary absent-rule result.
+            [[ ${mock_chains["${chain_name}"]:-0} -eq 1 ]] || return 2
             [[ ${mock_jump_counts["${jump_key}"]:-0} -gt 0 ]]
             ;;
         -D)
@@ -202,11 +346,18 @@ ipset()
             mock_sets["${ipset_name}"]=1
             ;;
         list)
-            ipset_name="${2:-}"
-            [[ ${mock_sets["${ipset_name}"]:-0} -eq 1 ]]
+            [[ "${1:-}" == "-n" && -z "${2:-}" ]] || return 2
+            (( mock_ipset_list_status == 0 )) \
+                || return "${mock_ipset_list_status}"
+            for ipset_name in "${!mock_sets[@]}"; do
+                if [[ ${mock_sets["${ipset_name}"]:-0} -eq 1 ]]; then
+                    printf '%s\n' "${ipset_name}"
+                fi
+            done
             ;;
         destroy)
             ipset_name="${1:-}"
+            mock_ipset_destroy_calls=$((mock_ipset_destroy_calls + 1))
             if [[ ${mock_set_destroy_failures["${ipset_name}"]:-0} -gt 0 ]]; then
                 mock_set_destroy_failures["${ipset_name}"]=$((
                     mock_set_destroy_failures["${ipset_name}"] - 1
@@ -222,9 +373,61 @@ ipset()
     esac
 }
 
+ip()
+{
+    [[ "$*" == "-o link show" ]] || return 2
+    (( mock_ip_link_status == 0 )) || return "${mock_ip_link_status}"
+
+    printf '1: lo: <LOOPBACK,UP> mtu 65536\n'
+    if (( mock_thread_if_present != 0 )); then
+        printf '7: %s@if8: <BROADCAST,UP> mtu 1280\n' "${thread_if}"
+    fi
+}
+
+timeout()
+{
+    local command_name
+    local forced_status
+    local kill_grace_duration
+
+    printf -v kill_grace_duration '%d.%03ds' \
+        "$((otbr_cleanup_kill_grace_milliseconds / 1000))" \
+        "$((otbr_cleanup_kill_grace_milliseconds % 1000))"
+
+    [[ "${1:-}" == "--foreground" ]] || return 2
+    shift
+    [[ "${1:-}" == "--kill-after=${kill_grace_duration}" ]] || return 2
+    shift
+    [[ "${1:-}" =~ ^[0-9]+\.[0-9]{3}s$ ]] || return 2
+    shift
+
+    command_name="${1:-}"
+    forced_status="${mock_timeout_command_status["${command_name}"]:-0}"
+    if (( forced_status != 0 )); then
+        return "${forced_status}"
+    fi
+
+    "$@"
+}
+
+_otbr_clock_milliseconds()
+{
+    REPLY="${mock_now_milliseconds}"
+}
+
 sleep()
 {
+    local delay_duration
+
+    printf -v delay_duration '%d.%03ds' \
+        "$((otbr_ipset_destroy_delay_milliseconds / 1000))" \
+        "$((otbr_ipset_destroy_delay_milliseconds % 1000))"
+    assert_eq "${delay_duration}" "${1:-}" "ipset retry delay"
+
     mock_sleep_calls=$((mock_sleep_calls + 1))
+    mock_now_milliseconds=$((
+        mock_now_milliseconds + otbr_ipset_destroy_delay_milliseconds
+    ))
 }
 
 assert_firewall_state_clean()
@@ -317,6 +520,7 @@ test_cleanup_failures_are_bounded()
 {
     mock_reset
     mock_jump_counts["-o|${otbr_forward_ingress_chain}"]=1
+    mock_chains["${otbr_forward_ingress_chain}"]=1
     mock_fail_rule_delete=1
     if otbr_firewall_cleanup; then
         fail "cleanup unexpectedly succeeded with an undeletable jump"
@@ -337,6 +541,7 @@ test_cleanup_failures_are_bounded()
     mock_jump_counts["-o|${otbr_forward_ingress_chain}"]=$((
         otbr_cleanup_max_rule_deletes + 1
     ))
+    mock_chains["${otbr_forward_ingress_chain}"]=1
     if otbr_firewall_cleanup; then
         fail "cleanup unexpectedly accepted excessive duplicate jumps"
     fi
@@ -351,6 +556,168 @@ test_cleanup_failures_are_bounded()
     fi
     assert_eq 1 "${mock_chains["${otbr_forward_ingress_chain}"]}" \
         "undeletable chain remains visible for the next reconciliation attempt"
+}
+
+test_cleanup_probe_statuses_are_preserved()
+{
+    local status
+
+    mock_reset
+    otbr_firewall_cleanup \
+        || fail "missing iptables and ipset objects should be a clean state"
+    otbr_firewall_cleanup \
+        || fail "repeated cleanup of missing objects should remain idempotent"
+
+    for status in 2 3 4; do
+        mock_reset
+        mock_chains["${otbr_forward_ingress_chain}"]=1
+        mock_chains["${otbr_forward_egress_chain}"]=1
+        mock_ip6_operation_status["-C"]="${status}"
+        if otbr_firewall_cleanup; then
+            fail "cleanup ignored ip6tables -C status ${status}"
+        fi
+    done
+
+    for status in 2 3 4; do
+        mock_reset
+        mock_ip6_operation_status["-L"]="${status}"
+        if otbr_firewall_cleanup; then
+            fail "cleanup ignored ip6tables -L status ${status}"
+        fi
+    done
+
+    for status in 1 2 3 4; do
+        mock_reset
+        mock_sets["otbr-ingress-deny-src"]=1
+        mock_ipset_list_status="${status}"
+        if otbr_firewall_cleanup; then
+            fail "cleanup ignored all-ipset listing status ${status}"
+        fi
+        assert_eq 0 "${mock_ipset_destroy_calls}" \
+            "ipset destroy calls after an unverified listing"
+    done
+}
+
+test_cleanup_command_timeouts_are_preserved()
+{
+    mock_reset
+    mock_timeout_command_status["ip6tables"]=124
+    if otbr_firewall_cleanup; then
+        fail "cleanup ignored a timed-out ip6tables command"
+    fi
+    assert_eq 0 "${mock_ip6_call_count}" \
+        "timed-out ip6tables command execution"
+
+    mock_reset
+    mock_sets["otbr-ingress-deny-src"]=1
+    mock_timeout_command_status["ipset"]=124
+    if otbr_firewall_cleanup; then
+        fail "cleanup ignored a timed-out ipset command"
+    fi
+    assert_eq 0 "${mock_ipset_destroy_calls}" \
+        "ipset destroy calls after a timed-out listing"
+}
+
+test_cleanup_uses_one_shared_deadline()
+{
+    mock_reset
+    mock_jump_counts["-o|${otbr_forward_ingress_chain}"]=100
+    mock_chains["${otbr_forward_ingress_chain}"]=1
+    mock_ip6_elapsed_milliseconds=1000
+
+    if otbr_firewall_cleanup; then
+        fail "cleanup unexpectedly completed after exhausting its deadline"
+    fi
+
+    assert_eq "${otbr_cleanup_budget_milliseconds}" \
+        "${mock_now_milliseconds}" "cleanup wall-clock deadline"
+    assert_eq 4 "${mock_ip6_call_count}" \
+        "commands admitted before the shared deadline"
+    assert_eq 0 "${mock_ipset_destroy_calls}" \
+        "ipset work after the shared deadline"
+}
+
+test_disabled_cleanup_owner_guard()
+{
+    local fixture_result
+
+    mock_reset
+    mock_thread_if_present=1
+    if otbr_disabled_cleanup_is_safe; then
+        fail "disabled cleanup ignored an existing ${thread_if}"
+    fi
+    assert_contains "${thread_if} already exists" \
+        "${otbr_cleanup_guard_reason}" "foreign-owner guard reason"
+
+    mock_reset
+    mock_ip_link_status=4
+    if otbr_disabled_cleanup_is_safe; then
+        fail "disabled cleanup proceeded after interface inspection failed"
+    fi
+    assert_contains "could not be inspected" \
+        "${otbr_cleanup_guard_reason}" "interface-probe guard reason"
+
+    mock_reset
+    otbr_disabled_cleanup_is_safe \
+        || fail "disabled cleanup was blocked with no ${thread_if}"
+
+    fixture_result="$(run_disabled_script_fixture 1 0)"
+    assert_contains '0|Skipping stale OTBR firewall cleanup' \
+        "${fixture_result}" "guarded disabled caller policy"
+
+    fixture_result="$(run_disabled_script_fixture 0 1)"
+    assert_contains '1|Could not completely clean up stale OTBR firewall state' \
+        "${fixture_result}" "best-effort disabled caller policy"
+}
+
+test_service_caller_failure_policies()
+{
+    local fixture_result
+    local fixture_status
+
+    if run_start_script_fixture 1 0; then
+        fail "run script continued after stale cleanup failed"
+    else
+        fixture_status=$?
+    fi
+    assert_eq 42 "${fixture_status}" "run cleanup failure policy"
+
+    if run_start_script_fixture 0 1; then
+        fail "run script continued after firewall setup failed"
+    else
+        fixture_status=$?
+    fi
+    assert_eq 42 "${fixture_status}" "run setup failure policy"
+
+    fixture_result="$(run_finish_script_fixture 1 7 0)"
+    assert_eq '7|1' "${fixture_result}" \
+        "finish cleanup failure preserves process exit"
+
+    fixture_result="$(run_finish_script_fixture 1 256 15)"
+    assert_eq '143|1' "${fixture_result}" \
+        "finish cleanup failure preserves signal exit"
+
+    fixture_result="$(run_finish_script_fixture 1 0 0)"
+    assert_eq 'none|0' "${fixture_result}" \
+        "successful process exit remains successful"
+}
+
+test_finish_timeout_has_cleanup_headroom()
+{
+    local finish_timeout_milliseconds
+
+    finish_timeout_milliseconds="$(
+        tr -d '[:space:]' < "${TIMEOUT_FINISH_FILE}"
+    )"
+    [[ "${finish_timeout_milliseconds}" =~ ^[1-9][0-9]*$ ]] \
+        || fail "timeout-finish must contain positive milliseconds"
+
+    if (( otbr_cleanup_budget_milliseconds \
+        + otbr_cleanup_kill_grace_milliseconds \
+        + otbr_cleanup_finish_headroom_milliseconds \
+        >= finish_timeout_milliseconds )); then
+        fail "cleanup budget and kill grace do not leave finish headroom"
+    fi
 }
 
 test_setup_failure_rolls_back_partial_state()
@@ -420,6 +787,10 @@ test_service_script_invariants()
         || fail "finish script does not invoke shared cleanup"
     grep -q 'otbr_firewall_cleanup' "${ENABLE_CHECK_SCRIPT}" \
         || fail "disabled OTBR path does not invoke shared cleanup"
+    grep -q 'otbr_disabled_cleanup_is_safe' "${ENABLE_CHECK_SCRIPT}" \
+        || fail "disabled OTBR path does not guard a possible foreign owner"
+    [[ -f "${TIMEOUT_FINISH_FILE}" ]] \
+        || fail "otbr-agent has no explicit finish timeout"
 }
 
 main()
@@ -428,6 +799,12 @@ main()
     test_enabled_setup_preserves_filtering
     test_cleanup_removes_duplicate_state
     test_cleanup_failures_are_bounded
+    test_cleanup_probe_statuses_are_preserved
+    test_cleanup_command_timeouts_are_preserved
+    test_cleanup_uses_one_shared_deadline
+    test_disabled_cleanup_owner_guard
+    test_service_caller_failure_policies
+    test_finish_timeout_has_cleanup_headroom
     test_setup_failure_rolls_back_partial_state
     test_restart_and_mode_transitions
     test_service_script_invariants
