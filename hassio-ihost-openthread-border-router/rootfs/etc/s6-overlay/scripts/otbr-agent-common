@@ -1,9 +1,95 @@
-#!/bin/sh
+#!/bin/bash
+# shellcheck shell=bash
 
-declare thread_if
-declare otbr_forward_ingress_chain
-declare otbr_forward_egress_chain
 thread_if="wpan0"
 otbr_forward_ingress_chain="OTBR_FORWARD_INGRESS"
 otbr_forward_egress_chain="OTBR_FORWARD_EGRESS"
+otbr_fw_mark="0x1001"
+otbr_firewall_ipsets=(
+    "otbr-ingress-deny-src"
+    "otbr-ingress-deny-src-swap"
+    "otbr-ingress-allow-dst"
+    "otbr-ingress-allow-dst-swap"
+)
 
+_otbr_ipset_destroy_if_exist()
+{
+    local ipset_name="$1"
+
+    # The ipset seems to be in use by the kernel for a brief period,
+    # retry destroying it.
+    while ipset list -n "${ipset_name}" 2>/dev/null; do
+        ipset destroy "${ipset_name}" || true
+    done
+}
+
+otbr_firewall_setup()
+{
+    local firewall_enabled="$1"
+
+    ipset create -exist otbr-ingress-deny-src hash:net family inet6
+    ipset create -exist otbr-ingress-deny-src-swap hash:net family inet6
+    ipset create -exist otbr-ingress-allow-dst hash:net family inet6
+    ipset create -exist otbr-ingress-allow-dst-swap hash:net family inet6
+
+    if [[ "${firewall_enabled}" == "true" ]]; then
+        ip6tables -N "${otbr_forward_ingress_chain}"
+        ip6tables -I FORWARD 1 -o "${thread_if}" -j "${otbr_forward_ingress_chain}"
+
+        ip6tables -A "${otbr_forward_ingress_chain}" -m pkttype --pkt-type unicast -i "${thread_if}" -j DROP
+        ip6tables -A "${otbr_forward_ingress_chain}" -m set --match-set otbr-ingress-deny-src src -j DROP
+        ip6tables -A "${otbr_forward_ingress_chain}" -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT
+        ip6tables -A "${otbr_forward_ingress_chain}" -m pkttype --pkt-type unicast -j DROP
+        ip6tables -A "${otbr_forward_ingress_chain}" -j ACCEPT
+
+        ip6tables -N "${otbr_forward_egress_chain}"
+        ip6tables -I FORWARD 2 -i "${thread_if}" -j "${otbr_forward_egress_chain}"
+        ip6tables -A "${otbr_forward_egress_chain}" -j ACCEPT
+    elif [[ "${firewall_enabled}" == "false" ]]; then
+        # Make sure ip6tables (as used by Docker) allows IP forwarding.
+        ip6tables -P FORWARD ACCEPT
+        # HAOS 9.3 and earlier (for 9.4 ACCEPT is the default, so this does nothing).
+        ip6tables-legacy -P FORWARD ACCEPT
+    else
+        return 2
+    fi
+}
+
+otbr_nat64_setup()
+{
+    local backbone_if="$1"
+
+    iptables -t mangle -A PREROUTING -i "${thread_if}" \
+        -j MARK --set-mark "${otbr_fw_mark}"
+    iptables -t nat -A POSTROUTING -m mark --mark "${otbr_fw_mark}" \
+        -j MASQUERADE
+    iptables -t filter -A FORWARD -o "${backbone_if}" -j ACCEPT
+    iptables -t filter -A FORWARD -i "${backbone_if}" -j ACCEPT
+}
+
+otbr_firewall_cleanup()
+{
+    local ipset_name
+
+    while ip6tables -C FORWARD -o "${thread_if}" -j "${otbr_forward_ingress_chain}" 2>/dev/null; do
+        ip6tables -D FORWARD -o "${thread_if}" -j "${otbr_forward_ingress_chain}"
+    done
+
+    if ip6tables -L "${otbr_forward_ingress_chain}" 2>/dev/null; then
+        ip6tables -w -F "${otbr_forward_ingress_chain}"
+        ip6tables -w -X "${otbr_forward_ingress_chain}"
+    fi
+
+    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
+        _otbr_ipset_destroy_if_exist "${ipset_name}"
+    done
+
+    while ip6tables -C FORWARD -i "${thread_if}" -j "${otbr_forward_egress_chain}" 2>/dev/null; do
+        ip6tables -D FORWARD -i "${thread_if}" -j "${otbr_forward_egress_chain}"
+    done
+
+    if ip6tables -L "${otbr_forward_egress_chain}" 2>/dev/null; then
+        ip6tables -w -F "${otbr_forward_egress_chain}"
+        ip6tables -w -X "${otbr_forward_egress_chain}"
+    fi
+}
