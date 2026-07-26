@@ -1,9 +1,10 @@
 # Candidate provenance and publication record
 
 This record belongs only to the fork branch
-`codex/otbr-candidate-feed`. Phase 1 is local-only. No branch, image, package,
-visibility, pull request, upstream comment, or Home Assistant state is changed
-until the separately listed external writes are explicitly approved.
+`codex/otbr-candidate-feed`. Phase 1 was local-only. The candidate branch,
+exact image publication, public visibility, and this provenance follow-up were
+separately and explicitly approved. No pull request, upstream comment,
+canonical worktree, or Home Assistant state was changed.
 
 ## Source identity
 
@@ -14,21 +15,26 @@ until the separately listed external writes are explicitly approved.
 | Canonical Silicon subtree | `ab9d32ddf7d7cdeda9ba97cd7ae4be2dbbeb8b8e` |
 | Candidate content commit | `e86f3b32105a0f7eaf669672d0938ed8e9fb4b16` |
 | Candidate content tree | `0d377877ff329db1a4788aacc40c636116d694ba` |
+| Candidate commit present at image publication | `e107034c488daf7d6dd9fbab0cf5f2e76d15c1ad` |
+| Candidate tree present at image publication | `caa9dd73028fe439eae561e13ba4d09db08d9f98` |
 | Candidate branch | `codex/otbr-candidate-feed` |
 | Candidate version/tag | `1.0.2` |
 | Candidate architecture | `amd64` only |
 | Fork | `QEDeD/hassio-ihost-addon` |
 | Upstream source | `iHost-Open-Source-Project/hassio-ihost-addon` |
 
-The candidate content commit is recorded by a second local commit because a
-Git commit cannot contain its own object ID. The eventual published branch SHA
-is verified separately after both local commits are pushed.
+The candidate content commit identifies the reviewed delivery tree before its
+provenance record. Image publication occurred only after the remote candidate
+branch resolved to `e107034c488daf7d6dd9fbab0cf5f2e76d15c1ad`. The final
+provenance commit is reported externally after its normal push because a Git
+commit cannot contain its own object ID; no recursive commit is created merely
+to embed that SHA.
 
 ## Validated local image
 
 The image below was built and validated before this delivery branch was
-created. Phase 2 must retag this exact cached image and must not rebuild it
-merely to change its registry name.
+created. Phase 2 retagged and published this exact cached image; it was not
+rebuilt merely to change its registry name.
 
 | Item | Recorded value |
 | --- | --- |
@@ -66,17 +72,35 @@ approved, or endorsed the QEDeD candidate package.
 | --- | --- |
 | Exact package/tag | `ghcr.io/qeded/ihost-silabs-otbr-candidate-186eac8354fdcab9c224ec840989da1fd86af882-amd64:1.0.2` |
 | Target package URL | `https://github.com/users/QEDeD/packages/container/package/ihost-silabs-otbr-candidate-186eac8354fdcab9c224ec840989da1fd86af882-amd64` |
-| Publication | `PENDING EXPLICIT APPROVAL` |
-| Package visibility | `PENDING EXPLICIT APPROVAL` |
-| Registry manifest/platform digest | `PENDING PUBLICATION` |
-| Registry image configuration digest | `PENDING REMOTE VERIFICATION` |
-| Anonymous pull verification | `PENDING PUBLICATION` |
-| Published branch SHA | `PENDING BRANCH PUSH` |
+| Publication | `PUBLISHED EXACTLY ONCE — exact cached descriptor reused; no rebuild` |
+| Package visibility | `public — irreversible; changed only after private identity and access verification` |
+| Package association and access before public change | `unlinked; QEDeD sole Admin; no Actions or Codespaces repository access` |
+| Registry manifest/platform digest | `sha256:5a10cd6e03a4f398722b111278a6a24faa9af2261a1759b43c7784a7a31ee55a` |
+| Registry image configuration digest | `sha256:ee8a97319ca2616afc84a28dd30d5d984308fb3d0961027930586ec69ad559d3` |
+| Remote platform and labels | `linux/amd64; all 11 recorded HA/OCI labels matched exactly` |
+| Anonymous pull verification | `PASS — 2026-07-26T22:15:12Z; fresh empty Docker config, manifest inspection, and digest-pinned pull` |
+| Candidate branch SHA at image publication | `e107034c488daf7d6dd9fbab0cf5f2e76d15c1ad` |
+| Final provenance commit | `reported externally after normal push; intentionally not embedded recursively` |
 
 The SHA-bearing tag is procedurally immutable, not cryptographically pinned by
 the add-on metadata. Supervisor derives the tag from `version: 1.0.2`.
-Publication therefore occurs exactly once: never overwrite or reuse the
-package/tag, and record the resulting remote manifest digest.
+Publication occurred exactly once. Never overwrite or reuse the package/tag;
+the resulting manifest digest is recorded above.
+
+Private verification before the visibility change confirmed one package
+version and only tag `1.0.2`, an unlinked package, no inherited access, no
+Actions or Codespaces repository access, and only `QEDeD` with the Admin role.
+The scope-limited QEDeD classic PAT reported exactly `write:packages`, with no
+`repo` or `delete:packages` scope, and an expiration of
+`2026-08-02T22:05:45Z`. After the verified upload, Docker logged out, the
+isolated credential directory and clipboard value were removed, and the PAT
+was revoked; a subsequent authenticated identity request returned `401`.
+
+Anonymous verification used a new, empty Docker configuration with no auth or
+credential helper. The public package page returned HTTP `200`; anonymous GHCR
+tag enumeration returned only `1.0.2`; manifest and configuration reads matched
+the digests, `linux/amd64` platform, and all labels above; and a digest-pinned
+`docker pull` completed successfully.
 
 ## Delivery-only differences
 
