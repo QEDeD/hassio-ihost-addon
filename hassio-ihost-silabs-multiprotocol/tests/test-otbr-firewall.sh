@@ -14,6 +14,16 @@ readonly RUN_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run"
 readonly FINISH_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish"
 readonly TIMEOUT_FINISH_FILE="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish"
 readonly ENABLE_CHECK_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh"
+readonly DISABLED_CLEANUP_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-disabled-cleanup.sh"
+readonly OWNER_LOCK="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-owner-lock.py"
+readonly STANDALONE_OWNER_LOCK="${ADDON_DIR}/../hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-owner-lock.py"
+readonly OWNER_RUN="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/run"
+readonly OWNER_FINISH="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/finish"
+readonly OWNER_TYPE="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/type"
+readonly OWNER_NOTIFICATION_FD="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/notification-fd"
+readonly OWNER_TIMEOUT_UP="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/timeout-up"
+readonly OWNER_BASE_DEPENDENCY="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/dependencies.d/base"
+readonly AGENT_OWNER_DEPENDENCY="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/otbr-owner-lock"
 
 # The test invokes the shared functions with stateful command mocks. The service
 # scripts themselves are checked for syntax and caller-level invariants below.
@@ -229,9 +239,7 @@ run_disabled_script_fixture()
 
     script="$(sed \
         -e 's#^[[:space:]]*\. /etc/s6-overlay/scripts/otbr-agent-common.*$#    :#' \
-        -e 's#^[[:space:]]*rm /etc/s6-overlay/.*$#    :#' \
-        -e 's#^[[:space:]]*bashio::exit.ok.*$#    return 0#' \
-        "${ENABLE_CHECK_SCRIPT}")"
+        "${DISABLED_CLEANUP_SCRIPT}")"
 
     (
         function bashio::config.false() { return 0; }
@@ -1117,13 +1125,14 @@ test_service_script_invariants()
 {
     local file
     for file in "${COMMON_SCRIPT}" "${RUN_SCRIPT}" \
-        "${FINISH_SCRIPT}" "${ENABLE_CHECK_SCRIPT}"; do
+        "${FINISH_SCRIPT}" "${ENABLE_CHECK_SCRIPT}" \
+        "${DISABLED_CLEANUP_SCRIPT}" "${OWNER_RUN}" "${OWNER_FINISH}"; do
         bash -n "${file}"
     done
 
     if grep -RqsE 'ip6tables-legacy|ip6tables[[:space:]]+-P[[:space:]]+FORWARD' \
         "${COMMON_SCRIPT}" "${RUN_SCRIPT}" "${FINISH_SCRIPT}" \
-        "${ENABLE_CHECK_SCRIPT}"; then
+        "${ENABLE_CHECK_SCRIPT}" "${DISABLED_CLEANUP_SCRIPT}"; then
         fail "obsolete legacy or host-wide FORWARD policy command remains"
     fi
 
@@ -1158,12 +1167,71 @@ test_service_script_invariants()
         || fail "finish script does not invoke shared cleanup"
     grep -q 'otbr_firewall_cleanup_claim_consume' "${FINISH_SCRIPT}" \
         || fail "finish cleanup is not gated by an ownership claim"
-    grep -q 'otbr_firewall_cleanup' "${ENABLE_CHECK_SCRIPT}" \
-        || fail "disabled OTBR path does not invoke shared cleanup"
+    grep -q 'otbr_firewall_cleanup' "${DISABLED_CLEANUP_SCRIPT}" \
+        || fail "protected disabled OTBR command does not invoke shared cleanup"
     grep -q 'otbr_firewall_cleanup_is_safe' "${RUN_SCRIPT}" \
         || fail "startup cleanup does not guard a possible foreign owner"
-    grep -q 'otbr_firewall_cleanup_is_safe' "${ENABLE_CHECK_SCRIPT}" \
-        || fail "disabled OTBR path does not guard a possible foreign owner"
+    grep -q 'otbr_firewall_cleanup_is_safe' "${DISABLED_CLEANUP_SCRIPT}" \
+        || fail "protected disabled cleanup does not guard an uncooperative owner"
+    grep -Fq '/etc/s6-overlay/scripts/otbr-owner-lock.py' \
+        "${ENABLE_CHECK_SCRIPT}" \
+        || fail "disabled OTBR cleanup does not acquire the shared owner gate"
+    grep -Fq -- '-- /etc/s6-overlay/scripts/otbr-disabled-cleanup.sh' \
+        "${ENABLE_CHECK_SCRIPT}" \
+        || fail "disabled OTBR path does not execute the protected cleanup command"
+    grep -Fq '3>/dev/null' "${ENABLE_CHECK_SCRIPT}" \
+        || fail "disabled OTBR owner helper does not redirect readiness fd 3"
+    grep -Fq '[[ "${cleanup_status}" -eq 75 ]]' "${ENABLE_CHECK_SCRIPT}" \
+        || fail "disabled OTBR path does not handle ownership conflict status 75"
+
+    [[ "$(<"${OWNER_TYPE}")" == "longrun" ]] \
+        || fail "OTBR ownership gate is not an s6 longrun"
+    [[ "$(<"${OWNER_NOTIFICATION_FD}")" == "3" ]] \
+        || fail "OTBR ownership gate does not notify readiness on fd 3"
+    [[ "$(<"${OWNER_TIMEOUT_UP}")" == "5000" ]] \
+        || fail "OTBR ownership gate has the wrong startup timeout"
+    [[ -f "${OWNER_BASE_DEPENDENCY}" ]] \
+        || fail "OTBR ownership gate does not depend on base"
+    [[ -f "${AGENT_OWNER_DEPENDENCY}" ]] \
+        || fail "otbr-agent does not depend on the ownership gate"
+    [[ ! -e "${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/dependencies.d/otbr-agent" ]] \
+        || fail "ownership dependency is reversed and would release before teardown"
+    grep -Fqx \
+        'exec /usr/bin/python3 /etc/s6-overlay/scripts/otbr-owner-lock.py' \
+        "${OWNER_RUN}" \
+        || fail "ownership service does not exec the shared helper"
+    grep -Fqx \
+        'DEFAULT_SOCKET_NAME = "io.home-assistant.otbr-owner.v1"' \
+        "${OWNER_LOCK}" \
+        || fail "ownership helper uses the wrong abstract socket name"
+    grep -Fq 'socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)' \
+        "${OWNER_LOCK}" \
+        || fail "ownership helper does not use an atomic abstract socket bind"
+    grep -Fq 'owner_socket.bind(address)' "${OWNER_LOCK}" \
+        || fail "ownership helper does not bind its ownership socket"
+    grep -Fq 'os.write(3, b"\n")' "${OWNER_LOCK}" \
+        || fail "ownership helper does not notify s6 after acquisition"
+    grep -Fq 'return os.EX_TEMPFAIL' "${OWNER_LOCK}" \
+        || fail "ownership contention does not return status 75"
+    grep -Fq 'os.set_inheritable(owner_socket.fileno(), True)' \
+        "${OWNER_LOCK}" \
+        || fail "protected commands do not inherit the ownership descriptor"
+    grep -Fq 'os.execvp(command[0], command)' "${OWNER_LOCK}" \
+        || fail "ownership helper does not exec protected commands"
+    [[ "$(sha256sum "${OWNER_LOCK}" | awk '{ print $1 }')" \
+        == "8d28df968974c984629d0aff197baac49ca421571f6d078c5db9a40aca23d684" ]] \
+        || fail "ownership helper differs from the reviewed cross-add-on implementation"
+    if [[ -f "${STANDALONE_OWNER_LOCK}" ]]; then
+        cmp --silent "${OWNER_LOCK}" "${STANDALONE_OWNER_LOCK}" \
+            || fail "OTBR add-ons use different ownership helpers"
+    fi
+    grep -Fq '/run/s6/basedir/bin/halt' "${OWNER_FINISH}" \
+        || fail "ownership failure does not halt the container"
+    grep -Fq 'exit 125' "${OWNER_FINISH}" \
+        || fail "ownership failure is not marked permanent"
+    grep -Fq 'if test "${exit_code}" -eq 75; then' "${OWNER_FINISH}" \
+        || fail "ownership finish script lacks the conflict diagnostic"
+
     [[ -f "${TIMEOUT_FINISH_FILE}" ]] \
         || fail "otbr-agent has no explicit finish timeout"
     grep -qE 'unzip[[:space:]]+-q[[:space:]]+slc_cli_linux\.zip' \
@@ -1192,11 +1260,24 @@ test_service_script_invariants()
         || fail "OCI image revision label must use BUILD_COMMIT"
 
     local entrypoint_line
+    local heavy_build_completion_line
     local label_line
+    local rootfs_copy_line
+    heavy_build_completion_line="$(
+        grep -n '&& touch /accept_silabs_msla' "${DOCKERFILE}" \
+            | head -n 1 | cut -d: -f1
+    )"
+    rootfs_copy_line="$(
+        grep -n '^COPY rootfs /$' "${DOCKERFILE}" \
+            | head -n 1 | cut -d: -f1
+    )"
     entrypoint_line="$(grep -n '^ENTRYPOINT ' "${DOCKERFILE}" \
         | tail -n 1 | cut -d: -f1)"
     label_line="$(grep -n '^LABEL ' "${DOCKERFILE}" \
         | tail -n 1 | cut -d: -f1)"
+    (( heavy_build_completion_line < rootfs_copy_line \
+        && rootfs_copy_line < label_line )) \
+        || fail "rootfs must be copied after the expensive OTBR build and before labels"
     (( label_line > entrypoint_line )) \
         || fail "source-specific labels must follow expensive image layers"
     for build_arg in BUILD_ARCH BUILD_COMMIT BUILD_VERSION; do

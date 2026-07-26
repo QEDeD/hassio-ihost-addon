@@ -83,6 +83,13 @@ radio firmware, link type, and option values.
 - Trigger RCP recovery while Zigbee and Thread sleepy end devices are active.
   Require source-match restoration to complete without table-capacity errors
   and confirm that all devices remain reachable afterward.
+- On the same host, start this candidate while standalone OTBR is active, then
+  repeat in the opposite order. The second OTBR must stop with the
+  ownership-conflict diagnostic without changing the first add-on's `wpan0` or
+  netfilter state. With standalone OTBR active, also start this candidate with
+  `otbr_enable: false`: it must warn and skip stale cleanup while Zigbee becomes
+  ready. After both a clean stop and forced termination of the owner, retry the
+  contender and confirm it acquires the gate without manual cleanup.
 
 The Home Assistant upstream add-on deprecated shared-radio multiprotocol
 operation, so hardware acceptance is a release requirement for this downstream

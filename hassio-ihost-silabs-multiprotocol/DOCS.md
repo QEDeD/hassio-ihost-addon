@@ -97,8 +97,21 @@ whether the add-on configures IPv6 forwarding rules:
 In both modes, the add-on creates interface-scoped OTBR chains and the ipsets
 required by the compiled OTBR agent. It does not change the host-wide IPv6
 `FORWARD` policy. IPv6 forwarding must be enabled on the Home Assistant host.
-Only one OTBR implementation should manage `wpan0` and the globally named OTBR
-chains and ipsets at a time.
+
+### Exclusive OTBR ownership
+
+Only one OTBR implementation may manage `wpan0` and the globally named OTBR
+chains and ipsets at a time. This add-on and the standalone OpenThread Border
+Router add-on use the same atomic host-network ownership gate. If either add-on
+already owns it, OTBR startup in this add-on stops with a clear conflict
+message before `otbr-agent` can reconcile firewall state or create `wpan0`.
+
+When `otbr_enable` is false, stale firewall cleanup uses the same gate. A
+conflict skips that cleanup with a warning while the Zigbee services continue
+starting. Stop the active OTBR add-on before retrying cleanup. The gate is a
+Linux abstract socket, not a file, so the kernel releases it automatically
+after a clean stop, crash, or container removal; no lock-file cleanup is
+required.
 
 Use `backbone_interface` to select the host interface used for backbone routing
 on multi-NIC or VLAN systems. When it is unset, the add-on uses the primary
@@ -106,14 +119,15 @@ interface reported by Supervisor. Startup fails with a clear error if no
 primary interface is reported or the selected interface does not exist; the
 add-on does not silently guess `eth0`.
 
-Before startup reconciliation, the add-on refuses to clean or replace firewall
-state if `wpan0` already exists, or if network interfaces cannot be inspected.
-When OTBR is disabled, it logs a warning and skips cleanup under the same
-conditions so Zigbee can continue starting. This conservative guard avoids
-removing globally named rules from an active standalone OTBR. Because those
-rules do not record which add-on created them, an orphaned `wpan0` can also
-prevent automatic cleanup; stop every OTBR implementation before manually
-removing stale state or restarting the host.
+The ownership gate covers cooperating add-ons. Before startup reconciliation,
+the add-on also refuses to clean or replace firewall state if `wpan0` already
+exists, or if network interfaces cannot be inspected. When OTBR is disabled,
+it logs a warning and skips cleanup under the same conditions so Zigbee can
+continue starting. This conservative fallback protects state owned by an older
+or otherwise uncooperative OTBR implementation. Because legacy rules do not
+record which add-on created them, an orphaned `wpan0` can also prevent automatic
+cleanup; stop every OTBR implementation before manually removing stale state or
+restarting the host.
 
 ### Web interface (advanced)
 

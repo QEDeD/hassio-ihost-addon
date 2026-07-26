@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bashio
+# vim: ft=bash
+# shellcheck shell=bash
+# ==============================================================================
+# Claim exclusive host-network ownership for this OTBR implementation
+# ==============================================================================
+
+bashio::log.info "Claiming exclusive OTBR host-network ownership..."
+exec /usr/bin/python3 /etc/s6-overlay/scripts/otbr-owner-lock.py

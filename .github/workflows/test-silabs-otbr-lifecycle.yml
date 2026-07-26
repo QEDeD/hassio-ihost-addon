@@ -37,22 +37,35 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          files=(
+          bash_files=(
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/cpcd-config-up
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/finish
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/run
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-disabled-cleanup.sh
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/socat-cpcd-tcp-enable-check.sh
             hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe
             hassio-ihost-silabs-multiprotocol/tests/test-cpcd-config.sh
+            hassio-ihost-silabs-multiprotocol/tests/test-disabled-owner-lock.sh
             hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
             hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
             hassio-ihost-silabs-multiprotocol/tests/test-openthread-recovery-patch.sh
+            hassio-ihost-silabs-multiprotocol/tests/test-owner-lock.sh
+          )
+          python_files=(
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-owner-lock.py
           )
 
-          bash -n "${files[@]}"
-          shellcheck --shell=bash --severity=warning -x -P SCRIPTDIR "${files[@]}"
+          bash -n "${bash_files[@]}"
+          shellcheck \
+            --shell=bash --severity=warning -x -P SCRIPTDIR \
+            "${bash_files[@]}"
+          python3 -c \
+            'import pathlib, sys; compile(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"), sys.argv[1], "exec")' \
+            "${python_files[0]}"
 
       - name: Validate lifecycle file modes and line endings
         shell: bash
@@ -61,17 +74,28 @@ jobs:
           fail() { echo "::error::$*" >&2; exit 1; }
           executable_files=(
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/cpcd-config-up
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/finish
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/run
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-disabled-cleanup.sh
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-owner-lock.py
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/socat-cpcd-tcp-enable-check.sh
             hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe
+            hassio-ihost-silabs-multiprotocol/tests/test-disabled-owner-lock.sh
             hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
             hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+            hassio-ihost-silabs-multiprotocol/tests/test-owner-lock.sh
           )
           regular_files=(
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/otbr-owner-lock
             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/dependencies.d/base
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/notification-fd
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/timeout-up
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/type
             hassio-ihost-silabs-multiprotocol/openthread-patches/0002-spinel-Clear-source-match-tables-before-restoring.patch
             hassio-ihost-silabs-multiprotocol/tests/kernel/Dockerfile
             hassio-ihost-silabs-multiprotocol/tests/test-cpcd-config.sh
@@ -149,12 +173,16 @@ jobs:
             "${docs}" "${readme}"; then
             fail "obsolete categorical Zigbee2MQTT-only guidance remains"
           fi
+          # Match literal Dockerfile build arguments, not shell variables.
+          # shellcheck disable=SC2016
           grep -Fq 'io.hass.version="${BUILD_VERSION}"' "${dockerfile}" \
             || fail "image is missing the dynamic io.hass.version label"
           grep -Fq 'io.hass.type="app"' "${dockerfile}" \
             || fail "image is missing the io.hass.type label"
+          # shellcheck disable=SC2016
           grep -Fq 'io.hass.arch="${BUILD_ARCH}"' "${dockerfile}" \
             || fail "image is missing the dynamic io.hass.arch label"
+          # shellcheck disable=SC2016
           grep -Fq 'org.opencontainers.image.version="${BUILD_VERSION}"' \
             "${dockerfile}" \
             || fail "image is missing the dynamic OCI version label"
@@ -162,6 +190,7 @@ jobs:
             'org.opencontainers.image.source="https://github.com/iHost-Open-Source-Project/hassio-ihost-addon"' \
             "${dockerfile}" \
             || fail "image is missing the canonical OCI source label"
+          # shellcheck disable=SC2016
           grep -Fq 'org.opencontainers.image.revision="${BUILD_COMMIT}"' \
             "${dockerfile}" \
             || fail "image is missing the dynamic OCI revision label"
@@ -200,6 +229,13 @@ jobs:
 
       - name: Run firewall lifecycle tests
         run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+
+      - name: Run OTBR ownership tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash hassio-ihost-silabs-multiprotocol/tests/test-owner-lock.sh
+          bash hassio-ihost-silabs-multiprotocol/tests/test-disabled-owner-lock.sh
 
       - name: Run CPC device configuration tests
         run: bash hassio-ihost-silabs-multiprotocol/tests/test-cpcd-config.sh
@@ -353,10 +389,27 @@ jobs:
             --security-opt no-new-privileges \
             --entrypoint /bin/bash \
             "${IMAGE}" -ceu '
-            for command_name in bash ip iptables ip6tables ipset timeout; do
+            for command_name in bash ip iptables ip6tables ipset python3 timeout; do
               command -v "${command_name}" >/dev/null \
                 || { echo "missing runtime dependency: ${command_name}" >&2; exit 1; }
             done
+            owner_root=/etc/s6-overlay/s6-rc.d/otbr-owner-lock
+            test -x /etc/s6-overlay/scripts/otbr-owner-lock.py
+            test -x /etc/s6-overlay/scripts/otbr-disabled-cleanup.sh
+            test -x "${owner_root}/run"
+            test -x "${owner_root}/finish"
+            [[ "$(<"${owner_root}/type")" == "longrun" ]]
+            [[ "$(<"${owner_root}/notification-fd")" == "3" ]]
+            [[ "$(<"${owner_root}/timeout-up")" == "5000" ]]
+            test -f "${owner_root}/dependencies.d/base"
+            test -f \
+              /etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/otbr-owner-lock
+            python3 -c \
+              "import sys; assert sys.version_info[:2] == (3, 9), sys.version"
+            /etc/s6-overlay/scripts/otbr-owner-lock.py --help >/dev/null
+            /etc/s6-overlay/scripts/otbr-owner-lock.py \
+              --socket-name "io.home-assistant.otbr-owner.runtime-$$" \
+              -- /bin/true 3>/dev/null
             timeout 1 true
             ip -Version >/dev/null
             iptables --version >/dev/null
@@ -364,6 +417,10 @@ jobs:
               || { echo "ip6tables is not nft-backed" >&2; exit 1; }
             for script in \
               /etc/s6-overlay/scripts/cpcd-config-up \
+              /etc/s6-overlay/scripts/otbr-disabled-cleanup.sh \
+              /etc/s6-overlay/scripts/otbr-owner-lock.py \
+              /etc/s6-overlay/s6-rc.d/otbr-owner-lock/run \
+              /etc/s6-overlay/s6-rc.d/otbr-owner-lock/finish \
               /etc/s6-overlay/scripts/otbr-agent-common \
               /etc/s6-overlay/s6-rc.d/otbr-agent/run \
               /etc/s6-overlay/s6-rc.d/otbr-agent/finish; do
@@ -372,6 +429,9 @@ jobs:
             done
             bash -n \
               /etc/s6-overlay/scripts/cpcd-config-up \
+              /etc/s6-overlay/scripts/otbr-disabled-cleanup.sh \
+              /etc/s6-overlay/s6-rc.d/otbr-owner-lock/run \
+              /etc/s6-overlay/s6-rc.d/otbr-owner-lock/finish \
               /etc/s6-overlay/scripts/otbr-agent-common \
               /etc/s6-overlay/s6-rc.d/otbr-agent/run \
               /etc/s6-overlay/s6-rc.d/otbr-agent/finish

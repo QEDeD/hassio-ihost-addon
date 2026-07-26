@@ -216,8 +216,6 @@ COPY --from=zigbeed-builder \
      /usr/src/gecko_sdk/protocol/zigbee/app/projects/zigbeed/output/build/debug/zigbeed /usr/local/bin
 COPY --from=cpcd-builder /usr/local/ /usr/local/
 
-COPY rootfs /
-
 ENV BORDER_ROUTING=1
 ENV BACKBONE_ROUTER=1
 ENV WEB_GUI=1
@@ -302,6 +300,8 @@ RUN \
     && rm -rf /usr/src/* \
     && ldconfig \
     && touch /accept_silabs_msla 
+
+COPY rootfs /
 
 ENV \
     S6_STAGE2_HOOK=/etc/s6-overlay/scripts/enable-check.sh
