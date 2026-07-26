@@ -345,9 +345,10 @@ _otbr_remove_forward_jumps()
     if _otbr_probe_ip6tables_rule FORWARD \
         "${interface_flag}" "${thread_if}" -j "${chain_name}"; then
         return 1
+    else
+        status=$?
     fi
 
-    status=$?
     (( status == 1 ))
 }
 
@@ -470,9 +471,10 @@ _otbr_remove_iptables_rules()
 
     if _otbr_probe_iptables_rule "${table_name}" "${chain_name}" "$@"; then
         return 1
+    else
+        status=$?
     fi
 
-    status=$?
     (( status == 1 ))
 }
 

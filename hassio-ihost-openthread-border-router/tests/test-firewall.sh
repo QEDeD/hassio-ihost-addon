@@ -170,6 +170,13 @@ for mode in false true; do
 done
 
 reset_state
+jumps["-o|${otbr_forward_ingress_chain}"]="${otbr_cleanup_max_rule_deletes}"
+chains["${otbr_forward_ingress_chain}"]=1
+otbr_firewall_cleanup
+[[ ${delete_calls} -eq ${otbr_cleanup_max_rule_deletes} ]]
+assert_clean
+
+reset_state
 jumps["-o|${otbr_forward_ingress_chain}"]=$((otbr_cleanup_max_rule_deletes + 1))
 chains["${otbr_forward_ingress_chain}"]=1
 if otbr_firewall_cleanup; then exit 1; fi

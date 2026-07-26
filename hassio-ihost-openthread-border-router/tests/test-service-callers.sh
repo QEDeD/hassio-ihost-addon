@@ -9,6 +9,7 @@ readonly COMMON="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
 readonly RUN="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run"
 readonly FINISH="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish"
 readonly FLASHER="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/universal-silabs-flasher-up"
+readonly ENABLE_CHECK="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/enable-check.sh"
 
 # shellcheck source=../rootfs/etc/s6-overlay/scripts/otbr-agent-common
 # shellcheck disable=SC1090
@@ -263,6 +264,43 @@ source_finish()
             "${FINISH}"
     ) "$1" "$2"
 }
+
+source_enable_check()
+{
+    # Absolute service paths are intercepted by the touch/rm fixtures below.
+    # shellcheck disable=SC1090
+    source <(sed -e 's/\r$//' "${ENABLE_CHECK}")
+}
+
+# A network-only RCP dynamically enables both the socat service and the
+# otbr-agent dependency. Without network_device, neither marker is created.
+enable_check_output="$(
+    (
+        bashio::addon.port() { printf 'exposed\n'; }
+        bashio::var.has_value() { [[ -n "$1" ]]; }
+        bashio::config.has_value() { return 1; }
+        touch() { printf 'TOUCH:%s\n' "$*"; }
+        rm() { printf 'RM:%s\n' "$*"; }
+        source_enable_check
+    ) 2>&1
+)"
+[[ "${enable_check_output}" != *"TOUCH:"* ]]
+[[ "${enable_check_output}" != *"RM:"* ]]
+
+enable_check_output="$(
+    (
+        bashio::addon.port() { printf 'exposed\n'; }
+        bashio::var.has_value() { [[ -n "$1" ]]; }
+        bashio::config.has_value() { [[ "$1" == "network_device" ]]; }
+        touch() { printf 'TOUCH:%s\n' "$*"; }
+        rm() { printf 'RM:%s\n' "$*"; }
+        source_enable_check
+    ) 2>&1
+)"
+[[ "${enable_check_output}" == *"TOUCH:/etc/s6-overlay/s6-rc.d/user/contents.d/socat-otbr-tcp"* ]]
+[[ "${enable_check_output}" == *"TOUCH:/etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/socat-otbr-tcp"* ]]
+[[ "$(grep -c '^TOUCH:' <<< "${enable_check_output}")" -eq 2 ]]
+[[ "${enable_check_output}" != *"RM:"* ]]
 
 for caller_firewall_enabled in false true; do
     for caller_nat64_enabled in false true; do

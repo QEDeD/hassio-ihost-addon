@@ -41,6 +41,7 @@ jobs:
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/enable-check.sh
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-agent-common
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/universal-silabs-flasher-up
             hassio-ihost-openthread-border-router/tests/run.sh
