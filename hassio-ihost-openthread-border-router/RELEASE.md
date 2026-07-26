@@ -83,6 +83,12 @@ options.
   restores service without losing the Thread dataset.
 - Confirm the OTBR web UI and REST API become ready after configuration on
   repeated restarts.
+- On the same host, start this candidate while Silicon Labs Multiprotocol OTBR
+  is active, then repeat in the opposite order. The second add-on must stop
+  with the ownership-conflict diagnostic without changing the first add-on's
+  `wpan0` or netfilter state. After both a clean stop and forced termination of
+  the owner, retry the contender and confirm it acquires the gate without
+  manual cleanup.
 
 Also run a bounded TCP-RCP outage/restore test and a 24-hour soak while recording
 restart counts and file-descriptor usage. Reconnect/backoff design changes are a

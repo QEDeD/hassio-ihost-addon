@@ -7,6 +7,7 @@
 - Replace legacy and host-wide IPv6 forwarding changes with scoped OTBR chains
 - Recover stale firewall state and bound netfilter cleanup retries
 - Refuse teardown unless this startup claimed the shared OTBR netfilter state
+- Prevent concurrent OTBR add-ons with an atomic host-network ownership gate
 - Treat absent owned chains as a clean state with nft-backed iptables
 - Scope NAT64 forwarding to marked Thread traffic and established return traffic
 - Safely migrate unambiguous stale NAT64 rules leaked by version 2.13.0

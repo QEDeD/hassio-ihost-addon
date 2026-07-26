@@ -109,8 +109,17 @@ MASQUERADE rules. When there are extra interfaces or only half of that pair,
 capture the three listings above and establish rule ownership before changing
 host firewall state.
 
-Only one OTBR implementation should manage `wpan0` and the globally named OTBR
-chains and ipsets at a time.
+### Exclusive OTBR ownership
+
+Only one OTBR implementation may manage `wpan0` and the globally named OTBR
+chains and ipsets at a time. This add-on and the Silicon Labs Multiprotocol
+add-on use the same atomic host-network ownership gate. If either add-on
+already owns it, this add-on stops with a clear conflict message before
+`otbr-agent` can reconcile firewall state or create `wpan0`.
+
+Stop the other OTBR add-on before retrying. The gate is a Linux abstract socket,
+not a file, so the kernel releases it automatically after a clean stop, crash,
+or container removal; no lock-file cleanup is required.
 
 ### Web interface (advanced)
 
