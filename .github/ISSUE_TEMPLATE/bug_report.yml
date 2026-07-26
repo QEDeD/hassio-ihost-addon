@@ -29,6 +29,36 @@ body:
 
 
   - type: textarea
+    id: environment
+    attributes:
+      label: "Environment"
+      description: |
+        Provide the versions, platform, radio, connection, and relevant add-on
+        settings. Exact values help distinguish host, firmware, and lifecycle
+        failures that otherwise produce similar logs.
+      placeholder: |
+        Add-on version:
+        Home Assistant Core:
+        Home Assistant Supervisor:
+        Home Assistant OS:
+        Host device and architecture:
+        Radio model/chipset:
+        Radio firmware and mode (RCP/NCP/Multi-PAN):
+        Connection (USB/UART/TCP) and device/network_device:
+        Backbone interface (configured or Supervisor-selected):
+        Host IPv6 forwarding enabled:
+        Baud rate:
+        Hardware flow control:
+        CPCd tracing:
+        OTBR enabled:
+        Firewall enabled:
+        NAT64 enabled:
+        Add-on restart recovers:
+        Full host reboot recovers:
+    validations:
+      required: true
+
+  - type: textarea
     id: problem_description
     attributes:
       label: "Problem Description"
