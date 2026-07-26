@@ -5,16 +5,20 @@
 # ==============================================================================
 
 if bashio::config.false 'otbr_enable'; then
-    # shellcheck source=otbr-agent-common
-    # shellcheck disable=SC1091
-    . /etc/s6-overlay/scripts/otbr-agent-common
-
-    if otbr_firewall_cleanup_is_safe; then
-        if ! otbr_firewall_cleanup; then
-            bashio::log.warning "Could not completely clean up stale OTBR firewall state while disabling OTBR."
-        fi
+    if /usr/bin/python3 \
+        /etc/s6-overlay/scripts/otbr-owner-lock.py \
+        -- /etc/s6-overlay/scripts/otbr-disabled-cleanup.sh \
+        3>/dev/null; then
+        :
     else
-        bashio::log.warning "Skipping stale OTBR firewall cleanup while disabling OTBR: ${otbr_cleanup_guard_reason}."
+        cleanup_status=$?
+        if [[ "${cleanup_status}" -eq 75 ]]; then
+            bashio::log.warning \
+                "Skipping stale OTBR firewall cleanup: another OTBR add-on owns the host-network resources."
+        else
+            bashio::log.warning \
+                "Skipping stale OTBR firewall cleanup because the ownership helper exited with status ${cleanup_status}."
+        fi
     fi
 
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent

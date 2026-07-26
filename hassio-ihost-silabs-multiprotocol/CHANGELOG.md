@@ -7,6 +7,7 @@
 - Recover stale OTBR chains and keep firewall cleanup within the service shutdown deadline
 - Treat absent owned chains as a clean state with nft-backed iptables
 - Guard stale-state cleanup at startup and when disabling OpenThread if `wpan0` may have another active owner
+- Prevent concurrent OTBR add-ons with an atomic host-network ownership gate, including disabled-mode stale cleanup
 - Restore image builds with the current SLC CLI by supplying its required Java 21 runtime
 - Verify the downloaded SLC CLI archive before using it in release builds
 - Clear stale RCP source-match entries before restoring them after MultiPAN recovery
