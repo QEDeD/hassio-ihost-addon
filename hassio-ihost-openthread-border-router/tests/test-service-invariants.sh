@@ -11,13 +11,28 @@ readonly RUN="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run"
 readonly FINISH="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish"
 readonly AGENT_CHECK="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check"
 readonly TIMEOUT_FINISH="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish"
+readonly OWNER_LOCK="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-owner-lock.py"
+readonly SILABS_OWNER_LOCK="${ADDON_DIR}/../hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-owner-lock.py"
+readonly OWNER_RUN="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/run"
+readonly OWNER_FINISH="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/finish"
+readonly OWNER_TYPE="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/type"
+readonly OWNER_NOTIFICATION_FD="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/notification-fd"
+readonly OWNER_TIMEOUT_UP="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/timeout-up"
+readonly OWNER_BASE_DEPENDENCY="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/dependencies.d/base"
+readonly AGENT_OWNER_DEPENDENCY="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/otbr-owner-lock"
 readonly WEB_CONFIG_DEPENDENCY="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-web/dependencies.d/otbr-agent-configure"
 readonly CHANGELOG="${ADDON_DIR}/CHANGELOG.md"
 readonly CONFIG="${ADDON_DIR}/config.yaml"
 readonly SPINEL_RECOVERY_PATCH="${ADDON_DIR}/0002-spinel-Clear-source-match-tables-before-restoring.patch"
 readonly NAT64_OPTIONS_PATCH="${ADDON_DIR}/0003-nat64-handle-ipv4-options.patch"
 
-bash -n "${COMMON}" "${RUN}" "${FINISH}" "${AGENT_CHECK}"
+bash -n \
+    "${COMMON}" \
+    "${RUN}" \
+    "${FINISH}" \
+    "${AGENT_CHECK}" \
+    "${OWNER_RUN}" \
+    "${OWNER_FINISH}"
 # shellcheck source=../rootfs/etc/s6-overlay/scripts/otbr-agent-common
 # shellcheck disable=SC1090
 source "${COMMON}"
@@ -50,6 +65,34 @@ grep -q 'otbr_netfilter_cleanup' "${FINISH}"
 grep -q 'otbr_firewall_cleanup_claim_consume' "${FINISH}"
 grep -q '^otbr_firewall_cleanup_is_safe()$' "${COMMON}"
 grep -q '^otbr_firewall_cleanup_claim_consume()$' "${COMMON}"
+
+[[ "$(<"${OWNER_TYPE}")" == "longrun" ]]
+[[ "$(<"${OWNER_NOTIFICATION_FD}")" == "3" ]]
+[[ "$(<"${OWNER_TIMEOUT_UP}")" == "5000" ]]
+[[ -f "${OWNER_BASE_DEPENDENCY}" && ! -s "${OWNER_BASE_DEPENDENCY}" ]]
+[[ -f "${AGENT_OWNER_DEPENDENCY}" && ! -s "${AGENT_OWNER_DEPENDENCY}" ]]
+[[ ! -e "${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/dependencies.d/otbr-agent" ]]
+grep -Fqx \
+    'exec /usr/bin/python3 /etc/s6-overlay/scripts/otbr-owner-lock.py' \
+    "${OWNER_RUN}"
+grep -Fqx \
+    'DEFAULT_SOCKET_NAME = "io.home-assistant.otbr-owner.v1"' \
+    "${OWNER_LOCK}"
+grep -Fq 'socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)' "${OWNER_LOCK}"
+grep -Fq 'owner_socket.bind(address)' "${OWNER_LOCK}"
+grep -Fq 'os.write(3, b"\n")' "${OWNER_LOCK}"
+grep -Fq 'return os.EX_TEMPFAIL' "${OWNER_LOCK}"
+grep -Fq 'signal.signal(signal.SIGTERM, _exit_cleanly)' "${OWNER_LOCK}"
+grep -Fq 'signal.signal(signal.SIGINT, _exit_cleanly)' "${OWNER_LOCK}"
+[[ "$(sha256sum "${OWNER_LOCK}" | cut -d' ' -f1)" \
+    == "8d28df968974c984629d0aff197baac49ca421571f6d078c5db9a40aca23d684" ]]
+if [[ -f "${SILABS_OWNER_LOCK}" ]]; then
+    cmp --silent "${OWNER_LOCK}" "${SILABS_OWNER_LOCK}"
+fi
+grep -Fq '/run/s6/basedir/bin/halt' "${OWNER_FINISH}"
+grep -Fq 'exit 125' "${OWNER_FINISH}"
+grep -Fq 'if test "${exit_code}" -eq 75; then' "${OWNER_FINISH}"
+
 grep -qE '^[[:space:]]*-[[:space:]]+armv7[[:space:]]*$' "${CONFIG}"
 config_version="$(
     sed -nE 's/^version:[[:space:]]*"?([0-9]+\.[0-9]+\.[0-9]+)"?[[:space:]]*$/\1/p' \

@@ -1,0 +1,32 @@
+#!/usr/bin/with-contenv bashio
+# vim: ft=bash
+# shellcheck shell=bash
+# ==============================================================================
+# Refuse to restart after losing or failing to acquire OTBR ownership
+# ==============================================================================
+
+if test "$1" -eq 256; then
+    exit_code=$((128 + $2))
+else
+    exit_code="$1"
+fi
+
+if test "${exit_code}" -eq 0; then
+    bashio::log.info "Released exclusive OTBR host-network ownership."
+    exit 0
+fi
+
+if test "${exit_code}" -eq 75; then
+    bashio::log.fatal \
+        "Another OTBR add-on owns the host-network resources; startup is blocked."
+else
+    bashio::log.fatal \
+        "The OTBR ownership helper failed with exit code ${exit_code} (signal ${2})."
+fi
+
+printf '%s\n' "${exit_code}" > /run/s6-linux-init-container-results/exitcode
+/run/s6/basedir/bin/halt
+
+# Tell s6 that this failure is permanent so the longrun is not restarted while
+# the container is halting.
+exit 125

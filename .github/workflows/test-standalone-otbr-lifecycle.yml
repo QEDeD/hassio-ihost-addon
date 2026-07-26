@@ -37,10 +37,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          files=(
+          bash_files=(
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/finish
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/run
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/enable-check.sh
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-agent-common
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/universal-silabs-flasher-up
@@ -49,8 +51,20 @@ jobs:
             hassio-ihost-openthread-border-router/tests/test-firewall.sh
             hassio-ihost-openthread-border-router/tests/test-nat64.sh
             hassio-ihost-openthread-border-router/tests/test-netfilter-kernel.sh
+            hassio-ihost-openthread-border-router/tests/test-owner-lock.sh
             hassio-ihost-openthread-border-router/tests/test-service-invariants.sh
             hassio-ihost-openthread-border-router/tests/test-service-callers.sh
+          )
+          python_files=(
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-owner-lock.py
+          )
+          metadata_files=(
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/otbr-owner-lock
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/dependencies.d/base
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/notification-fd
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/timeout-up
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-owner-lock/type
           )
 
           require_mode() {
@@ -65,11 +79,12 @@ jobs:
             fi
           }
 
-          for file in "${files[@]}"; do
+          for file in "${bash_files[@]}" "${python_files[@]}"; do
             require_mode 100755 "${file}"
           done
-          require_mode 100644 \
-            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
+          for file in "${metadata_files[@]}"; do
+            require_mode 100644 "${file}"
+          done
           require_mode 100644 \
             hassio-ihost-openthread-border-router/tests/netfilter-smoke/Dockerfile
           for patch in \
@@ -81,8 +96,10 @@ jobs:
           require_mode 100644 \
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-web/dependencies.d/otbr-agent-configure
 
-          for file in "${files[@]}" \
-            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish \
+          for file in \
+            "${bash_files[@]}" \
+            "${python_files[@]}" \
+            "${metadata_files[@]}" \
             hassio-ihost-openthread-border-router/tests/netfilter-smoke/Dockerfile \
             hassio-ihost-openthread-border-router/0001-channel-monitor-disable-by-default.patch \
             hassio-ihost-openthread-border-router/0002-spinel-Clear-source-match-tables-before-restoring.patch \
@@ -93,8 +110,13 @@ jobs:
             fi
           done
 
-          bash -n "${files[@]}"
-          shellcheck --shell=bash --severity=warning -x -P SCRIPTDIR "${files[@]}"
+          bash -n "${bash_files[@]}"
+          shellcheck \
+            --shell=bash --severity=warning -x -P SCRIPTDIR \
+            "${bash_files[@]}"
+          python3 -c \
+            'import pathlib, sys; compile(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"), sys.argv[1], "exec")' \
+            "${python_files[0]}"
 
       - name: Validate add-on metadata
         shell: bash
@@ -353,8 +375,12 @@ jobs:
           docker run --rm \
             --platform linux/arm/v7 \
             --cap-drop ALL \
+            --read-only \
+            --pids-limit 64 \
             --security-opt no-new-privileges \
             --network none \
+            --tmpfs /run:rw,nosuid,nodev,noexec,size=4m \
+            --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
             --entrypoint /bin/bash \
             "local/standalone-otbr-armv7:${GITHUB_SHA}" \
             -c '
@@ -365,9 +391,29 @@ jobs:
                 ip6tables \
                 ipset \
                 otbr-agent \
+                python3 \
                 timeout; do
                 command -v "${command_name}" >/dev/null
               done
+              owner_root=/etc/s6-overlay/s6-rc.d/otbr-owner-lock
+              test -x /etc/s6-overlay/scripts/otbr-owner-lock.py
+              test -x "${owner_root}/run"
+              test -x "${owner_root}/finish"
+              [[ "$(<"${owner_root}/type")" == "longrun" ]]
+              [[ "$(<"${owner_root}/notification-fd")" == "3" ]]
+              [[ "$(<"${owner_root}/timeout-up")" == "5000" ]]
+              test -f "${owner_root}/dependencies.d/base"
+              test -f \
+                /etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/otbr-owner-lock
+              /etc/s6-overlay/scripts/otbr-owner-lock.py --help >/dev/null
+              # The overlay injects its base service during initialization.
+              # Stub only that service so s6-rc can validate the packaged
+              # add-on graph, including dependency direction and cycles.
+              cp -a /etc/s6-overlay/s6-rc.d /tmp/addon-s6-source
+              mkdir /tmp/addon-s6-source/base
+              printf "oneshot\n" > /tmp/addon-s6-source/base/type
+              printf ":\n" > /tmp/addon-s6-source/base/up
+              s6-rc-compile /tmp/addon-s6-compiled /tmp/addon-s6-source
               # qemu-user does not implement NETLINK_NETFILTER, so even
               # `ip6tables --version` fails under cross-architecture
               # emulation. Verify the nft alternatives without opening that
