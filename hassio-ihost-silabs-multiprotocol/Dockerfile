@@ -99,6 +99,7 @@ RUN \
 FROM --platform=linux/amd64 cross-builder-${BUILD_ARCH} AS zigbeed-builder
 
 ARG GECKO_SDK_VERSION
+ARG SLC_CLI_SHA256
 
 COPY --from=slc-java /usr/lib/jvm/java-21-amazon-corretto /opt/java/openjdk
 
@@ -115,6 +116,8 @@ RUN \
        --connect-timeout 30 --max-time 300 \
        --output slc_cli_linux.zip \
        https://www.silabs.com/documents/login/software/slc_cli_linux.zip \
+    && printf '%s  %s\n' "${SLC_CLI_SHA256}" slc_cli_linux.zip \
+       | sha256sum --check --strict - \
     && unzip -q slc_cli_linux.zip \
     && cd slc_cli/ && chmod +x slc
  
@@ -160,6 +163,17 @@ RUN \
 
 FROM $BUILD_FROM
 
+ARG BUILD_ARCH
+ARG BUILD_COMMIT
+ARG BUILD_VERSION
+
+LABEL \
+    io.hass.version="${BUILD_VERSION}" \
+    io.hass.type="app" \
+    io.hass.arch="${BUILD_ARCH}" \
+    org.opencontainers.image.version="${BUILD_VERSION}" \
+    org.opencontainers.image.source="https://github.com/iHost-Open-Source-Project/hassio-ihost-addon" \
+    org.opencontainers.image.revision="${BUILD_COMMIT}"
 
 RUN \
     set -x \

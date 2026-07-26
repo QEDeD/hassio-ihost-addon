@@ -262,58 +262,89 @@ _otbr_ipset_list_contains()
     return 1
 }
 
-_otbr_ipset_destroy_if_exist()
+_otbr_destroy_owned_ipsets()
 {
     local deadline_milliseconds="$1"
-    local ipset_name="$2"
-    local ipset_names="$3"
+    local ipset_names="$2"
+    local -a pending_ipsets=()
+    local -a retry_ipsets=()
     local attempt=1
     local command_status
     local delay_duration
+    local failed=0
+    local ipset_name
 
-    if ! _otbr_ipset_list_contains "${ipset_names}" "${ipset_name}"; then
-        return 0
-    fi
-
-    while (( attempt <= otbr_ipset_destroy_attempts )); do
-        if _otbr_cleanup_run "${deadline_milliseconds}" \
-            ipset destroy "${ipset_name}" >/dev/null 2>&1; then
-            command_status=0
-        else
-            command_status=$?
+    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
+        if _otbr_ipset_list_contains "${ipset_names}" "${ipset_name}"; then
+            pending_ipsets+=("${ipset_name}")
         fi
+    done
 
-        if (( command_status == 0 )); then
-            return 0
-        fi
+    while (( ${#pending_ipsets[@]} > 0 \
+        && attempt <= otbr_ipset_destroy_attempts )); do
+        retry_ipsets=()
 
-        if (( command_status != 1 )); then
-            return 1
+        # Give every owned set one destroy attempt per round. A referenced set
+        # must not consume the shared deadline before independent sets are tried.
+        for ipset_name in "${pending_ipsets[@]}"; do
+            if _otbr_cleanup_run "${deadline_milliseconds}" \
+                ipset destroy "${ipset_name}" >/dev/null 2>&1; then
+                command_status=0
+            else
+                command_status=$?
+            fi
+
+            case "${command_status}" in
+                0)
+                    ;;
+                1)
+                    retry_ipsets+=("${ipset_name}")
+                    ;;
+                *)
+                    failed=1
+                    ;;
+            esac
+        done
+
+        if (( ${#retry_ipsets[@]} == 0 )); then
+            break
         fi
 
         if ! _otbr_list_all_ipsets "${deadline_milliseconds}"; then
-            return 1
+            failed=1
+            break
         fi
         ipset_names="${REPLY}"
 
-        if ! _otbr_ipset_list_contains "${ipset_names}" "${ipset_name}"; then
-            return 0
+        pending_ipsets=()
+        for ipset_name in "${retry_ipsets[@]}"; do
+            if _otbr_ipset_list_contains "${ipset_names}" "${ipset_name}"; then
+                pending_ipsets+=("${ipset_name}")
+            fi
+        done
+
+        if (( ${#pending_ipsets[@]} == 0 )); then
+            break
         fi
 
-        if (( attempt < otbr_ipset_destroy_attempts )); then
-            printf -v delay_duration '%d.%03ds' \
-                "$((otbr_ipset_destroy_delay_milliseconds / 1000))" \
-                "$((otbr_ipset_destroy_delay_milliseconds % 1000))"
-            if ! _otbr_cleanup_run "${deadline_milliseconds}" \
-                sleep "${delay_duration}"; then
-                return 1
-            fi
+        if (( attempt >= otbr_ipset_destroy_attempts )); then
+            failed=1
+            break
+        fi
+
+        printf -v delay_duration '%d.%03ds' \
+            "$((otbr_ipset_destroy_delay_milliseconds / 1000))" \
+            "$((otbr_ipset_destroy_delay_milliseconds % 1000))"
+        if ! _otbr_cleanup_run "${deadline_milliseconds}" \
+            sleep "${delay_duration}"; then
+            failed=1
+            break
         fi
 
         attempt=$((attempt + 1))
     done
 
-    return 1
+    return "${failed}"
 }
 
 # The enable-check caller reads otbr_cleanup_guard_reason after this probe.
@@ -493,13 +524,10 @@ otbr_firewall_cleanup()
     if _otbr_list_all_ipsets "${deadline_milliseconds}"; then
         ipset_names="${REPLY}"
 
-        for ipset_name in "${otbr_firewall_ipsets[@]}"; do
-            if ! _otbr_ipset_destroy_if_exist \
-                "${deadline_milliseconds}" "${ipset_name}" \
-                "${ipset_names}"; then
-                failed=1
-            fi
-        done
+        if ! _otbr_destroy_owned_ipsets \
+            "${deadline_milliseconds}" "${ipset_names}"; then
+            failed=1
+        fi
     else
         failed=1
     fi

@@ -8,6 +8,10 @@
 - Treat absent owned chains as a clean state with nft-backed iptables
 - Clean stale OTBR firewall state when OpenThread is disabled unless `wpan0` may have another active owner
 - Restore image builds with the current SLC CLI by supplying its required Java 21 runtime
+- Verify the downloaded SLC CLI archive before using it in release builds
+- Add accurate Home Assistant and OCI version, architecture, source, and revision image labels
+- Allow `network_device` to be used without configuring an unused local serial device
+- Allow selecting the backbone interface and fail clearly when it cannot be detected
 
 ## 1.0.2
 

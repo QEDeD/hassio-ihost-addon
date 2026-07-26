@@ -7,6 +7,7 @@ ADDON_DIR="$(cd -- "${TEST_DIR}/.." && pwd)"
 readonly ADDON_DIR
 readonly COMMON_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
 readonly DOCKERFILE="${ADDON_DIR}/Dockerfile"
+readonly BUILD_FILE="${ADDON_DIR}/build.yaml"
 readonly RUN_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run"
 readonly FINISH_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish"
 readonly TIMEOUT_FINISH_FILE="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish"
@@ -32,9 +33,12 @@ declare -i mock_ip6_call_count
 declare -i mock_fail_ip6_call
 declare -i mock_ip6_elapsed_milliseconds
 declare -i mock_ipset_destroy_calls
+declare -i mock_ipset_create_calls
 declare -i mock_ipset_list_status
+declare -i mock_fail_ipset_create_call
 declare -i mock_ip_link_status
 declare -i mock_thread_if_present
+declare mock_ip_link_output
 declare -i mock_now_milliseconds
 declare -i mock_rule_delete_calls
 declare -i mock_sleep_calls
@@ -82,6 +86,10 @@ run_start_script_fixture()
     local cleanup_status="$1"
     local setup_status="$2"
     local firewall_config_true="${3:-false}"
+    local configured_backbone="${4-}"
+    local supervisor_backbone="${5-eth0}"
+    local existing_interfaces="${6-eth0}"
+    local supervisor_status="${7:-0}"
     local script
 
     script="$(sed \
@@ -91,19 +99,45 @@ run_start_script_fixture()
         "${RUN_SCRIPT}")"
 
     (
-        function bashio::api.supervisor() { printf 'eth0'; }
+        function bashio::api.supervisor() {
+            (( supervisor_status == 0 )) || return "${supervisor_status}"
+            printf '%s' "${supervisor_backbone}"
+        }
         function bashio::addon.ip_address() { printf '::1'; }
         function bashio::addon.port() { :; }
-        function bashio::config() { printf 'notice'; }
+        function bashio::config() {
+            case "$1" in
+                backbone_interface)
+                    printf '%s' "${configured_backbone}"
+                    ;;
+                otbr_log_level)
+                    printf 'notice'
+                    ;;
+                *)
+                    return 2
+                    ;;
+            esac
+        }
+        function bashio::config.has_value() {
+            [[ "$1" == "backbone_interface" \
+                && -n "${configured_backbone}" ]]
+        }
         function bashio::config.true() {
             [[ "$1" == "otbr_firewall" \
                 && "${firewall_config_true}" == "true" ]]
         }
-        function bashio::exit.nok() { exit 42; }
+        function bashio::exit.nok() {
+            printf 'EXIT: %s\n' "${1:-startup failed}" >&2
+            exit 42
+        }
         function bashio::log.info() { :; }
         function bashio::log.warning() { :; }
         function bashio::string.lower() { printf '%s' "$1"; }
         function bashio::var.has_value() { return 1; }
+        function ip() {
+            [[ "$*" == "link show dev "* ]] || return 2
+            [[ " ${existing_interfaces} " == *" ${4:-} "* ]]
+        }
 
         otbr_firewall_cleanup() {
             otbr_test_events+="cleanup;"
@@ -232,9 +266,12 @@ mock_reset()
     mock_fail_ip6_call=0
     mock_ip6_elapsed_milliseconds=0
     mock_ipset_destroy_calls=0
+    mock_ipset_create_calls=0
     mock_ipset_list_status=0
+    mock_fail_ipset_create_call=0
     mock_ip_link_status=0
     mock_thread_if_present=0
+    mock_ip_link_output=""
     mock_now_milliseconds=0
     mock_rule_delete_calls=0
     mock_sleep_calls=0
@@ -374,6 +411,11 @@ ipset()
         create)
             [[ "${1:-}" == "-exist" ]] || return 1
             ipset_name="${2:-}"
+            mock_ipset_create_calls=$((mock_ipset_create_calls + 1))
+            if (( mock_fail_ipset_create_call > 0 \
+                && mock_ipset_create_calls == mock_fail_ipset_create_call )); then
+                return 1
+            fi
             mock_sets["${ipset_name}"]=1
             ;;
         list)
@@ -408,6 +450,11 @@ ip()
 {
     [[ "$*" == "-o link show" ]] || return 2
     (( mock_ip_link_status == 0 )) || return "${mock_ip_link_status}"
+
+    if [[ -n "${mock_ip_link_output}" ]]; then
+        printf '%s' "${mock_ip_link_output}"
+        return
+    fi
 
     printf '1: lo: <LOOPBACK,UP> mtu 65536\n'
     if (( mock_thread_if_present != 0 )); then
@@ -480,6 +527,20 @@ assert_firewall_state_clean()
     done
 }
 
+assert_setup_jump_positions()
+{
+    local ingress_jump
+    local egress_jump
+
+    ingress_jump="ip6tables -w ${otbr_iptables_wait_seconds} -I FORWARD 1 -o ${thread_if} -j ${otbr_forward_ingress_chain}"
+    egress_jump="ip6tables -w ${otbr_iptables_wait_seconds} -I FORWARD 2 -i ${thread_if} -j ${otbr_forward_egress_chain}"
+
+    assert_eq "${ingress_jump}" "${mock_command_log[5]:-}" \
+        "ingress FORWARD jump position"
+    assert_eq "${egress_jump}" "${mock_command_log[7]:-}" \
+        "egress FORWARD jump position"
+}
+
 test_disabled_setup_is_scoped()
 {
     mock_reset
@@ -497,6 +558,7 @@ test_disabled_setup_is_scoped()
         "disabled ingress rule"
     assert_eq '-j ACCEPT' "${mock_egress_rules[0]}" \
         "disabled egress rule"
+    assert_setup_jump_positions
 
     local ipset_name
     for ipset_name in "${otbr_firewall_ipsets[@]}"; do
@@ -521,10 +583,19 @@ test_enabled_setup_preserves_filtering()
         "enabled ingress rule count"
     assert_eq 1 "${#mock_egress_rules[@]}" \
         "enabled egress rule count"
-    assert_contains '--match-set otbr-ingress-deny-src src -j DROP' \
-        "${mock_ingress_rules[*]}" "deny-source filtering rule"
-    assert_contains '--match-set otbr-ingress-allow-dst dst -j ACCEPT' \
-        "${mock_ingress_rules[*]}" "allow-destination filtering rule"
+    assert_eq "-m pkttype --pkt-type unicast -i ${thread_if} -j DROP" \
+        "${mock_ingress_rules[0]}" "enabled ingress rule 1"
+    assert_eq '-m set --match-set otbr-ingress-deny-src src -j DROP' \
+        "${mock_ingress_rules[1]}" "enabled ingress rule 2"
+    assert_eq '-m set --match-set otbr-ingress-allow-dst dst -j ACCEPT' \
+        "${mock_ingress_rules[2]}" "enabled ingress rule 3"
+    assert_eq '-m pkttype --pkt-type unicast -j DROP' \
+        "${mock_ingress_rules[3]}" "enabled ingress rule 4"
+    assert_eq '-j ACCEPT' "${mock_ingress_rules[4]}" \
+        "enabled ingress rule 5"
+    assert_eq '-j ACCEPT' "${mock_egress_rules[0]}" \
+        "enabled egress rule"
+    assert_setup_jump_positions
 }
 
 test_cleanup_removes_duplicate_state()
@@ -587,6 +658,31 @@ test_cleanup_failures_are_bounded()
     fi
     assert_eq 1 "${mock_chains["${otbr_forward_ingress_chain}"]}" \
         "undeletable chain remains visible for the next reconciliation attempt"
+}
+
+test_busy_ipset_does_not_starve_independent_sets()
+{
+    local busy_ipset="${otbr_firewall_ipsets[0]}"
+    local ipset_name
+
+    mock_reset
+    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
+        mock_sets["${ipset_name}"]=1
+    done
+    mock_set_destroy_failures["${busy_ipset}"]=999
+
+    if otbr_firewall_cleanup; then
+        fail "cleanup unexpectedly succeeded with a persistently busy ipset"
+    fi
+
+    assert_eq 1 "${mock_sets["${busy_ipset}"]}" \
+        "persistently busy ipset remains"
+    for ipset_name in "${otbr_firewall_ipsets[@]:1}"; do
+        assert_eq 0 "${mock_sets["${ipset_name}"]}" \
+            "${ipset_name} was not starved by the busy ipset"
+    done
+    assert_eq "$((otbr_ipset_destroy_attempts - 1))" \
+        "${mock_sleep_calls}" "busy ipset retry delay count"
 }
 
 test_cleanup_probe_statuses_are_preserved()
@@ -681,6 +777,17 @@ test_disabled_cleanup_owner_guard()
         "${otbr_cleanup_guard_reason}" "foreign-owner guard reason"
 
     mock_reset
+    mock_ip_link_output=$'1: lo: <LOOPBACK,UP> mtu 65536\n7: wpan0: <BROADCAST,UP> mtu 1280\n'
+    if otbr_disabled_cleanup_is_safe; then
+        fail "disabled cleanup ignored an unqualified ${thread_if} name"
+    fi
+
+    mock_reset
+    mock_ip_link_output=$'1: lo: <LOOPBACK,UP> mtu 65536\n7: upstream-wpan0@if8: <BROADCAST,UP> mtu 1280\n8: wpan00: <BROADCAST,UP> mtu 1280\n'
+    otbr_disabled_cleanup_is_safe \
+        || fail "disabled cleanup misidentified a similarly named interface"
+
+    mock_reset
     mock_ip_link_status=4
     if otbr_disabled_cleanup_is_safe; then
         fail "disabled cleanup proceeded after interface inspection failed"
@@ -706,14 +813,14 @@ test_service_caller_failure_policies()
     local fixture_result
     local fixture_status
 
-    if run_start_script_fixture 1 0; then
+    if run_start_script_fixture 1 0 2>/dev/null; then
         fail "run script continued after stale cleanup failed"
     else
         fixture_status=$?
     fi
     assert_eq 42 "${fixture_status}" "run cleanup failure policy"
 
-    if run_start_script_fixture 0 1; then
+    if run_start_script_fixture 0 1 2>/dev/null; then
         fail "run script continued after firewall setup failed"
     else
         fixture_status=$?
@@ -756,6 +863,59 @@ test_service_caller_successful_modes()
         "disabled caller otbr-agent exec"
 }
 
+test_backbone_interface_selection()
+{
+    local exec_args
+    local fixture_result
+    local fixture_status
+
+    fixture_result="$(
+        run_start_script_fixture 0 0 false br0 eth0 "eth0 br0" 99
+    )"
+    exec_args="${fixture_result#*|}"
+    assert_contains "/usr/sbin/otbr-agent -I wpan0 -B br0" "${exec_args}" \
+        "configured backbone interface"
+
+    if fixture_result="$(
+        run_start_script_fixture 0 0 false "" "" "eth0" 2>&1
+    )"; then
+        fail "startup guessed a backbone interface after empty discovery"
+    else
+        fixture_status=$?
+    fi
+    assert_eq 42 "${fixture_status}" \
+        "missing backbone interface status"
+    assert_contains "Configure backbone_interface explicitly" \
+        "${fixture_result}" "missing backbone interface diagnostic"
+    assert_not_contains "/usr/sbin/otbr-agent" "${fixture_result}" \
+        "agent startup after missing backbone discovery"
+
+    if fixture_result="$(
+        run_start_script_fixture 0 0 false missing0 eth0 "eth0 br0" 2>&1
+    )"; then
+        fail "startup accepted a nonexistent configured backbone interface"
+    else
+        fixture_status=$?
+    fi
+    assert_eq 42 "${fixture_status}" \
+        "nonexistent backbone interface status"
+    assert_contains "Backbone interface 'missing0' does not exist" \
+        "${fixture_result}" "nonexistent backbone interface diagnostic"
+
+    if fixture_result="$(
+        run_start_script_fixture 0 0 false "" missing0 "eth0 br0" 2>&1
+    )"; then
+        fail "startup accepted a nonexistent Supervisor backbone interface"
+    else
+        fixture_status=$?
+    fi
+    assert_eq 42 "${fixture_status}" \
+        "nonexistent Supervisor backbone interface status"
+    assert_contains "Backbone interface 'missing0' does not exist" \
+        "${fixture_result}" \
+        "nonexistent Supervisor backbone interface diagnostic"
+}
+
 test_finish_timeout_has_cleanup_headroom()
 {
     local finish_timeout_milliseconds
@@ -776,6 +936,10 @@ test_finish_timeout_has_cleanup_headroom()
 
 test_setup_failure_rolls_back_partial_state()
 {
+    local firewall_enabled
+    local ip6_setup_calls
+    local setup_call
+
     mock_reset
     if otbr_firewall_setup invalid; then
         fail "setup unexpectedly accepted an invalid firewall mode"
@@ -784,14 +948,31 @@ test_setup_failure_rolls_back_partial_state()
     fi
     assert_firewall_state_clean
 
-    mock_reset
-    # Four ipset calls precede ip6tables. Fail creating the egress chain after
-    # the ingress chain and jump have already been installed.
-    mock_fail_ip6_call=3
-    if otbr_firewall_setup true; then
-        fail "setup unexpectedly succeeded after an injected ip6tables failure"
-    fi
-    assert_firewall_state_clean
+    for firewall_enabled in false true; do
+        for ((setup_call = 1; setup_call <= ${#otbr_firewall_ipsets[@]}; setup_call++)); do
+            mock_reset
+            mock_fail_ipset_create_call="${setup_call}"
+            if otbr_firewall_setup "${firewall_enabled}"; then
+                fail "setup unexpectedly succeeded after ipset failure ${setup_call} in ${firewall_enabled} mode"
+            fi
+            assert_firewall_state_clean
+        done
+
+        if [[ "${firewall_enabled}" == "true" ]]; then
+            ip6_setup_calls=10
+        else
+            ip6_setup_calls=6
+        fi
+
+        for ((setup_call = 1; setup_call <= ip6_setup_calls; setup_call++)); do
+            mock_reset
+            mock_fail_ip6_call="${setup_call}"
+            if otbr_firewall_setup "${firewall_enabled}"; then
+                fail "setup unexpectedly succeeded after ip6tables failure ${setup_call} in ${firewall_enabled} mode"
+            fi
+            assert_firewall_state_clean
+        done
+    done
 }
 
 test_restart_and_mode_transitions()
@@ -848,6 +1029,27 @@ test_service_script_invariants()
     grep -qE 'unzip[[:space:]]+-q[[:space:]]+slc_cli_linux\.zip' \
         "${DOCKERFILE}" \
         || fail "SLC extraction must remain quiet enough for CI logs"
+    grep -qE '^  SLC_CLI_SHA256: [0-9a-f]{64}$' "${BUILD_FILE}" \
+        || fail "SLC archive checksum must be a lowercase SHA-256"
+    grep -qE 'sha256sum[[:space:]]+--check[[:space:]]+--strict' \
+        "${DOCKERFILE}" \
+        || fail "SLC archive must be verified before extraction"
+    grep -Fq 'io.hass.version="${BUILD_VERSION}"' "${DOCKERFILE}" \
+        || fail "image version label must use BUILD_VERSION"
+    grep -Fq 'io.hass.type="app"' "${DOCKERFILE}" \
+        || fail "image type label must identify a Home Assistant app"
+    grep -Fq 'io.hass.arch="${BUILD_ARCH}"' "${DOCKERFILE}" \
+        || fail "image architecture label must use BUILD_ARCH"
+    grep -Fq 'org.opencontainers.image.version="${BUILD_VERSION}"' \
+        "${DOCKERFILE}" \
+        || fail "OCI image version label must use BUILD_VERSION"
+    grep -Fq \
+        'org.opencontainers.image.source="https://github.com/iHost-Open-Source-Project/hassio-ihost-addon"' \
+        "${DOCKERFILE}" \
+        || fail "OCI image source label must identify the upstream repository"
+    grep -Fq 'org.opencontainers.image.revision="${BUILD_COMMIT}"' \
+        "${DOCKERFILE}" \
+        || fail "OCI image revision label must use BUILD_COMMIT"
 }
 
 main()
@@ -856,12 +1058,14 @@ main()
     test_enabled_setup_preserves_filtering
     test_cleanup_removes_duplicate_state
     test_cleanup_failures_are_bounded
+    test_busy_ipset_does_not_starve_independent_sets
     test_cleanup_probe_statuses_are_preserved
     test_cleanup_command_timeouts_are_preserved
     test_cleanup_uses_one_shared_deadline
     test_disabled_cleanup_owner_guard
     test_service_caller_failure_policies
     test_service_caller_successful_modes
+    test_backbone_interface_selection
     test_finish_timeout_has_cleanup_headroom
     test_setup_failure_rolls_back_partial_state
     test_restart_and_mode_transitions

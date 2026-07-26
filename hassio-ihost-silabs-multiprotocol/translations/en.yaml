@@ -10,6 +10,11 @@ configuration:
   flow_control:
     name: Hardware flow control
     description: Enable hardware flow control for serial port.
+  backbone_interface:
+    name: Backbone network interface
+    description: >-
+      The host network interface used for backbone routing. If not specified,
+      the primary interface reported by Supervisor is used.
   network_device:
     name: Network Device
     description: >-
@@ -22,7 +27,10 @@ configuration:
       (WARNING: flashing the original EmberZNet is a manual process currently)
   cpcd_trace:
     name: Co-Processor Communication tracing
-    description: Enable tracing for the Co-Processor Communication daemon.
+    description: >-
+      Enable high-volume tracing for the Co-Processor Communication daemon.
+      Tracing can materially degrade performance and stability; leave it
+      disabled except while troubleshooting.
   otbr_enable:
     name: Enable OpenThread Border Router
     description: Enable OpenThread Border Router agent.

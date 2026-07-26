@@ -9,6 +9,7 @@ readonly COMMON_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-agent-co
 readonly LOCK_PROBE_PATH="/usr/local/libexec/otbr-lock-probe"
 readonly SYSTEM_PATH="${PATH}"
 readonly FOREIGN_CHAIN="OTBR-FOREIGN-SENTINEL"
+readonly EXTERNAL_REFERENCE_CHAIN="OTBR-EXTERNAL-REFERENCE"
 readonly FOREIGN_IPSET="otbr-foreign-sentinel"
 readonly FOREIGN_IP="fd00:cafe::1"
 readonly FOREIGN_FORWARD_POLICY="DROP"
@@ -41,6 +42,11 @@ release_xtables_lock()
 
 cleanup_foreign_state()
 {
+    if ip6tables -w 1 -L "${EXTERNAL_REFERENCE_CHAIN}" \
+        -n >/dev/null 2>&1; then
+        ip6tables -w 1 -F "${EXTERNAL_REFERENCE_CHAIN}"
+        ip6tables -w 1 -X "${EXTERNAL_REFERENCE_CHAIN}"
+    fi
     if ip6tables -w 1 -C FORWARD -i lo \
         -j "${FOREIGN_CHAIN}" >/dev/null 2>&1; then
         ip6tables -w 1 -D FORWARD -i lo -j "${FOREIGN_CHAIN}"
@@ -69,8 +75,8 @@ best_effort_cleanup()
     unset XTABLES_LOCKFILE
     PATH="${SYSTEM_PATH}"
     otbr_cleanup_budget_milliseconds=4000
-    otbr_firewall_cleanup >/dev/null 2>&1 || true
     cleanup_foreign_state >/dev/null 2>&1
+    otbr_firewall_cleanup >/dev/null 2>&1 || true
 }
 
 trap best_effort_cleanup EXIT
@@ -107,6 +113,50 @@ assert_chain_rule_count()
     )"
     [[ "${actual}" == "${expected}" ]] \
         || fail "${chain_name} has ${actual} rules; expected ${expected}"
+}
+
+assert_chain_rules()
+{
+    local chain_name="$1"
+    shift
+    local -a actual_rules
+    local -a expected_suffixes=("$@")
+    local expected_rule
+    local index
+
+    mapfile -t actual_rules < <(
+        ip6tables -w 1 -S "${chain_name}" | awk '$1 == "-A"'
+    )
+    [[ "${#actual_rules[@]}" == "$#" ]] \
+        || fail "${chain_name} has ${#actual_rules[@]} rules; expected $#"
+
+    for index in "${!expected_suffixes[@]}"; do
+        expected_rule="-A ${chain_name} ${expected_suffixes[index]}"
+        [[ "${actual_rules[index]}" == "${expected_rule}" ]] \
+            || fail "${chain_name} rule $((index + 1)) is '${actual_rules[index]}'; expected '${expected_rule}'"
+    done
+}
+
+assert_owned_forward_jump_order()
+{
+    local -a forward_rules
+    local -a expected_rules=(
+        "-A FORWARD -o ${thread_if} -j ${otbr_forward_ingress_chain}"
+        "-A FORWARD -i ${thread_if} -j ${otbr_forward_egress_chain}"
+        "-A FORWARD -i lo -j ${FOREIGN_CHAIN}"
+    )
+    local index
+
+    mapfile -t forward_rules < <(
+        ip6tables -w 1 -S FORWARD | awk '$1 == "-A"'
+    )
+    [[ "${#forward_rules[@]}" == "${#expected_rules[@]}" ]] \
+        || fail "FORWARD has ${#forward_rules[@]} rules; expected ${#expected_rules[@]}"
+
+    for index in "${!expected_rules[@]}"; do
+        [[ "${forward_rules[index]}" == "${expected_rules[index]}" ]] \
+            || fail "FORWARD rule $((index + 1)) is '${forward_rules[index]}'; expected '${expected_rules[index]}'"
+    done
 }
 
 assert_foreign_state_preserved()
@@ -183,18 +233,14 @@ ip6tables -w 1 -C FORWARD -o "${thread_if}" \
     -j "${otbr_forward_ingress_chain}"
 ip6tables -w 1 -C FORWARD -i "${thread_if}" \
     -j "${otbr_forward_egress_chain}"
-ip6tables -w 1 -C "${otbr_forward_ingress_chain}" \
-    -m pkttype --pkt-type unicast -i "${thread_if}" -j DROP
-ip6tables -w 1 -C "${otbr_forward_ingress_chain}" \
-    -m set --match-set otbr-ingress-deny-src src -j DROP
-ip6tables -w 1 -C "${otbr_forward_ingress_chain}" \
-    -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT
-ip6tables -w 1 -C "${otbr_forward_ingress_chain}" \
-    -m pkttype --pkt-type unicast -j DROP
-ip6tables -w 1 -C "${otbr_forward_ingress_chain}" -j ACCEPT
-ip6tables -w 1 -C "${otbr_forward_egress_chain}" -j ACCEPT
-assert_chain_rule_count "${otbr_forward_ingress_chain}" 5
-assert_chain_rule_count "${otbr_forward_egress_chain}" 1
+assert_chain_rules "${otbr_forward_ingress_chain}" \
+    "-i ${thread_if} -m pkttype --pkt-type unicast -j DROP" \
+    "-m set --match-set otbr-ingress-deny-src src -j DROP" \
+    "-m set --match-set otbr-ingress-allow-dst dst -j ACCEPT" \
+    "-m pkttype --pkt-type unicast -j DROP" \
+    "-j ACCEPT"
+assert_chain_rules "${otbr_forward_egress_chain}" "-j ACCEPT"
+assert_owned_forward_jump_order
 assert_foreign_state_preserved
 otbr_firewall_cleanup
 assert_absent
@@ -211,6 +257,7 @@ ip6tables -w 1 -C "${otbr_forward_ingress_chain}" -j ACCEPT
 ip6tables -w 1 -C "${otbr_forward_egress_chain}" -j ACCEPT
 assert_chain_rule_count "${otbr_forward_ingress_chain}" 1
 assert_chain_rule_count "${otbr_forward_egress_chain}" 1
+assert_owned_forward_jump_order
 assert_foreign_state_preserved
 
 # Teardown removes every duplicate owned jump, not only the first one.
@@ -222,6 +269,33 @@ ip6tables -w 1 -I FORWARD 1 -i "${thread_if}" \
     || fail "duplicate ingress jump was not installed"
 [[ "$(forward_jump_count -i "${otbr_forward_egress_chain}")" == "2" ]] \
     || fail "duplicate egress jump was not installed"
+otbr_firewall_cleanup
+assert_absent
+assert_foreign_state_preserved
+
+# An unexpected external reference must make teardown fail explicitly without
+# preventing independent owned objects from being removed. Once the reference
+# is released, a subsequent reconciliation must complete.
+otbr_firewall_setup true
+ip6tables -w 1 -N "${EXTERNAL_REFERENCE_CHAIN}"
+ip6tables -w 1 -A "${EXTERNAL_REFERENCE_CHAIN}" \
+    -j "${otbr_forward_ingress_chain}"
+if otbr_firewall_cleanup >/dev/null 2>&1; then
+    fail "cleanup ignored an unexpected external owned-chain reference"
+fi
+ip6tables -w 1 -L "${otbr_forward_ingress_chain}" -n >/dev/null 2>&1 \
+    || fail "externally referenced ingress chain was unexpectedly removed"
+if ip6tables -w 1 -L "${otbr_forward_egress_chain}" \
+    -n >/dev/null 2>&1; then
+    fail "independent egress chain was starved by an external reference"
+fi
+for ipset_name in "${otbr_firewall_ipsets[@]}"; do
+    if ipset list "${ipset_name}" >/dev/null 2>&1; then
+        fail "independent ipset ${ipset_name} was starved by an external reference"
+    fi
+done
+ip6tables -w 1 -F "${EXTERNAL_REFERENCE_CHAIN}"
+ip6tables -w 1 -X "${EXTERNAL_REFERENCE_CHAIN}"
 otbr_firewall_cleanup
 assert_absent
 assert_foreign_state_preserved
