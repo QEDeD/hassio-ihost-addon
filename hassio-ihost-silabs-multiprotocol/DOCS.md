@@ -106,12 +106,14 @@ interface reported by Supervisor. Startup fails with a clear error if no
 primary interface is reported or the selected interface does not exist; the
 add-on does not silently guess `eth0`.
 
-When OTBR is disabled, the add-on skips stale firewall cleanup if `wpan0`
-already exists, or if network interfaces cannot be inspected. This conservative
-guard avoids removing globally named rules from an active standalone OTBR.
-Because those rules do not record which add-on created them, an orphaned
-`wpan0` can also prevent automatic cleanup; stop every OTBR implementation
-before manually removing stale state or restarting the host.
+Before startup reconciliation, the add-on refuses to clean or replace firewall
+state if `wpan0` already exists, or if network interfaces cannot be inspected.
+When OTBR is disabled, it logs a warning and skips cleanup under the same
+conditions so Zigbee can continue starting. This conservative guard avoids
+removing globally named rules from an active standalone OTBR. Because those
+rules do not record which add-on created them, an orphaned `wpan0` can also
+prevent automatic cleanup; stop every OTBR implementation before manually
+removing stale state or restarting the host.
 
 ### Web interface (advanced)
 

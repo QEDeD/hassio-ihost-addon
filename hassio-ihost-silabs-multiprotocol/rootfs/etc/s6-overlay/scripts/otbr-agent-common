@@ -10,6 +10,7 @@ otbr_firewall_ipsets=(
     "otbr-ingress-allow-dst"
     "otbr-ingress-allow-dst-swap"
 )
+otbr_firewall_cleanup_claim_file="/run/otbr-agent-firewall-owned"
 
 otbr_iptables_wait_seconds=5
 otbr_cleanup_iptables_wait_seconds=1
@@ -22,6 +23,27 @@ otbr_owner_probe_timeout_milliseconds=1000
 # Used by the lifecycle test to enforce headroom against timeout-finish.
 # shellcheck disable=SC2034
 otbr_cleanup_finish_headroom_milliseconds=3000
+
+otbr_firewall_cleanup_claim_reset()
+{
+    rm -f -- "${otbr_firewall_cleanup_claim_file}"
+}
+
+otbr_firewall_cleanup_claim_create()
+{
+    : > "${otbr_firewall_cleanup_claim_file}"
+}
+
+otbr_firewall_cleanup_claim_consume()
+{
+    if [[ ! -e "${otbr_firewall_cleanup_claim_file}" ]]; then
+        return 1
+    fi
+
+    if ! rm -f -- "${otbr_firewall_cleanup_claim_file}"; then
+        return 2
+    fi
+}
 
 _otbr_clock_milliseconds()
 {
@@ -347,9 +369,9 @@ _otbr_destroy_owned_ipsets()
     return "${failed}"
 }
 
-# The enable-check caller reads otbr_cleanup_guard_reason after this probe.
+# Callers read otbr_cleanup_guard_reason after this probe.
 # shellcheck disable=SC2034
-otbr_disabled_cleanup_is_safe()
+otbr_firewall_cleanup_is_safe()
 {
     local deadline_milliseconds
     local link_line

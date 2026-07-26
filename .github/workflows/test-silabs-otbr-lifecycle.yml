@@ -128,14 +128,13 @@ jobs:
           yq -e '(.configuration | type == "!!map")' \
             "${translation}" >/dev/null
           yq -e \
-            '.host_ipc == false and
+            '(has("host_ipc") | not) and
              .host_network == true and
-             .stage == "stable" and
+             (has("stage") | not) and
              (.privileged | any_c(. == "NET_ADMIN"))' \
             "${config}" >/dev/null
           yq -e \
-            '(.options | has("backbone_interface")) and
-             .options.backbone_interface == null and
+            '(.options | has("backbone_interface") | not) and
              .schema.backbone_interface == "str?"' \
             "${config}" >/dev/null
 
@@ -186,6 +185,9 @@ jobs:
             [[ "$(yq -r '.image' "${config}")" == *'{arch}'* ]] \
               || fail "multi-arch image is missing {arch}"
           fi
+
+      - name: Run Dockerfile build checks
+        run: docker build --check hassio-ihost-silabs-multiprotocol
 
       - name: Run firewall lifecycle tests
         run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh

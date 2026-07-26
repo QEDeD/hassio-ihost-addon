@@ -26,10 +26,22 @@ fi
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 
-if otbr_firewall_cleanup; then
-    bashio::log.info "OTBR firewall teardown completed."
+declare cleanup_claim_status
+if otbr_firewall_cleanup_claim_consume; then
+    if otbr_firewall_cleanup; then
+        bashio::log.info "OTBR firewall teardown completed."
+    else
+        bashio::log.warning "OTBR firewall teardown was incomplete."
+    fi
 else
-    bashio::log.warning "OTBR firewall teardown was incomplete."
+    cleanup_claim_status=$?
+    if (( cleanup_claim_status == 1 )); then
+        bashio::log.info \
+            "Skipping OTBR firewall teardown because startup did not claim the firewall state."
+    else
+        bashio::log.warning \
+            "Skipping OTBR firewall teardown because its ownership claim could not be consumed."
+    fi
 fi
 
 if [[ "${fatal_exit}" == "true" ]]; then

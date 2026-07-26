@@ -168,9 +168,14 @@ test_device_schema_is_optional()
     tr -d '\r' < "${CONFIG_FILE}" \
         | grep -Fqx '  device: device(subsystem=tty)?' \
         || fail "local device schema must remain optional"
-    tr -d '\r' < "${CONFIG_FILE}" \
-        | grep -Fqx '  backbone_interface: null' \
-        || fail "backbone interface default must remain optional"
+    if awk '
+        /^options:/ { in_options = 1; next }
+        /^[^[:space:]]/ { in_options = 0 }
+        in_options && /^  backbone_interface:/ { found = 1 }
+        END { exit found ? 0 : 1 }
+    ' "${CONFIG_FILE}"; then
+        fail "backbone interface must not have a default option"
+    fi
     tr -d '\r' < "${CONFIG_FILE}" \
         | grep -Fqx '  backbone_interface: str?' \
         || fail "backbone interface schema must remain optional"

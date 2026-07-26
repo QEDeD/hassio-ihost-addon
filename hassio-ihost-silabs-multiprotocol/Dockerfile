@@ -1,9 +1,10 @@
-ARG BUILD_FROM
-ARG BUILD_ARCH
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bullseye
+ARG BUILD_ARCH=amd64
+ARG BUILD_TOOL_PLATFORM=linux/amd64
 # The Linux SLC CLI is an amd64 build tool; Java never enters target images.
-FROM --platform=linux/amd64 amazoncorretto:21-al2-jdk@sha256:6bd5dbcb269cbcd5d1470743f5dd9ba4310555d6db55bdc09211971732d792ce AS slc-java
+FROM --platform=${BUILD_TOOL_PLATFORM} amazoncorretto:21-al2-jdk@sha256:6bd5dbcb269cbcd5d1470743f5dd9ba4310555d6db55bdc09211971732d792ce AS slc-java
 
-FROM --platform=linux/amd64 debian:bullseye AS cross-builder-base
+FROM --platform=${BUILD_TOOL_PLATFORM} debian:bullseye AS cross-builder-base
 
 ENV \
     LANG="C.UTF-8" \
@@ -31,7 +32,7 @@ RUN \
        build-essential \
        git
 
-FROM --platform=linux/amd64 cross-builder-base AS cross-builder-armv7
+FROM cross-builder-base AS cross-builder-armv7
 
 COPY debian-armv7.cmake /usr/src/debian.cmake
 
@@ -46,7 +47,7 @@ RUN \
     && apt-get install -y --no-install-recommends \
        crossbuild-essential-armhf
 
-FROM --platform=linux/amd64 cross-builder-base AS cross-builder-aarch64
+FROM cross-builder-base AS cross-builder-aarch64
 
 COPY debian-arm64.cmake /usr/src/debian.cmake
 
@@ -61,7 +62,7 @@ RUN \
     && apt-get install -y --no-install-recommends \
        crossbuild-essential-arm64
 
-FROM --platform=linux/amd64 cross-builder-base AS cross-builder-amd64
+FROM cross-builder-base AS cross-builder-amd64
 
 COPY debian-amd64.cmake /usr/src/debian.cmake
 
@@ -77,7 +78,7 @@ RUN \
        crossbuild-essential-amd64
 
 
-FROM --platform=linux/amd64 cross-builder-${BUILD_ARCH} AS cpcd-builder
+FROM cross-builder-${BUILD_ARCH} AS cpcd-builder
 
 ARG CPCD_VERSION
 ENV CPCD_DIR=/usr/src/cpc-daemon
@@ -96,7 +97,7 @@ RUN \
     && make \
     && make install
 
-FROM --platform=linux/amd64 cross-builder-${BUILD_ARCH} AS zigbeed-builder
+FROM cross-builder-${BUILD_ARCH} AS zigbeed-builder
 
 ARG GECKO_SDK_VERSION
 ARG SLC_CLI_SHA256
@@ -162,18 +163,6 @@ RUN \
         debug
 
 FROM $BUILD_FROM
-
-ARG BUILD_ARCH
-ARG BUILD_COMMIT
-ARG BUILD_VERSION
-
-LABEL \
-    io.hass.version="${BUILD_VERSION}" \
-    io.hass.type="app" \
-    io.hass.arch="${BUILD_ARCH}" \
-    org.opencontainers.image.version="${BUILD_VERSION}" \
-    org.opencontainers.image.source="https://github.com/iHost-Open-Source-Project/hassio-ihost-addon" \
-    org.opencontainers.image.revision="${BUILD_COMMIT}"
 
 RUN \
     set -x \
@@ -299,3 +288,20 @@ HEALTHCHECK --interval=10s --start-period=120s CMD [ "$(s6-svstat -u /run/servic
 # use s6-overlay as init system
 WORKDIR /
 ENTRYPOINT ["/init"]
+
+# Keep source-specific metadata after expensive build layers so validating a
+# new exact commit can reuse the compiled artifacts.
+ARG BUILD_ARCH
+ARG BUILD_COMMIT
+ARG BUILD_VERSION
+RUN \
+    test -n "${BUILD_ARCH}" \
+    && test -n "${BUILD_COMMIT}" \
+    && test -n "${BUILD_VERSION}"
+LABEL \
+    io.hass.version="${BUILD_VERSION}" \
+    io.hass.type="app" \
+    io.hass.arch="${BUILD_ARCH}" \
+    org.opencontainers.image.version="${BUILD_VERSION}" \
+    org.opencontainers.image.source="https://github.com/iHost-Open-Source-Project/hassio-ihost-addon" \
+    org.opencontainers.image.revision="${BUILD_COMMIT}"

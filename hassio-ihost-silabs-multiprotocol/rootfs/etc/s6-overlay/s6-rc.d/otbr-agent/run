@@ -9,6 +9,19 @@
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 
+if ! otbr_firewall_cleanup_claim_reset; then
+    bashio::exit.nok "Could not reset the OTBR firewall ownership claim."
+fi
+
+if ! otbr_firewall_cleanup_is_safe; then
+    bashio::exit.nok \
+        "Refusing to reconcile OTBR firewall state: ${otbr_cleanup_guard_reason}."
+fi
+
+if ! otbr_firewall_cleanup_claim_create; then
+    bashio::exit.nok "Could not create the OTBR firewall ownership claim."
+fi
+
 if ! otbr_firewall_cleanup; then
     bashio::exit.nok "Could not clean up stale OTBR firewall state."
 fi

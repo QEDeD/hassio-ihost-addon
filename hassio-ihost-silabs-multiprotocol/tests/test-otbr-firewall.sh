@@ -90,6 +90,9 @@ run_start_script_fixture()
     local supervisor_backbone="${5-eth0}"
     local existing_interfaces="${6-eth0}"
     local supervisor_status="${7:-0}"
+    local cleanup_guard_status="${8:-0}"
+    local cleanup_claim_reset_status="${9:-0}"
+    local cleanup_claim_create_status="${10:-0}"
     local script
 
     script="$(sed \
@@ -127,7 +130,8 @@ run_start_script_fixture()
                 && "${firewall_config_true}" == "true" ]]
         }
         function bashio::exit.nok() {
-            printf 'EXIT: %s\n' "${1:-startup failed}" >&2
+            printf 'EXIT: %s EVENTS:%s\n' \
+                "${1:-startup failed}" "${otbr_test_events:-}" >&2
             exit 42
         }
         function bashio::log.info() { :; }
@@ -139,6 +143,19 @@ run_start_script_fixture()
             [[ " ${existing_interfaces} " == *" ${4:-} "* ]]
         }
 
+        otbr_firewall_cleanup_claim_reset() {
+            otbr_test_events+="claim-reset;"
+            return "${cleanup_claim_reset_status}"
+        }
+        otbr_firewall_cleanup_is_safe() {
+            otbr_cleanup_guard_reason="fixture guard"
+            otbr_test_events+="guard;"
+            return "${cleanup_guard_status}"
+        }
+        otbr_firewall_cleanup_claim_create() {
+            otbr_test_events+="claim-create;"
+            return "${cleanup_claim_create_status}"
+        }
         otbr_firewall_cleanup() {
             otbr_test_events+="cleanup;"
             return "${cleanup_status}"
@@ -165,6 +182,7 @@ run_finish_script_fixture()
     local cleanup_status="$1"
     local run_status="$2"
     local run_signal="$3"
+    local cleanup_claim_status="${4:-0}"
     local script
 
     script="$(sed \
@@ -178,6 +196,10 @@ run_finish_script_fixture()
         function bashio::log.info() { :; }
         function bashio::log.warning() { :; }
 
+        otbr_firewall_cleanup_claim_consume() {
+            otbr_test_events+="claim-consume;"
+            return "${cleanup_claim_status}"
+        }
         otbr_firewall_cleanup() {
             otbr_test_events+="cleanup;"
             return "${cleanup_status}"
@@ -216,7 +238,7 @@ run_disabled_script_fixture()
             otbr_test_warnings+="$*;"
         }
 
-        otbr_disabled_cleanup_is_safe() {
+        otbr_firewall_cleanup_is_safe() {
             otbr_cleanup_guard_reason="fixture guard"
             return "${guard_status}"
         }
@@ -764,40 +786,40 @@ test_cleanup_uses_one_shared_deadline()
         "ipset work after the shared deadline"
 }
 
-test_disabled_cleanup_owner_guard()
+test_cleanup_owner_guard()
 {
     local fixture_result
 
     mock_reset
     mock_thread_if_present=1
-    if otbr_disabled_cleanup_is_safe; then
-        fail "disabled cleanup ignored an existing ${thread_if}"
+    if otbr_firewall_cleanup_is_safe; then
+        fail "cleanup ignored an existing ${thread_if}"
     fi
     assert_contains "${thread_if} already exists" \
         "${otbr_cleanup_guard_reason}" "foreign-owner guard reason"
 
     mock_reset
     mock_ip_link_output=$'1: lo: <LOOPBACK,UP> mtu 65536\n7: wpan0: <BROADCAST,UP> mtu 1280\n'
-    if otbr_disabled_cleanup_is_safe; then
-        fail "disabled cleanup ignored an unqualified ${thread_if} name"
+    if otbr_firewall_cleanup_is_safe; then
+        fail "cleanup ignored an unqualified ${thread_if} name"
     fi
 
     mock_reset
     mock_ip_link_output=$'1: lo: <LOOPBACK,UP> mtu 65536\n7: upstream-wpan0@if8: <BROADCAST,UP> mtu 1280\n8: wpan00: <BROADCAST,UP> mtu 1280\n'
-    otbr_disabled_cleanup_is_safe \
-        || fail "disabled cleanup misidentified a similarly named interface"
+    otbr_firewall_cleanup_is_safe \
+        || fail "cleanup misidentified a similarly named interface"
 
     mock_reset
     mock_ip_link_status=4
-    if otbr_disabled_cleanup_is_safe; then
-        fail "disabled cleanup proceeded after interface inspection failed"
+    if otbr_firewall_cleanup_is_safe; then
+        fail "cleanup proceeded after interface inspection failed"
     fi
     assert_contains "could not be inspected" \
         "${otbr_cleanup_guard_reason}" "interface-probe guard reason"
 
     mock_reset
-    otbr_disabled_cleanup_is_safe \
-        || fail "disabled cleanup was blocked with no ${thread_if}"
+    otbr_firewall_cleanup_is_safe \
+        || fail "cleanup was blocked with no ${thread_if}"
 
     fixture_result="$(run_disabled_script_fixture 1 0)"
     assert_contains '0|Skipping stale OTBR firewall cleanup' \
@@ -808,10 +830,88 @@ test_disabled_cleanup_owner_guard()
         "${fixture_result}" "best-effort disabled caller policy"
 }
 
+test_cleanup_claim_lifecycle()
+{
+    local claim_status
+    local original_claim_file="${otbr_firewall_cleanup_claim_file}"
+    local test_claim_file
+
+    test_claim_file="$(mktemp)"
+    otbr_firewall_cleanup_claim_file="${test_claim_file}"
+
+    otbr_firewall_cleanup_claim_reset \
+        || fail "cleanup claim reset failed"
+    [[ ! -e "${test_claim_file}" ]] \
+        || fail "cleanup claim reset left a marker"
+
+    otbr_firewall_cleanup_claim_create \
+        || fail "cleanup claim creation failed"
+    [[ -f "${test_claim_file}" ]] \
+        || fail "cleanup claim creation left no marker"
+
+    otbr_firewall_cleanup_claim_consume \
+        || fail "cleanup claim consumption failed"
+    [[ ! -e "${test_claim_file}" ]] \
+        || fail "cleanup claim consumption left a marker"
+
+    if otbr_firewall_cleanup_claim_consume; then
+        fail "missing cleanup claim was accepted"
+    else
+        claim_status=$?
+    fi
+    assert_eq 1 "${claim_status}" "missing cleanup claim status"
+
+    otbr_firewall_cleanup_claim_file="${original_claim_file}"
+    rm -f -- "${test_claim_file}"
+}
+
 test_service_caller_failure_policies()
 {
     local fixture_result
     local fixture_status
+
+    if fixture_result="$(
+        run_start_script_fixture 0 0 false "" eth0 eth0 0 0 1 0 2>&1
+    )"; then
+        fail "run script continued after cleanup claim reset failed"
+    else
+        fixture_status=$?
+    fi
+    assert_eq 42 "${fixture_status}" "run cleanup claim reset status"
+    assert_contains "EVENTS:claim-reset;" "${fixture_result}" \
+        "cleanup claim reset failure order"
+    assert_not_contains "guard;" "${fixture_result}" \
+        "ownership probe after cleanup claim reset failure"
+
+    if fixture_result="$(
+        run_start_script_fixture 0 0 false "" eth0 eth0 0 1 2>&1
+    )"; then
+        fail "run script reconciled firewall state while ${thread_if} was owned"
+    else
+        fixture_status=$?
+    fi
+    assert_eq 42 "${fixture_status}" "run ownership guard status"
+    assert_contains "Refusing to reconcile OTBR firewall state" \
+        "${fixture_result}" "run ownership guard diagnostic"
+    assert_contains "EVENTS:claim-reset;guard;" "${fixture_result}" \
+        "run ownership guard event order"
+    assert_not_contains "claim-create;" "${fixture_result}" \
+        "firewall ownership claim with a possible foreign owner"
+    assert_not_contains "cleanup;" "${fixture_result}" \
+        "firewall cleanup with a possible foreign owner"
+
+    if fixture_result="$(
+        run_start_script_fixture 0 0 false "" eth0 eth0 0 0 0 1 2>&1
+    )"; then
+        fail "run script continued after cleanup claim creation failed"
+    else
+        fixture_status=$?
+    fi
+    assert_eq 42 "${fixture_status}" "run cleanup claim creation status"
+    assert_contains "EVENTS:claim-reset;guard;claim-create;" \
+        "${fixture_result}" "cleanup claim creation failure order"
+    assert_not_contains "cleanup;" "${fixture_result}" \
+        "firewall cleanup after cleanup claim creation failure"
 
     if run_start_script_fixture 1 0 2>/dev/null; then
         fail "run script continued after stale cleanup failed"
@@ -828,16 +928,28 @@ test_service_caller_failure_policies()
     assert_eq 42 "${fixture_status}" "run setup failure policy"
 
     fixture_result="$(run_finish_script_fixture 1 7 0)"
-    assert_eq '7|1|125|exitcode;halt;cleanup;' "${fixture_result}" \
+    assert_eq '7|1|125|exitcode;halt;claim-consume;cleanup;' \
+        "${fixture_result}" \
         "fatal process exit is persisted before cleanup"
 
     fixture_result="$(run_finish_script_fixture 1 256 15)"
-    assert_eq '143|1|125|exitcode;halt;cleanup;' "${fixture_result}" \
+    assert_eq '143|1|125|exitcode;halt;claim-consume;cleanup;' \
+        "${fixture_result}" \
         "fatal signal exit is persisted before cleanup"
 
     fixture_result="$(run_finish_script_fixture 1 0 0)"
-    assert_eq 'none|0|0|cleanup;' "${fixture_result}" \
+    assert_eq 'none|0|0|claim-consume;cleanup;' "${fixture_result}" \
         "successful process exit cleans up and remains restartable"
+
+    fixture_result="$(run_finish_script_fixture 1 42 0 1)"
+    assert_eq '42|1|125|exitcode;halt;claim-consume;' \
+        "${fixture_result}" \
+        "pre-ownership startup failure must not clean foreign firewall state"
+
+    fixture_result="$(run_finish_script_fixture 1 42 0 2)"
+    assert_eq '42|1|125|exitcode;halt;claim-consume;' \
+        "${fixture_result}" \
+        "unconsumable ownership claim must fail closed"
 }
 
 test_service_caller_successful_modes()
@@ -849,7 +961,9 @@ test_service_caller_successful_modes()
     fixture_result="$(run_start_script_fixture 0 0 true)"
     lifecycle_events="${fixture_result%%|*}"
     exec_args="${fixture_result#*|}"
-    assert_eq "cleanup;setup:true;exec;" "${lifecycle_events}" \
+    assert_eq \
+        "claim-reset;guard;claim-create;cleanup;setup:true;exec;" \
+        "${lifecycle_events}" \
         "enabled caller lifecycle"
     assert_contains "/usr/sbin/otbr-agent -I wpan0 -B eth0" "${exec_args}" \
         "enabled caller otbr-agent exec"
@@ -857,7 +971,9 @@ test_service_caller_successful_modes()
     fixture_result="$(run_start_script_fixture 0 0 false)"
     lifecycle_events="${fixture_result%%|*}"
     exec_args="${fixture_result#*|}"
-    assert_eq "cleanup;setup:false;exec;" "${lifecycle_events}" \
+    assert_eq \
+        "claim-reset;guard;claim-create;cleanup;setup:false;exec;" \
+        "${lifecycle_events}" \
         "disabled caller lifecycle"
     assert_contains "/usr/sbin/otbr-agent -I wpan0 -B eth0" "${exec_args}" \
         "disabled caller otbr-agent exec"
@@ -1010,19 +1126,41 @@ test_service_script_invariants()
     fi
 
     local cleanup_line
+    local cleanup_claim_line
+    local cleanup_claim_reset_line
+    local cleanup_guard_line
     local setup_line
-    cleanup_line="$(grep -n 'otbr_firewall_cleanup' "${RUN_SCRIPT}" \
+    cleanup_claim_reset_line="$(
+        grep -n 'if ! otbr_firewall_cleanup_claim_reset' "${RUN_SCRIPT}" \
+            | head -n 1 | cut -d: -f1
+    )"
+    cleanup_guard_line="$(
+        grep -n 'if ! otbr_firewall_cleanup_is_safe' "${RUN_SCRIPT}" \
+            | head -n 1 | cut -d: -f1
+    )"
+    cleanup_claim_line="$(
+        grep -n 'if ! otbr_firewall_cleanup_claim_create' "${RUN_SCRIPT}" \
+            | head -n 1 | cut -d: -f1
+    )"
+    cleanup_line="$(grep -n 'if ! otbr_firewall_cleanup;' "${RUN_SCRIPT}" \
         | head -n 1 | cut -d: -f1)"
     setup_line="$(grep -n 'otbr_firewall_setup' "${RUN_SCRIPT}" \
         | head -n 1 | cut -d: -f1)"
-    (( cleanup_line < setup_line )) \
-        || fail "startup cleanup must precede firewall setup"
+    (( cleanup_claim_reset_line < cleanup_guard_line \
+        && cleanup_guard_line < cleanup_claim_line \
+        && cleanup_claim_line < cleanup_line \
+        && cleanup_line < setup_line )) \
+        || fail "startup claim, ownership guard, cleanup, and setup order is unsafe"
 
     grep -q 'otbr_firewall_cleanup' "${FINISH_SCRIPT}" \
         || fail "finish script does not invoke shared cleanup"
+    grep -q 'otbr_firewall_cleanup_claim_consume' "${FINISH_SCRIPT}" \
+        || fail "finish cleanup is not gated by an ownership claim"
     grep -q 'otbr_firewall_cleanup' "${ENABLE_CHECK_SCRIPT}" \
         || fail "disabled OTBR path does not invoke shared cleanup"
-    grep -q 'otbr_disabled_cleanup_is_safe' "${ENABLE_CHECK_SCRIPT}" \
+    grep -q 'otbr_firewall_cleanup_is_safe' "${RUN_SCRIPT}" \
+        || fail "startup cleanup does not guard a possible foreign owner"
+    grep -q 'otbr_firewall_cleanup_is_safe' "${ENABLE_CHECK_SCRIPT}" \
         || fail "disabled OTBR path does not guard a possible foreign owner"
     [[ -f "${TIMEOUT_FINISH_FILE}" ]] \
         || fail "otbr-agent has no explicit finish timeout"
@@ -1050,6 +1188,19 @@ test_service_script_invariants()
     grep -Fq 'org.opencontainers.image.revision="${BUILD_COMMIT}"' \
         "${DOCKERFILE}" \
         || fail "OCI image revision label must use BUILD_COMMIT"
+
+    local entrypoint_line
+    local label_line
+    entrypoint_line="$(grep -n '^ENTRYPOINT ' "${DOCKERFILE}" \
+        | tail -n 1 | cut -d: -f1)"
+    label_line="$(grep -n '^LABEL ' "${DOCKERFILE}" \
+        | tail -n 1 | cut -d: -f1)"
+    (( label_line > entrypoint_line )) \
+        || fail "source-specific labels must follow expensive image layers"
+    for build_arg in BUILD_ARCH BUILD_COMMIT BUILD_VERSION; do
+        grep -Fq "test -n \"\${${build_arg}}\"" "${DOCKERFILE}" \
+            || fail "${build_arg} must be rejected when empty"
+    done
 }
 
 main()
@@ -1062,7 +1213,8 @@ main()
     test_cleanup_probe_statuses_are_preserved
     test_cleanup_command_timeouts_are_preserved
     test_cleanup_uses_one_shared_deadline
-    test_disabled_cleanup_owner_guard
+    test_cleanup_owner_guard
+    test_cleanup_claim_lifecycle
     test_service_caller_failure_policies
     test_service_caller_successful_modes
     test_backbone_interface_selection
