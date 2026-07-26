@@ -387,9 +387,11 @@ jobs:
             --read-only \
             --pids-limit 64 \
             --security-opt no-new-privileges \
+            --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
             --entrypoint /bin/bash \
             "${IMAGE}" -ceu '
-            for command_name in bash ip iptables ip6tables ipset python3 timeout; do
+            for command_name in \
+              bash ip iptables ip6tables ipset python3 s6-rc-compile timeout; do
               command -v "${command_name}" >/dev/null \
                 || { echo "missing runtime dependency: ${command_name}" >&2; exit 1; }
             done
@@ -410,6 +412,17 @@ jobs:
             /etc/s6-overlay/scripts/otbr-owner-lock.py \
               --socket-name "io.home-assistant.otbr-owner.runtime-$$" \
               -- /bin/true 3>/dev/null
+            # s6-overlay injects these services during initialization. Stub
+            # only those external nodes so compilation validates the packaged
+            # add-on graph, including dependency direction and cycles.
+            cp -a /etc/s6-overlay/s6-rc.d /tmp/addon-s6-source
+            for injected_service in base legacy-cont-init; do
+              mkdir "/tmp/addon-s6-source/${injected_service}"
+              printf "oneshot\n" \
+                > "/tmp/addon-s6-source/${injected_service}/type"
+              printf ":\n" > "/tmp/addon-s6-source/${injected_service}/up"
+            done
+            s6-rc-compile /tmp/addon-s6-compiled /tmp/addon-s6-source
             timeout 1 true
             ip -Version >/dev/null
             iptables --version >/dev/null
