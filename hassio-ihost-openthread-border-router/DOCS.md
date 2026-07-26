@@ -6,7 +6,8 @@ Follow these steps to get the add-on installed on your system:
 
 1. Navigate in your Home Assistant frontend to **Settings** -> **Add-ons, Backup & Supervisor** -> **Add-on Store**.
 2. Click on the top right menu and "Repository"
-3. Add "https://github.com/home-assistant/addons" to add the "Home Assistant Add-on Repository for Development" repository.
+3. Add `https://github.com/iHost-Open-Source-Project/hassio-ihost-addon`
+   as the add-on repository.
 4. Find the "OpenThread Border Router" add-on and click it.
 5. Click on the "INSTALL" button.
 
@@ -18,9 +19,23 @@ OpenThread. This add-on automatically installs the necessary firmware on these s
 
 If you are using Home Assistant Yellow, choose `/dev/ttyAMA1` as device.
 
-> Important!!!
->
-> When using the iHost’s built-in **MG21** chip (located at `/dev/ttyS4`) with this add-on, **hardware flow control must be disabled** for the OpenThread Border Router to function properly.
+### Radio serial compatibility
+
+The default hardware-flow-control setting remains enabled for compatibility
+with radios that require RTS/CTS. Two supported MG21 configurations are known
+exceptions:
+
+| Radio and firmware | Device | Baud rate | Hardware flow control |
+|---|---|---:|---|
+| iHost built-in MG21 | `/dev/ttyS4` | `460800` | **Disabled** |
+| SONOFF ZBDongle-E with the bundled `zbdonglee-460800` OT RCP firmware | Select its detected serial device | `460800` | **Disabled** |
+| nRF54L15 RCP using compatible nRF Connect SDK firmware | Select its detected serial device | `1000000` when specified by that firmware | Follow the firmware documentation |
+| Other radio or replacement RCP firmware | Select its detected serial device | Follow the firmware documentation | Follow the firmware documentation |
+
+An incorrect baud rate or flow-control mode can look like an OTBR startup,
+reset, or radio-communication failure. After changing a radio or its firmware,
+confirm both settings against that exact firmware and validate repeated add-on
+starts and Thread attachment on the target hardware.
 
 ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-openthread-border-router/images/otbr_configuration.png)
 
@@ -66,11 +81,33 @@ selected backbone interface. Return traffic is accepted only for established
 or related connections. NAT64 does not add unrestricted forwarding rules for
 all traffic on the backbone interface.
 
+Use `backbone_interface` to select the host interface that carries backbone and
+NAT64 traffic on multi-NIC or VLAN systems. When it is unset, the add-on uses
+the primary interface reported by Supervisor. Startup fails with a clear error
+if no primary interface is reported or the selected interface does not exist;
+the add-on does not silently guess `eth0`.
+
 During an upgrade from version 2.13.0, the add-on removes legacy unrestricted
 NAT64 rules only when their OTBR signature identifies a complete ingress and
 egress pair for one backbone interface. Incomplete or ambiguous host firewall
 rules are preserved and startup stops for manual review instead of deleting
 rules that may belong to another service.
+
+If the log reports that legacy NAT64 cleanup is blocked, inspect the following
+from a trusted shell in the host network namespace with `NET_ADMIN` access:
+
+```text
+iptables -t filter -S FORWARD
+iptables -t mangle -S PREROUTING
+iptables -t nat -S POSTROUTING
+```
+
+Do not flush `FORWARD` or remove every matching rule. The historical add-on
+signature consists of one `-i <interface> -j ACCEPT` and one
+`-o <same-interface> -j ACCEPT` rule, together with the `wpan0` MARK and matching
+MASQUERADE rules. When there are extra interfaces or only half of that pair,
+capture the three listings above and establish rule ownership before changing
+host firewall state.
 
 Only one OTBR implementation should manage `wpan0` and the globally named OTBR
 chains and ipsets at a time.
@@ -92,9 +129,10 @@ Add-on configuration:
 
 | Configuration      | Description                                            |
 |--------------------|--------------------------------------------------------|
-| device (mandatory) | Serial port where the OpenThread RCP Radio is attached |
+| device             | Local serial port for the OpenThread RCP; optional when `network_device` is set |
 | baudrate           | Serial port baudrate (depends on firmware)   |
 | flow_control       | If hardware flow control should be enabled (depends on firmware) |
+| backbone_interface | Optional host interface for backbone routing and NAT64; defaults to the Supervisor primary interface |
 | autoflash_firmware | Automatically install/update firmware (Home Assistant SkyConnect/Yellow) |
 | otbr_log_level     | Set the log level of the OpenThread BorderRouter Agent     |
 | firewall           | Apply OTBR ingress filtering; scoped `wpan0` forwarding remains enabled when disabled |
@@ -116,7 +154,9 @@ Add-on configuration:
 > recommended.
 
 > [!NOTE]
-> When using a network device, you still need to set a dummy serial port device, e.g. `/dev/ttyS3`.
+> `network_device` takes precedence when both RCP fields are set. A dummy local
+> serial device is not required; startup fails only when both `device` and
+> `network_device` are empty.
 
 ## Support
 
@@ -133,7 +173,7 @@ In case you've found a bug, please [open an issue on our GitHub][issue].
 [discord]: https://discord.gg/c5DvZ4e
 [forum]: https://community.home-assistant.io
 [reddit]: https://reddit.com/r/homeassistant
-[issue]: https://github.com/home-assistant/addons/issues
+[issue]: https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/issues
 [openthread-platforms]: https://openthread.io/platforms
 [nordic-nrf52840-dongle]: https://www.nordicsemi.com/Products/Development-hardware/nrf52840-dongle
 [nordic-nrf52840-dongle-install]: https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/protocols/thread/tools.html#configuring_a_radio_co-processor

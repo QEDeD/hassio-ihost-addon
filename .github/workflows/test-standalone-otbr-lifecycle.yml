@@ -38,9 +38,11 @@ jobs:
         run: |
           set -euo pipefail
           files=(
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/universal-silabs-flasher-up
             hassio-ihost-openthread-border-router/tests/run.sh
             hassio-ihost-openthread-border-router/tests/netfilter-smoke/iptables-lock-probe
             hassio-ihost-openthread-border-router/tests/test-firewall.sh
@@ -69,10 +71,21 @@ jobs:
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
           require_mode 100644 \
             hassio-ihost-openthread-border-router/tests/netfilter-smoke/Dockerfile
+          for patch in \
+            hassio-ihost-openthread-border-router/0001-channel-monitor-disable-by-default.patch \
+            hassio-ihost-openthread-border-router/0002-spinel-Clear-source-match-tables-before-restoring.patch \
+            hassio-ihost-openthread-border-router/0003-nat64-handle-ipv4-options.patch; do
+            require_mode 100644 "${patch}"
+          done
+          require_mode 100644 \
+            hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-web/dependencies.d/otbr-agent-configure
 
           for file in "${files[@]}" \
             hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish \
-            hassio-ihost-openthread-border-router/tests/netfilter-smoke/Dockerfile; do
+            hassio-ihost-openthread-border-router/tests/netfilter-smoke/Dockerfile \
+            hassio-ihost-openthread-border-router/0001-channel-monitor-disable-by-default.patch \
+            hassio-ihost-openthread-border-router/0002-spinel-Clear-source-match-tables-before-restoring.patch \
+            hassio-ihost-openthread-border-router/0003-nat64-handle-ipv4-options.patch; do
             if grep -q $'\r' "${file}"; then
               printf '::error file=%s::file contains CRLF line endings\n' "${file}"
               exit 1
@@ -110,7 +123,19 @@ jobs:
           yq -e '(.configuration | type == "!!map")' \
             "${translation}" >/dev/null
           yq -e \
-            '.host_network == true and (.privileged | any_c(. == "NET_ADMIN"))' \
+            '.host_network == true and
+             (. | has("host_ipc") | not) and
+             (. | has("stage") | not) and
+             (.privileged | any_c(. == "NET_ADMIN"))' \
+            "${config}" >/dev/null
+          yq -e '.options.flow_control == true' "${config}" >/dev/null \
+            || fail "flow_control default changed; update the radio compatibility guidance"
+          yq -e \
+            '.url == "https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-openthread-border-router" and
+             (.options | has("backbone_interface") | not) and
+             .schema.device == "device(subsystem=tty)?" and
+             .schema.backbone_interface == "str?" and
+             (.schema.baudrate | contains("1000000"))' \
             "${config}" >/dev/null
 
           version="$(yq -r '.version' "${config}")"
@@ -138,6 +163,70 @@ jobs:
             [[ "$(yq -r '.image' "${config}")" == *'{arch}'* ]] \
               || fail "multi-arch image is missing {arch}"
           fi
+
+      - name: Verify OpenThread patch stack against pinned source
+        shell: bash
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*" >&2; exit 1; }
+          addon=hassio-ihost-openthread-border-router
+          otbr_revision="$(yq -r '.args.OTBR_VERSION' "${addon}/build.yaml")"
+          scratch="$(mktemp -d)"
+          otbr="${scratch}/ot-br-posix"
+          openthread="${scratch}/openthread"
+
+          git init --quiet "${otbr}"
+          git -C "${otbr}" fetch --quiet --no-tags --depth=1 \
+            --filter=blob:none \
+            https://github.com/openthread/ot-br-posix.git \
+            "${otbr_revision}"
+          openthread_revision="$(
+            git -C "${otbr}" ls-tree FETCH_HEAD \
+              third_party/openthread/repo |
+              awk '$2 == "commit" { print $3 }'
+          )"
+          [[ "${openthread_revision}" =~ ^[0-9a-f]{40}$ ]] \
+            || fail "could not resolve pinned OpenThread submodule revision"
+
+          git init --quiet "${openthread}"
+          git -C "${openthread}" sparse-checkout init --cone
+          git -C "${openthread}" sparse-checkout set \
+            src/core/net src/core/thread src/lib/spinel
+          git -C "${openthread}" fetch --quiet --no-tags --depth=1 \
+            --filter=blob:none \
+            https://github.com/openthread/openthread.git \
+            "${openthread_revision}"
+          git -C "${openthread}" checkout --quiet --detach FETCH_HEAD
+
+          for patch in \
+            0001-channel-monitor-disable-by-default.patch \
+            0002-spinel-Clear-source-match-tables-before-restoring.patch \
+            0003-nat64-handle-ipv4-options.patch; do
+            git -C "${openthread}" apply --check --whitespace=error-all \
+              "${GITHUB_WORKSPACE}/${addon}/${patch}"
+            git -C "${openthread}" apply --whitespace=error-all \
+              "${GITHUB_WORKSPACE}/${addon}/${patch}"
+          done
+          translator="${openthread}/src/core/net/nat64_translator.cpp"
+          grep -Fqx \
+            '                              ip4Header.GetTotalLength() - ip4Header.GetHeaderLength());' \
+            "${translator}"
+          grep -Fqx \
+            '                                       ip4Header.GetTotalLength() - ip4Header.GetHeaderLength());' \
+            "${translator}"
+          if grep -Fq \
+              'ip4Header.GetTotalLength() - sizeof(ip4Header)' \
+              "${translator}"; then
+            fail "NAT64 counters still assume a fixed-size IPv4 header"
+          fi
+          git -C "${openthread}" diff --check
+
+      - name: Validate the armv7 Dockerfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --check --platform linux/arm/v7 \
+            hassio-ihost-openthread-border-router
 
       - name: Run firewall and NAT64 lifecycle tests
         run: bash hassio-ihost-openthread-border-router/tests/run.sh
@@ -198,8 +287,10 @@ jobs:
         run: |
           set -euo pipefail
           build=hassio-ihost-openthread-border-router/build.yaml
+          config=hassio-ihost-openthread-border-router/config.yaml
           {
             echo "build_from=$(yq -r '.build_from.armv7' "${build}")"
+            echo "build_version=$(yq -r '.version' "${config}")"
             echo "otbr_version=$(yq -r '.args.OTBR_VERSION' "${build}")"
             echo "flasher_version=$(yq -r '.args.UNIVERSAL_SILABS_FLASHER' "${build}")"
           } >> "${GITHUB_OUTPUT}"
@@ -220,11 +311,83 @@ jobs:
           file: ./hassio-ihost-openthread-border-router/Dockerfile
           platforms: linux/arm/v7
           pull: true
-          outputs: type=cacheonly
+          load: true
+          tags: local/standalone-otbr-armv7:${{ github.sha }}
           cache-from: type=gha,scope=standalone-otbr-armv7
           cache-to: type=gha,mode=min,scope=standalone-otbr-armv7,ignore-error=true
           build-args: |
             BUILD_ARCH=armv7
+            BUILD_COMMIT=${{ github.sha }}
             BUILD_FROM=${{ steps.build-config.outputs.build_from }}
+            BUILD_VERSION=${{ steps.build-config.outputs.build_version }}
             OTBR_VERSION=${{ steps.build-config.outputs.otbr_version }}
             UNIVERSAL_SILABS_FLASHER=${{ steps.build-config.outputs.flasher_version }}
+
+      - name: Verify Home Assistant image labels
+        shell: bash
+        env:
+          EXPECTED_REVISION: ${{ github.sha }}
+          EXPECTED_SOURCE: https://github.com/iHost-Open-Source-Project/hassio-ihost-addon
+          EXPECTED_VERSION: ${{ steps.build-config.outputs.build_version }}
+          IMAGE: local/standalone-otbr-armv7:${{ github.sha }}
+        run: |
+          set -euo pipefail
+          inspect_label() {
+            docker image inspect \
+              --format "{{ index .Config.Labels \"$1\" }}" \
+              "${IMAGE}"
+          }
+
+          [[ "$(inspect_label io.hass.version)" == "${EXPECTED_VERSION}" ]]
+          [[ "$(inspect_label io.hass.type)" == "app" ]]
+          [[ "$(inspect_label io.hass.arch)" == "armv7" ]]
+          [[ "$(inspect_label org.opencontainers.image.version)" == "${EXPECTED_VERSION}" ]]
+          [[ "$(inspect_label org.opencontainers.image.source)" == "${EXPECTED_SOURCE}" ]]
+          [[ "$(inspect_label org.opencontainers.image.revision)" == "${EXPECTED_REVISION}" ]]
+
+      - name: Exercise the armv7 add-on image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            --platform linux/arm/v7 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --network none \
+            --entrypoint /bin/bash \
+            "local/standalone-otbr-armv7:${GITHUB_SHA}" \
+            -c '
+              set -euo pipefail
+              for command_name in \
+                ip \
+                iptables \
+                ip6tables \
+                ipset \
+                otbr-agent \
+                timeout; do
+                command -v "${command_name}" >/dev/null
+              done
+              # qemu-user does not implement NETLINK_NETFILTER, so even
+              # `ip6tables --version` fails under cross-architecture
+              # emulation. Verify the nft alternatives without opening that
+              # socket; the native real-kernel job above exercises the rules.
+              [[ "$(
+                basename "$(readlink -f "$(command -v iptables)")"
+              )" == "xtables-nft-multi" ]]
+              [[ "$(
+                basename "$(readlink -f "$(command -v ip6tables)")"
+              )" == "xtables-nft-multi" ]]
+              source /etc/s6-overlay/scripts/otbr-agent-common
+              otbr_firewall_cleanup_claim_reset
+              otbr_firewall_cleanup_is_safe
+              otbr_firewall_cleanup_claim_create
+              otbr_firewall_cleanup_claim_consume
+              if otbr_firewall_cleanup_claim_consume; then
+                echo "consumed ownership claim was unexpectedly reusable" >&2
+                exit 1
+              else
+                [[ $? -eq 1 ]]
+              fi
+              python3 -c "from cffi import FFI; FFI(); import gpiod"
+              universal-silabs-flasher --help >/dev/null
+            '

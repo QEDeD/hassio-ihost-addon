@@ -60,6 +60,10 @@ ip6tables()
 ipset()
 {
     local op=$1 name
+
+    calls=$((calls + 1))
+    mock_now_ms=$((mock_now_ms + command_advance_ms))
+    (( fail_call == 0 || calls != fail_call )) || return "${fail_status}"
     shift
     case "${op}" in
         create) [[ ${1:-} == -exist ]] || return 1; name=${2}; sets["${name}"]=1 ;;
@@ -148,10 +152,22 @@ otbr_firewall_cleanup
 [[ ${sleep_calls} -eq 2 ]]
 assert_clean
 
-reset_state
-fail_call=3
-if otbr_firewall_setup true; then exit 1; fi
-assert_clean
+# Every mutating setup operation, including all four ipset creations, must
+# preserve the original failure and roll back everything created before it.
+for mode in false true; do
+    if [[ "${mode}" == "true" ]]; then
+        setup_call_count=14
+    else
+        setup_call_count=10
+    fi
+
+    for ((failed_setup_call = 1; failed_setup_call <= setup_call_count; failed_setup_call++)); do
+        reset_state
+        fail_call="${failed_setup_call}"
+        if otbr_firewall_setup "${mode}"; then exit 1; fi
+        assert_clean
+    done
+done
 
 reset_state
 jumps["-o|${otbr_forward_ingress_chain}"]=$((otbr_cleanup_max_rule_deletes + 1))
@@ -189,6 +205,22 @@ done
 if otbr_firewall_cleanup; then exit 1; fi
 (( mock_now_ms <= otbr_cleanup_budget_milliseconds ))
 (( sleep_calls < 4 * (otbr_ipset_destroy_attempts - 1) ))
+
+# A busy first set must not prevent cleanup from removing later independent
+# sets before the shared deadline expires.
+reset_state
+otbr_cleanup_budget_milliseconds=300
+for name in "${otbr_firewall_ipsets[@]}"; do
+    sets["${name}"]=1
+done
+destroy_failures["${otbr_firewall_ipsets[0]}"]=999
+if otbr_firewall_cleanup; then exit 1; fi
+[[ ${sets["${otbr_firewall_ipsets[0]}"]} -eq 1 ]]
+for name in "${otbr_firewall_ipsets[@]:1}"; do
+    [[ ${sets["${name}"]} -eq 0 ]]
+done
+(( mock_now_ms <= otbr_cleanup_budget_milliseconds ))
+otbr_cleanup_budget_milliseconds=4000
 
 reset_state
 jumps["-o|${otbr_forward_ingress_chain}"]=10

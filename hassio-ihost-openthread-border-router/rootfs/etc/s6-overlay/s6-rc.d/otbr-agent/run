@@ -9,6 +9,19 @@
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 
+if ! otbr_firewall_cleanup_claim_reset; then
+    bashio::exit.nok "Could not reset the OTBR firewall ownership claim."
+fi
+
+if ! otbr_firewall_cleanup_is_safe; then
+    bashio::exit.nok \
+        "Refusing to reconcile OTBR firewall or NAT64 state: ${otbr_cleanup_guard_reason}."
+fi
+
+if ! otbr_firewall_cleanup_claim_create; then
+    bashio::exit.nok "Could not create the OTBR firewall ownership claim."
+fi
+
 if ! otbr_netfilter_cleanup; then
     bashio::exit.nok "Could not clean up stale OTBR firewall or NAT64 state."
 fi
@@ -22,16 +35,41 @@ declare otbr_log_level_int
 declare otbr_rest_listen
 declare otbr_rest_listen_port
 
-backbone_if="$(bashio::api.supervisor 'GET' '/network/info' '' 'first(.interfaces[] | select (.primary == true)) .interface')"
+backbone_if=""
+if bashio::config.has_value 'backbone_interface'; then
+    backbone_if="$(bashio::config 'backbone_interface')"
+else
+    backbone_if="$(
+        bashio::api.supervisor \
+            'GET' '/network/info' '' \
+            'first(.interfaces[] | select (.primary == true)) .interface // empty'
+    )"
+fi
+
+if [[ -z "${backbone_if}" ]]; then
+    bashio::exit.nok \
+        "No primary network interface found. Configure backbone_interface explicitly."
+fi
+
+if ! ip link show dev "${backbone_if}" >/dev/null 2>&1; then
+    bashio::exit.nok \
+        "Backbone interface '${backbone_if}' does not exist in the host network namespace."
+fi
 
 if [[ ! -r /proc/sys/net/ipv6/conf/all/forwarding ]] \
     || [[ "$(cat /proc/sys/net/ipv6/conf/all/forwarding)" != "1" ]]; then
     bashio::log.warning "IPv6 routing/forwarding is not enabled on the Home Assistant host."
 fi
-device=$(bashio::config 'device')
+if ! bashio::config.has_value 'device' \
+    && ! bashio::config.has_value 'network_device'; then
+    bashio::exit.nok \
+        "No RCP configured. Set either device (serial) or network_device (TCP host:port)."
+fi
 
 if bashio::config.has_value 'network_device'; then
     device="/tmp/ttyOTBR"
+else
+    device="$(bashio::config 'device')"
 fi
 
 baudrate=$(bashio::config 'baudrate')
@@ -73,11 +111,6 @@ case "${otbr_log_level}" in
         bashio::exit.nok "Unknown otbr_log_level: ${otbr_log_level}"
         ;;
 esac
-
-if [[ -z "${backbone_if}" ]]; then
-    bashio::log.warning "No primary network interface found! Using static eth0."
-    backbone_if="eth0"
-fi
 
 # shellcheck disable=SC2015
 mkdir -p /data/thread && ln -sft /var/lib /data/thread || bashio::exit.nok "Could not create directory /var/lib/thread to store Thread data."

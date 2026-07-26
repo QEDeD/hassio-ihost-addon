@@ -6,10 +6,15 @@ configuration:
   baudrate:
     name: Baudrate
     description: >-
-      The serial port baudrate used to communicate with the Silicon Labs radio.
+      The serial port baudrate used to communicate with the RCP radio.
   flow_control:
     name: Hardware flow control
     description: Enable hardware flow control for serial port.
+  backbone_interface:
+    name: Backbone network interface
+    description: >-
+      The host network interface used for backbone routing and NAT64. If not
+      specified, the primary interface reported by Supervisor is used.
   network_device:
     name: Network Device
     description: >-

@@ -1,7 +1,8 @@
-ARG BUILD_FROM
-FROM $BUILD_FROM
+# check=error=true
+ARG BUILD_FROM=ghcr.io/home-assistant/armv7-base-debian:bookworm
+ARG BUILD_IMAGE_PLATFORM=linux/arm/v7
+FROM --platform=${BUILD_IMAGE_PLATFORM} $BUILD_FROM
 
-ARG BUILD_ARCH
 ARG OTBR_VERSION
 ARG UNIVERSAL_SILABS_FLASHER
 
@@ -21,6 +22,8 @@ ENV \
     GIT_HTTP_LOW_SPEED_TIME=60
 
 COPY 0001-channel-monitor-disable-by-default.patch /usr/src
+COPY 0002-spinel-Clear-source-match-tables-before-restoring.patch /usr/src
+COPY 0003-nat64-handle-ipv4-options.patch /usr/src
 COPY openthread-core-ha-config-posix.h /usr/src
 # Required during OTBR and armv7 Python-extension builds; removed after build
 ENV OTBR_BUILD_DEPS="build-essential ninja-build cmake wget ca-certificates \
@@ -32,6 +35,12 @@ ENV OTBR_BUILD_DEPS="build-essential ninja-build cmake wget ca-certificates \
 ENV OTBR_UNUSED_DEBS="libavahi-client3 avahi-daemon rsyslog"
 
 WORKDIR /usr/src
+
+# Fail source builds before apt and clone if the builder omitted a required,
+# reproducibility-sensitive input from build.yaml.
+RUN \
+    test -n "${OTBR_VERSION}" \
+    && test -n "${UNIVERSAL_SILABS_FLASHER}"
 
 # Install npm/nodejs for WebUI before calling script/bootstrap to avoid
 # systemd getting pulled in
@@ -65,12 +74,34 @@ RUN \
     && git fetch origin ${OTBR_VERSION} \
     && git checkout ${OTBR_VERSION} \
     && git submodule update --init \
-    && ./script/bootstrap \
     && ( \
         cd third_party/openthread/repo \
-        && patch -p1 < /usr/src/0001-channel-monitor-disable-by-default.patch \
+        && git apply --whitespace=error-all \
+           /usr/src/0001-channel-monitor-disable-by-default.patch \
+        && git apply --whitespace=error-all \
+           /usr/src/0002-spinel-Clear-source-match-tables-before-restoring.patch \
+        && git apply --whitespace=error-all \
+           /usr/src/0003-nat64-handle-ipv4-options.patch \
+        && grep -Fqx \
+           '    IgnoreError(ClearSrcMatchShortEntries());' \
+           src/lib/spinel/radio_spinel.cpp \
+        && grep -Fqx \
+           '        VerifyOrExit(!HasSourceRouteOption(aMessage));' \
+           src/core/net/ip4_types.cpp \
+        && grep -Fqx \
+           '    aMessage.RemoveHeader(ip4Header.GetHeaderLength());' \
+           src/core/net/nat64_translator.cpp \
+        && grep -Fqx \
+           '                              ip4Header.GetTotalLength() - ip4Header.GetHeaderLength());' \
+           src/core/net/nat64_translator.cpp \
+        && grep -Fqx \
+           '                                       ip4Header.GetTotalLength() - ip4Header.GetHeaderLength());' \
+           src/core/net/nat64_translator.cpp \
         && cp /usr/src/openthread-core-ha-config-posix.h . \
        ) \
+    # Apply source backports before the expensive bootstrap so an incompatible \
+    # pinned revision fails quickly instead of after cross-architecture setup. \
+    && ./script/bootstrap \
     # Mimic rt_tables_install \
     && echo "88 openthread" >> /etc/iproute2/rt_tables \
     # Mimic otbr_install \
@@ -123,3 +154,20 @@ COPY rootfs /
 
 ENV \
     S6_STAGE2_HOOK=/etc/s6-overlay/scripts/enable-check.sh
+
+# Keep publisher metadata last so release version changes do not invalidate
+# the expensive OTBR compilation layer.
+ARG BUILD_ARCH
+ARG BUILD_COMMIT
+ARG BUILD_VERSION
+RUN \
+    test -n "${BUILD_ARCH}" \
+    && test -n "${BUILD_COMMIT}" \
+    && test -n "${BUILD_VERSION}"
+LABEL \
+    io.hass.version="${BUILD_VERSION}" \
+    io.hass.type="app" \
+    io.hass.arch="${BUILD_ARCH}" \
+    org.opencontainers.image.version="${BUILD_VERSION}" \
+    org.opencontainers.image.source="https://github.com/iHost-Open-Source-Project/hassio-ihost-addon" \
+    org.opencontainers.image.revision="${BUILD_COMMIT}"

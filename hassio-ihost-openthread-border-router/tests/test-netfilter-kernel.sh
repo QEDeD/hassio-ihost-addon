@@ -10,6 +10,8 @@ readonly keep_chain_v4=OTBR_SMOKE_KEEP4
 readonly keep_chain_v6=OTBR_SMOKE_KEEP6
 readonly keep_ipset=otbr-smoke-keep
 readonly reference_chain=OTBR_SMOKE_REF6
+readonly owned_reference_chain_v4=OTBR_SMOKE_OWNED_REF4
+readonly owned_reference_chain_v6=OTBR_SMOKE_OWNED_REF6
 readonly legacy_backbone_if=legacy0
 readonly ambiguous_legacy_backbone_if=legacy1
 readonly incomplete_legacy_backbone_if=legacy2
@@ -39,41 +41,87 @@ expect_failure()
     fi
 }
 
-assert_ip6_chain_rule_count()
+assert_ip6_chain_rules_exact()
 {
-    local actual=0
     local chain_name="$1"
-    local expected="$2"
+    local index
     local rule
+    local -a actual=()
+    local -a expected=()
+    shift
+    expected=("$@")
 
     while IFS= read -r rule; do
         if [[ "${rule}" == "-A ${chain_name} "* ]]; then
-            ((actual += 1))
+            actual+=("${rule#"-A ${chain_name} "}")
         fi
     done < <(ip6tables -S "${chain_name}")
 
-    if (( actual != expected )); then
-        fail "${chain_name} has ${actual} rules, expected ${expected}"
-    fi
+    (( ${#actual[@]} == ${#expected[@]} )) \
+        || fail "${chain_name} rule count differs from the exact expected list"
+    for index in "${!expected[@]}"; do
+        [[ "${actual[index]}" == "${expected[index]}" ]] \
+            || fail "${chain_name} rule $((index + 1)) is '${actual[index]}', expected '${expected[index]}'"
+    done
 }
 
-assert_iptables_chain_rule_count()
+assert_iptables_chain_rules_exact()
 {
-    local actual=0
-    local chain_name="$1"
-    local expected="$2"
+    local table_name="$1"
+    local chain_name="$2"
+    local index
     local rule
-    local table_name="$3"
+    local -a actual=()
+    local -a expected=()
+    shift 2
+    expected=("$@")
 
     while IFS= read -r rule; do
         if [[ "${rule}" == "-A ${chain_name} "* ]]; then
-            ((actual += 1))
+            actual+=("${rule#"-A ${chain_name} "}")
         fi
     done < <(iptables -t "${table_name}" -S "${chain_name}")
 
-    if (( actual != expected )); then
-        fail "${table_name}/${chain_name} has ${actual} rules, expected ${expected}"
-    fi
+    (( ${#actual[@]} == ${#expected[@]} )) \
+        || fail "${table_name}/${chain_name} rule count differs from the exact expected list"
+    for index in "${!expected[@]}"; do
+        [[ "${actual[index]}" == "${expected[index]}" ]] \
+            || fail "${table_name}/${chain_name} rule $((index + 1)) is '${actual[index]}', expected '${expected[index]}'"
+    done
+}
+
+assert_forward_jump_order()
+{
+    local rule
+    local -a forward_v4=()
+    local -a forward_v6=()
+
+    while IFS= read -r rule; do
+        [[ "${rule}" == "-A FORWARD "* ]] && forward_v4+=("${rule}")
+    done < <(iptables -t filter -S FORWARD)
+    while IFS= read -r rule; do
+        [[ "${rule}" == "-A FORWARD "* ]] && forward_v6+=("${rule}")
+    done < <(ip6tables -S FORWARD)
+
+    [[ "${forward_v4[0]:-}" == "-A FORWARD -j ${otbr_forward_nat64_chain}" ]] \
+        || fail "NAT64 jump is not first in IPv4 FORWARD"
+    [[ "${forward_v6[0]:-}" == "-A FORWARD -o ${thread_if} -j ${otbr_forward_ingress_chain}" ]] \
+        || fail "ingress jump is not first in IPv6 FORWARD"
+    [[ "${forward_v6[1]:-}" == "-A FORWARD -i ${thread_if} -j ${otbr_forward_egress_chain}" ]] \
+        || fail "egress jump is not second in IPv6 FORWARD"
+}
+
+assert_forward_policies_preserved()
+{
+    local policy_v4
+    local policy_v6
+
+    IFS= read -r policy_v4 < <(iptables -t filter -S FORWARD)
+    IFS= read -r policy_v6 < <(ip6tables -S FORWARD)
+    [[ "${policy_v4}" == "-P FORWARD DROP" ]] \
+        || fail "IPv4 FORWARD policy changed: ${policy_v4}"
+    [[ "${policy_v6}" == "-P FORWARD DROP" ]] \
+        || fail "IPv6 FORWARD policy changed: ${policy_v6}"
 }
 
 assert_firewall_ipsets_present()
@@ -98,8 +146,14 @@ assert_firewall_jumps_present()
 
 assert_enabled_firewall_rules()
 {
-    assert_ip6_chain_rule_count "${otbr_forward_ingress_chain}" 5
-    assert_ip6_chain_rule_count "${otbr_forward_egress_chain}" 1
+    assert_ip6_chain_rules_exact "${otbr_forward_ingress_chain}" \
+        "-i ${thread_if} -m pkttype --pkt-type unicast -j DROP" \
+        "-m set --match-set otbr-ingress-deny-src src -j DROP" \
+        "-m set --match-set otbr-ingress-allow-dst dst -j ACCEPT" \
+        "-m pkttype --pkt-type unicast -j DROP" \
+        "-j ACCEPT"
+    assert_ip6_chain_rules_exact "${otbr_forward_egress_chain}" \
+        "-j ACCEPT"
 
     expect_success "enabled firewall omitted Thread-source unicast drop" \
         ip6tables -C "${otbr_forward_ingress_chain}" \
@@ -121,8 +175,10 @@ assert_enabled_firewall_rules()
 
 assert_disabled_firewall_rules()
 {
-    assert_ip6_chain_rule_count "${otbr_forward_ingress_chain}" 1
-    assert_ip6_chain_rule_count "${otbr_forward_egress_chain}" 1
+    assert_ip6_chain_rules_exact "${otbr_forward_ingress_chain}" \
+        "-j ACCEPT"
+    assert_ip6_chain_rules_exact "${otbr_forward_egress_chain}" \
+        "-j ACCEPT"
 
     expect_success "disabled firewall omitted scoped ingress accept" \
         ip6tables -C "${otbr_forward_ingress_chain}" -j ACCEPT
@@ -265,6 +321,12 @@ cleanup_smoke()
 
     ip6tables -w 1 -F "${reference_chain}" >/dev/null 2>&1
     ip6tables -w 1 -X "${reference_chain}" >/dev/null 2>&1
+    ip6tables -w 1 -F "${owned_reference_chain_v6}" >/dev/null 2>&1
+    ip6tables -w 1 -X "${owned_reference_chain_v6}" >/dev/null 2>&1
+    iptables -w 1 -t filter \
+        -F "${owned_reference_chain_v4}" >/dev/null 2>&1
+    iptables -w 1 -t filter \
+        -X "${owned_reference_chain_v4}" >/dev/null 2>&1
 
     otbr_cleanup_budget_milliseconds=4000
     otbr_ipset_destroy_attempts=20
@@ -281,11 +343,17 @@ cleanup_smoke()
 }
 trap cleanup_smoke EXIT
 
+# A restrictive host policy is valid input state. Setup and every cleanup path
+# must preserve it for both protocol families.
+iptables -w "${otbr_iptables_wait_seconds}" -t filter -P FORWARD DROP
+ip6tables -w "${otbr_iptables_wait_seconds}" -P FORWARD DROP
+
 # Empty teardown is deliberately repeatable, including iptables-nft's
 # nonzero probe result when a referenced custom target does not exist.
 otbr_netfilter_cleanup
 otbr_netfilter_cleanup
 assert_owned_absent
+assert_forward_policies_preserved
 
 # These unrelated objects prove cleanup is limited to exact owned names and
 # signatures.
@@ -316,7 +384,11 @@ expect_success "NAT64 setup omitted chain" \
     iptables -t filter -L "${otbr_forward_nat64_chain}" -n
 expect_success "NAT64 setup omitted jump" \
     iptables -t filter -C FORWARD -j "${otbr_forward_nat64_chain}"
-assert_iptables_chain_rule_count "${otbr_forward_nat64_chain}" 2 filter
+assert_iptables_chain_rules_exact filter "${otbr_forward_nat64_chain}" \
+    "-o eth0 -m mark --mark ${otbr_fw_mark} -j ACCEPT" \
+    "-i eth0 -o ${thread_if} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT"
+assert_forward_jump_order
+assert_forward_policies_preserved
 expect_success "NAT64 setup omitted marked outbound accept" \
     iptables -t filter -C "${otbr_forward_nat64_chain}" \
     -m mark --mark "${otbr_fw_mark}" -o eth0 -j ACCEPT
@@ -358,7 +430,12 @@ fi
 assert_nat64_absent
 expect_success "referenced ipset was unexpectedly destroyed" \
     ipset list otbr-ingress-deny-src
+for independent_ipset in "${otbr_firewall_ipsets[@]:1}"; do
+    expect_failure "busy first ipset starved cleanup of ${independent_ipset}" \
+        ipset list "${independent_ipset}"
+done
 assert_sentinels_present
+assert_forward_policies_preserved
 
 ip6tables -w "${otbr_iptables_wait_seconds}" -F "${reference_chain}"
 ip6tables -w "${otbr_iptables_wait_seconds}" -X "${reference_chain}"
@@ -368,6 +445,7 @@ otbr_netfilter_cleanup
 otbr_netfilter_cleanup
 assert_owned_absent
 assert_sentinels_present
+assert_forward_policies_preserved
 
 # Disabled mode must remain scoped to the owned chains. It may permit traffic
 # through those chains, but it must not restore the broad FORWARD accepts used
@@ -377,10 +455,51 @@ assert_firewall_ipsets_present
 assert_firewall_jumps_present
 assert_disabled_firewall_rules
 assert_sentinels_present
+assert_forward_policies_preserved
 otbr_firewall_cleanup
 otbr_firewall_cleanup
 assert_owned_absent
 assert_sentinels_present
+assert_forward_policies_preserved
+
+# An unexpected external reference must produce an incomplete cleanup result,
+# preserve the referenced owned chain, and recover once only that foreign
+# reference is removed.
+otbr_firewall_setup false
+ip6tables -w "${otbr_iptables_wait_seconds}" \
+    -N "${owned_reference_chain_v6}"
+ip6tables -w "${otbr_iptables_wait_seconds}" \
+    -A "${owned_reference_chain_v6}" \
+    -j "${otbr_forward_ingress_chain}"
+expect_failure "IPv6 cleanup ignored an external owned-chain reference" \
+    otbr_firewall_cleanup
+expect_success "referenced IPv6 owned chain was unexpectedly removed" \
+    ip6tables -L "${otbr_forward_ingress_chain}" -n
+ip6tables -w "${otbr_iptables_wait_seconds}" \
+    -F "${owned_reference_chain_v6}"
+ip6tables -w "${otbr_iptables_wait_seconds}" \
+    -X "${owned_reference_chain_v6}"
+otbr_firewall_cleanup
+assert_owned_absent
+assert_forward_policies_preserved
+
+otbr_nat64_setup eth0
+iptables -w "${otbr_iptables_wait_seconds}" -t filter \
+    -N "${owned_reference_chain_v4}"
+iptables -w "${otbr_iptables_wait_seconds}" -t filter \
+    -A "${owned_reference_chain_v4}" \
+    -j "${otbr_forward_nat64_chain}"
+expect_failure "IPv4 cleanup ignored an external owned-chain reference" \
+    otbr_nat64_cleanup
+expect_success "referenced IPv4 owned chain was unexpectedly removed" \
+    iptables -t filter -L "${otbr_forward_nat64_chain}" -n
+iptables -w "${otbr_iptables_wait_seconds}" -t filter \
+    -F "${owned_reference_chain_v4}"
+iptables -w "${otbr_iptables_wait_seconds}" -t filter \
+    -X "${owned_reference_chain_v4}"
+otbr_nat64_cleanup
+assert_owned_absent
+assert_forward_policies_preserved
 
 # Exercise migration of the unambiguous broad rules emitted by version 2.13.0.
 iptables -w "${otbr_iptables_wait_seconds}" \

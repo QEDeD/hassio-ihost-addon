@@ -1,0 +1,151 @@
+diff --git a/src/core/net/ip4_types.cpp b/src/core/net/ip4_types.cpp
+index 472dee003..4daa2653b 100644
+--- a/src/core/net/ip4_types.cpp
++++ b/src/core/net/ip4_types.cpp
+@@ -34,6 +34,7 @@
+ #include "ip4_types.hpp"
+ 
+ #include "common/numeric_limits.hpp"
++#include "common/offset_range.hpp"
+ #include "net/ip6_address.hpp"
+ 
+ namespace ot {
+@@ -208,11 +209,59 @@ Error Header::ParseFrom(const Message &aMessage)
+     VerifyOrExit(IsValid());
+     VerifyOrExit(GetTotalLength() == aMessage.GetLength());
+ 
++    if (GetIhl() > kMinIhl)
++    {
++        VerifyOrExit(!HasSourceRouteOption(aMessage));
++    }
++
+     error = kErrorNone;
+ 
+ exit:
+     return error;
+ }
+ 
++bool Header::HasSourceRouteOption(const Message &aMessage) const
++{
++    bool        hasSourceRoute = false;
++    uint16_t    headerLen      = GetHeaderLength();
++    OffsetRange range;
++
++    VerifyOrExit(headerLen <= aMessage.GetLength());
++    range.InitFromRange(sizeof(Header), headerLen);
++
++    while (!range.IsEmpty())
++    {
++        uint8_t optionType;
++        uint8_t optionLen;
++
++        SuccessOrExit(aMessage.Read(range, optionType));
++        range.AdvanceOffset(sizeof(uint8_t));
++
++        if (optionType == kOptionEnd)
++        {
++            break;
++        }
++
++        if (optionType == kOptionNop)
++        {
++            continue;
++        }
++
++        SuccessOrExit(aMessage.Read(range, optionLen));
++        VerifyOrExit(optionLen >= 2 && range.Contains(optionLen - 1));
++
++        if (optionType == kOptionLsrr || optionType == kOptionSsrr)
++        {
++            hasSourceRoute = true;
++            ExitNow();
++        }
++
++        range.AdvanceOffset(optionLen - 1);
++    }
++
++exit:
++    return hasSourceRoute;
++}
++
+ } // namespace Ip4
+ } // namespace ot
+diff --git a/src/core/net/ip4_types.hpp b/src/core/net/ip4_types.hpp
+index 1f67e958e..d5638cfe4 100644
+--- a/src/core/net/ip4_types.hpp
++++ b/src/core/net/ip4_types.hpp
+@@ -298,7 +298,24 @@ public:
+      * @retval TRUE    If the header appears to be well-formed.
+      * @retval FALSE   If the header does not appear to be well-formed.
+      */
+-    bool IsValid(void) const { return IsVersion4(); }
++    bool IsValid(void) const
++    {
++        return IsVersion4() && (GetIhl() >= kMinIhl) && (GetHeaderLength() <= GetTotalLength());
++    }
++
++    /**
++     * Returns the IPv4 Internet Header Length (IHL) value.
++     *
++     * @returns The IPv4 IHL value.
++     */
++    uint8_t GetIhl(void) const { return mVersIhl & kIhlMask; }
++
++    /**
++     * Returns the IPv4 Header Length value.
++     *
++     * @returns The IPv4 Header Length value.
++     */
++    uint16_t GetHeaderLength(void) const { return static_cast<uint16_t>(GetIhl()) * 4; }
+ 
+     /**
+      * Initializes the Version to 4 and sets Traffic Class and Flow fields to zero.
+@@ -518,6 +535,7 @@ private:
+     static constexpr uint8_t  kVersion4           = 0x40;   // Use with `mVersIhl`
+     static constexpr uint8_t  kVersionMask        = 0xf0;   // Use with `mVersIhl`
+     static constexpr uint8_t  kIhlMask            = 0x0f;   // Use with `mVersIhl`
++    static constexpr uint8_t  kMinIhl             = 5;      ///< Minimum IPv4 Internet Header Length (in 32-bit words).
+     static constexpr uint8_t  kDscpOffset         = 2;      // Use with `mDscpEcn`
+     static constexpr uint16_t kDscpMask           = 0xfc;   // Use with `mDscpEcn`
+     static constexpr uint8_t  kEcnOffset          = 0;      // Use with `mDscpEcn`
+@@ -526,7 +544,13 @@ private:
+     static constexpr uint16_t kFlagsDf            = 0x4000; // Use with `mFlagsFragmentOffset`
+     static constexpr uint16_t kFlagsMf            = 0x2000; // Use with `mFlagsFragmentOffset`
+     static constexpr uint16_t kFragmentOffsetMask = 0x1fff; // Use with `mFlagsFragmentOffset`
+-    static constexpr uint32_t kVersIhlInit        = 0x45;   // Version 4, Header length = 5x8 bytes.
++    static constexpr uint32_t kVersIhlInit        = 0x45;   // Version 4, Header length = 5x4 bytes.
++    static constexpr uint8_t  kOptionEnd          = 0;      ///< End of Options List
++    static constexpr uint8_t  kOptionNop          = 1;      ///< No Operation
++    static constexpr uint8_t  kOptionLsrr         = 131;    ///< Loose Source and Record Route
++    static constexpr uint8_t  kOptionSsrr         = 137;    ///< Strict Source and Record Route
++
++    bool HasSourceRouteOption(const Message &aMessage) const;
+ 
+     uint8_t  mVersIhl;
+     uint8_t  mDscpEcn;
+diff --git a/src/core/net/nat64_translator.cpp b/src/core/net/nat64_translator.cpp
+index 7b56886bc..0e70e4e28 100644
+--- a/src/core/net/nat64_translator.cpp
++++ b/src/core/net/nat64_translator.cpp
+@@ -234,7 +234,7 @@ Translator::Result Translator::TranslateToIp6(Message &aMessage)
+         ExitNow(res = kDrop);
+     }
+ 
+-    aMessage.RemoveHeader(sizeof(Ip4::Header));
++    aMessage.RemoveHeader(ip4Header.GetHeaderLength());
+ 
+     ip6Header.Clear();
+     ip6Header.InitVersionTrafficClassFlow();
+@@ -277,8 +277,10 @@ Translator::Result Translator::TranslateToIp6(Message &aMessage)
+         ExitNow(res = kDrop);
+     }
+     aMessage.SetType(Message::kTypeIp6);
+-    mCounters.Count4To6Packet(ip4Header.GetProtocol(), ip4Header.GetTotalLength() - sizeof(ip4Header));
+-    mapping->mCounters.Count4To6Packet(ip4Header.GetProtocol(), ip4Header.GetTotalLength() - sizeof(ip4Header));
++    mCounters.Count4To6Packet(ip4Header.GetProtocol(),
++                              ip4Header.GetTotalLength() - ip4Header.GetHeaderLength());
++    mapping->mCounters.Count4To6Packet(ip4Header.GetProtocol(),
++                                       ip4Header.GetTotalLength() - ip4Header.GetHeaderLength());
+ 
+ exit:
+     if (res == Result::kDrop)

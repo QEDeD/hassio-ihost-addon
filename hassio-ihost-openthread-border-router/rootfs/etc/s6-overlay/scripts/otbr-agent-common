@@ -12,6 +12,7 @@ otbr_firewall_ipsets=(
     "otbr-ingress-allow-dst"
     "otbr-ingress-allow-dst-swap"
 )
+otbr_firewall_cleanup_claim_file="/run/otbr-agent-firewall-owned"
 
 otbr_iptables_wait_seconds=5
 otbr_cleanup_max_rule_deletes=64
@@ -19,12 +20,34 @@ otbr_ipset_destroy_attempts=20
 otbr_ipset_destroy_delay_seconds=0.1
 otbr_cleanup_budget_milliseconds=4000
 otbr_cleanup_kill_grace_seconds=0.5
+otbr_owner_probe_timeout_milliseconds=1000
 
 otbr_cleanup_deadline_milliseconds=""
 otbr_cleanup_remaining_milliseconds=0
 otbr_now_milliseconds=0
 _otbr_legacy_rule_flags=()
 _otbr_legacy_rule_interfaces=()
+
+otbr_firewall_cleanup_claim_reset()
+{
+    rm -f -- "${otbr_firewall_cleanup_claim_file}"
+}
+
+otbr_firewall_cleanup_claim_create()
+{
+    : > "${otbr_firewall_cleanup_claim_file}"
+}
+
+otbr_firewall_cleanup_claim_consume()
+{
+    if [[ ! -e "${otbr_firewall_cleanup_claim_file}" ]]; then
+        return 1
+    fi
+
+    if ! rm -f -- "${otbr_firewall_cleanup_claim_file}"; then
+        return 2
+    fi
+}
 
 _otbr_now_milliseconds()
 {
@@ -47,6 +70,32 @@ _otbr_now_milliseconds()
         (10#${uptime_seconds} * 1000)
         + 10#${uptime_fraction:0:3}
     ))
+}
+
+_otbr_run_until()
+{
+    local deadline_milliseconds="$1"
+    local remaining_milliseconds
+    local timeout_duration
+    shift
+
+    if [[ ! "${deadline_milliseconds}" =~ ^[0-9]+$ ]] \
+        || ! _otbr_now_milliseconds; then
+        return 124
+    fi
+
+    remaining_milliseconds=$((deadline_milliseconds - otbr_now_milliseconds))
+    if (( remaining_milliseconds <= 0 )); then
+        return 124
+    fi
+
+    printf -v timeout_duration '%d.%03ds' \
+        "$((remaining_milliseconds / 1000))" \
+        "$((remaining_milliseconds % 1000))"
+
+    timeout --foreground \
+        --kill-after="${otbr_cleanup_kill_grace_seconds}s" \
+        "${timeout_duration}" "$@"
 }
 
 _otbr_cleanup_scope_enter()
@@ -86,19 +135,52 @@ _otbr_cleanup_refresh_remaining()
 
 _otbr_cleanup_run()
 {
-    local timeout_duration
-
     if ! _otbr_cleanup_refresh_remaining; then
         return 124
     fi
 
-    printf -v timeout_duration '%d.%03ds' \
-        "$((otbr_cleanup_remaining_milliseconds / 1000))" \
-        "$((otbr_cleanup_remaining_milliseconds % 1000))"
+    _otbr_run_until "${otbr_cleanup_deadline_milliseconds}" "$@"
+}
 
-    timeout --foreground \
-        --kill-after="${otbr_cleanup_kill_grace_seconds}s" \
-        "${timeout_duration}" "$@"
+# Callers read otbr_cleanup_guard_reason after this probe.
+# shellcheck disable=SC2034
+otbr_firewall_cleanup_is_safe()
+{
+    local deadline_milliseconds
+    local link_line
+    local link_name
+    local link_output
+
+    otbr_cleanup_guard_reason=""
+
+    if ! _otbr_now_milliseconds; then
+        otbr_cleanup_guard_reason="the monotonic clock could not be read"
+        return 1
+    fi
+    deadline_milliseconds=$((
+        otbr_now_milliseconds + otbr_owner_probe_timeout_milliseconds
+    ))
+
+    if ! link_output="$(
+        _otbr_run_until "${deadline_milliseconds}" \
+            ip -o link show 2>/dev/null
+    )"; then
+        otbr_cleanup_guard_reason="network interfaces could not be inspected"
+        return 1
+    fi
+
+    while IFS= read -r link_line; do
+        link_name="${link_line#*: }"
+        link_name="${link_name%%:*}"
+        link_name="${link_name%%@*}"
+
+        if [[ "${link_name}" == "${thread_if}" ]]; then
+            otbr_cleanup_guard_reason="${thread_if} already exists and may be managed by another OTBR implementation"
+            return 1
+        fi
+    done <<< "${link_output}"
+
+    return 0
 }
 
 _otbr_cleanup_xtables()
@@ -298,47 +380,64 @@ _otbr_delete_chain_if_exist()
     return "${failed}"
 }
 
-_otbr_ipset_destroy_if_exist()
+_otbr_destroy_firewall_ipsets()
 {
-    local ipset_name="$1"
-    local attempt=1
+    local -A attempts=()
+    local -a pending=("${otbr_firewall_ipsets[@]}")
+    local -a retry=()
+    local failed=0
+    local ipset_name
     local status
 
-    while (( attempt <= otbr_ipset_destroy_attempts )); do
-        if _otbr_ipset_exists "${ipset_name}"; then
-            :
-        else
-            status=$?
-            if (( status == 1 )); then
-                return 0
+    # Retry in rounds rather than exhausting every attempt for one set before
+    # inspecting the next. A foreign kernel reference can keep one owned set
+    # busy, but it must not starve independently removable sets within the
+    # shared cleanup deadline.
+    while (( ${#pending[@]} != 0 )); do
+        retry=()
+
+        for ipset_name in "${pending[@]}"; do
+            if _otbr_ipset_exists "${ipset_name}"; then
+                :
+            else
+                status=$?
+                if (( status > 1 )); then
+                    failed=1
+                fi
+                continue
             fi
-            return 1
-        fi
 
-        if _otbr_cleanup_run ipset destroy \
-            "${ipset_name}" >/dev/null 2>&1; then
-            return 0
-        else
-            status=$?
-        fi
+            attempts["${ipset_name}"]=$(( ${attempts["${ipset_name}"]:-0} + 1 ))
+            if _otbr_cleanup_run ipset destroy \
+                "${ipset_name}" >/dev/null 2>&1; then
+                continue
+            else
+                status=$?
+            fi
 
-        # A failed destroy can mean that a kernel reference is still draining.
-        # Other failures (including the shared deadline) are not retryable.
-        if (( status != 1 )); then
-            return 1
-        fi
+            # A failed destroy can mean that a kernel reference is still
+            # draining. Other failures (including the shared deadline) are
+            # not retryable, but still do not prevent inspection of later
+            # independent sets in this round.
+            if (( status != 1 )) \
+                || (( attempts["${ipset_name}"] >= otbr_ipset_destroy_attempts )); then
+                failed=1
+                continue
+            fi
 
-        if (( attempt < otbr_ipset_destroy_attempts )); then
-            if ! _otbr_cleanup_run sleep \
+            retry+=("${ipset_name}")
+        done
+
+        pending=("${retry[@]}")
+        if (( ${#pending[@]} != 0 )) \
+            && ! _otbr_cleanup_run sleep \
                 "${otbr_ipset_destroy_delay_seconds}"; then
-                return 1
-            fi
+            failed=1
+            break
         fi
-
-        attempt=$((attempt + 1))
     done
 
-    return 1
+    return "${failed}"
 }
 
 _otbr_remove_iptables_rules()
@@ -473,6 +572,16 @@ _otbr_legacy_broad_rules_are_unambiguous()
 
     [[ "${has_ingress_rule}" == "true" \
         && "${has_egress_rule}" == "true" ]]
+}
+
+_otbr_report_legacy_cleanup_blocked()
+{
+    printf '%s\n' \
+        "OTBR cleanup could not safely identify legacy NAT64 FORWARD rules." \
+        "The possible ownership signature was preserved for manual review." \
+        "Inspect: iptables -t filter -S FORWARD" \
+        "         iptables -t mangle -S PREROUTING" \
+        "         iptables -t nat -S POSTROUTING" >&2
 }
 
 _otbr_firewall_rollback()
@@ -644,6 +753,7 @@ otbr_nat64_cleanup()
     local mark_status
     local masquerade_present=false
     local masquerade_status
+    local legacy_review_required=false
     local nat64_chain_present=false
     local nat64_chain_status
     local owns_cleanup_scope=false
@@ -711,6 +821,7 @@ otbr_nat64_cleanup()
         else
             failed=1
             preserve_signature=true
+            legacy_review_required=true
         fi
     fi
 
@@ -730,11 +841,13 @@ otbr_nat64_cleanup()
                             -j ACCEPT; then
                             failed=1
                             preserve_signature=true
+                            legacy_review_required=true
                         fi
                     done
                 else
                     failed=1
                     preserve_signature=true
+                    legacy_review_required=true
                 fi
             fi
 
@@ -743,15 +856,18 @@ otbr_nat64_cleanup()
             if ! _otbr_list_legacy_broad_rules; then
                 failed=1
                 preserve_signature=true
+                legacy_review_required=true
             elif (( ${#_otbr_legacy_rule_flags[@]} != 0 )); then
                 failed=1
                 preserve_signature=true
+                legacy_review_required=true
             fi
         elif (( ${#_otbr_legacy_rule_flags[@]} != 0 )); then
             # A partial signature is not enough proof that broad ACCEPT rules
             # are ours. Preserve it and fail closed for a later/manual retry.
             failed=1
             preserve_signature=true
+            legacy_review_required=true
         fi
     fi
 
@@ -779,6 +895,8 @@ otbr_nat64_cleanup()
             -m mark --mark "${otbr_fw_mark}" -j MASQUERADE; then
             failed=1
         fi
+    elif [[ "${legacy_review_required}" == "true" ]]; then
+        _otbr_report_legacy_cleanup_blocked
     fi
 
     if [[ "${owns_cleanup_scope}" == "true" ]]; then
@@ -823,7 +941,6 @@ otbr_netfilter_cleanup()
 
 otbr_firewall_cleanup()
 {
-    local ipset_name
     local failed=0
     local owns_cleanup_scope=false
     local scope_status
@@ -853,11 +970,9 @@ otbr_firewall_cleanup()
         failed=1
     fi
 
-    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
-        if ! _otbr_ipset_destroy_if_exist "${ipset_name}"; then
-            failed=1
-        fi
-    done
+    if ! _otbr_destroy_firewall_ipsets; then
+        failed=1
+    fi
 
     if [[ "${owns_cleanup_scope}" == "true" ]]; then
         _otbr_cleanup_scope_leave

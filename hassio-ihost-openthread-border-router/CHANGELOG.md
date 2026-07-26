@@ -2,11 +2,18 @@
 
 ## 2.14.0
 
+- Backport the OpenThread fix for CVE-2026-8369 in NAT64 IPv4 option handling
+- Clear stale RCP source-match entries before Spinel recovery
 - Replace legacy and host-wide IPv6 forwarding changes with scoped OTBR chains
 - Recover stale firewall state and bound netfilter cleanup retries
+- Refuse teardown unless this startup claimed the shared OTBR netfilter state
 - Treat absent owned chains as a clean state with nft-backed iptables
 - Scope NAT64 forwarding to marked Thread traffic and established return traffic
 - Safely migrate unambiguous stale NAT64 rules leaked by version 2.13.0
+- Serialize web startup after OTBR agent configuration and harden readiness checks
+- Allow selecting the NAT64/backbone interface and fail on invalid detection
+- Allow network RCP configuration without a dummy local serial device
+- Accept 1,000,000 baud for compatible nRF54L15 RCP firmware
 - Restore armv7 builds when flasher dependencies require native Python extensions
 
 ## 2.13.0

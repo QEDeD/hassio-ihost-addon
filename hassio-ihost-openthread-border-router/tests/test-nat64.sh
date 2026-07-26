@@ -184,7 +184,9 @@ rules["filter|FORWARD|-o eth0 -j ACCEPT"]=1
 rules["filter|FORWARD|-i eth0 -j ACCEPT"]=1
 rules["filter|FORWARD|-o docker0 -j ACCEPT"]=1
 rules["filter|FORWARD|-i docker0 -j ACCEPT"]=1
-if otbr_nat64_cleanup; then exit 1; fi
+if legacy_cleanup_output="$(otbr_nat64_cleanup 2>&1)"; then exit 1; fi
+[[ "${legacy_cleanup_output}" == *"could not safely identify legacy NAT64"* ]]
+[[ "${legacy_cleanup_output}" == *"iptables -t filter -S FORWARD"* ]]
 [[ ${rules["mangle|PREROUTING|-i ${thread_if} -j MARK --set-mark ${otbr_fw_mark}"]:-0} -eq 1 ]]
 [[ ${rules["nat|POSTROUTING|-m mark --mark ${otbr_fw_mark} -j MASQUERADE"]:-0} -eq 1 ]]
 [[ ${rules["filter|FORWARD|-o eth0 -j ACCEPT"]:-0} -eq 1 ]]
@@ -246,10 +248,14 @@ if otbr_nat64_cleanup; then exit 1; fi
 [[ ${rules["nat|POSTROUTING|-m mark --mark ${otbr_fw_mark} -j MASQUERADE"]:-0} -eq 1 ]]
 [[ ${rules["filter|FORWARD|-i eth0 -j ACCEPT"]:-0} -eq 1 ]]
 
-reset_state
-fail_call=4
-if otbr_nat64_setup eth0; then exit 1; fi
-assert_clean
+# Each NAT64 setup mutation must roll back all state created by earlier
+# operations while preserving the original setup failure.
+for ((failed_setup_call = 1; failed_setup_call <= 6; failed_setup_call++)); do
+    reset_state
+    fail_call="${failed_setup_call}"
+    if otbr_nat64_setup eth0; then exit 1; fi
+    assert_clean
+done
 
 reset_state
 rules["filter|FORWARD|-j ${otbr_forward_nat64_chain}"]=$((otbr_cleanup_max_rule_deletes + 1))

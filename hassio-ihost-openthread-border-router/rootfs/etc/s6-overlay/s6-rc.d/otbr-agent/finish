@@ -26,10 +26,22 @@ fi
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
 
-if otbr_netfilter_cleanup; then
-    bashio::log.info "OTBR firewall and NAT64 teardown completed."
+declare cleanup_claim_status
+if otbr_firewall_cleanup_claim_consume; then
+    if otbr_netfilter_cleanup; then
+        bashio::log.info "OTBR firewall and NAT64 teardown completed."
+    else
+        bashio::log.warning "OTBR firewall or NAT64 teardown was incomplete."
+    fi
 else
-    bashio::log.warning "OTBR firewall or NAT64 teardown was incomplete."
+    cleanup_claim_status=$?
+    if (( cleanup_claim_status == 1 )); then
+        bashio::log.info \
+            "Skipping OTBR firewall and NAT64 teardown because startup did not claim the state."
+    else
+        bashio::log.warning \
+            "Skipping OTBR firewall and NAT64 teardown because its ownership claim could not be consumed."
+    fi
 fi
 
 if test "${finish_status}" -ne 0; then
