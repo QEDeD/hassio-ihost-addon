@@ -8,6 +8,10 @@ readonly ADDON_DIR
 readonly COMMON_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
 readonly LOCK_PROBE_PATH="/usr/local/libexec/otbr-lock-probe"
 readonly SYSTEM_PATH="${PATH}"
+readonly FOREIGN_CHAIN="OTBR-FOREIGN-SENTINEL"
+readonly FOREIGN_IPSET="otbr-foreign-sentinel"
+readonly FOREIGN_IP="fd00:cafe::1"
+readonly FOREIGN_FORWARD_POLICY="DROP"
 
 # shellcheck source=../rootfs/etc/s6-overlay/scripts/otbr-agent-common
 # shellcheck disable=SC1090
@@ -15,6 +19,7 @@ source "${COMMON_SCRIPT}"
 
 xtables_lock_pid=""
 original_path=""
+original_forward_policy=""
 
 fail()
 {
@@ -34,8 +39,27 @@ release_xtables_lock()
     xtables_lock_pid=""
 }
 
+cleanup_foreign_state()
+{
+    if ip6tables -w 1 -C FORWARD -i lo \
+        -j "${FOREIGN_CHAIN}" >/dev/null 2>&1; then
+        ip6tables -w 1 -D FORWARD -i lo -j "${FOREIGN_CHAIN}"
+    fi
+    if ip6tables -w 1 -L "${FOREIGN_CHAIN}" -n >/dev/null 2>&1; then
+        ip6tables -w 1 -F "${FOREIGN_CHAIN}"
+        ip6tables -w 1 -X "${FOREIGN_CHAIN}"
+    fi
+    if ipset list "${FOREIGN_IPSET}" >/dev/null 2>&1; then
+        ipset destroy "${FOREIGN_IPSET}"
+    fi
+    if [[ -n "${original_forward_policy}" ]]; then
+        ip6tables -w 1 -P FORWARD "${original_forward_policy}"
+    fi
+}
+
 best_effort_cleanup()
 {
+    set +e
     release_xtables_lock
     if [[ -n "${original_path}" ]]; then
         PATH="${original_path}"
@@ -46,6 +70,7 @@ best_effort_cleanup()
     PATH="${SYSTEM_PATH}"
     otbr_cleanup_budget_milliseconds=4000
     otbr_firewall_cleanup >/dev/null 2>&1 || true
+    cleanup_foreign_state >/dev/null 2>&1
 }
 
 trap best_effort_cleanup EXIT
@@ -84,6 +109,26 @@ assert_chain_rule_count()
         || fail "${chain_name} has ${actual} rules; expected ${expected}"
 }
 
+assert_foreign_state_preserved()
+{
+    local forward_policy
+
+    ip6tables -w 1 -C FORWARD -i lo -j "${FOREIGN_CHAIN}" \
+        || fail "unrelated FORWARD jump was removed"
+    ip6tables -w 1 -C "${FOREIGN_CHAIN}" \
+        -m set --match-set "${FOREIGN_IPSET}" src -j ACCEPT \
+        || fail "unrelated chain rule was removed"
+    ipset test "${FOREIGN_IPSET}" "${FOREIGN_IP}" >/dev/null 2>&1 \
+        || fail "unrelated IPv6 ipset entry was removed"
+
+    forward_policy="$(
+        ip6tables -w 1 -S FORWARD \
+            | awk '$1 == "-P" { print $3 }'
+    )"
+    [[ "${forward_policy}" == "${FOREIGN_FORWARD_POLICY}" ]] \
+        || fail "FORWARD policy changed to ${forward_policy}"
+}
+
 forward_jump_count()
 {
     local interface_flag="$1"
@@ -104,10 +149,28 @@ done
 [[ "$(ip6tables --version)" == *"nf_tables"* ]] \
     || fail "kernel smoke test requires the nft-backed iptables frontend"
 
+# Seed unrelated host-owned netfilter state. Every lifecycle transition must
+# leave this chain, jump, ipset, and deliberately restrictive policy intact.
+original_forward_policy="$(
+    ip6tables -w 1 -S FORWARD \
+        | awk '$1 == "-P" { print $3 }'
+)"
+[[ -n "${original_forward_policy}" ]] \
+    || fail "could not capture the original FORWARD policy"
+ipset create "${FOREIGN_IPSET}" hash:ip family inet6
+ipset add "${FOREIGN_IPSET}" "${FOREIGN_IP}"
+ip6tables -w 1 -N "${FOREIGN_CHAIN}"
+ip6tables -w 1 -A "${FOREIGN_CHAIN}" \
+    -m set --match-set "${FOREIGN_IPSET}" src -j ACCEPT
+ip6tables -w 1 -I FORWARD 1 -i lo -j "${FOREIGN_CHAIN}"
+ip6tables -w 1 -P FORWARD "${FOREIGN_FORWARD_POLICY}"
+assert_foreign_state_preserved
+
 # Absent state is a successful, idempotent cleanup.
 otbr_firewall_cleanup
 otbr_firewall_cleanup
 assert_absent
+assert_foreign_state_preserved
 
 # Filtering-enabled setup creates every owned object and the full ingress
 # policy, then teardown removes all of it.
@@ -132,8 +195,10 @@ ip6tables -w 1 -C "${otbr_forward_ingress_chain}" -j ACCEPT
 ip6tables -w 1 -C "${otbr_forward_egress_chain}" -j ACCEPT
 assert_chain_rule_count "${otbr_forward_ingress_chain}" 5
 assert_chain_rule_count "${otbr_forward_egress_chain}" 1
+assert_foreign_state_preserved
 otbr_firewall_cleanup
 assert_absent
+assert_foreign_state_preserved
 
 # Filtering-disabled setup remains interface-scoped and has only permissive
 # rules in the two owned chains.
@@ -146,6 +211,7 @@ ip6tables -w 1 -C "${otbr_forward_ingress_chain}" -j ACCEPT
 ip6tables -w 1 -C "${otbr_forward_egress_chain}" -j ACCEPT
 assert_chain_rule_count "${otbr_forward_ingress_chain}" 1
 assert_chain_rule_count "${otbr_forward_egress_chain}" 1
+assert_foreign_state_preserved
 
 # Teardown removes every duplicate owned jump, not only the first one.
 ip6tables -w 1 -I FORWARD 1 -o "${thread_if}" \
@@ -158,6 +224,7 @@ ip6tables -w 1 -I FORWARD 1 -i "${thread_if}" \
     || fail "duplicate egress jump was not installed"
 otbr_firewall_cleanup
 assert_absent
+assert_foreign_state_preserved
 
 # Some iptables-nft builds skip the historical global lock. Put a narrow probe
 # shim in PATH for this case so -w contention is deterministic while the real
@@ -203,10 +270,13 @@ original_path=""
 unset XTABLES_LOCKFILE
 ip6tables -w 1 -L "${otbr_forward_ingress_chain}" -n >/dev/null 2>&1 \
     || fail "firewall state vanished while xtables was locked"
+assert_foreign_state_preserved
 
 otbr_cleanup_budget_milliseconds=4000
 otbr_firewall_cleanup
 assert_absent
+assert_foreign_state_preserved
 
+cleanup_foreign_state
 trap - EXIT
 printf 'PASS: real-kernel OTBR firewall lifecycle\n'

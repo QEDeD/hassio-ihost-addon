@@ -81,26 +81,48 @@ run_start_script_fixture()
 {
     local cleanup_status="$1"
     local setup_status="$2"
+    local firewall_config_true="${3:-false}"
     local script
 
     script="$(sed \
         -e 's#^[[:space:]]*\. /etc/s6-overlay/scripts/otbr-agent-common.*$#    :#' \
         -e 's#^mkdir -p /data/thread.*$#:#' \
+        -e '\@/tmp/otbr-agent-rest-api@c\:' \
         "${RUN_SCRIPT}")"
 
     (
         function bashio::api.supervisor() { printf 'eth0'; }
+        function bashio::addon.ip_address() { printf '::1'; }
+        function bashio::addon.port() { :; }
         function bashio::config() { printf 'notice'; }
-        function bashio::config.true() { return 1; }
+        function bashio::config.true() {
+            [[ "$1" == "otbr_firewall" \
+                && "${firewall_config_true}" == "true" ]]
+        }
         function bashio::exit.nok() { exit 42; }
         function bashio::log.info() { :; }
         function bashio::log.warning() { :; }
         function bashio::string.lower() { printf '%s' "$1"; }
+        function bashio::var.has_value() { return 1; }
 
-        otbr_firewall_cleanup() { return "${cleanup_status}"; }
-        otbr_firewall_setup() { return "${setup_status}"; }
+        otbr_firewall_cleanup() {
+            otbr_test_events+="cleanup;"
+            return "${cleanup_status}"
+        }
+        otbr_firewall_setup() {
+            otbr_test_events+="setup:$1;"
+            return "${setup_status}"
+        }
+        exec() {
+            otbr_test_events+="exec;"
+            otbr_test_exec_args="$*"
+        }
+
+        otbr_test_events=""
+        otbr_test_exec_args=""
 
         eval "${script}"
+        printf '%s|%s\n' "${otbr_test_events}" "${otbr_test_exec_args}"
     )
 }
 
@@ -711,6 +733,29 @@ test_service_caller_failure_policies()
         "successful process exit cleans up and remains restartable"
 }
 
+test_service_caller_successful_modes()
+{
+    local exec_args
+    local fixture_result
+    local lifecycle_events
+
+    fixture_result="$(run_start_script_fixture 0 0 true)"
+    lifecycle_events="${fixture_result%%|*}"
+    exec_args="${fixture_result#*|}"
+    assert_eq "cleanup;setup:true;exec;" "${lifecycle_events}" \
+        "enabled caller lifecycle"
+    assert_contains "/usr/sbin/otbr-agent -I wpan0 -B eth0" "${exec_args}" \
+        "enabled caller otbr-agent exec"
+
+    fixture_result="$(run_start_script_fixture 0 0 false)"
+    lifecycle_events="${fixture_result%%|*}"
+    exec_args="${fixture_result#*|}"
+    assert_eq "cleanup;setup:false;exec;" "${lifecycle_events}" \
+        "disabled caller lifecycle"
+    assert_contains "/usr/sbin/otbr-agent -I wpan0 -B eth0" "${exec_args}" \
+        "disabled caller otbr-agent exec"
+}
+
 test_finish_timeout_has_cleanup_headroom()
 {
     local finish_timeout_milliseconds
@@ -816,6 +861,7 @@ main()
     test_cleanup_uses_one_shared_deadline
     test_disabled_cleanup_owner_guard
     test_service_caller_failure_policies
+    test_service_caller_successful_modes
     test_finish_timeout_has_cleanup_headroom
     test_setup_failure_rolls_back_partial_state
     test_restart_and_mode_transitions
