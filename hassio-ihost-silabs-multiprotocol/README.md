@@ -1,11 +1,18 @@
-# Home Assistant Add-on: SiliconLabs Zigbee/OpenThread Multiprotocol Add-on
+# TEST/EXPERIMENTAL — Silicon Labs Zigbee/OpenThread candidate 186eac8
 
-Zigbee/OpenThread Multiprotocol container for Silicon Labs based radios 
-such as SONOFF ZBDongle-E.
+> [!CAUTION]
+> Fork-only AMD64 hardware candidate. Back up Home Assistant, record the
+> original options and consumer endpoints, stop every existing radio/OTBR
+> owner, and follow the
+> [candidate runbook](https://github.com/QEDeD/hassio-ihost-addon/blob/codex/otbr-candidate-feed/HARDWARE-TEST-RUNBOOK.md)
+> before starting it.
 
-![Supports armv7 Architecture][armv7-shield]
-![Supports aarch64 Architecture][aarch64-shield]
 ![Supports amd64 Architecture][amd64-shield]
+
+This feed resolves version `1.0.2` to the unique image associated with
+canonical source `186eac8354fdcab9c224ec840989da1fd86af882`. Results apply to
+that broad canonical head only, not to any future scope-specific upstream
+head.
 
 ## About
 
@@ -15,8 +22,6 @@ installed to support multiple IEEE 802.15.4 Personal Area Networks (PAN). The
 addon is modified based on the Silicon Labs Multiprotocol Addon and has been 
 successfully tested on the SONOFF [ZBDongle-E](https://sonoff.tech/products/sonoff-zigbee-3-0-usb-dongle-plus-zbdongle-e) and [iHost MG21 chip](https://sonoff.tech/products/sonoff-ihost-smart-home-hub).
 
-[armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
-[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
 
 ### NOTICE

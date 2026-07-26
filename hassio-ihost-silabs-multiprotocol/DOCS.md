@@ -1,4 +1,12 @@
-# Home Assistant Add-on: Silicon Labs Multiprotocol
+# TEST/EXPERIMENTAL — Silicon Labs Multiprotocol candidate 186eac8
+
+> [!CAUTION]
+> This fork-only add-on is an AMD64 hardware candidate for broad canonical
+> head `186eac8354fdcab9c224ec840989da1fd86af882`. Before starting it, create a
+> current backup, record the original add-on options and radio consumers, stop
+> every existing radio/OTBR owner, and follow the
+> [hardware-test and rollback runbook](https://github.com/QEDeD/hassio-ihost-addon/blob/codex/otbr-candidate-feed/HARDWARE-TEST-RUNBOOK.md).
+> Results do not validate any future scope-specific upstream head.
 
 ## Prerequisites
 This addon is compatible with SONOFF dongles utilizing Silicon Labs chips, such as the
@@ -20,19 +28,21 @@ an existing radio setup.
 
 Follow these steps to get the add-on installed on your system:
 
-1. Add Silicon Labs Multiprotocol Add-on to Repositories
+1. Add the fork-only candidate feed to Repositories
       - Go to the Add-on Store → Click the More button (⋮) in the upper-right corner → Select Repositories
-        Paste the following URL:https://github.com/iHost-Open-Source-Project/hassio-ihost-addon
-      - Or, simply click the button below to add it automatically:
+        Paste this exact URL:
 
-      [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
-      
+      ```text
+      https://github.com/QEDeD/hassio-ihost-addon#codex/otbr-candidate-feed
+      ```
+
       ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-silabs-multiprotocol/images/description-picture_1.png)
 
-2. Install Silicon Labs Multiprotocol(Mod) Add-on
-      - Search for Silicon Labs Multiprotocol(Mod) Add-on in the Add-ons Store.
+2. Install TEST/EXPERIMENTAL — Silicon Labs Multiprotocol (186eac8)
+      - Confirm that the store entry is experimental and AMD64-only.
       - Click "Install" button.  
-      - Wait for the installation to complete
+      - Wait for the installation to complete, but do not start it until the
+        linked runbook preflight is complete.
 
 ## How to use
 

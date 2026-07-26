@@ -1,5 +1,5 @@
 {
-    "name": "iHost Open Source Project",
-    "url": "https://github.com/iHost-Open-Source-Project/hassio-ihost-addon",
-    "maintainer": "cubeDeveloper <cube@coolkit.cn>"
+    "name": "TEST ONLY - Silicon Labs OTBR candidate 186eac8",
+    "url": "https://github.com/QEDeD/hassio-ihost-addon/tree/codex/otbr-candidate-feed",
+    "maintainer": "QEDeD (experimental fork candidate)"
 }

@@ -1,34 +1,59 @@
-# Hassio iHost Add-ons
+# TEST ONLY — Silicon Labs OTBR candidate 186eac8
 
-## About
-This repository contains a set of Home Assistant add-ons developed specifically for **SONOFF iHost**.
+> [!CAUTION]
+> This is an experimental, fork-only hardware-test feed. It is not an
+> upstream release, it supports only `amd64`, and it must not be started
+> without a current backup and a recorded rollback path.
+
+This branch exposes exactly one Home Assistant add-on:
+**TEST/EXPERIMENTAL — Silicon Labs Multiprotocol (186eac8)**. Its runtime and
+build inputs come from broad canonical Silicon Labs head
+`186eac8354fdcab9c224ec840989da1fd86af882`. The delivery metadata selects the
+already validated AMD64 image under a unique candidate-only GHCR name.
+
+Successful hardware results validate that exact broad canonical head. They do
+not validate a later, scope-specific, rebased, or otherwise changed upstream
+head.
 
 ## Installation
-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
-2. Paste the following URL:  
-   [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
-3. Or, simply click the button below to add it automatically:
 
-[![Add Repository](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
+Do not add this repository until the provenance record shows that the image was
+published, made public with explicit approval, and anonymously pull-verified.
 
-## 🔄 Updating Repository
+1. Create and verify a current Home Assistant backup.
+2. Record the original add-on options, radio connection, consumers, and
+   rollback target.
+3. In Home Assistant, open the add-on store repository dialog.
+4. Add this exact branch URL:
 
-If you can only see part of the add-ons after adding this repository, it might be due to outdated local cache.  
-To refresh:
+   ```text
+   https://github.com/QEDeD/hassio-ihost-addon#codex/otbr-candidate-feed
+   ```
 
-1. Go to the Add-on Store  
-2. Click the **More** button (⋮) in the upper-right corner  
-3. Click **Check for updates**
+5. Refresh the store and verify that this repository exposes only the
+   conspicuously named TEST/EXPERIMENTAL AMD64 candidate.
+6. Install it, but do not start it until the preflight section of the
+   [hardware-test and rollback runbook](./HARDWARE-TEST-RUNBOOK.md) is
+   complete.
 
-This will force Home Assistant to reload the latest add-on list from all configured repositories.
+The resolved image reference must be:
 
+```text
+ghcr.io/qeded/ihost-silabs-otbr-candidate-186eac8354fdcab9c224ec840989da1fd86af882-amd64:1.0.2
+```
 
-## License
+## Records
 
-All add-ons in this repository are released under the [MIT License](./LICENSE).
+- [Candidate provenance and publication record](./CANDIDATE-PROVENANCE.md)
+- [Hardware-test and rollback runbook](./HARDWARE-TEST-RUNBOOK.md)
+- [Canonical implementation release gates](./hassio-ihost-silabs-multiprotocol/RELEASE.md)
 
----
+No pull request or upstream contact is part of this candidate feed.
 
-## Maintainers
+## License and attribution
 
-Maintained by the [iHost Open Source Project](https://github.com/iHost-Open-Source-Project).
+The retained implementation and documentation remain subject to the
+repository's [MIT license](./LICENSE), notices, and component-specific license
+files. The implementation originates from the
+[iHost Open Source Project](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon);
+this experimental delivery branch is maintained only in the `QEDeD` fork.

@@ -1,14 +1,13 @@
 ---
 version: 1.0.2
 slug: hassio_ihost_silabs_multiprotocol
-name: Silicon Labs Multiprotocol
-description: Zigbee and OpenThread multiprotocol add-on
+name: TEST/EXPERIMENTAL - Silicon Labs Multiprotocol (186eac8)
+description: TEST ONLY - broad issue #83 hardware candidate from canonical head 186eac8
 url: >
-  https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-silabs-multiprotocol
+  https://github.com/QEDeD/hassio-ihost-addon/blob/codex/otbr-candidate-feed/HARDWARE-TEST-RUNBOOK.md
 arch:
-  - armv7
-  - aarch64
   - amd64
+stage: experimental
 homeassistant: 2024.1.0
 gpio: true
 hassio_api: true
@@ -19,7 +18,7 @@ host_uts: true
 privileged:
   - IPC_LOCK
   - NET_ADMIN
-image: ghcr.io/ihost-open-source-project/hassio-ihost-silabs-multiprotocol-{arch}
+image: ghcr.io/qeded/ihost-silabs-otbr-candidate-186eac8354fdcab9c224ec840989da1fd86af882-{arch}
 init: false
 options:
   device: null
