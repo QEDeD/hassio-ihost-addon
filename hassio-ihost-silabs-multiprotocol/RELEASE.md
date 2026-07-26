@@ -43,7 +43,9 @@ request.
 
 4. Keep the full build logs with the release record. In particular, record the
    resolved base-image digests and verify that the downloaded SLC CLI matches
-   `args.SLC_CLI_SHA256` in `build.yaml`.
+   `args.SLC_CLI_SHA256` in `build.yaml`. Also verify that the embedded
+   OpenThread recovery patch matches `args.OPENTHREAD_RECOVERY_PATCH_SHA256`
+   and applies cleanly to the configured Simplicity SDK revision.
 
 ## Build the release candidate
 
@@ -78,6 +80,9 @@ radio firmware, link type, and option values.
 - Run concurrent Zigbee and Thread traffic for at least 24 hours. Record CPC
   endpoint state, file-descriptor counts, and recovery after an RCP reset or
   link interruption.
+- Trigger RCP recovery while Zigbee and Thread sleepy end devices are active.
+  Require source-match restoration to complete without table-capacity errors
+  and confirm that all devices remain reachable afterward.
 
 The Home Assistant upstream add-on deprecated shared-radio multiprotocol
 operation, so hardware acceptance is a release requirement for this downstream
