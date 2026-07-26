@@ -1,13 +1,12 @@
 name: Check Release
+description: Check a GitHub repository for a newer release
 inputs:
   owner:
-    description: "Owner"
+    description: "Owner, for example: esphome"
     required: true
-    example: "esphome"
   repo:
-    description: "Repo"
+    description: "Repository, for example: home-assistant-addon"
     required: true
-    example: "home-assistant-addon"
 runs:
   using: "composite"
   steps:

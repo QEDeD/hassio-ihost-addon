@@ -1,18 +1,16 @@
 name: Check HA Addon Version
+description: Check a Home Assistant add-on for a newer version
 inputs:
   addon_folder_name:
-    description: "Addon folder name"
+    description: "Add-on folder name, for example: matter_server"
     required: true
-    example: "matter_server"
   config:
-    description: "Addon config file name"
+    description: "Add-on config file name, for example: config.yaml"
     required: false
-    example: "config.yaml"
     default: "config.yaml"
   change_log:
-    description: "Change log file name"
+    description: "Changelog file name, for example: CHANGELOG.md"
     required: false
-    example: "CHANGELOG.md"
     default: "CHANGELOG.md"
 
 runs:
