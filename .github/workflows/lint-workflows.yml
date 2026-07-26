@@ -1,0 +1,42 @@
+name: Lint GitHub Actions workflows
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/actions/**"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  actionlint:
+    name: Actionlint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Lint workflow files
+        shell: bash
+        run: |
+          docker run --rm \
+            --cap-drop ALL \
+            --network none \
+            --read-only \
+            --pids-limit 128 \
+            --security-opt no-new-privileges \
+            --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
+            --volume "${GITHUB_WORKSPACE}:/repo:ro" \
+            --workdir /repo \
+            "docker.io/rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667" \
+            -color \
+            -pyflakes= \
+            -shellcheck=

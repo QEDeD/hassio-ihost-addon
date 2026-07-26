@@ -1,25 +1,21 @@
 name: Compare with previous release
+description: Compare release metadata with the previously recorded version
 inputs:
   owner:
-    description: "Owner"
+    description: "Owner, for example: esphome"
     required: true
-    example: "esphome"
   repo:
-    description: "Repo"
+    description: "Repository, for example: home-assistant-addon"
     required: true
-    example: "home-assistant-addon"
   current_version:
-    description: "Current Version"
+    description: "Current version, for example: 2023.10.0"
     required: true
-    example: "2023.10.0"
   release_url:
-    description: "Release URL"
+    description: "Release URL for the current version"
     required: true
-    example: "https://github.com/esphome/home-assistant-addon/releases/tag/2023.10.0"
   body:
-    description: "Release Body"
+    description: "Release body or changelog summary"
     required: true
-    example: "## Changelog\n\n- Fixes\n- New features"
 
 runs:
   using: "composite"
