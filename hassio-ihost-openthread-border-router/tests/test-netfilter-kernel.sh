@@ -11,6 +11,8 @@ readonly keep_chain_v6=OTBR_SMOKE_KEEP6
 readonly keep_ipset=otbr-smoke-keep
 readonly reference_chain=OTBR_SMOKE_REF6
 readonly legacy_backbone_if=legacy0
+readonly ambiguous_legacy_backbone_if=legacy1
+readonly incomplete_legacy_backbone_if=legacy2
 readonly lock_probe_path=/usr/local/libexec/otbr-lock-probe
 declare lock_pid=""
 declare original_path=""
@@ -37,6 +39,143 @@ expect_failure()
     fi
 }
 
+assert_ip6_chain_rule_count()
+{
+    local actual=0
+    local chain_name="$1"
+    local expected="$2"
+    local rule
+
+    while IFS= read -r rule; do
+        if [[ "${rule}" == "-A ${chain_name} "* ]]; then
+            ((actual += 1))
+        fi
+    done < <(ip6tables -S "${chain_name}")
+
+    if (( actual != expected )); then
+        fail "${chain_name} has ${actual} rules, expected ${expected}"
+    fi
+}
+
+assert_iptables_chain_rule_count()
+{
+    local actual=0
+    local chain_name="$1"
+    local expected="$2"
+    local rule
+    local table_name="$3"
+
+    while IFS= read -r rule; do
+        if [[ "${rule}" == "-A ${chain_name} "* ]]; then
+            ((actual += 1))
+        fi
+    done < <(iptables -t "${table_name}" -S "${chain_name}")
+
+    if (( actual != expected )); then
+        fail "${table_name}/${chain_name} has ${actual} rules, expected ${expected}"
+    fi
+}
+
+assert_firewall_ipsets_present()
+{
+    local ipset_name
+
+    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
+        expect_success "firewall setup omitted ${ipset_name}" \
+            ipset list "${ipset_name}"
+    done
+}
+
+assert_firewall_jumps_present()
+{
+    expect_success "firewall setup omitted ingress jump" \
+        ip6tables -C FORWARD -o "${thread_if}" \
+        -j "${otbr_forward_ingress_chain}"
+    expect_success "firewall setup omitted egress jump" \
+        ip6tables -C FORWARD -i "${thread_if}" \
+        -j "${otbr_forward_egress_chain}"
+}
+
+assert_enabled_firewall_rules()
+{
+    assert_ip6_chain_rule_count "${otbr_forward_ingress_chain}" 5
+    assert_ip6_chain_rule_count "${otbr_forward_egress_chain}" 1
+
+    expect_success "enabled firewall omitted Thread-source unicast drop" \
+        ip6tables -C "${otbr_forward_ingress_chain}" \
+        -m pkttype --pkt-type unicast -i "${thread_if}" -j DROP
+    expect_success "enabled firewall omitted denied-source drop" \
+        ip6tables -C "${otbr_forward_ingress_chain}" \
+        -m set --match-set otbr-ingress-deny-src src -j DROP
+    expect_success "enabled firewall omitted allowed-destination accept" \
+        ip6tables -C "${otbr_forward_ingress_chain}" \
+        -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT
+    expect_success "enabled firewall omitted residual unicast drop" \
+        ip6tables -C "${otbr_forward_ingress_chain}" \
+        -m pkttype --pkt-type unicast -j DROP
+    expect_success "enabled firewall omitted residual ingress accept" \
+        ip6tables -C "${otbr_forward_ingress_chain}" -j ACCEPT
+    expect_success "enabled firewall omitted egress accept" \
+        ip6tables -C "${otbr_forward_egress_chain}" -j ACCEPT
+}
+
+assert_disabled_firewall_rules()
+{
+    assert_ip6_chain_rule_count "${otbr_forward_ingress_chain}" 1
+    assert_ip6_chain_rule_count "${otbr_forward_egress_chain}" 1
+
+    expect_success "disabled firewall omitted scoped ingress accept" \
+        ip6tables -C "${otbr_forward_ingress_chain}" -j ACCEPT
+    expect_success "disabled firewall omitted scoped egress accept" \
+        ip6tables -C "${otbr_forward_egress_chain}" -j ACCEPT
+    expect_failure "disabled firewall retained Thread-source unicast drop" \
+        ip6tables -C "${otbr_forward_ingress_chain}" \
+        -m pkttype --pkt-type unicast -i "${thread_if}" -j DROP
+    expect_failure "disabled firewall retained denied-source drop" \
+        ip6tables -C "${otbr_forward_ingress_chain}" \
+        -m set --match-set otbr-ingress-deny-src src -j DROP
+    expect_failure "disabled firewall retained allowed-destination filter" \
+        ip6tables -C "${otbr_forward_ingress_chain}" \
+        -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT
+    expect_failure "disabled firewall retained residual unicast drop" \
+        ip6tables -C "${otbr_forward_ingress_chain}" \
+        -m pkttype --pkt-type unicast -j DROP
+    expect_failure "disabled firewall added broad ingress accept" \
+        ip6tables -C FORWARD -i "${thread_if}" -j ACCEPT
+    expect_failure "disabled firewall added broad egress accept" \
+        ip6tables -C FORWARD -o "${thread_if}" -j ACCEPT
+}
+
+seed_legacy_nat64_signature()
+{
+    iptables -w "${otbr_iptables_wait_seconds}" \
+        -t mangle -A PREROUTING -i "${thread_if}" \
+        -j MARK --set-mark "${otbr_fw_mark}"
+    iptables -w "${otbr_iptables_wait_seconds}" \
+        -t nat -A POSTROUTING -m mark --mark "${otbr_fw_mark}" \
+        -j MASQUERADE
+}
+
+assert_legacy_nat64_signature_present()
+{
+    expect_success "legacy MARK signature was removed" \
+        iptables -t mangle -C PREROUTING -i "${thread_if}" \
+        -j MARK --set-mark "${otbr_fw_mark}"
+    expect_success "legacy MASQUERADE signature was removed" \
+        iptables -t nat -C POSTROUTING \
+        -m mark --mark "${otbr_fw_mark}" -j MASQUERADE
+}
+
+remove_legacy_nat64_signature_fixture()
+{
+    iptables -w "${otbr_iptables_wait_seconds}" \
+        -t mangle -D PREROUTING -i "${thread_if}" \
+        -j MARK --set-mark "${otbr_fw_mark}"
+    iptables -w "${otbr_iptables_wait_seconds}" \
+        -t nat -D POSTROUTING -m mark --mark "${otbr_fw_mark}" \
+        -j MASQUERADE
+}
+
 assert_nat64_absent()
 {
     expect_failure "NAT64 chain remains" \
@@ -55,6 +194,12 @@ assert_firewall_absent()
 {
     local ipset_name
 
+    expect_failure "IPv6 ingress FORWARD jump remains" \
+        ip6tables -C FORWARD -o "${thread_if}" \
+        -j "${otbr_forward_ingress_chain}"
+    expect_failure "IPv6 egress FORWARD jump remains" \
+        ip6tables -C FORWARD -i "${thread_if}" \
+        -j "${otbr_forward_egress_chain}"
     expect_failure "IPv6 ingress chain remains" \
         ip6tables -L "${otbr_forward_ingress_chain}" -n
     expect_failure "IPv6 egress chain remains" \
@@ -86,6 +231,8 @@ assert_sentinels_present()
 
 cleanup_smoke()
 {
+    local fixture_if
+
     trap - EXIT
     set +e
 
@@ -100,6 +247,21 @@ cleanup_smoke()
         original_path=""
     fi
     unset XTABLES_LOCKFILE
+
+    for fixture_if in \
+        "${legacy_backbone_if}" \
+        "${ambiguous_legacy_backbone_if}" \
+        "${incomplete_legacy_backbone_if}"; do
+        iptables -w 1 -t filter -D FORWARD \
+            -i "${fixture_if}" -j ACCEPT >/dev/null 2>&1
+        iptables -w 1 -t filter -D FORWARD \
+            -o "${fixture_if}" -j ACCEPT >/dev/null 2>&1
+    done
+    iptables -w 1 -t mangle -D PREROUTING -i "${thread_if}" \
+        -j MARK --set-mark "${otbr_fw_mark}" >/dev/null 2>&1
+    iptables -w 1 -t nat -D POSTROUTING \
+        -m mark --mark "${otbr_fw_mark}" \
+        -j MASQUERADE >/dev/null 2>&1
 
     ip6tables -w 1 -F "${reference_chain}" >/dev/null 2>&1
     ip6tables -w 1 -X "${reference_chain}" >/dev/null 2>&1
@@ -143,24 +305,25 @@ ipset create "${keep_ipset}" hash:net family inet6
 otbr_firewall_setup true
 otbr_nat64_setup eth0
 
-for ipset_name in "${otbr_firewall_ipsets[@]}"; do
-    expect_success "firewall setup omitted ${ipset_name}" \
-        ipset list "${ipset_name}"
-done
+assert_firewall_ipsets_present
 expect_success "firewall setup omitted ingress chain" \
     ip6tables -L "${otbr_forward_ingress_chain}" -n
 expect_success "firewall setup omitted egress chain" \
     ip6tables -L "${otbr_forward_egress_chain}" -n
-expect_success "firewall setup omitted ingress jump" \
-    ip6tables -C FORWARD -o "${thread_if}" \
-    -j "${otbr_forward_ingress_chain}"
-expect_success "firewall setup omitted egress jump" \
-    ip6tables -C FORWARD -i "${thread_if}" \
-    -j "${otbr_forward_egress_chain}"
+assert_firewall_jumps_present
+assert_enabled_firewall_rules
 expect_success "NAT64 setup omitted chain" \
     iptables -t filter -L "${otbr_forward_nat64_chain}" -n
 expect_success "NAT64 setup omitted jump" \
     iptables -t filter -C FORWARD -j "${otbr_forward_nat64_chain}"
+assert_iptables_chain_rule_count "${otbr_forward_nat64_chain}" 2 filter
+expect_success "NAT64 setup omitted marked outbound accept" \
+    iptables -t filter -C "${otbr_forward_nat64_chain}" \
+    -m mark --mark "${otbr_fw_mark}" -o eth0 -j ACCEPT
+expect_success "NAT64 setup omitted return-traffic accept" \
+    iptables -t filter -C "${otbr_forward_nat64_chain}" \
+    -m conntrack --ctstate ESTABLISHED,RELATED \
+    -i eth0 -o "${thread_if}" -j ACCEPT
 expect_success "NAT64 setup omitted MARK" \
     iptables -t mangle -C PREROUTING -i "${thread_if}" \
     -j MARK --set-mark "${otbr_fw_mark}"
@@ -206,6 +369,19 @@ otbr_netfilter_cleanup
 assert_owned_absent
 assert_sentinels_present
 
+# Disabled mode must remain scoped to the owned chains. It may permit traffic
+# through those chains, but it must not restore the broad FORWARD accepts used
+# by version 2.13.0 or retain any enabled-mode filtering rules.
+otbr_firewall_setup false
+assert_firewall_ipsets_present
+assert_firewall_jumps_present
+assert_disabled_firewall_rules
+assert_sentinels_present
+otbr_firewall_cleanup
+otbr_firewall_cleanup
+assert_owned_absent
+assert_sentinels_present
+
 # Exercise migration of the unambiguous broad rules emitted by version 2.13.0.
 iptables -w "${otbr_iptables_wait_seconds}" \
     -t filter -A FORWARD -i "${legacy_backbone_if}" -j ACCEPT
@@ -223,6 +399,68 @@ expect_failure "legacy ingress ACCEPT remains" \
 expect_failure "legacy egress ACCEPT remains" \
     iptables -t filter -C FORWARD \
     -o "${legacy_backbone_if}" -j ACCEPT
+assert_nat64_absent
+assert_sentinels_present
+
+# A complete pair on more than one backbone interface is ambiguous. Cleanup
+# must preserve every broad rule and the MARK+MASQUERADE ownership signature
+# so that it cannot delete host rules belonging to another service.
+for fixture_if in \
+    "${legacy_backbone_if}" \
+    "${ambiguous_legacy_backbone_if}"; do
+    iptables -w "${otbr_iptables_wait_seconds}" \
+        -t filter -A FORWARD -i "${fixture_if}" -j ACCEPT
+    iptables -w "${otbr_iptables_wait_seconds}" \
+        -t filter -A FORWARD -o "${fixture_if}" -j ACCEPT
+done
+seed_legacy_nat64_signature
+expect_failure "ambiguous multi-interface legacy cleanup succeeded" \
+    otbr_nat64_cleanup
+for fixture_if in \
+    "${legacy_backbone_if}" \
+    "${ambiguous_legacy_backbone_if}"; do
+    expect_success "ambiguous legacy ingress rule was removed" \
+        iptables -t filter -C FORWARD -i "${fixture_if}" -j ACCEPT
+    expect_success "ambiguous legacy egress rule was removed" \
+        iptables -t filter -C FORWARD -o "${fixture_if}" -j ACCEPT
+done
+assert_legacy_nat64_signature_present
+assert_sentinels_present
+
+# Remove only the exact rules seeded by this test, then prove the unrelated
+# sentinels survived both production cleanup and fixture cleanup.
+for fixture_if in \
+    "${legacy_backbone_if}" \
+    "${ambiguous_legacy_backbone_if}"; do
+    iptables -w "${otbr_iptables_wait_seconds}" \
+        -t filter -D FORWARD -i "${fixture_if}" -j ACCEPT
+    iptables -w "${otbr_iptables_wait_seconds}" \
+        -t filter -D FORWARD -o "${fixture_if}" -j ACCEPT
+done
+remove_legacy_nat64_signature_fixture
+assert_nat64_absent
+assert_sentinels_present
+
+# One half of a historical broad ACCEPT pair is likewise insufficient proof
+# of ownership and must be preserved together with the identifying signature.
+iptables -w "${otbr_iptables_wait_seconds}" \
+    -t filter -A FORWARD \
+    -i "${incomplete_legacy_backbone_if}" -j ACCEPT
+seed_legacy_nat64_signature
+expect_failure "incomplete legacy cleanup succeeded" otbr_nat64_cleanup
+expect_success "incomplete legacy ingress rule was removed" \
+    iptables -t filter -C FORWARD \
+    -i "${incomplete_legacy_backbone_if}" -j ACCEPT
+expect_failure "incomplete fixture unexpectedly gained an egress rule" \
+    iptables -t filter -C FORWARD \
+    -o "${incomplete_legacy_backbone_if}" -j ACCEPT
+assert_legacy_nat64_signature_present
+assert_sentinels_present
+
+iptables -w "${otbr_iptables_wait_seconds}" \
+    -t filter -D FORWARD \
+    -i "${incomplete_legacy_backbone_if}" -j ACCEPT
+remove_legacy_nat64_signature_fixture
 assert_nat64_absent
 assert_sentinels_present
 
