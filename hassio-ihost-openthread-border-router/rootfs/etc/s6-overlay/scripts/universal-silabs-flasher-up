@@ -39,9 +39,6 @@ function is_home_assistant_yellow {
     return 1
 }
 
-device=$(bashio::config 'device')
-gpio_reset_flag=""
-
 if bashio::config.false 'autoflash_firmware'; then
     bashio::log.info "Flashing firmware is disabled"
     exit 0
@@ -51,6 +48,9 @@ if bashio::config.has_value 'network_device'; then
     bashio::log.info "Network device is selected, skipping firmware flashing"
     exit 0
 fi
+
+device=$(bashio::config 'device')
+gpio_reset_flag=""
 
 if is_home_assistant_yellow; then
     bashio::log.info "Detected Home Assistant Yellow"

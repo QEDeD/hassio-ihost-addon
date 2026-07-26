@@ -4,7 +4,7 @@ slug: openthread_border_router
 name: OpenThread Border Router
 description: OpenThread Border Router add-on
 url: >-
-  https://github.com/home-assistant/addons/tree/master/openthread_border_router
+  https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-openthread-border-router
 arch:
   - armv7
 homeassistant: 2023.9.0
@@ -12,8 +12,6 @@ gpio: true
 hassio_api: true
 discovery:
   - otbr
-# IPC is only used within the Add-on
-host_ipc: false
 host_network: true
 host_uts: true
 privileged:
@@ -38,9 +36,10 @@ ports_description:
   8080/tcp: OpenThread Web port
   8081/tcp: OpenThread REST API port
 schema:
-  device: device(subsystem=tty)
-  baudrate: list(57600|115200|230400|460800|921600)
+  device: device(subsystem=tty)?
+  baudrate: list(57600|115200|230400|460800|921600|1000000)
   flow_control: bool
+  backbone_interface: str?
   network_device: str?
   autoflash_firmware: bool
   otbr_log_level: list(debug|info|notice|warning|error|critical|alert|emergency)

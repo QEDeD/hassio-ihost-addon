@@ -6,10 +6,15 @@ configuration:
   baudrate:
     name: Baudrate
     description: >-
-      The serial port baudrate used to communicate with the Silicon Labs radio.
+      The serial port baudrate used to communicate with the RCP radio.
   flow_control:
     name: Hardware flow control
     description: Enable hardware flow control for serial port.
+  backbone_interface:
+    name: Backbone network interface
+    description: >-
+      The host network interface used for backbone routing and NAT64. If not
+      specified, the primary interface reported by Supervisor is used.
   network_device:
     name: Network Device
     description: >-
@@ -28,12 +33,13 @@ configuration:
   firewall:
     name: OTBR firewall
     description: >-
-      Use OpenThread Border Router firewall to block unnecessary traffic.
+      Apply OTBR ingress filtering. When disabled, the add-on still permits
+      IPv6 forwarding through wpan0 using interface-scoped rules.
   nat64:
     name: NAT64
     description: >-
-      Enable IPv6 to IPv4 network address translation. This allows Thread
-      devices to communicate with devices on the Internet.
+      Permit marked Thread-originated traffic to reach IPv4 networks and allow
+      only established or related return traffic through the backbone.
 network:
   8080/tcp: OpenThread Web port
   8081/tcp: OpenThread REST API port

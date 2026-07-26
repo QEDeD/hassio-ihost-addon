@@ -5,8 +5,26 @@
 # OpenThread BorderRouter start script
 # ==============================================================================
 
+# shellcheck source=../../scripts/otbr-agent-common
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
+
+if ! otbr_firewall_cleanup_claim_reset; then
+    bashio::exit.nok "Could not reset the OTBR firewall ownership claim."
+fi
+
+if ! otbr_firewall_cleanup_is_safe; then
+    bashio::exit.nok \
+        "Refusing to reconcile OTBR firewall or NAT64 state: ${otbr_cleanup_guard_reason}."
+fi
+
+if ! otbr_firewall_cleanup_claim_create; then
+    bashio::exit.nok "Could not create the OTBR firewall ownership claim."
+fi
+
+if ! otbr_netfilter_cleanup; then
+    bashio::exit.nok "Could not clean up stale OTBR firewall or NAT64 state."
+fi
 
 declare backbone_if
 declare device
@@ -17,11 +35,41 @@ declare otbr_log_level_int
 declare otbr_rest_listen
 declare otbr_rest_listen_port
 
-backbone_if="$(bashio::api.supervisor 'GET' '/network/info' '' 'first(.interfaces[] | select (.primary == true)) .interface')"
-device=$(bashio::config 'device')
+backbone_if=""
+if bashio::config.has_value 'backbone_interface'; then
+    backbone_if="$(bashio::config 'backbone_interface')"
+else
+    backbone_if="$(
+        bashio::api.supervisor \
+            'GET' '/network/info' '' \
+            'first(.interfaces[] | select (.primary == true)) .interface // empty'
+    )"
+fi
+
+if [[ -z "${backbone_if}" ]]; then
+    bashio::exit.nok \
+        "No primary network interface found. Configure backbone_interface explicitly."
+fi
+
+if ! ip link show dev "${backbone_if}" >/dev/null 2>&1; then
+    bashio::exit.nok \
+        "Backbone interface '${backbone_if}' does not exist in the host network namespace."
+fi
+
+if [[ ! -r /proc/sys/net/ipv6/conf/all/forwarding ]] \
+    || [[ "$(cat /proc/sys/net/ipv6/conf/all/forwarding)" != "1" ]]; then
+    bashio::log.warning "IPv6 routing/forwarding is not enabled on the Home Assistant host."
+fi
+if ! bashio::config.has_value 'device' \
+    && ! bashio::config.has_value 'network_device'; then
+    bashio::exit.nok \
+        "No RCP configured. Set either device (serial) or network_device (TCP host:port)."
+fi
 
 if bashio::config.has_value 'network_device'; then
     device="/tmp/ttyOTBR"
+else
+    device="$(bashio::config 'device')"
 fi
 
 baudrate=$(bashio::config 'baudrate')
@@ -64,62 +112,28 @@ case "${otbr_log_level}" in
         ;;
 esac
 
-# shellcheck disable=SC2086
-if [ -z ${backbone_if} ]; then
-    bashio::log.warning "No primary network interface found! Using static eth0."
-    backbone_if="eth0"
-fi
-
 # shellcheck disable=SC2015
 mkdir -p /data/thread && ln -sft /var/lib /data/thread || bashio::exit.nok "Could not create directory /var/lib/thread to store Thread data."
 
-# We compile the OTBR with firewall support, so otbr-agent tries to update the
-# ipsets. Therefor, create ipsets always to avoid errors from otbr-agent. Just
-# the ipsets  won't have an effect in practice when the firewall is disabled.
-ipset create -exist otbr-ingress-deny-src hash:net family inet6
-ipset create -exist otbr-ingress-deny-src-swap hash:net family inet6
-ipset create -exist otbr-ingress-allow-dst hash:net family inet6
-ipset create -exist otbr-ingress-allow-dst-swap hash:net family inet6
-
+firewall_enabled=false
 if bashio::config.true 'firewall'; then
-    bashio::log.info "Setup OTBR firewall..."
-# shellcheck disable=SC2086,SC2154
-    ip6tables -N $otbr_forward_ingress_chain
-# shellcheck disable=SC2086,SC2154
-    ip6tables -I FORWARD 1 -o $thread_if -j $otbr_forward_ingress_chain
-
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_ingress_chain -m pkttype --pkt-type unicast -i ${thread_if} -j DROP
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_ingress_chain -m set --match-set otbr-ingress-deny-src src -j DROP
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_ingress_chain -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_ingress_chain -m pkttype --pkt-type unicast -j DROP
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_ingress_chain -j ACCEPT
-
-    # shellcheck disable=SC2086,SC2154
-    ip6tables -N $otbr_forward_egress_chain
-    # shellcheck disable=SC2086
-    ip6tables -I FORWARD 2 -i $thread_if -j $otbr_forward_egress_chain
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_egress_chain -j ACCEPT
+    firewall_enabled=true
+    bashio::log.info "Setting up OTBR ingress filtering."
 else
-    # Make sure ip6tables (as used by Docker) allow IP forwarding
-    ip6tables -P FORWARD ACCEPT
-    # HAOS 9.3 and earlier (for 9.4 accept is the default so this won't do anything)
-    ip6tables-legacy -P FORWARD ACCEPT
+    bashio::log.info "OTBR ingress filtering is disabled; allowing scoped Thread forwarding."
+fi
+
+if ! otbr_firewall_setup "${firewall_enabled}"; then
+    bashio::exit.nok "Could not set up OTBR firewall state."
 fi
 
 if bashio::config.true 'nat64'; then
-    # shellcheck disable=SC2086
-    iptables -t mangle -A PREROUTING -i ${thread_if} -j MARK --set-mark 0x1001
-    iptables -t nat -A POSTROUTING -m mark --mark 0x1001 -j MASQUERADE
-    # shellcheck disable=SC2086
-    iptables -t filter -A FORWARD -o ${backbone_if} -j ACCEPT
-    # shellcheck disable=SC2086
-    iptables -t filter -A FORWARD -i ${backbone_if} -j ACCEPT
+    if ! otbr_nat64_setup "${backbone_if}"; then
+        if ! otbr_netfilter_cleanup; then
+            bashio::log.warning "OTBR firewall or NAT64 rollback was incomplete."
+        fi
+        bashio::exit.nok "Could not set up OTBR NAT64 firewall state."
+    fi
 fi
 
 otbr_rest_listen="::"
@@ -139,10 +153,9 @@ echo "${otbr_rest_listen}" > /tmp/otbr-agent-rest-api
 echo "${otbr_rest_listen_port}" >> /tmp/otbr-agent-rest-api
 
 bashio::log.info "Starting otbr-agent..."
-# shellcheck disable=SC2086
 exec s6-notifyoncheck -d -s 300 -w 300 -n 0 stdbuf -oL \
-    "/usr/sbin/otbr-agent" -I ${thread_if} -B "${backbone_if}" \
+    "/usr/sbin/otbr-agent" -I "${thread_if}" -B "${backbone_if}" \
         --rest-listen-address "${otbr_rest_listen}" \
-        -d${otbr_log_level_int} -v -s \
+        "-d${otbr_log_level_int}" -v -s \
         "spinel+hdlc+uart://${device}?uart-baudrate=${baudrate}${flow_control}" \
         "trel://${backbone_if}"
