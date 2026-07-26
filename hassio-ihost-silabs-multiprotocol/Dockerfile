@@ -162,6 +162,29 @@ RUN \
         C_FLAGS="-std=gnu99 -DEMBER_MULTICAST_TABLE_SIZE=16" \
         debug
 
+FROM zigbeed-builder AS otbr-source
+
+ARG OPENTHREAD_RECOVERY_PATCH_SHA256
+
+COPY openthread-patches/0002-spinel-Clear-source-match-tables-before-restoring.patch /usr/src/openthread-recovery.patch
+
+RUN \
+    set -x \
+    && cd gecko_sdk \
+    && printf '%s  %s\n' "${OPENTHREAD_RECOVERY_PATCH_SHA256}" \
+       /usr/src/openthread-recovery.patch \
+       | sha256sum --check --strict - \
+    && git apply --check --whitespace=error-all \
+       --directory=util/third_party/openthread \
+       /usr/src/openthread-recovery.patch \
+    && git apply --whitespace=error-all \
+       --directory=util/third_party/openthread \
+       /usr/src/openthread-recovery.patch \
+    && grep -Fqx '    IgnoreError(ClearSrcMatchShortEntries());' \
+       util/third_party/openthread/src/lib/spinel/radio_spinel.cpp \
+    && grep -Fqx '    IgnoreError(ClearSrcMatchExtEntries());' \
+       util/third_party/openthread/src/lib/spinel/radio_spinel.cpp
+
 FROM $BUILD_FROM
 
 RUN \
@@ -181,7 +204,7 @@ RUN \
 
 COPY --from=zigbeed-builder \
      /usr/src/gecko_sdk/util/third_party/ot-br-posix /usr/src/ot-br-posix
-COPY --from=zigbeed-builder \
+COPY --from=otbr-source \
      /usr/src/gecko_sdk/util/third_party/openthread /usr/src/openthread
 COPY --from=zigbeed-builder \
      /usr/src/gecko_sdk/protocol/openthread/platform-abstraction/posix/ /usr/src/silabs-vendor-interface
