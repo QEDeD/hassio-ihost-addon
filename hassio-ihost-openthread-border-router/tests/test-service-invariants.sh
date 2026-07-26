@@ -12,6 +12,8 @@ readonly FINISH="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish"
 readonly AGENT_CHECK="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check"
 readonly TIMEOUT_FINISH="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish"
 readonly WEB_CONFIG_DEPENDENCY="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-web/dependencies.d/otbr-agent-configure"
+readonly CHANGELOG="${ADDON_DIR}/CHANGELOG.md"
+readonly CONFIG="${ADDON_DIR}/config.yaml"
 readonly SPINEL_RECOVERY_PATCH="${ADDON_DIR}/0002-spinel-Clear-source-match-tables-before-restoring.patch"
 readonly NAT64_OPTIONS_PATCH="${ADDON_DIR}/0003-nat64-handle-ipv4-options.patch"
 
@@ -48,18 +50,23 @@ grep -q 'otbr_netfilter_cleanup' "${FINISH}"
 grep -q 'otbr_firewall_cleanup_claim_consume' "${FINISH}"
 grep -q '^otbr_firewall_cleanup_is_safe()$' "${COMMON}"
 grep -q '^otbr_firewall_cleanup_claim_consume()$' "${COMMON}"
-grep -qE '^[[:space:]]*-[[:space:]]+armv7[[:space:]]*$' "${ADDON_DIR}/config.yaml"
-grep -Fqx 'version: 2.13.0' "${ADDON_DIR}/config.yaml"
-if grep -qE '^(host_ipc|stage):' "${ADDON_DIR}/config.yaml"; then
+grep -qE '^[[:space:]]*-[[:space:]]+armv7[[:space:]]*$' "${CONFIG}"
+config_version="$(
+    sed -nE 's/^version:[[:space:]]*"?([0-9]+\.[0-9]+\.[0-9]+)"?[[:space:]]*$/\1/p' \
+        "${CONFIG}"
+)"
+[[ "${config_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+grep -Fqx "## ${config_version}" "${CHANGELOG}"
+if grep -qE '^(host_ipc|stage):' "${CONFIG}"; then
     echo 'default-valued host_ipc or stage metadata must be omitted' >&2
     exit 1
 fi
-grep -Fqx '  device: device(subsystem=tty)?' "${ADDON_DIR}/config.yaml"
+grep -Fqx '  device: device(subsystem=tty)?' "${CONFIG}"
 grep -Fqx \
     '  baudrate: list(57600|115200|230400|460800|921600|1000000)' \
-    "${ADDON_DIR}/config.yaml"
-grep -Fqx '  backbone_interface: str?' "${ADDON_DIR}/config.yaml"
-options_block="$(sed -n '/^options:/,/^ports:/p' "${ADDON_DIR}/config.yaml")"
+    "${CONFIG}"
+grep -Fqx '  backbone_interface: str?' "${CONFIG}"
+options_block="$(sed -n '/^options:/,/^ports:/p' "${CONFIG}")"
 [[ "${options_block}" != *"backbone_interface"* ]]
 
 grep -Fqx '# check=error=true' "${DOCKERFILE}"

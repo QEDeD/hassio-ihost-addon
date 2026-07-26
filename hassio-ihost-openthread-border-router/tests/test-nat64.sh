@@ -258,6 +258,13 @@ for ((failed_setup_call = 1; failed_setup_call <= 6; failed_setup_call++)); do
 done
 
 reset_state
+rules["filter|FORWARD|-j ${otbr_forward_nat64_chain}"]="${otbr_cleanup_max_rule_deletes}"
+chains["filter|${otbr_forward_nat64_chain}"]=1
+otbr_nat64_cleanup
+[[ ${delete_calls} -eq ${otbr_cleanup_max_rule_deletes} ]]
+assert_clean
+
+reset_state
 rules["filter|FORWARD|-j ${otbr_forward_nat64_chain}"]=$((otbr_cleanup_max_rule_deletes + 1))
 chains["filter|${otbr_forward_nat64_chain}"]=1
 if otbr_nat64_cleanup; then exit 1; fi
