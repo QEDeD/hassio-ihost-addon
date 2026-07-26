@@ -1,11 +1,17 @@
-ARG BUILD_FROM
-ARG BUILD_ARCH
-FROM --platform=linux/amd64 debian:bullseye AS cross-builder-base
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bullseye
+ARG BUILD_ARCH=amd64
+ARG BUILD_TOOL_PLATFORM=linux/amd64
+# The Linux SLC CLI is an amd64 build tool; Java never enters target images.
+FROM --platform=${BUILD_TOOL_PLATFORM} amazoncorretto:21-al2-jdk@sha256:6bd5dbcb269cbcd5d1470743f5dd9ba4310555d6db55bdc09211971732d792ce AS slc-java
+
+FROM --platform=${BUILD_TOOL_PLATFORM} debian:bullseye AS cross-builder-base
 
 ENV \
     LANG="C.UTF-8" \
     DEBIAN_FRONTEND="noninteractive" \
-    CURL_CA_BUNDLE="/etc/ssl/certs/ca-certificates.crt"
+    CURL_CA_BUNDLE="/etc/ssl/certs/ca-certificates.crt" \
+    GIT_HTTP_LOW_SPEED_LIMIT="1024" \
+    GIT_HTTP_LOW_SPEED_TIME="60"
 
 WORKDIR /usr/src
 
@@ -13,6 +19,11 @@ WORKDIR /usr/src
 # hadolint ignore=DL3009
 RUN \
     set -x \
+    && printf '%s\n' \
+       'Acquire::Retries "3";' \
+       'Acquire::http::Timeout "60";' \
+       'Acquire::https::Timeout "60";' \
+       > /etc/apt/apt.conf.d/80-network-retries \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
        bash \
@@ -21,7 +32,7 @@ RUN \
        build-essential \
        git
 
-FROM --platform=linux/amd64 cross-builder-base AS cross-builder-armv7
+FROM cross-builder-base AS cross-builder-armv7
 
 COPY debian-armv7.cmake /usr/src/debian.cmake
 
@@ -36,7 +47,7 @@ RUN \
     && apt-get install -y --no-install-recommends \
        crossbuild-essential-armhf
 
-FROM --platform=linux/amd64 cross-builder-base AS cross-builder-aarch64
+FROM cross-builder-base AS cross-builder-aarch64
 
 COPY debian-arm64.cmake /usr/src/debian.cmake
 
@@ -51,7 +62,7 @@ RUN \
     && apt-get install -y --no-install-recommends \
        crossbuild-essential-arm64
 
-FROM --platform=linux/amd64 cross-builder-base AS cross-builder-amd64
+FROM cross-builder-base AS cross-builder-amd64
 
 COPY debian-amd64.cmake /usr/src/debian.cmake
 
@@ -67,7 +78,7 @@ RUN \
        crossbuild-essential-amd64
 
 
-FROM --platform=linux/amd64 cross-builder-${BUILD_ARCH} AS cpcd-builder
+FROM cross-builder-${BUILD_ARCH} AS cpcd-builder
 
 ARG CPCD_VERSION
 ENV CPCD_DIR=/usr/src/cpc-daemon
@@ -86,11 +97,12 @@ RUN \
     && make \
     && make install
 
-FROM --platform=linux/amd64 cross-builder-${BUILD_ARCH} AS zigbeed-builder
+FROM cross-builder-${BUILD_ARCH} AS zigbeed-builder
 
 ARG GECKO_SDK_VERSION
+ARG SLC_CLI_SHA256
 
-COPY slc_cli_linux.zip /usr/src/slc_cli_linux.zip
+COPY --from=slc-java /usr/lib/jvm/java-21-amazon-corretto /opt/java/openjdk
 
 RUN \
     set -x \
@@ -98,14 +110,20 @@ RUN \
        python3 \
        python3-jinja2 \
        python3-pip \
-       openjdk-17-jre \
        git-lfs \
        unzip \
-    && curl -O https://www.silabs.com/documents/login/software/slc_cli_linux.zip \
-    && unzip slc_cli_linux.zip \
+    && curl --fail --location --show-error \
+       --retry 3 --retry-delay 2 --retry-connrefused \
+       --connect-timeout 30 --max-time 300 \
+       --output slc_cli_linux.zip \
+       https://www.silabs.com/documents/login/software/slc_cli_linux.zip \
+    && printf '%s  %s\n' "${SLC_CLI_SHA256}" slc_cli_linux.zip \
+       | sha256sum --check --strict - \
+    && unzip -q slc_cli_linux.zip \
     && cd slc_cli/ && chmod +x slc
  
-ENV PATH="/usr/src/slc_cli/:$PATH"
+ENV JAVA_HOME="/opt/java/openjdk"
+ENV PATH="${JAVA_HOME}/bin:/usr/src/slc_cli/:$PATH"
 
 RUN \
     set -x \
@@ -146,9 +164,13 @@ RUN \
 
 FROM $BUILD_FROM
 
-
 RUN \
     set -x \
+    && printf '%s\n' \
+       'Acquire::Retries "3";' \
+       'Acquire::http::Timeout "60";' \
+       'Acquire::https::Timeout "60";' \
+       > /etc/apt/apt.conf.d/80-network-retries \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
        libmbedtls12 \
@@ -176,15 +198,15 @@ COPY rootfs /
 ENV BORDER_ROUTING=1
 ENV BACKBONE_ROUTER=1
 ENV WEB_GUI=1
-ENV DOCKER 1
+ENV DOCKER=1
 
 
 # Required and installed during build (script/bootstrap), could be removed
 
-ENV OTBR_BUILD_DEPS build-essential ninja-build cmake wget ca-certificates \
+ENV OTBR_BUILD_DEPS="build-essential ninja-build cmake wget ca-certificates \
   libreadline-dev libncurses-dev libcpputest-dev libdbus-1-dev libavahi-common-dev \
   libavahi-client-dev libboost-dev libboost-filesystem-dev libboost-system-dev \
-  libnetfilter-queue-dev
+  libnetfilter-queue-dev"
 
 # Build OTBR natively from Gecko SDK sources
 
@@ -266,3 +288,20 @@ HEALTHCHECK --interval=10s --start-period=120s CMD [ "$(s6-svstat -u /run/servic
 # use s6-overlay as init system
 WORKDIR /
 ENTRYPOINT ["/init"]
+
+# Keep source-specific metadata after expensive build layers so validating a
+# new exact commit can reuse the compiled artifacts.
+ARG BUILD_ARCH
+ARG BUILD_COMMIT
+ARG BUILD_VERSION
+RUN \
+    test -n "${BUILD_ARCH}" \
+    && test -n "${BUILD_COMMIT}" \
+    && test -n "${BUILD_VERSION}"
+LABEL \
+    io.hass.version="${BUILD_VERSION}" \
+    io.hass.type="app" \
+    io.hass.arch="${BUILD_ARCH}" \
+    org.opencontainers.image.version="${BUILD_VERSION}" \
+    org.opencontainers.image.source="https://github.com/iHost-Open-Source-Project/hassio-ihost-addon" \
+    org.opencontainers.image.revision="${BUILD_COMMIT}"

@@ -6,3 +6,5 @@ build_from:
 args:
   CPCD_VERSION: v4.6.1
   GECKO_SDK_VERSION: v2024.12.1-0
+  # The vendor URL is unversioned; update this only after reviewing a new archive.
+  SLC_CLI_SHA256: 5fc88e5f7e3a782a9181716bf173285d4794ea6d2282dde0c992179e3ab955f8

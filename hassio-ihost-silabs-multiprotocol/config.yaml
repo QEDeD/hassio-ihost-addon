@@ -14,8 +14,6 @@ gpio: true
 hassio_api: true
 discovery:
   - otbr
-# IPC is only used within the Add-on
-host_ipc: false
 host_network: true
 host_uts: true
 privileged:
@@ -43,10 +41,10 @@ schema:
   device: device(subsystem=tty)?
   baudrate: list(57600|115200|230400|460800|921600)
   flow_control: bool?
+  backbone_interface: str?
   network_device: str?
   cpcd_trace: bool
   otbr_enable: bool
   otbr_log_level: list(debug|info|notice|warning|error|critical|alert|emergency)
   otbr_firewall: bool
-stage: stable
 startup: services
