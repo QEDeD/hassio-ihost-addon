@@ -6,5 +6,7 @@ build_from:
 args:
   CPCD_VERSION: v4.6.1
   GECKO_SDK_VERSION: v2024.12.1-0
+  # Vetted in home-assistant/addons@19ab6b21e81193ec8f1cd7a19134b734fedea5af.
+  OPENTHREAD_RECOVERY_PATCH_SHA256: 19f6d7c5ba2166a9d3e7089bb50c3ee2c072d482327600e49cfc27405612cf32
   # The vendor URL is unversioned; update this only after reviewing a new archive.
   SLC_CLI_SHA256: 5fc88e5f7e3a782a9181716bf173285d4794ea6d2282dde0c992179e3ab955f8

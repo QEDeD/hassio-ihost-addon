@@ -8,6 +8,8 @@ readonly ADDON_DIR
 readonly COMMON_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
 readonly DOCKERFILE="${ADDON_DIR}/Dockerfile"
 readonly BUILD_FILE="${ADDON_DIR}/build.yaml"
+readonly OPENTHREAD_RECOVERY_PATCH="${ADDON_DIR}/openthread-patches/0002-spinel-Clear-source-match-tables-before-restoring.patch"
+readonly EXPECTED_OPENTHREAD_RECOVERY_PATCH_SHA256="19f6d7c5ba2166a9d3e7089bb50c3ee2c072d482327600e49cfc27405612cf32"
 readonly RUN_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run"
 readonly FINISH_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish"
 readonly TIMEOUT_FINISH_FILE="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish"
@@ -1203,6 +1205,60 @@ test_service_script_invariants()
     done
 }
 
+test_openthread_recovery_patch_invariants()
+{
+    local actual_patch_sha256
+    local patch_stage_line
+    local patched_source_copy_line
+    local slc_generate_line
+
+    [[ -f "${OPENTHREAD_RECOVERY_PATCH}" ]] \
+        || fail "OpenThread RCP recovery patch is missing"
+    actual_patch_sha256="$(
+        sha256sum "${OPENTHREAD_RECOVERY_PATCH}" | awk '{ print $1 }'
+    )"
+    assert_eq "${EXPECTED_OPENTHREAD_RECOVERY_PATCH_SHA256}" \
+        "${actual_patch_sha256}" "OpenThread RCP recovery patch SHA-256"
+    grep -Fqx \
+        "  OPENTHREAD_RECOVERY_PATCH_SHA256: ${EXPECTED_OPENTHREAD_RECOVERY_PATCH_SHA256}" \
+        "${BUILD_FILE}" \
+        || fail "build metadata does not pin the reviewed recovery patch"
+    grep -Fq \
+        'COPY openthread-patches/0002-spinel-Clear-source-match-tables-before-restoring.patch /usr/src/openthread-recovery.patch' \
+        "${DOCKERFILE}" \
+        || fail "Dockerfile does not copy the reviewed recovery patch"
+    grep -Fq 'git apply --check --whitespace=error-all' "${DOCKERFILE}" \
+        || fail "Dockerfile does not preflight the recovery patch"
+    grep -Fq -- '--directory=util/third_party/openthread' "${DOCKERFILE}" \
+        || fail "recovery patch is not scoped to the embedded OpenThread tree"
+    grep -Fq '${OPENTHREAD_RECOVERY_PATCH_SHA256}' "${DOCKERFILE}" \
+        || fail "Dockerfile does not verify the recovery patch SHA-256"
+    grep -Fq \
+        "grep -Fqx '    IgnoreError(ClearSrcMatchShortEntries());'" \
+        "${DOCKERFILE}" \
+        || fail "Dockerfile does not assert the short source-match clear"
+    grep -Fq \
+        "grep -Fqx '    IgnoreError(ClearSrcMatchExtEntries());'" \
+        "${DOCKERFILE}" \
+        || fail "Dockerfile does not assert the extended source-match clear"
+
+    patch_stage_line="$(
+        grep -nF 'FROM zigbeed-builder AS otbr-source' "${DOCKERFILE}" \
+            | head -n 1 | cut -d: -f1
+    )"
+    slc_generate_line="$(
+        grep -nF '&& slc generate' "${DOCKERFILE}" \
+            | head -n 1 | cut -d: -f1
+    )"
+    patched_source_copy_line="$(
+        grep -nF 'COPY --from=otbr-source' "${DOCKERFILE}" \
+            | head -n 1 | cut -d: -f1
+    )"
+    (( slc_generate_line < patch_stage_line \
+        && patch_stage_line < patched_source_copy_line )) \
+        || fail "recovery patch stage must preserve Zigbee build caching and feed OTBR"
+}
+
 main()
 {
     test_disabled_setup_is_scoped
@@ -1222,6 +1278,7 @@ main()
     test_setup_failure_rolls_back_partial_state
     test_restart_and_mode_transitions
     test_service_script_invariants
+    test_openthread_recovery_patch_invariants
     printf 'PASS: OTBR firewall lifecycle tests\n'
 }
 
