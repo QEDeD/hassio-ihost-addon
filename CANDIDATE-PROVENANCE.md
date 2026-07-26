@@ -12,7 +12,8 @@ until the separately listed external writes are explicitly approved.
 | Canonical source commit | `186eac8354fdcab9c224ec840989da1fd86af882` |
 | Canonical root tree | `6742dfa230fc4724897c6196643da5261a919391` |
 | Canonical Silicon subtree | `ab9d32ddf7d7cdeda9ba97cd7ae4be2dbbeb8b8e` |
-| Candidate content commit | `PENDING — filled by the follow-up local provenance commit` |
+| Candidate content commit | `e86f3b32105a0f7eaf669672d0938ed8e9fb4b16` |
+| Candidate content tree | `0d377877ff329db1a4788aacc40c636116d694ba` |
 | Candidate branch | `codex/otbr-candidate-feed` |
 | Candidate version/tag | `1.0.2` |
 | Candidate architecture | `amd64` only |
