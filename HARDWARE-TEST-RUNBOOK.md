@@ -21,9 +21,12 @@ Stop and roll back immediately if any of the following occurs:
 - the exact image or environment cannot be confirmed; or
 - recovery access or backup readiness is lost.
 
-Do not interpret a pass as validation of a future scope-specific upstream
-head. It validates only the exact broad canonical head and image recorded in
-`CANDIDATE-PROVENANCE.md`.
+A pass from this runbook may be reported only as:
+
+> The required issue #83 firewall/lifecycle matrix passed on the recorded hardware for canonical source 186eac8354fdcab9c224ec840989da1fd86af882.
+
+That scoped result does not constitute complete broad-head hardware acceptance
+and does not validate a future scope-specific upstream head.
 
 ## 1. Complete the private pre-test record
 
@@ -294,10 +297,20 @@ Pass only if every required check succeeds without manual netfilter repair.
 Clearly label the result:
 
 ```text
-Validated broad canonical Silicon Labs head
-186eac8354fdcab9c224ec840989da1fd86af882.
-This does not validate any future scope-specific upstream head.
+The required issue #83 firewall/lifecycle matrix passed on the recorded hardware for canonical source 186eac8354fdcab9c224ec840989da1fd86af882.
 ```
+
+This is not complete broad-head hardware acceptance. Complete broad-head
+hardware acceptance additionally requires these remaining
+[`RELEASE.md`](./hassio-ihost-silabs-multiprotocol/RELEASE.md) gates:
+
+- local serial and TCP `network_device` coverage;
+- multi-interface/backbone routing;
+- 24-hour concurrent Zigbee/Thread load;
+- RCP reset/link-interruption and source-match recovery; and
+- two-owner Silicon/standalone contention testing.
+
+It does not validate any future scope-specific upstream head.
 
 ## 10. Quick rollback to the original add-on
 

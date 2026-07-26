@@ -55,6 +55,11 @@ org.opencontainers.image.source=https://github.com/iHost-Open-Source-Project/has
 org.opencontainers.image.version=1.0.2
 ```
 
+The preserved `org.opencontainers.image.source` label points to the upstream
+repository because this candidate reuses the exact validated image instead of
+rebuilding it under the QEDeD namespace. It does not mean upstream published,
+approved, or endorsed the QEDeD candidate package.
+
 ## Candidate registry record
 
 | Item | Recorded value |
@@ -147,7 +152,18 @@ Hardware testing is blocked until all of these are true:
 
 ## Validation scope
 
-Results from this candidate validate broad canonical head
-`186eac8354fdcab9c224ec840989da1fd86af882` and its recorded tree. They do not
+Any passing hardware report for this candidate is limited to this statement:
+
+> The required issue #83 firewall/lifecycle matrix passed on the recorded hardware for canonical source 186eac8354fdcab9c224ec840989da1fd86af882.
+
+That scoped result is not complete broad-head hardware acceptance and does not
 validate any later, scope-specific, rebased, amended, or otherwise different
-upstream head.
+upstream head. Complete broad-head hardware acceptance additionally requires
+these remaining gates from
+[`RELEASE.md`](./hassio-ihost-silabs-multiprotocol/RELEASE.md):
+
+- local serial and TCP `network_device` coverage;
+- multi-interface/backbone routing;
+- 24-hour concurrent Zigbee/Thread load;
+- RCP reset/link-interruption and source-match recovery; and
+- two-owner Silicon/standalone contention testing.

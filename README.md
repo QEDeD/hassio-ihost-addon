@@ -11,9 +11,20 @@ build inputs come from broad canonical Silicon Labs head
 `186eac8354fdcab9c224ec840989da1fd86af882`. The delivery metadata selects the
 already validated AMD64 image under a unique candidate-only GHCR name.
 
-Successful hardware results validate that exact broad canonical head. They do
-not validate a later, scope-specific, rebased, or otherwise changed upstream
-head.
+Any passing hardware report for this candidate is limited to this statement:
+
+> The required issue #83 firewall/lifecycle matrix passed on the recorded hardware for canonical source 186eac8354fdcab9c224ec840989da1fd86af882.
+
+That scoped result is not complete broad-head hardware acceptance and does not
+validate a later, scope-specific, rebased, or otherwise changed upstream head.
+Complete broad-head hardware acceptance additionally requires these remaining
+[canonical release gates](./hassio-ihost-silabs-multiprotocol/RELEASE.md):
+
+- local serial and TCP `network_device` coverage;
+- multi-interface/backbone routing;
+- 24-hour concurrent Zigbee/Thread load;
+- RCP reset/link-interruption and source-match recovery; and
+- two-owner Silicon/standalone contention testing.
 
 ## Installation
 

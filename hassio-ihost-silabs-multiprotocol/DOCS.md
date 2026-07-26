@@ -6,7 +6,21 @@
 > current backup, record the original add-on options and radio consumers, stop
 > every existing radio/OTBR owner, and follow the
 > [hardware-test and rollback runbook](https://github.com/QEDeD/hassio-ihost-addon/blob/codex/otbr-candidate-feed/HARDWARE-TEST-RUNBOOK.md).
-> Results do not validate any future scope-specific upstream head.
+>
+> Any passing hardware report is limited to this statement:
+>
+> The required issue #83 firewall/lifecycle matrix passed on the recorded hardware for canonical source 186eac8354fdcab9c224ec840989da1fd86af882.
+
+That scoped result is not complete broad-head hardware acceptance and does not
+validate any future scope-specific upstream head. Complete broad-head hardware
+acceptance additionally requires the remaining
+[`RELEASE.md`](./RELEASE.md) gates:
+
+- local serial and TCP `network_device` coverage;
+- multi-interface/backbone routing;
+- 24-hour concurrent Zigbee/Thread load;
+- RCP reset/link-interruption and source-match recovery; and
+- two-owner Silicon/standalone contention testing.
 
 ## Prerequisites
 This addon is compatible with SONOFF dongles utilizing Silicon Labs chips, such as the
