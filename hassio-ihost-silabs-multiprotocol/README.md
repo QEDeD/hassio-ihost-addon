@@ -21,8 +21,9 @@ successfully tested on the SONOFF [ZBDongle-E](https://sonoff.tech/products/sono
 
 ### NOTICE
 
-1. Since the ZHA integration currently only supports EZSP v14, while the MultiPAN firmware 
-is based on EZSP v16,it can only be used with Zigbee2MQTT (Z2M).
+1. Use a ZHA or Zigbee2MQTT version that supports the EZSP version provided by
+the installed MultiPAN firmware. The configuration example in the add-on
+documentation uses Zigbee2MQTT.
 2. Before using this add-on, you must first flash the MultiPAN firmware via [SONOFF Dongle Flasher][sonoff-dongle-flasher] or [SONOFF Dongle Flasher Add-on](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-sonoff-dongle-flasher).
 
 
