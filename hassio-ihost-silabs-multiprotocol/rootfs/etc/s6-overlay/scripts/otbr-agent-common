@@ -1,9 +1,562 @@
-#!/bin/sh
+#!/bin/bash
+# shellcheck shell=bash
 
-declare thread_if
-declare otbr_forward_ingress_chain
-declare otbr_forward_egress_chain
 thread_if="wpan0"
 otbr_forward_ingress_chain="OTBR_FORWARD_INGRESS"
 otbr_forward_egress_chain="OTBR_FORWARD_EGRESS"
+otbr_firewall_ipsets=(
+    "otbr-ingress-deny-src"
+    "otbr-ingress-deny-src-swap"
+    "otbr-ingress-allow-dst"
+    "otbr-ingress-allow-dst-swap"
+)
+otbr_firewall_cleanup_claim_file="/run/otbr-agent-firewall-owned"
 
+otbr_iptables_wait_seconds=5
+otbr_cleanup_iptables_wait_seconds=1
+otbr_cleanup_max_rule_deletes=64
+otbr_ipset_destroy_attempts=20
+otbr_ipset_destroy_delay_milliseconds=100
+otbr_cleanup_budget_milliseconds=4000
+otbr_cleanup_kill_grace_milliseconds=500
+otbr_owner_probe_timeout_milliseconds=1000
+# Used by the lifecycle test to enforce headroom against timeout-finish.
+# shellcheck disable=SC2034
+otbr_cleanup_finish_headroom_milliseconds=3000
+
+otbr_firewall_cleanup_claim_reset()
+{
+    rm -f -- "${otbr_firewall_cleanup_claim_file}"
+}
+
+otbr_firewall_cleanup_claim_create()
+{
+    : > "${otbr_firewall_cleanup_claim_file}"
+}
+
+otbr_firewall_cleanup_claim_consume()
+{
+    if [[ ! -e "${otbr_firewall_cleanup_claim_file}" ]]; then
+        return 1
+    fi
+
+    if ! rm -f -- "${otbr_firewall_cleanup_claim_file}"; then
+        return 2
+    fi
+}
+
+_otbr_clock_milliseconds()
+{
+    local uptime
+    local uptime_seconds
+    local uptime_fraction
+
+    if ! IFS= read -r uptime < /proc/uptime; then
+        return 1
+    fi
+
+    if [[ ! "${uptime}" =~ ^([0-9]+)\.([0-9]+)[[:space:]] ]]; then
+        return 1
+    fi
+
+    uptime_seconds="${BASH_REMATCH[1]}"
+    uptime_fraction="${BASH_REMATCH[2]}"
+    uptime_fraction="${uptime_fraction}000"
+    REPLY=$((
+        (10#${uptime_seconds} * 1000)
+        + 10#${uptime_fraction:0:3}
+    ))
+}
+
+_otbr_cleanup_has_time()
+{
+    local deadline_milliseconds="$1"
+
+    if ! _otbr_clock_milliseconds; then
+        return 1
+    fi
+    (( REPLY < deadline_milliseconds ))
+}
+
+_otbr_cleanup_run()
+{
+    local deadline_milliseconds="$1"
+    local kill_grace_duration
+    local now_milliseconds
+    local remaining_milliseconds
+    local timeout_duration
+    shift
+
+    if ! _otbr_clock_milliseconds; then
+        return 124
+    fi
+    now_milliseconds="${REPLY}"
+    remaining_milliseconds=$((deadline_milliseconds - now_milliseconds))
+    if (( remaining_milliseconds <= 0 )); then
+        return 124
+    fi
+
+    printf -v timeout_duration '%d.%03ds' \
+        "$((remaining_milliseconds / 1000))" \
+        "$((remaining_milliseconds % 1000))"
+    printf -v kill_grace_duration '%d.%03ds' \
+        "$((otbr_cleanup_kill_grace_milliseconds / 1000))" \
+        "$((otbr_cleanup_kill_grace_milliseconds % 1000))"
+
+    timeout --foreground \
+        --kill-after="${kill_grace_duration}" \
+        "${timeout_duration}" "$@"
+}
+
+_otbr_cleanup_ip6tables()
+{
+    local deadline_milliseconds="$1"
+    shift
+
+    local now_milliseconds
+    local remaining_milliseconds
+    local wait_seconds
+
+    if ! _otbr_clock_milliseconds; then
+        return 124
+    fi
+    now_milliseconds="${REPLY}"
+    remaining_milliseconds=$((deadline_milliseconds - now_milliseconds))
+    wait_seconds=$((remaining_milliseconds / 1000))
+
+    if (( wait_seconds < 1 )); then
+        wait_seconds=1
+    elif (( wait_seconds > otbr_cleanup_iptables_wait_seconds )); then
+        wait_seconds="${otbr_cleanup_iptables_wait_seconds}"
+    fi
+
+    _otbr_cleanup_run "${deadline_milliseconds}" \
+        ip6tables -w "${wait_seconds}" "$@"
+}
+
+_otbr_remove_forward_jumps()
+{
+    local deadline_milliseconds="$1"
+    local interface_flag="$2"
+    local chain_name="$3"
+    local removed=0
+    local command_status
+
+    # With the nft-backed xtables implementation, checking a jump whose target
+    # chain does not exist exits 2 rather than the usual "rule absent" status 1.
+    # A dangling jump cannot outlive its target chain, so an absent owned chain
+    # is already a clean state.
+    if _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
+        -L "${chain_name}" -n >/dev/null 2>&1; then
+        command_status=0
+    else
+        command_status=$?
+    fi
+
+    case "${command_status}" in
+        0)
+            ;;
+        1)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+
+    while (( removed < otbr_cleanup_max_rule_deletes )); do
+        if _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
+            -C FORWARD "${interface_flag}" "${thread_if}" \
+            -j "${chain_name}" 2>/dev/null; then
+            command_status=0
+        else
+            command_status=$?
+        fi
+
+        case "${command_status}" in
+            0)
+                ;;
+            1)
+                return 0
+                ;;
+            *)
+                return 1
+                ;;
+        esac
+
+        if ! _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
+            -D FORWARD "${interface_flag}" "${thread_if}" \
+            -j "${chain_name}"; then
+            return 1
+        fi
+
+        removed=$((removed + 1))
+    done
+
+    # Refuse to loop indefinitely if state is unexpectedly duplicated many times.
+    if _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
+        -C FORWARD "${interface_flag}" "${thread_if}" \
+        -j "${chain_name}" 2>/dev/null; then
+        return 1
+    else
+        command_status=$?
+    fi
+
+    if (( command_status == 1 )); then
+        return 0
+    fi
+
+    return 1
+}
+
+_otbr_delete_chain_if_exist()
+{
+    local deadline_milliseconds="$1"
+    local chain_name="$2"
+    local command_status
+    local failed=0
+
+    if _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
+        -L "${chain_name}" -n >/dev/null 2>&1; then
+        command_status=0
+    else
+        command_status=$?
+    fi
+
+    case "${command_status}" in
+        0)
+            ;;
+        1)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+
+    if ! _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
+        -F "${chain_name}"; then
+        failed=1
+    fi
+
+    if ! _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
+        -X "${chain_name}"; then
+        failed=1
+    fi
+
+    return "${failed}"
+}
+
+_otbr_list_all_ipsets()
+{
+    local deadline_milliseconds="$1"
+    local command_status
+    local ipset_names
+
+    if ipset_names="$(
+        _otbr_cleanup_run "${deadline_milliseconds}" \
+            ipset list -n 2>/dev/null
+    )"; then
+        command_status=0
+    else
+        command_status=$?
+    fi
+
+    if (( command_status != 0 )); then
+        return "${command_status}"
+    fi
+
+    REPLY="${ipset_names}"
+}
+
+_otbr_ipset_list_contains()
+{
+    local ipset_names="$1"
+    local ipset_name="$2"
+    local listed_name
+
+    while IFS= read -r listed_name; do
+        if [[ "${listed_name}" == "${ipset_name}" ]]; then
+            return 0
+        fi
+    done <<< "${ipset_names}"
+
+    return 1
+}
+
+_otbr_destroy_owned_ipsets()
+{
+    local deadline_milliseconds="$1"
+    local ipset_names="$2"
+    local -a pending_ipsets=()
+    local -a retry_ipsets=()
+    local attempt=1
+    local command_status
+    local delay_duration
+    local failed=0
+    local ipset_name
+
+    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
+        if _otbr_ipset_list_contains "${ipset_names}" "${ipset_name}"; then
+            pending_ipsets+=("${ipset_name}")
+        fi
+    done
+
+    while (( ${#pending_ipsets[@]} > 0 \
+        && attempt <= otbr_ipset_destroy_attempts )); do
+        retry_ipsets=()
+
+        # Give every owned set one destroy attempt per round. A referenced set
+        # must not consume the shared deadline before independent sets are tried.
+        for ipset_name in "${pending_ipsets[@]}"; do
+            if _otbr_cleanup_run "${deadline_milliseconds}" \
+                ipset destroy "${ipset_name}" >/dev/null 2>&1; then
+                command_status=0
+            else
+                command_status=$?
+            fi
+
+            case "${command_status}" in
+                0)
+                    ;;
+                1)
+                    retry_ipsets+=("${ipset_name}")
+                    ;;
+                *)
+                    failed=1
+                    ;;
+            esac
+        done
+
+        if (( ${#retry_ipsets[@]} == 0 )); then
+            break
+        fi
+
+        if ! _otbr_list_all_ipsets "${deadline_milliseconds}"; then
+            failed=1
+            break
+        fi
+        ipset_names="${REPLY}"
+
+        pending_ipsets=()
+        for ipset_name in "${retry_ipsets[@]}"; do
+            if _otbr_ipset_list_contains "${ipset_names}" "${ipset_name}"; then
+                pending_ipsets+=("${ipset_name}")
+            fi
+        done
+
+        if (( ${#pending_ipsets[@]} == 0 )); then
+            break
+        fi
+
+        if (( attempt >= otbr_ipset_destroy_attempts )); then
+            failed=1
+            break
+        fi
+
+        printf -v delay_duration '%d.%03ds' \
+            "$((otbr_ipset_destroy_delay_milliseconds / 1000))" \
+            "$((otbr_ipset_destroy_delay_milliseconds % 1000))"
+        if ! _otbr_cleanup_run "${deadline_milliseconds}" \
+            sleep "${delay_duration}"; then
+            failed=1
+            break
+        fi
+
+        attempt=$((attempt + 1))
+    done
+
+    return "${failed}"
+}
+
+# Callers read otbr_cleanup_guard_reason after this probe.
+# shellcheck disable=SC2034
+otbr_firewall_cleanup_is_safe()
+{
+    local deadline_milliseconds
+    local link_line
+    local link_name
+    local link_output
+
+    otbr_cleanup_guard_reason=""
+
+    if ! _otbr_clock_milliseconds; then
+        otbr_cleanup_guard_reason="the monotonic clock could not be read"
+        return 1
+    fi
+    deadline_milliseconds=$((REPLY + otbr_owner_probe_timeout_milliseconds))
+
+    if ! link_output="$(
+        _otbr_cleanup_run "${deadline_milliseconds}" \
+            ip -o link show 2>/dev/null
+    )"; then
+        otbr_cleanup_guard_reason="network interfaces could not be inspected"
+        return 1
+    fi
+
+    while IFS= read -r link_line; do
+        link_name="${link_line#*: }"
+        link_name="${link_name%%:*}"
+        link_name="${link_name%%@*}"
+
+        if [[ "${link_name}" == "${thread_if}" ]]; then
+            otbr_cleanup_guard_reason="${thread_if} already exists and may be managed by another OTBR implementation"
+            return 1
+        fi
+    done <<< "${link_output}"
+
+    return 0
+}
+
+_otbr_firewall_rollback()
+{
+    # Preserve the setup failure as the caller-facing result. Cleanup is best
+    # effort here; a subsequent startup will retry reconciliation before setup.
+    if ! otbr_firewall_cleanup >/dev/null 2>&1; then
+        return 0
+    fi
+
+    return 0
+}
+
+otbr_firewall_setup()
+{
+    local firewall_enabled="$1"
+    local ipset_name
+
+    if [[ "${firewall_enabled}" != "true" \
+        && "${firewall_enabled}" != "false" ]]; then
+        return 2
+    fi
+
+    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
+        if ! ipset create -exist "${ipset_name}" hash:net family inet6; then
+            _otbr_firewall_rollback
+            return 1
+        fi
+    done
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -N "${otbr_forward_ingress_chain}"; then
+        _otbr_firewall_rollback
+        return 1
+    fi
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -I FORWARD 1 -o "${thread_if}" \
+        -j "${otbr_forward_ingress_chain}"; then
+        _otbr_firewall_rollback
+        return 1
+    fi
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -N "${otbr_forward_egress_chain}"; then
+        _otbr_firewall_rollback
+        return 1
+    fi
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -I FORWARD 2 -i "${thread_if}" \
+        -j "${otbr_forward_egress_chain}"; then
+        _otbr_firewall_rollback
+        return 1
+    fi
+
+    if [[ "${firewall_enabled}" == "true" ]]; then
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" \
+            -m pkttype --pkt-type unicast -i "${thread_if}" -j DROP; then
+            _otbr_firewall_rollback
+            return 1
+        fi
+
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" \
+            -m set --match-set otbr-ingress-deny-src src -j DROP; then
+            _otbr_firewall_rollback
+            return 1
+        fi
+
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" \
+            -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT; then
+            _otbr_firewall_rollback
+            return 1
+        fi
+
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" \
+            -m pkttype --pkt-type unicast -j DROP; then
+            _otbr_firewall_rollback
+            return 1
+        fi
+
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" -j ACCEPT; then
+            _otbr_firewall_rollback
+            return 1
+        fi
+    else
+        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+            -A "${otbr_forward_ingress_chain}" -j ACCEPT; then
+            _otbr_firewall_rollback
+            return 1
+        fi
+    fi
+
+    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
+        -A "${otbr_forward_egress_chain}" -j ACCEPT; then
+        _otbr_firewall_rollback
+        return 1
+    fi
+}
+
+otbr_firewall_cleanup()
+{
+    local deadline_milliseconds
+    local ipset_names
+    local ipset_name
+    local failed=0
+
+    if ! _otbr_clock_milliseconds; then
+        return 1
+    fi
+    deadline_milliseconds=$((REPLY + otbr_cleanup_budget_milliseconds))
+
+    if ! _otbr_remove_forward_jumps "${deadline_milliseconds}" \
+        -o "${otbr_forward_ingress_chain}"; then
+        failed=1
+    fi
+
+    if ! _otbr_remove_forward_jumps "${deadline_milliseconds}" \
+        -i "${otbr_forward_egress_chain}"; then
+        failed=1
+    fi
+
+    if ! _otbr_delete_chain_if_exist "${deadline_milliseconds}" \
+        "${otbr_forward_ingress_chain}"; then
+        failed=1
+    fi
+
+    if ! _otbr_delete_chain_if_exist "${deadline_milliseconds}" \
+        "${otbr_forward_egress_chain}"; then
+        failed=1
+    fi
+
+    if _otbr_list_all_ipsets "${deadline_milliseconds}"; then
+        ipset_names="${REPLY}"
+
+        if ! _otbr_destroy_owned_ipsets \
+            "${deadline_milliseconds}" "${ipset_names}"; then
+            failed=1
+        fi
+    else
+        failed=1
+    fi
+
+    if ! _otbr_cleanup_has_time "${deadline_milliseconds}"; then
+        failed=1
+    fi
+
+    return "${failed}"
+}

@@ -10,14 +10,13 @@ declare baudrate
 declare flow_control
 declare cpcd_trace
 
-if ! bashio::config.has_value 'device'; then
-    bashio::log.fatal "No serial port device set!"
-    bashio::exit.nok
-fi
-device=$(bashio::config 'device')
-
 if bashio::config.has_value 'network_device'; then
     device="/tmp/ttyCPC"
+elif bashio::config.has_value 'device'; then
+    device=$(bashio::config 'device')
+else
+    bashio::log.fatal "Neither a local device nor network_device is configured!"
+    bashio::exit.nok
 fi
 
 baudrate=$(bashio::config 'baudrate')

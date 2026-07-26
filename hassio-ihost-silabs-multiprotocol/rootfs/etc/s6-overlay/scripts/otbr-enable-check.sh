@@ -5,6 +5,18 @@
 # ==============================================================================
 
 if bashio::config.false 'otbr_enable'; then
+    # shellcheck source=otbr-agent-common
+    # shellcheck disable=SC1091
+    . /etc/s6-overlay/scripts/otbr-agent-common
+
+    if otbr_firewall_cleanup_is_safe; then
+        if ! otbr_firewall_cleanup; then
+            bashio::log.warning "Could not completely clean up stale OTBR firewall state while disabling OTBR."
+        fi
+    else
+        bashio::log.warning "Skipping stale OTBR firewall cleanup while disabling OTBR: ${otbr_cleanup_guard_reason}."
+    fi
+
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-web
     rm /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent-rest-discovery
