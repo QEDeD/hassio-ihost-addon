@@ -1,0 +1,367 @@
+name: Test Silicon Labs OTBR lifecycle
+
+on:
+  pull_request:
+    paths:
+      - ".gitattributes"
+      - ".github/workflows/test-silabs-otbr-lifecycle.yml"
+      - "hassio-ihost-silabs-multiprotocol/**"
+  push:
+    branches:
+      - master
+    paths:
+      - ".gitattributes"
+      - ".github/workflows/test-silabs-otbr-lifecycle.yml"
+      - "hassio-ihost-silabs-multiprotocol/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lifecycle:
+    name: Lifecycle regression tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Validate lifecycle shell scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/cpcd-config-up
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/socat-cpcd-tcp-enable-check.sh
+            hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe
+            hassio-ihost-silabs-multiprotocol/tests/test-cpcd-config.sh
+            hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
+            hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+          )
+
+          bash -n "${files[@]}"
+          shellcheck --shell=bash --severity=warning -x -P SCRIPTDIR "${files[@]}"
+
+      - name: Validate lifecycle file modes and line endings
+        shell: bash
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*" >&2; exit 1; }
+          executable_files=(
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/cpcd-config-up
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/socat-cpcd-tcp-enable-check.sh
+            hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe
+            hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
+            hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+          )
+          regular_files=(
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
+            hassio-ihost-silabs-multiprotocol/tests/kernel/Dockerfile
+            hassio-ihost-silabs-multiprotocol/tests/test-cpcd-config.sh
+          )
+          text_files=("${executable_files[@]}" "${regular_files[@]}")
+
+          for file in "${executable_files[@]}"; do
+            mode="$(git ls-files --stage -- "${file}" | awk '{ print $1 }')"
+            [[ "${mode}" == "100755" ]] \
+              || fail "${file} must be committed with mode 100755 (found ${mode:-untracked})"
+          done
+
+          for file in "${regular_files[@]}"; do
+            mode="$(git ls-files --stage -- "${file}" | awk '{ print $1 }')"
+            [[ "${mode}" == "100644" ]] \
+              || fail "${file} must be committed with mode 100644 (found ${mode:-untracked})"
+          done
+
+          for file in "${text_files[@]}"; do
+            if grep -q $'\r' "${file}"; then
+              fail "${file} contains CRLF line endings"
+            fi
+          done
+
+      - name: Validate add-on metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*" >&2; exit 1; }
+          addon=hassio-ihost-silabs-multiprotocol
+          config="${addon}/config.yaml"
+          build="${addon}/build.yaml"
+          dockerfile="${addon}/Dockerfile"
+          translation="${addon}/translations/en.yaml"
+          docs="${addon}/DOCS.md"
+          readme="${addon}/README.md"
+
+          for yaml in "${config}" "${build}" "${translation}"; do
+            yq -e '.' "${yaml}" >/dev/null
+          done
+          yq -e '
+            (.name | type == "!!str" and length > 0) and
+            (.slug | type == "!!str" and length > 0) and
+            (.version | type == "!!str" and length > 0) and
+            (.description | type == "!!str" and length > 0) and
+            (.arch | type == "!!seq" and length > 0) and
+            (.image | type == "!!str" and length > 0) and
+            (.options | type == "!!map") and
+            (.schema | type == "!!map")
+          ' "${config}" >/dev/null
+          yq -e '(.build_from | type == "!!map" and length > 0)' \
+            "${build}" >/dev/null
+          yq -e \
+            '.args.SLC_CLI_SHA256 | test("^[0-9a-f]{64}$")' \
+            "${build}" >/dev/null
+          yq -e '(.configuration | type == "!!map")' \
+            "${translation}" >/dev/null
+          yq -e \
+            '(has("host_ipc") | not) and
+             .host_network == true and
+             (has("stage") | not) and
+             (.privileged | any_c(. == "NET_ADMIN"))' \
+            "${config}" >/dev/null
+          yq -e \
+            '(.options | has("backbone_interface") | not) and
+             .schema.backbone_interface == "str?"' \
+            "${config}" >/dev/null
+
+          if grep -Eiq \
+            'only[[:space:]]+be[[:space:]]+used[[:space:]]+(with|on)[[:space:]]+(Zigbee2MQTT|Z2M)' \
+            "${docs}" "${readme}"; then
+            fail "obsolete categorical Zigbee2MQTT-only guidance remains"
+          fi
+          grep -Fq 'io.hass.version="${BUILD_VERSION}"' "${dockerfile}" \
+            || fail "image is missing the dynamic io.hass.version label"
+          grep -Fq 'io.hass.type="app"' "${dockerfile}" \
+            || fail "image is missing the io.hass.type label"
+          grep -Fq 'io.hass.arch="${BUILD_ARCH}"' "${dockerfile}" \
+            || fail "image is missing the dynamic io.hass.arch label"
+          grep -Fq 'org.opencontainers.image.version="${BUILD_VERSION}"' \
+            "${dockerfile}" \
+            || fail "image is missing the dynamic OCI version label"
+          grep -Fq \
+            'org.opencontainers.image.source="https://github.com/iHost-Open-Source-Project/hassio-ihost-addon"' \
+            "${dockerfile}" \
+            || fail "image is missing the canonical OCI source label"
+          grep -Fq 'org.opencontainers.image.revision="${BUILD_COMMIT}"' \
+            "${dockerfile}" \
+            || fail "image is missing the dynamic OCI revision label"
+
+          version="$(yq -r '.version' "${addon}/config.yaml")"
+          grep -Fqx "## ${version}" "${addon}/CHANGELOG.md" \
+            || fail "config version ${version} has no changelog heading"
+
+          config_arch="$(yq -o=json -I=0 '.arch | sort' "${config}")"
+          build_arch="$(yq -o=json -I=0 '.build_from | keys | sort' "${build}")"
+          [[ "${config_arch}" == "${build_arch}" ]] \
+            || fail "config.arch and build_from keys differ"
+
+          while IFS= read -r key; do
+            KEY="${key}" yq -e '.schema | has(strenv(KEY))' \
+              "${config}" >/dev/null \
+              || fail "option ${key} is absent from schema"
+          done < <(yq -r '.options | keys[]' "${config}")
+
+          while IFS= read -r key; do
+            KEY="${key}" yq -e '.configuration | has(strenv(KEY))' \
+              "${translation}" >/dev/null \
+              || fail "schema key ${key} has no English translation"
+          done < <(yq -r '.schema | keys[]' "${config}")
+
+          if (( $(yq -r '.arch | length' "${config}") > 1 )); then
+            [[ "$(yq -r '.image' "${config}")" == *'{arch}'* ]] \
+              || fail "multi-arch image is missing {arch}"
+          fi
+
+      - name: Run Dockerfile build checks
+        run: docker build --check hassio-ihost-silabs-multiprotocol
+
+      - name: Run firewall lifecycle tests
+        run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+
+      - name: Run CPC device configuration tests
+        run: bash hassio-ihost-silabs-multiprotocol/tests/test-cpcd-config.sh
+
+      - name: Run real-kernel firewall smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          addon=hassio-ihost-silabs-multiprotocol
+          image="local/silabs-otbr-kernel-test:${GITHUB_SHA}"
+
+          docker build --pull --tag "${image}" \
+            --file "${addon}/tests/kernel/Dockerfile" "${addon}"
+          docker run --rm \
+            --cap-drop ALL \
+            --cap-add NET_ADMIN \
+            --cap-add NET_RAW \
+            --network none \
+            --read-only \
+            --pids-limit 128 \
+            --security-opt no-new-privileges \
+            --tmpfs /run:rw,nosuid,nodev,noexec,size=1m \
+            --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
+            "${image}"
+
+  addon-lint:
+    name: Add-on configuration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Run Home Assistant add-on lint
+        uses: frenck/action-addon-linter@f995494fd84fae6310d23617e66d0e37de4f14eb # v2.21
+        with:
+          path: "./hassio-ihost-silabs-multiprotocol"
+
+  # Direct Buildx keeps the armv7 release gate that the current HA builder dropped.
+  image-build:
+    name: Build ${{ matrix.arch }} image
+    needs:
+      - lifecycle
+      - addon-lint
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: armv7
+            runner: ubuntu-24.04
+            platform: linux/arm/v7
+            qemu: arm
+          - arch: aarch64
+            # Keep the target image native: QEMU aarch64 can intermittently
+            # crash while libc-bin runs ldconfig. The fixed amd64-only SLC and
+            # cross-builder stages still require x86 emulation on this runner.
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
+            qemu: amd64
+          - arch: amd64
+            runner: ubuntu-24.04
+            platform: linux/amd64
+            qemu: ""
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Read build configuration
+        id: build-config
+        shell: bash
+        env:
+          BUILD_ARCH: ${{ matrix.arch }}
+        run: |
+          set -euo pipefail
+          build=hassio-ihost-silabs-multiprotocol/build.yaml
+          config=hassio-ihost-silabs-multiprotocol/config.yaml
+          {
+            echo "build_from=$(yq -r ".build_from.${BUILD_ARCH}" "${build}")"
+            echo "build_version=$(yq -r '.version' "${config}")"
+            echo "cpcd_version=$(yq -r '.args.CPCD_VERSION' "${build}")"
+            echo "gecko_sdk_version=$(yq -r '.args.GECKO_SDK_VERSION' "${build}")"
+            echo "slc_cli_sha256=$(yq -r '.args.SLC_CLI_SHA256' "${build}")"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Set up QEMU
+        if: matrix.qemu != ''
+        uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
+        with:
+          image: docker.io/tonistiigi/binfmt@sha256:400a4873b838d1b89194d982c45e5fb3cda4593fbfd7e08a02e76b03b21166f0
+          platforms: ${{ matrix.qemu }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+      - name: Build ${{ matrix.arch }} add-on image
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        with:
+          context: ./hassio-ihost-silabs-multiprotocol
+          file: ./hassio-ihost-silabs-multiprotocol/Dockerfile
+          platforms: ${{ matrix.platform }}
+          pull: true
+          load: true
+          tags: local/silabs-otbr:${{ github.sha }}-${{ matrix.arch }}
+          cache-from: type=gha,scope=silabs-${{ matrix.arch }}
+          cache-to: type=gha,scope=silabs-${{ matrix.arch }},mode=min,ignore-error=true
+          build-args: |
+            BUILD_ARCH=${{ matrix.arch }}
+            BUILD_COMMIT=${{ github.sha }}
+            BUILD_VERSION=${{ steps.build-config.outputs.build_version }}
+            BUILD_FROM=${{ steps.build-config.outputs.build_from }}
+            CPCD_VERSION=${{ steps.build-config.outputs.cpcd_version }}
+            GECKO_SDK_VERSION=${{ steps.build-config.outputs.gecko_sdk_version }}
+            SLC_CLI_SHA256=${{ steps.build-config.outputs.slc_cli_sha256 }}
+
+      - name: Validate ${{ matrix.arch }} runtime image
+        shell: bash
+        env:
+          IMAGE: local/silabs-otbr:${{ github.sha }}-${{ matrix.arch }}
+          PLATFORM: ${{ matrix.platform }}
+          EXPECTED_ARCH: ${{ matrix.arch }}
+          EXPECTED_COMMIT: ${{ github.sha }}
+          EXPECTED_SOURCE: https://github.com/iHost-Open-Source-Project/hassio-ihost-addon
+          EXPECTED_VERSION: ${{ steps.build-config.outputs.build_version }}
+        run: |
+          set -euo pipefail
+          expected_labels="${EXPECTED_VERSION}|app|${EXPECTED_ARCH}|${EXPECTED_VERSION}|${EXPECTED_SOURCE}|${EXPECTED_COMMIT}"
+          actual_labels="$(
+            docker image inspect --format \
+              '{{ index .Config.Labels "io.hass.version" }}|{{ index .Config.Labels "io.hass.type" }}|{{ index .Config.Labels "io.hass.arch" }}|{{ index .Config.Labels "org.opencontainers.image.version" }}|{{ index .Config.Labels "org.opencontainers.image.source" }}|{{ index .Config.Labels "org.opencontainers.image.revision" }}' \
+              "${IMAGE}"
+          )"
+          [[ "${actual_labels}" == "${expected_labels}" ]] \
+            || {
+              echo "invalid image labels: expected ${expected_labels}, got ${actual_labels}" >&2
+              exit 1
+            }
+          docker run --rm \
+            --platform "${PLATFORM}" \
+            --cap-drop ALL \
+            --network none \
+            --read-only \
+            --pids-limit 64 \
+            --security-opt no-new-privileges \
+            --entrypoint /bin/bash \
+            "${IMAGE}" -ceu '
+            for command_name in bash ip iptables ip6tables ipset timeout; do
+              command -v "${command_name}" >/dev/null \
+                || { echo "missing runtime dependency: ${command_name}" >&2; exit 1; }
+            done
+            timeout 1 true
+            ip -Version >/dev/null
+            iptables --version >/dev/null
+            [[ "$(ip6tables --version)" == *"nf_tables"* ]] \
+              || { echo "ip6tables is not nft-backed" >&2; exit 1; }
+            for script in \
+              /etc/s6-overlay/scripts/cpcd-config-up \
+              /etc/s6-overlay/scripts/otbr-agent-common \
+              /etc/s6-overlay/s6-rc.d/otbr-agent/run \
+              /etc/s6-overlay/s6-rc.d/otbr-agent/finish; do
+              [[ -x "${script}" ]] \
+                || { echo "runtime script is not executable: ${script}" >&2; exit 1; }
+            done
+            bash -n \
+              /etc/s6-overlay/scripts/cpcd-config-up \
+              /etc/s6-overlay/scripts/otbr-agent-common \
+              /etc/s6-overlay/s6-rc.d/otbr-agent/run \
+              /etc/s6-overlay/s6-rc.d/otbr-agent/finish
+          '
