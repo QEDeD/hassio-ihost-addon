@@ -14,6 +14,8 @@ Validated on 2026-09-08 against source commit
 - A local image containing only the five focused service files over that release
   passes individual Bash syntax checks and complete s6 service-graph compilation.
   SHA-256 hashes of all five installed files match the focused source.
+- A bounded detached-radio trial on HAOS 18.2 passes CPC/OTBR startup,
+  permissive firewall setup, cleanup and restoration of the original services.
 
 The kernel suite covers filtering and permissive forwarding, retained foreign
 rules/ipsets and FORWARD policy, duplicate cleanup, externally referenced state,
@@ -109,25 +111,72 @@ private container network namespace. It does not exercise host-network radio
 startup, CPC, the real `wpan0` interface or Supervisor lifecycle of the OTBR
 service.
 
-## Limits and remaining gate
+## Bounded detached-radio trial on HAOS 18.2
 
-This validates the focused scripts against real nft kernel operations on both
-WSL2 and HAOS 18.2, and against the released AMD64 userspace. It is not a fresh
-build of all add-on binaries, an ARM result, or evidence of successful
-radio/Thread startup. The baseline source Dockerfile requires an untracked
-`slc_cli_linux.zip`; no broad build changes were folded into this fix.
+A subsequent authorized host-network trial on 2026-09-08 exercised the real
+USB radio using the same released AMD64 image and five unchanged focused files.
+The operator had created a Proxmox VM snapshot before the trial. That snapshot
+was a recovery aid, not a rollback of physical radio or mesh state.
 
-The supported operating constraint remains one OTBR implementation at a time.
-The cleanup marker is a lifecycle marker, not a cross-add-on exclusion lock.
-Production radio testing needs its own bounded rollback plan and must respect
-the operator's current authorization. Only the temporary isolated test app and
-its catalog/staging entries were changed on production, then removed; the
-existing radio installations were not modified.
+The temporary manual-only app had separate private storage. A guarded importer
+copied only the existing Thread settings file and `zigbeed/host_token.nvm` from
+a native Supervisor backup, preserving the original app's options and storage.
+It verified source/readback hashes, exact paths, types, sizes and modes; refused
+unknown or changed destination state; and allowed one trial start. Its 23 local
+fixture tests passed under the released image's Python 3.9.2. An import-only
+rehearsal on HA completed without launching the radio services. The actual trial
+used a new backup created after Zigbee2MQTT and the original Multiprotocol app
+were stopped, followed by an ownership/network preflight.
 
-The baseline radio service runs from private `/data/zigbeed` storage. Installing
-a separate radio candidate gives it different private storage, so a hostname
-change alone is not a demonstrated state-preserving trial. The existing SSH
-access supports local-app staging but does not provide an HAOS host Docker
-shell. A radio trial still needs a verified state-preserving installation and
-rollback route; the isolated kernel-test app is not that route. No additional
-production radio candidate or permanent deployment mechanism was installed.
+Test-only changes bounded the scope: a binary wrapper forced
+`--auto-attach=0`, REST used port 18081, and Supervisor REST discovery was
+suppressed. Zigbee2MQTT stayed stopped and never connected to the candidate.
+The complete temporary s6 graph compiled; the wrapper's arguments and readiness
+metadata were checked with a local stub. A four-minute s6 stop timer provided a
+backstop; the normal controller stopped the candidate earlier, so timer expiry
+was not exercised during the live trial. These harness changes are not part of
+the proposed runtime fix.
+
+Observed results, UTC:
+
+- 18:38:07: handover began; both original consumers were stopped before backup.
+- 18:38:21: candidate REST became ready, 14.4 seconds after handover. CPC reported
+  successful startup; zigbeed and its TCP 9999 endpoint also became available.
+- Eleven checks over approximately one minute kept Thread state `disabled`,
+  candidate state started and both original consumers stopped. The log confirmed
+  the permissive scoped-forwarding path with `otbr_firewall: false`.
+- 18:39:29: the stopped-candidate audit found no `wpan0`, owned chains/ipsets or
+  candidate listeners. IPv4 and IPv6 FORWARD policies were still `DROP`, matching
+  the pre-trial baseline. OTBR exited with code zero. mDNS registration warnings
+  occurred during service shutdown after mDNS began stopping; cleanup still
+  satisfied the acceptance checks.
+- 18:39:43: the original radio endpoint was ready. By 18:39:54, a fresh
+  timestamped Zigbee2MQTT startup and both original app states were verified.
+  Total handover-to-restoration time was 107.1 seconds. Original options,
+  versions, boot/watchdog settings, protection and update settings were unchanged.
+
+The temporary app was uninstalled, its known staging/control files removed, and
+the local catalog reloaded. Absence was checked; both original services remained
+started afterward. The quiesced backup was retained privately for recovery.
+Private logs, state manifests and device identifiers were not added to this
+repository. No trial data was copied back into the original installation.
+
+## Limits and next gate
+
+The evidence now covers the focused firewall lifecycle on WSL2 and HAOS 18.2,
+the released AMD64 userspace, and detached CPC/OTBR startup with the real radio
+and host network. It does not establish Thread mesh attachment, commissioning,
+Zigbee/Thread coexistence under traffic, long-term reliability or ARM behavior.
+Zigbee2MQTT recovery is established by fresh service readiness, not an end-to-end
+physical-device actuation test. The temporary wrapper also means this is not an
+unmodified default-auto-attach startup test.
+
+This is not a fresh build of all add-on binaries. The baseline Dockerfile
+requires an untracked `slc_cli_linux.zip`; no broad build changes were folded
+into this fix. The supported operating constraint remains one OTBR at a time;
+the cleanup marker is a lifecycle marker, not a cross-add-on exclusion lock.
+
+The bounded trial's acceptance gate is complete. The focused change is ready
+for maintainer review with these limits stated. A future mesh/coexistence trial
+would need its own justified scope and applicable production authorization;
+it is not a prerequisite silently added to this compatibility increment.
