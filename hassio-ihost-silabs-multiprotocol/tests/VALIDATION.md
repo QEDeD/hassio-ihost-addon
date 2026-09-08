@@ -161,6 +161,26 @@ started afterward. The quiesced backup was retained privately for recovery.
 Private logs, state manifests and device identifiers were not added to this
 repository. No trial data was copied back into the original installation.
 
+### Filtering-enabled follow-up
+
+A second bounded detached trial on 2026-09-08 used the same runtime and guards,
+with only the candidate option changed to `otbr_firewall: true`. The original
+services were stopped before a new backup; its imported Zigbee state differed
+from the earlier backup and source/readback verification passed.
+
+Handover began at 19:07:39 UTC. Candidate readiness followed in 14.6 seconds;
+the log confirmed `Setting up OTBR ingress filtering.`, CPC startup and the
+Zigbee TCP endpoint. Eleven observations over approximately one minute kept
+Thread disabled and the original consumers stopped. The post-stop audit at
+19:09:03 found no candidate interface, listeners, owned chains or ipsets; both
+host FORWARD policies remained `DROP`. Fresh original radio and Zigbee2MQTT
+readiness was verified by 19:09:27, 107.7 seconds after handover. Settings were
+unchanged. The temporary app and its staging/control files were removed;
+both original apps remained started and the recovery backup was retained.
+
+This adds real-radio startup/cleanup evidence for filtering enabled; it does
+not add packet-filter behavior under Thread traffic or mesh/coexistence evidence.
+
 ## Limits and next gate
 
 The evidence now covers the focused firewall lifecycle on WSL2 and HAOS 18.2,
@@ -176,7 +196,14 @@ requires an untracked `slc_cli_linux.zip`; no broad build changes were folded
 into this fix. The supported operating constraint remains one OTBR at a time;
 the cleanup marker is a lifecycle marker, not a cross-add-on exclusion lock.
 
-The bounded trial's acceptance gate is complete. The focused change is ready
-for maintainer review with these limits stated. A future mesh/coexistence trial
-would need its own justified scope and applicable production authorization;
-it is not a prerequisite silently added to this compatibility increment.
+Both detached-startup configuration gates are complete. A real-network trial
+remains a separate gate: traffic can advance security counters accepted by
+other devices, and reverting to an older private-state copy can leave resumed
+counters behind those peers. A VM snapshot cannot rewind peer state; see the
+[Silicon Labs migration guidance](https://docs.silabs.com/zigbee/8.1.3/multiprotocol-solution-linux/host-ncp-rcp-migration).
+
+The existing temporary app has a different Supervisor identity and private
+storage from the original app. Before a mesh/coexistence trial, establish a
+verified route that preserves current state across code changes, or obtain
+specific operator approval for the remaining recovery risk. The completed
+service-restoration checks do not establish end-to-end peer counter acceptance.
