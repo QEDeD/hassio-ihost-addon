@@ -75,6 +75,16 @@ To use the OTBR enable it in the Configuration tab and restart the add-on. Home
 Assistant should discover the OpenThread border router automatically and
 configure it as necessary.
 
+#### Firewall behavior
+
+`otbr_firewall` controls OTBR ingress filtering. When it is disabled, the
+add-on still permits forwarding into and out of `wpan0` through its own IPv6
+chains, but does not apply the ingress filtering rules. It does not change the
+host-wide IPv6 `FORWARD` policy or invoke `ip6tables-legacy`.
+
+Only one OTBR implementation may manage `wpan0` and the globally named OTBR
+chains and ipsets at a time. Stop another OTBR before starting or disabling
+this add-on so its guarded cleanup can safely reconcile its own state.
 ### Web interface (advanced)
 
 There is also a web interface provided by the OTBR. However, the web
