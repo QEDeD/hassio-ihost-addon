@@ -1,0 +1,79 @@
+name: Test Silicon Labs OTBR firewall
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/test-silabs-otbr-firewall.yml"
+      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/**"
+      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
+      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh"
+      - "hassio-ihost-silabs-multiprotocol/tests/**"
+  push:
+    paths:
+      - ".github/workflows/test-silabs-otbr-firewall.yml"
+      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/**"
+      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
+      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh"
+      - "hassio-ihost-silabs-multiprotocol/tests/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Validate scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          runtime_files=(
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
+          )
+          test_files=(
+            hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+            hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
+            hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe
+          )
+          for file in "${runtime_files[@]}" "${test_files[@]}"; do
+            bash -n "${file}"
+          done
+          shellcheck --shell=bash --severity=warning -x -P SCRIPTDIR "${runtime_files[@]}"
+
+      - name: Run mocked firewall lifecycle test
+        run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+
+      - name: Run isolated kernel firewall test
+        shell: bash
+        run: |
+          set -euo pipefail
+          addon=hassio-ihost-silabs-multiprotocol
+          image="local/silabs-otbr-kernel-test:${GITHUB_SHA}"
+
+          docker build --pull --tag "${image}" \
+            --file "${addon}/tests/kernel/Dockerfile" "${addon}"
+          docker run --rm \
+            --cap-drop ALL \
+            --cap-add NET_ADMIN \
+            --cap-add NET_RAW \
+            --network none \
+            --read-only \
+            --pids-limit 128 \
+            --security-opt no-new-privileges \
+            --tmpfs /run:rw,nosuid,nodev,noexec,size=1m \
+            --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
+            "${image}"
