@@ -181,29 +181,80 @@ both original apps remained started and the recovery backup was retained.
 This adds real-radio startup/cleanup evidence for filtering enabled; it does
 not add packet-filter behavior under Thread traffic or mesh/coexistence evidence.
 
+## Approved live-network trial
+
+After explicit operator approval of the state/counter recovery risk, a bounded
+trial on 2026-09-08 used the same released binaries and focused files with
+`otbr_firewall: false`. The temporary wrapper initially kept Thread disabled.
+The controller compared all parsed active-dataset TLVs against Home Assistant's
+preferred dataset before using the pinned REST API's `PUT /node/state` with
+`"enable"`. No dataset was commissioned or overwritten, and no radio firmware
+was changed. The original Z2M endpoint and configuration remained unchanged.
+
+Device acceptance used Zigbee2MQTT 2.14.1's correlated
+`bridge/request/device/reporting/read` request for `genOnOff.onOff`, with a fresh
+transaction ID and a successful physical ZCL response required. This reads
+reporting configuration; it does not change device attributes or bindings.
+An Aqara SP-EUC01 and IKEA LED2201G8 passed baseline probes and were selected.
+A different plug failed its baseline probe and was excluded. See the
+[versioned handler](https://github.com/Koenkk/zigbee2mqtt/blob/2.14.1/lib/extension/bridge.ts#L508-L544).
+
+An initial attempt stopped before candidate radio startup because of an operator
+logging argument collision after backup creation. Both original services and
+device probes recovered in 35 seconds. The collision was fixed and covered by
+a local regression check; seven mocked controller/recovery checks passed before
+the successful retry. The trial runtime source was unchanged.
+
+Observed results for the retry, UTC:
+
+- 19:30:35: handover began; a fresh original-app backup was taken while stopped.
+- 19:30:50: the candidate dataset matched the preferred dataset, then Thread was
+  enabled. It reached leader role at 19:31:25.
+- Both selected Zigbee devices returned successful physical responses at
+  19:31:41 and again at 19:32:32 while Thread remained active. Eight role/service
+  checks over approximately 45 seconds passed.
+- Two active Thread diagnostic requests returned only the candidate's own
+  response, with one router reported. Its outgoing MAC broadcast counter rose
+  from 70 to 82; incoming packet counters and reported errors remained zero.
+  This is concurrent Thread broadcast activity and Zigbee request/response
+  evidence, not a remote Thread-peer exchange.
+- After stopping Zigbee2MQTT, disabling Thread and stopping the candidate, a
+  native backup retained the candidate's post-test state and local image.
+  Both Thread and Zigbee file hashes differed from the pre-test backup; their
+  retained contents and sizes were verified without publishing keys or IDs.
+- At 19:32:51, cleanup showed no candidate interface, listeners, chains or ipsets.
+  Both host FORWARD policies remained `DROP`.
+- The first selected-device read after restoring the original app failed with
+  a delivery error. One planned original-radio/Z2M restart followed. Both device
+  reads passed at 19:33:50, with unchanged original settings. Handover through
+  verified recovery took 196.6 seconds. Both reads passed again at 19:37:30.
+
+The delivery failure was not isolated to a specific cause. It must not be
+reported as proof of a counter regression, nor should recovery of two devices
+be represented as proof of counter-safe rollback for every peer. The temporary
+app, staging/control files and MQTT test credentials were removed after the
+follow-up checks. The post-test state/image backup remains available privately;
+its newer Thread state was not copied into the original installation.
+
 ## Limits and next gate
 
-The evidence now covers the focused firewall lifecycle on WSL2 and HAOS 18.2,
-the released AMD64 userspace, and detached CPC/OTBR startup with the real radio
-and host network. It does not establish Thread mesh attachment, commissioning,
-Zigbee/Thread coexistence under traffic, long-term reliability or ARM behavior.
-Zigbee2MQTT recovery is established by fresh service readiness, not an end-to-end
-physical-device actuation test. The temporary wrapper also means this is not an
-unmodified default-auto-attach startup test.
+Evidence now covers both detached firewall configurations, Thread activation
+with the existing dataset, and physical Zigbee reads during concurrent Thread
+broadcast activity on the released AMD64 runtime and real HAOS 18.2 radio.
+Remote Thread-peer communication remains unverified. Default automatic attach,
+commissioning, application traffic to a Thread device, filtering behavior under
+Thread unicast load, long-term reliability and ARM behavior remain outside the
+evidence. No physical device actuation was used as a test.
 
 This is not a fresh build of all add-on binaries. The baseline Dockerfile
 requires an untracked `slc_cli_linux.zip`; no broad build changes were folded
 into this fix. The supported operating constraint remains one OTBR at a time;
 the cleanup marker is a lifecycle marker, not a cross-add-on exclusion lock.
 
-Both detached-startup configuration gates are complete. A real-network trial
-remains a separate gate: traffic can advance security counters accepted by
-other devices, and reverting to an older private-state copy can leave resumed
-counters behind those peers. A VM snapshot cannot rewind peer state; see the
-[Silicon Labs migration guidance](https://docs.silabs.com/zigbee/8.1.3/multiprotocol-solution-linux/host-ncp-rcp-migration).
-
-The existing temporary app has a different Supervisor identity and private
-storage from the original app. Before a mesh/coexistence trial, establish a
-verified route that preserves current state across code changes, or obtain
-specific operator approval for the remaining recovery risk. The completed
-service-restoration checks do not establish end-to-end peer counter acceptance.
+The next meaningful functional gate requires a known reachable Thread peer on
+the intended dataset. Plan state continuity before another activation: the
+original app retains older Thread settings while the post-trial backup contains
+newer state. Do not assume a VM rollback rewinds other devices' accepted security
+counters; see the [Silicon Labs migration guidance](https://docs.silabs.com/zigbee/8.1.3/multiprotocol-solution-linux/host-ncp-rcp-migration).
+A future test must use an appropriate current-state/recovery route and remain
+within the operator's applicable authorization.
