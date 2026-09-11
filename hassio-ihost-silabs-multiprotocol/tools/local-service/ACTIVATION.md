@@ -102,11 +102,16 @@ from this review.
    authentication path, explicit Z2M endpoint and existing HA OTBR integration
    reconfiguration must be verified without editing .storage directly. Existing
    SSH access is to a separate container, not a host exec shell. Do not introduce
-   privileged access or export credentials just to satisfy these steps. Installed
-   SSH manager role and helper handling remain an acceptance check. The Core HTTP proxy
-   excludes this options path; ha-api POST /api/hassio/addons/.../options is not
-   a supported shortcut. Verify the installed in-app Bashio Supervisor helper
-   after authorized access unlock; keep credentials inside that app.
+   privileged access or export credentials just to satisfy these steps.
+   Installed SSH app 10.4.0 has manager role, but its older Bashio helper puts
+   credentials/body in curl arguments and trace/debug output; do not use it for
+   writes. Its CLI has no options command. Prefer the existing authenticated
+   admin UI (Core supervisor/api WebSocket), preserving the complete options
+   object. Installed curl supports stdin configuration as a possible alternative,
+   but that authenticated construction has not been tested. Core's HTTP proxy
+   excludes the options path; ha-api POST /api/hassio/addons/.../options is not
+   supported. Access now passes; no options write was performed.
+
 4. Resolve the discovery observation gap in README. Collect actual SRV targets,
    ports and AAAA from the relevant links; management REST/WebSocket endpoints
    are not accessory advertisements. No arbitrary Supervisor container-exec API
@@ -159,6 +164,21 @@ Values and installed routes are evidence, not
 permission to write sysctls. Do not reuse Docker ULA as a site/Thread prefix or
 claim a generated site prefix is allocated. Validate actual phone route acceptance
 and necessary ICMPv6 with the networking owner.
+
+Core 2026.9.1 has no OTBR options/URL-reconfiguration flow. Supervisor discovery
+identity is generated per app slug/service, so importing Thread state into a new
+slug cannot retain the old integration identity. An explicitly approved transition
+must remove the old OTBR entry and add the new router through supported setup.
+Removal has no OTBR dataset reset/delete hook, but adding a router without an
+active dataset can create/import a dataset and enable it. Automatic hassio
+rediscovery runs that setup without a confirmation form. Both preparation images
+therefore omit the discovery service from the s6 user bundle. Verify the intended
+active dataset privately before manual integration setup; leave automatic
+discovery disabled. This safeguard is verified in both compiled service bundles.
+No integration flow was executed. Source:
+[Core OTBR flow](https://github.com/home-assistant/core/blob/2026.9.1/homeassistant/components/otbr/config_flow.py),
+[removal behavior](https://github.com/home-assistant/core/blob/2026.9.1/homeassistant/components/otbr/__init__.py),
+[Supervisor identity](https://github.com/home-assistant/supervisor/blob/2026.09.0/supervisor/discovery/__init__.py).
 
 After separate network approval and acceptance, commission the confirmed Thread
 accessory with the confirmed phone on its chosen IoT SSID. Require actual remote
@@ -228,7 +248,7 @@ Current state: package/importer/observations implemented locally; both images bu
 s6 graphs compile and 21 tests pass under released Python 3.9.2. Synthetic
 same-volume image switching and installed local-only DNS-SD checks pass; 15 mocked
 Supervisor lifecycle/options tests pass. Native Supervisor persistence/backup
-integration, authenticated reconfiguration, normal radio startup and real-peer
+integration, actual options/integration transition, normal radio startup and real-peer
 behavior remain unverified. No production
 change was made. The proposal is maintained here; private operational mappings
 remain outside Git. Approval for peer coordination only permits sharing this work.

@@ -51,6 +51,9 @@ def generate(destination, recovery=False):
         write('rootfs/etc/s6-overlay/s6-rc.d/local-observe/' + name, value.encode())
     write('rootfs/etc/s6-overlay/s6-rc.d/user/contents.d/local-observe', b'')
     dockerfile = ('FROM ' + BASE + '\n' + ('ENV LOCAL_SERVICE_RECOVERY=1\n' if recovery else '') + 'COPY rootfs/ /\n'
+        # HA's automatic discovery flow can create a missing Thread dataset.
+        # Keep setup manual until active dataset availability is verified.
+        'RUN rm /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent-rest-discovery\n'
         'RUN chmod 0755 /etc/s6-overlay/s6-rc.d/local-observe/run'
         + ('' if recovery else ' /etc/s6-overlay/scripts/otbr-agent-common /etc/s6-overlay/scripts/otbr-enable-check.sh /etc/s6-overlay/s6-rc.d/otbr-agent/run /etc/s6-overlay/s6-rc.d/otbr-agent/finish')
         + '\nARG BUILD_VERSION=' + config['version'] + '\nARG BUILD_ARCH=amd64\n'

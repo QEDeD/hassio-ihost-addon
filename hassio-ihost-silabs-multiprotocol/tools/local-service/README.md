@@ -165,13 +165,19 @@ AppArmor and host namespace observations still need runtime verification.
 Updated local images (neither published nor installed in HA):
 
 - `local/otbr-persistent-prep:0.1.0-dnssd`, manifest-list digest
-  `sha256:80e0fd44b7f77635a671d538029f029b070f864706a950063879bec2cc14d03a`.
+  `sha256:b02a49e02a52c1efaaf8ae759536d59594484620490193ac8dd79d8dab35656f`.
 - `local/otbr-persistent-prep:0.1.1-recovery-dnssd`, manifest-list digest
-  `sha256:1ef03aefa520efb2f8e5310aa35eb30dc9342c98121f7a322e51baf6376c01e7`.
+  `sha256:074fc973bf2b84c2b1f327daec80a1b8a8af4f5bf4fdb73682c52b8642ae5bcd`.
+
+Both current images suppress automatic OTBR REST discovery in the compiled s6
+user bundle. Core's discovery flow can create a missing active dataset without
+confirmation. Integration setup is manual and gated on private active-dataset
+verification; see ACTIVATION.md for the supported remove-old/add-new transition.
 
 Remaining gates: native Supervisor persistence/backup/failure integration,
 authenticated control and endpoint reconfiguration, then approved verification
 of real OT socket, host namespace, discovery and radio behavior. The documented
-access prerequisite must pass before installed SSH app role and helper handling
-can be checked. No production
+access prerequisite now passes and installed SSH manager role is verified.
+The installed Bashio helper is unsuitable for credential-safe writes; existing
+admin UI control is preferred. No integration or app-options write was tested. No production
 installation, restart, radio test or network modification was performed.
