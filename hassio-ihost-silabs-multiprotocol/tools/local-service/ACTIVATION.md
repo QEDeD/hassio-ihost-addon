@@ -110,7 +110,14 @@ from this review.
    object. Installed curl supports stdin configuration as a possible alternative,
    but that authenticated construction has not been tested. Core's HTTP proxy
    excludes the options path; ha-api POST /api/hassio/addons/.../options is not
-   supported. Access now passes; no options write was performed.
+   supported. A fresh admin Core supervisor/api WebSocket read now verifies
+   complete installed-app options are available without the Bashio workaround.
+   Supervisor version matches the pinned source; original radio app and Zigbee
+   consumer are running, with OTBR disabled. Full options were retained privately.
+   The native backup catalog is readable but does not establish a current backup
+   or successful restoration. No options write, backup creation or service
+   transition was performed. The authenticated read-path gate is discharged;
+   native persistence/recovery acceptance remains separate.
 
 4. Resolve the discovery observation gap in README. Collect actual SRV targets,
    ports and AAAA from the relevant links; management REST/WebSocket endpoints
@@ -260,10 +267,10 @@ including state/counter uncertainty and whether to leave the service running.
 Network changes, commissioning/actuation, firmware and snapshot restoration are
 not silently bundled. Do not ask for execution approval while hard gates remain.
 
-Planning range before implementation was2–4h agent effort plus20–60min overlapping
+Planning range before implementation was2â€“4h agent effort plus20â€“60min overlapping
 local build/test runtime; the Docker startup blocker is now resolved. Native
-Supervisor recovery integration and control readiness dominate remaining uncertainty. Human decision/approval10–20min and physical
-commissioning5–15min are separate from an initial30–45min live observation/recovery
+Supervisor recovery integration and control readiness dominate remaining uncertainty. Human decision/approval10â€“20min and physical
+commissioning5â€“15min are separate from an initial30â€“45min live observation/recovery
 budget. No reliable completion estimate for native Supervisor recovery integration
 is claimed; the mocked rehearsal does not discharge that gate. Stop/reassess if reliable recovery requires
 privileged machinery disproportionate to this fix.
