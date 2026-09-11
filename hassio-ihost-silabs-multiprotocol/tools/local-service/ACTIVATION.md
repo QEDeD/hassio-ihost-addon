@@ -1,0 +1,187 @@
+# Proposed local-service activation and current-state recovery
+
+Status: proposed; execution not authorized. This is the maintained, public-safe
+version of the operator proposal. Backup IDs, interface/address assignments,
+phone/accessory identities and approved windows remain in private task context.
+
+## Outcome and choice
+
+Enable a usable Thread border router with the focused HAOS18 compatibility fix,
+preserving existing Zigbee operation and proving communication with a real Thread
+accessory. Cross-subnet commissioning and network policy belong to the networking
+workstream. The radio task supplies actual OMR, backbone and return-route evidence.
+
+A supported same-app update carrying the exact fix is preferred if available.
+The September11 upstream check still showed1.0.2, with no newer add-on-path runtime
+change after its May6 release. Refresh availability before migration. Do not use
+the old broad candidate feed or add radio firmware/build-system changes.
+
+The proposed immediate alternative is one operator-maintained local app using
+the pinned release plus five focused files. It replaces the original as sole
+radio owner and keeps one persistent private volume across subsequent starts.
+Original remains installed but stopped, with boot/watchdog disabled. Accepting
+that local maintenance obligation is a real user decision; otherwise wait for an
+appropriate upstream update. The disposable four-minute trial is not a durable
+commissioning service. No parallel owner or perpetual import mechanism is needed.
+
+## Pre-activation gates
+
+1. Generate fixed/recovery contexts from the reviewed source. Validate both on
+   the released runtime in isolated containers with no radio, host networking or
+   production secrets: package schema/labels, full s6 graph, five runtime hashes,
+   entrypoint refusal, normal state-preserving restarts with stub init, and
+   same-volume sentinel survival while switching code. Confirm default automatic
+   attach behavior and actual observation binaries. These image checks remain
+   blocked by unavailable Docker at this checkpoint.
+2. In an isolated Supervisor test environment, verify stopped-app update and
+   failure handling, options persistence, complete current-state backup and
+   restoration characteristics. Do not run normal /init with a radio. Source
+   contracts below do not replace this acceptance gate. No isolated Supervisor
+   environment has yet been selected or verified.
+3. Prepare the supported options/reconfiguration client. Full option writes,
+   authentication path, explicit Z2M endpoint and existing HA OTBR integration
+   reconfiguration must be verified without editing .storage directly. Existing
+   SSH access is to a separate container, not a host exec shell. Do not introduce
+   privileged access or export credentials just to satisfy these steps.
+4. Resolve the discovery observation gap in README. Collect actual SRV targets,
+   ports and AAAA from the relevant links; management REST/WebSocket endpoints
+   are not accessory advertisements. No arbitrary Supervisor container-exec API
+   exists. Prepackaged observation uses the app's own namespace and local socket.
+5. Obtain a concrete execution window only when packages, recovery, observation
+   and participant details are reviewable. The historic24h testing permission
+   expired; later coordination/SSH permission does not renew production authority.
+
+## Proposed approved handover
+
+Before interruption, confirm current owner/options/versions and two fresh
+correlated physical Zigbee baselines; confirm native backup and external VM
+recovery availability. Stop Z2M, then original radio service. Disable original
+autostart/watchdog and take a NEW verified stopped-state native backup.
+
+Import only newer retained Thread state from the post-trial candidate backup and
+fresh Zigbee state from that new original backup. Check no newer Thread activity
+has superseded the retained source. The importer now implements this two-source
+transfer and refuses unsafe/interrupted imports; private hashes do not prove
+currentness. The original importer cannot handle the newer image-containing
+candidate archive and must not be reused unchanged.
+
+Start the replacement first with OTBR off and explicit Z2M endpoint; require the
+physical reads. From the first attempted runtime handoff onward, its volume is
+authoritative for both radios. Never assume an unsuccessful startup left counters
+unchanged. After privately verifying the intended Thread dataset, enable OTBR
+using ordinary release startup and require attached role, fresh Zigbee reads and
+unchanged global/foreign firewall state. Initial firewall=false reproduces the
+reported bug and historical live trial; it is NOT accepted permanent policy.
+FortiGate filtering does not replace all host/Thread ingress protections.
+
+Observe at least ten minutes after readiness, failing earlier on a concrete
+fault. At a proposed15-minute initial decision point, either prerequisites and
+service tests passed or recovery starts; this is not a guarantee that recovery
+will finish in15 minutes. Collect actual OMR prefix from border-routing/network
+data, never from dataset mesh-local/RLOC. Collect correct-namespace host addresses,
+all IPv6 routing tables/rules and return path toward the phone's selected subnet.
+
+The current network proposal uses a local-only site ULA and selected RIO routes,
+with RA default-router lifetime0. No IPv6 Internet is assumed. Therefore absence
+of an IPv6 default route alone is not a failure: require the effective specific
+route to the phone subnet, and the opposite route to actual OMR. Observe
+forwarding, accept_ra, accept_ra_defrtr, accept_ra_rtr_pref, accept_ra_rt_info_min/max_plen,
+accept_ra_pinfo and autoconf on the backbone. Linux forwarding normally disables
+kernel RA acceptance unless accept_ra=2; kernel RIO acceptance additionally depends
+on route-information settings. HAOS also uses NetworkManager; inspect its connection
+policy and effective routes before attributing missing routes to kernel sysctls.
+A sysctl value alone does not prove how the managed host processed advertisements.
+Values and installed routes are evidence, not
+permission to write sysctls. Do not reuse Docker ULA as a site/Thread prefix or
+claim a generated site prefix is allocated. Validate actual phone route acceptance
+and necessary ICMPv6 with the networking owner.
+
+After separate network approval and acceptance, commission the confirmed Thread
+accessory with the confirmed phone on its chosen IoT SSID. Require actual remote
+Thread communication and Matter operation alongside Zigbee; historical leader/
+broadcast activity with zero peers is insufficient. A controlled same-app restart
+must recover both before auto-start/ongoing operation is accepted. Whether a
+successful candidate remains running and the final host firewall mode must be
+explicitly agreed. Do not move the phone or backbone as an implicit workaround.
+
+## Recovery, verified source contracts
+
+Supervisor version verified for this installation:2026.09.0. Its
+[pinned lifecycle code](https://github.com/home-assistant/supervisor/blob/2026.09.0/supervisor/apps/app.py#L971)
+shows update builds/pulls before stopping; rebuild removes container/image before
+building. Rebuild's finally block attempts startup when entry state was started,
+even after failure. Neither promises automatic working-image rollback. Restoring
+an old native backup replaces current data and is not code-only recovery.
+
+Preferred recovery after ANY new-app radio execution is to stop Z2M, disable OTBR
+in the SAME app, preserve its latest state in a verified native backup, then
+restart its unchanged released Zigbee binaries against current /data. Keep the
+original app stopped. If the new app never attempted radio initialization, the
+original with unchanged state/settings can instead be resumed. A failed import
+alone does not transfer ownership.
+
+Exact Supervisor preparation/recovery API sequence, NOT execution authority:
+
+1. GET `/addons/<slug>/info`; retain current full options privately.
+2. POST `/addons/<slug>/options` with the FULL existing `options` dictionary,
+   changing `otbr_enable` to false, plus top-level `boot: manual`,
+   `watchdog: false`, `auto_update: false`. This saves without restarting;
+   options writes replace, rather than merge, the dictionary.
+3. Stop consumers and POST `/addons/<slug>/stop`; verify stopped. Take/verify a
+   native current-state backup before code changes where possible. If current
+   state cannot be retained, stop and escalate rather than restore stale state.
+4. For an unavoidable code change, keep the same local app slug and source
+   directory, stage the reviewed recovery context, reload the store, and prefer
+   a distinct recovery package version through
+   POST `/store/addons/<slug>/update` with `backup:false, background:false`.
+   Existing options/data persist; recovery entrypoint refuses OTBR enabled.
+   Same-version rebuild is possible but removes the current image first and
+   therefore is not the preferred recovery path. Prebuilding on Desktop is not
+   proof the recovery image is installed/available on HA.
+5. Verify version, stopped state, complete options and current private data before
+   explicitly starting. No uninstall/remove-config and no restoration of older
+   state. A native backup of latest data remains a recovery aid, not proof peer
+   counters can be rewound.
+
+[Manager](https://github.com/home-assistant/supervisor/blob/2026.09.0/supervisor/apps/manager.py#L250)
+requires different installed/store versions for update and matching versions for
+rebuild; force does not bypass that check. [Options API](https://github.com/home-assistant/supervisor/blob/2026.09.0/supervisor/api/apps.py#L307),
+[store API](https://github.com/home-assistant/supervisor/blob/2026.09.0/supervisor/api/store.py#L62)
+and [persistent data](https://github.com/home-assistant/supervisor/blob/2026.09.0/supervisor/apps/data.py#L53)
+support the sequence. Exact installed CLI flags and authenticated invocation are
+still prerequisites; there is no arbitrary image-version rollback/exec endpoint.
+
+Require successful baseline Zigbee reads and a five-minute follow-up. One extra
+same-app restart may be included in explicit approval; September8 showed recovery
+after one extra restart but did not isolate the cause or prove counter-safe
+rollback for every device. If it fails, retain state/evidence and escalate. Do not
+flash, reset, re-pair, restore an old VM snapshot or switch to the stale original.
+Later migration back to the original needs its own current-state transfer plan.
+
+## Readiness, authority and effort
+
+Current state: package/importer/observations implemented locally,19 synthetic tests
+pass. Actual new image, s6, Supervisor persistence/failure, diagnostic capability,
+endpoint reconfiguration and real-peer behavior remain unverified. No production
+change was made. The proposal is maintained here; private operational mappings
+remain outside Git. Approval for peer coordination only permits sharing this work.
+
+A future approval request must name the exact package/window, temporary Zigbee
+outage, stopped backup/two-source import, sole-owner and endpoint changes, Thread
+activation, observation, current-state-preserving recovery and permitted restart,
+including state/counter uncertainty and whether to leave the service running.
+Network changes, commissioning/actuation, firmware and snapshot restoration are
+not silently bundled. Do not ask for execution approval while hard gates remain.
+
+Planning range before implementation was2–4h agent effort plus20–60min overlapping
+local build/test runtime; Docker availability and isolated Supervisor validation
+now dominate remaining uncertainty. Human decision/approval10–20min and physical
+commissioning5–15min are separate from an initial30–45min live observation/recovery
+budget. No reliable completion estimate for environment repair or an unselected
+Supervisor test environment is claimed. Stop/reassess if reliable recovery requires
+privileged machinery disproportionate to this fix.
+
+References: [HA app persistence/configuration](https://developers.home-assistant.io/docs/apps/configuration/),
+[local app testing](https://developers.home-assistant.io/docs/apps/testing/),
+[Linux IPv6 sysctls](https://www.kernel.org/doc/html/latest/networking/ip-sysctl.html),
+[upstream release configuration](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-silabs-multiprotocol/config.yaml).

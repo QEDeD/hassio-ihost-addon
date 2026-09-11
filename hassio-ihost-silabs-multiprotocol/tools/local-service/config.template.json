@@ -1,0 +1,67 @@
+{
+  "name": "Local focused Silicon Labs Multiprotocol",
+  "description": "Operator-maintained focused compatibility package; import-only by default",
+  "version": "0.1.0-local",
+  "slug": "codex_ihost_otbr_focused",
+  "arch": [
+    "amd64"
+  ],
+  "stage": "experimental",
+  "startup": "services",
+  "boot": "manual",
+  "init": false,
+  "host_network": true,
+  "host_ipc": false,
+  "host_pid": false,
+  "host_uts": true,
+  "hassio_api": true,
+  "discovery": [
+    "otbr"
+  ],
+  "privileged": [
+    "IPC_LOCK",
+    "NET_ADMIN"
+  ],
+  "full_access": false,
+  "apparmor": true,
+  "map": [
+    {
+      "type": "backup",
+      "read_only": true
+    },
+    {
+      "type": "share",
+      "read_only": true
+    }
+  ],
+  "ports": {
+    "9999/tcp": null,
+    "8080/tcp": null,
+    "8081/tcp": null
+  },
+  "options": {
+    "device": null,
+    "baudrate": "115200",
+    "flow_control": false,
+    "cpcd_trace": false,
+    "otbr_enable": false,
+    "otbr_log_level": "notice",
+    "otbr_firewall": false,
+    "local_service_mode": "prepare",
+    "local_observe": false,
+    "local_backbone": "eth0"
+  },
+  "schema": {
+    "device": "device(subsystem=tty)?",
+    "baudrate": "list(57600|115200|230400|460800|921600)",
+    "flow_control": "bool?",
+    "network_device": "str?",
+    "cpcd_trace": "bool",
+    "otbr_enable": "bool",
+    "otbr_log_level": "list(debug|info|notice|warning|error|critical|alert|emergency)",
+    "otbr_firewall": "bool",
+    "local_service_mode": "list(prepare|run)",
+    "local_observe": "bool",
+    "local_backbone": "str"
+  }
+}
