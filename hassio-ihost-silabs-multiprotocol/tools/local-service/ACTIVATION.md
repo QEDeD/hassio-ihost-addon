@@ -12,9 +12,11 @@ accessory. Cross-subnet commissioning and network policy belong to the networkin
 workstream. The radio task supplies actual OMR, backbone and return-route evidence.
 
 A supported same-app update carrying the exact fix is preferred if available.
-The September11 upstream check still showed1.0.2, with no newer add-on-path runtime
-change after its May6 release. Refresh availability before migration. Do not use
-the old broad candidate feed or add radio firmware/build-system changes.
+The September 11 expanded upstream review found no released replacement for the
+focused fix. iHost publishes only master, at 5a8d7dec067f9196ada5879f31f71cbf6d595bff;
+this branch contains it. Release 1.0.2's current AMD64 registry digest exactly
+matches make_context.py's pinned base. Refresh availability before migration.
+Do not use the old broad candidate feed or add radio firmware/build-system changes.
 
 The proposed immediate alternative is one operator-maintained local app using
 the pinned release plus five focused files. It replaces the original as sole
@@ -23,6 +25,59 @@ Original remains installed but stopped, with boot/watchdog disabled. Accepting
 that local maintenance obligation is a real user decision; otherwise wait for an
 appropriate upstream update. The disposable four-minute trial is not a durable
 commissioning service. No parallel owner or perpetual import mechanism is needed.
+
+## Wider upstream activity reviewed, September 11
+
+Coverage: all published iHost branches, all nine upstream PRs in all states,
+issue inventory and relevant discussions, and branch inventories for all 30
+public forks returned by GitHub. Divergent fork changes affecting Multiprotocol
+or OTBR were inspected. Related review inventoried seven branches in Home Assistant addons, 17 in HAOS
+and four in ot-br-posix, then examined relevant branch comparisons and PRs.
+This is a bounded public-source review, not a claim about private development or
+hardware validation of alternatives.
+
+- [iHost PR 78](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/pull/78),
+  Arno500/master at 03598f9b9c739d0293fa434f6899c1fa1efe5f7d, is open. It directly
+  removes the global and legacy FORWARD policy calls and creates Thread chains
+  in both firewall modes, but bundles NAT64, TREL, DNS and build changes. No
+  reviews or status checks were recorded. Its unguarded chain creation and
+  teardown do not establish our stale-state, partial-failure and bounded-cleanup
+  acceptance properties. It is relevant prior work, not a validated replacement.
+- [iHost PR 79](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/pull/79),
+  Arno500/trixie at 4c7d63cf10ed0cf70f31c64257663c3bdd8b5983, is open and upgrades
+  Debian/build dependencies without repairing the service firewall lifecycle.
+- Other material forks do not supply a better compatible base: juliusrickert's
+  1.1.0 starts from older 1.0.0 and adds NAT64 arguments while retaining the
+  firewall path; bepvte's mainline OTBR/Trixie rewrite removes CPC vendor and
+  MultiPAN build flags in favor of UART, so shared-radio compatibility is not
+  established. Fiveol expands privileges/disables AppArmor without a lifecycle
+  fix. The skypeachblue and antoniocifu standalone wrappers default to 1.0.0.
+- [Home Assistant PR 4500](https://github.com/home-assistant/addons/pull/4500)
+  already merged the same global-policy removal into standalone OTBR 2.16.6,
+  commit f73db363abdf89b3bc4d1479220278f6ca708e63. Its current multiprotocol source
+  still contains the offending calls. Multiprotocol automatic builds were
+  [disabled in PR 4555](https://github.com/home-assistant/addons/pull/4555).
+  The old alternate multiprotocol SDK branch has no firewall fix.
+- [Home Assistant draft PR 4803](https://github.com/home-assistant/addons/pull/4803)
+  is a broader host-input/output, multicast, routing and nftables redesign.
+  Maintainer discussion flags Docker/iptables interaction. Its contributor's
+  multi-router failure reports are not evidence of those failures here.
+  [PR 4818](https://github.com/home-assistant/addons/pull/4818) proposes newer
+  standalone OTBR binaries, not a multiprotocol update.
+- [OTBR PR 3325](https://github.com/openthread/ot-br-posix/pull/3325) adds an opt-in,
+  default-off nftables backend; adopting it requires build/runtime changes.
+  Merged [PR 3517](https://github.com/openthread/ot-br-posix/pull/3517) and
+  [PR 3521](https://github.com/openthread/ot-br-posix/pull/3521) provide additional
+  Docker lifecycle precedent, not a released iHost package. HAOS's native Docker
+  nftables migration remains [open](https://github.com/home-assistant/operating-system/issues/4588);
+  do not confuse it with the iptables-nft compatibility backend already tested.
+
+Decision: retain the exact released iHost base and narrow lifecycle overlay.
+The review corrects any implication that no overlapping unmerged work exists;
+it does not justify importing the broader changes. Existing real-traffic,
+current-state recovery and final firewall-policy gates remain. No source/runtime
+change, new trial authority, automatic monitoring or maintainer contact follows
+from this review.
 
 ## Pre-activation gates
 
