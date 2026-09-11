@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import selectors
 import signal
+import socket
 import subprocess
 import time
 
@@ -73,23 +74,55 @@ def prefixes_and_routes(text):
     return '\n'.join(result)
 
 
-def discovery_records(text):
+def srv_records(text, service):
+    """Read only SRV fields from dns-sd -Z; never retain instance or TXT data."""
     records = []
     for line in text.splitlines():
-        fields = line.split(';')
-        if len(fields) < 9 or fields[0] != '=':
+        match = re.fullmatch(r'(\S+)\s+SRV\s+\d+\s+\d+\s+(\d+)\s+(\S+)(?:\s+;.*)?', line)
+        if not match or not match[1].endswith('.' + service):
+            continue
+        port, target = int(match[2]), match[3]
+        if not 0 < port <= 65535 or len(target) > 253:
+            continue
+        # Only local mDNS targets; arguments never pass through a shell.
+        if not re.fullmatch(r'(?:[a-zA-Z0-9_-]{1,63}\.)+local\.', target, re.IGNORECASE):
+            continue
+        record = {'service': service, 'target': target, 'port': port}
+        if record not in records:
+            records.append(record)
+    return records
+
+
+def ipv6_records(text, target):
+    records = []
+    for line in text.splitlines():
+        fields = line.split()
+        if len(fields) != 7 or fields[1] != 'Add' or fields[4].lower() != target.lower():
             continue
         try:
-            address = ipaddress.ip_address(fields[7])
-            port = int(fields[8])
-            if not 0 < port <= 65535:
-                continue
+            interface = int(fields[3])
+            address = ipaddress.IPv6Address(fields[5].split('%', 1)[0])
         except ValueError:
             continue
-        records.append({'interface': fields[1], 'protocol': fields[2],
-                        'service': fields[4], 'target': fields[6],
-                        'address': str(address), 'port': port})
+        record = {'interface_index': interface, 'address': str(address)}
+        if record not in records:
+            records.append(record)
     return records
+
+
+def discovery_records(service, interface_index):
+    # -lo is used only by the isolated fixture. Production supplies the verified
+    # backbone's OS interface index. Each query exits itself after two seconds.
+    interface = ['-lo'] if interface_index == -1 else ['-i', str(interface_index)]
+    browse = capture(['dns-sd'] + interface + ['-t', '2', '-Z', service, 'local.'], 4)
+    candidates = srv_records(browse.get('output', ''), service)
+    records = []
+    for record in candidates[:4]:
+        addresses = capture(['dns-sd'] + interface + ['-t', '2', '-G', 'v6', record['target']], 4)
+        records.append(dict(record, address_status=addresses['status'],
+                            addresses=ipv6_records(addresses.get('output', ''), record['target'])))
+    return {'status': browse['status'], 'query_window_seconds': 2,
+            'truncated': len(candidates) > 4, 'records': records}
 
 
 def sample(backbone, discover=False):
@@ -120,12 +153,15 @@ def sample(backbone, discover=False):
                 sysctls[interface + '/' + setting] = 'unavailable'
     observations['sysctls_read_only'] = sysctls
     if discover:
-        records = {}
-        for service in ('_meshcop._udp', '_matterc._udp', '_matter._tcp'):
-            value = capture(['avahi-browse', '--parsable', '--resolve', '--terminate', service], 8)
-            records[service] = {'status': value['status'],
-                                'records': discovery_records(value.get('output', ''))}
-        observations['active_mdns_queries'] = records
+        try:
+            interface_index = socket.if_nametoindex(backbone)
+        except OSError:
+            observations['active_mdns_queries'] = {'status': 'unavailable',
+                                                   'error': 'backbone interface not found'}
+        else:
+            observations['active_mdns_queries'] = {
+                service: discovery_records(service, interface_index)
+                for service in ('_meshcop._udp', '_matterc._udp', '_matter._tcp')}
     return observations
 
 

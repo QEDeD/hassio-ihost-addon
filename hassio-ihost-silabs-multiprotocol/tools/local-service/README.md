@@ -95,17 +95,20 @@ it records20 samples with30-second gaps; bounded command runtimes add to duratio
 Commands are fixed, shell-free and output-limited. The process reads Thread role,
 OMR/network data, host IPv6 addresses/routes/rules and RA/RIO/forwarding sysctls.
 Only prefix/route sections of network data are logged; no dataset/key command is
-present. On the first/last samples it tries bounded active Avahi DNS-SD queries,
-retaining only interface, service, target, address and port, not TXT/instance data.
-Logs remain private. A command failure, timeout, OpenThread Error response or
-missing binary is explicit rather than interpreted as an empty topology.
+present. On the first/last samples it uses the installed dns-sd client and the
+existing mDNSResponder daemon on the verified backbone interface. Each browse
+and IPv6 address query has a two-second window and a four-second external bound;
+at most four SRV targets per service are resolved. It retains service, target,
+port, IPv6 address and interface index, not TXT/instance data. Results are bounded
+observations, not an exhaustive inventory; an empty result does not establish
+absence of devices. Only valid .local targets are resolved. Truncation and query
+failure are explicit. Logs remain private.
 
-Image inspection now confirms ot-ctl, ip, avahi-browse and dns-sd are installed.
-Avahi daemon/socket availability and actual resolved advertisements remain
-unverified (upstream uses mDNSResponder). Client presence alone does not establish
-a functioning discovery observation path. Select an existing compatible discovery
-client or approved observation point after image inspection; do not install an
-Avahi daemon or reflector into the radio app simply to satisfy this script.
+A local-only synthetic service with a spaced instance name, private TXT, SRV and
+AAAA was registered and resolved through the installed helper in both images.
+No network or radio was accessible, and normal /init did not run. This establishes
+the daemon/client/parser combination, not multicast delivery on the actual LAN,
+AppArmor acceptance or discovery of real accessories. No Avahi daemon is needed.
 The full fixed and recovery s6 graphs now compile. Actual OT CLI commands/socket,
 AppArmor and host namespace observations still need runtime verification.
 
@@ -137,8 +140,38 @@ AppArmor and host namespace observations still need runtime verification.
   `sha256:0bb322481674051d9171f5e07a3f74cf73fa9899c75f44523865f149a90212c0`.
   Neither image is published or installed in HA.
 
-Remaining gates: state continuity across code-image switches, isolated Supervisor
-persistence/failure rehearsal, real discovery/OT socket operation, authenticated
-control and endpoint reconfiguration. Synthetic tests do not prove radio-state
-integrity or successful Supervisor recovery. No production installation, restart,
-radio test or network modification was performed.
+## Completed isolated checks and remaining gates
+
+- All 21 preparation tests pass in WSL and the released Python 3.9.2 runtime.
+- Both updated images build; installed Python source hashes match, the five
+  focused runtime files are unchanged, and complete s6 graphs compile.
+- `check_dns_sd.py` passes against the installed helper in each image. Run it
+  only in an isolated Docker container with networking disabled, capabilities
+  dropped, read-only root/source, writable /run and /tmp tmpfs, and Python as
+  the entrypoint. It starts only mDNSResponder plus a local-only registration;
+  it never starts normal init, creates a Thread network or accesses a radio.
+- `check_image_switch.py` runs under Linux/WSL with Docker: fixed -> fixed ->
+  recovery -> fixed preserves two evolving synthetic state files and nondefault
+  options on one /data bind mount. OTBR-enabled recovery is refused before stub
+  init. This proves container continuity, not radio counter safety or Supervisor
+  update/backup behavior.
+- An isolated Supervisor 2026.09.0 rehearsal at commit
+  75e47083b96c97c46d411ea0292e5b699a7850c2 passed 15 tests: upstream running/stopped
+  update/rebuild and options cases, plus four synthetic continuity cases. Docker
+  and AppsData.save_data were mocked. This establishes Python lifecycle and
+  in-memory options behavior, not durable Supervisor persistence or native
+  backup/restore integration.
+
+Updated local images (neither published nor installed in HA):
+
+- `local/otbr-persistent-prep:0.1.0-dnssd`, manifest-list digest
+  `sha256:80e0fd44b7f77635a671d538029f029b070f864706a950063879bec2cc14d03a`.
+- `local/otbr-persistent-prep:0.1.1-recovery-dnssd`, manifest-list digest
+  `sha256:1ef03aefa520efb2f8e5310aa35eb30dc9342c98121f7a322e51baf6376c01e7`.
+
+Remaining gates: native Supervisor persistence/backup/failure integration,
+authenticated control and endpoint reconfiguration, then approved verification
+of real OT socket, host namespace, discovery and radio behavior. The documented
+access prerequisite must pass before installed SSH app role and helper handling
+can be checked. No production
+installation, restart, radio test or network modification was performed.

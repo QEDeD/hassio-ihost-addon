@@ -2,6 +2,7 @@ import importlib.util
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('observe', Path(__file__).with_name('observe.py'))
 o = importlib.util.module_from_spec(spec)
@@ -35,13 +36,33 @@ class ObservationTests(unittest.TestCase):
         self.assertIn('fd01::/64', result)
         self.assertNotIn('private', result)
 
-    def test_discovery_retains_srv_addresses_without_txt_or_instance(self):
-        text = '=;eth0;IPv6;private-name;_matter._tcp;local;device.local;fd00::2;5540;"private TXT"\n'
-        result = o.discovery_records(text)
-        self.assertEqual(result[0]['address'], 'fd00::2')
-        self.assertEqual(result[0]['port'], 5540)
-        self.assertNotIn('private', str(result))
-        self.assertEqual(o.discovery_records('=;x;x;x;x;x;x;bad;port;txt'), [])
+    def test_srv_records_exclude_txt_instance_and_invalid_targets(self):
+        text = ('Private._matter._tcp SRV 0 0 5540 fixture.local. ; comment\n'
+                'Private._matter._tcp TXT "private TXT"\n'
+                'Bad._matter._tcp SRV 0 0 999999 fixture.local.\n'
+                'Remote._matter._tcp SRV 0 0 443 external.example.\n')
+        self.assertEqual(o.srv_records(text, '_matter._tcp'),
+                         [{'service': '_matter._tcp', 'target': 'fixture.local.', 'port': 5540}])
+        self.assertNotIn('Private', str(o.srv_records(text, '_matter._tcp')))
+        self.assertEqual(o.srv_records(text, '_meshcop._udp'), [])
+
+    def test_ipv6_fields_and_interface_are_retained(self):
+        text = ('09:00:00 Add 40000002 7 fixture.local. fe80::17%eth0 120\n'
+                '09:00:00 Add 40000002 7 other.local. 2001:db8::1 120\n'
+                '09:00:00 Add 40000002 7 fixture.local. invalid 120\n')
+        self.assertEqual(o.ipv6_records(text, 'fixture.local.'),
+                         [{'interface_index': 7, 'address': 'fe80::17'}])
+
+    def test_discovery_bounds_queries_and_preserves_resolution_failure(self):
+        text = ''.join('P%d._matter._tcp SRV 0 0 5540 h%d.local.\n' % (i, i) for i in range(6))
+        with patch.object(o, 'capture', side_effect=[{'status': 'ok', 'output': text}] +
+                          [{'status': 'error'}] * 4) as capture:
+            result = o.discovery_records('_matter._tcp', 7)
+        self.assertTrue(result['truncated'])
+        self.assertEqual(len(result['records']), 4)
+        self.assertTrue(all(r['address_status'] == 'error' for r in result['records']))
+        self.assertEqual(capture.call_count, 5)
+        self.assertEqual(capture.call_args_list[0].args[0][:3], ['dns-sd', '-i', '7'])
 
 
 if __name__ == '__main__':

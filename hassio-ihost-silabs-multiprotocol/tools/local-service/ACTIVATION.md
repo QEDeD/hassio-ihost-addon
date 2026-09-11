@@ -87,18 +87,26 @@ from this review.
    entrypoint refusal, normal state-preserving restarts with stub init, and
    same-volume sentinel survival while switching code. Confirm default automatic
    attach behavior and actual observation binaries. Both images now build, full s6 graphs compile,
-   installed files match and19 tests pass on released Python3.9.2. Normal /init,
-   stub-init image switching and actual diagnostic operation remain unverified.
+   installed files match and 21 tests pass on released Python 3.9.2. Stub-init
+   image switching preserves evolving synthetic data/options, and local-only
+   DNS-SD resolution passes through the installed observer in both images.
+   Normal /init, production multicast and real radio operation remain unverified.
 2. In an isolated Supervisor test environment, verify stopped-app update and
    failure handling, options persistence, complete current-state backup and
    restoration characteristics. Do not run normal /init with a radio. Source
-   contracts below do not replace this acceptance gate. No isolated Supervisor
-   environment has yet been selected or verified.
+   contracts below do not replace this acceptance gate. A pinned, isolated
+   Supervisor 2026.09.0 mocked rehearsal passed 15 lifecycle/options tests.
+   Docker and save_data were mocked: native backup/restore and durable Supervisor
+   integration remain unverified; the real-container continuity test is separate.
 3. Prepare the supported options/reconfiguration client. Full option writes,
    authentication path, explicit Z2M endpoint and existing HA OTBR integration
    reconfiguration must be verified without editing .storage directly. Existing
    SSH access is to a separate container, not a host exec shell. Do not introduce
-   privileged access or export credentials just to satisfy these steps.
+   privileged access or export credentials just to satisfy these steps. Installed
+   SSH manager role and helper handling remain an acceptance check. The Core HTTP proxy
+   excludes this options path; ha-api POST /api/hassio/addons/.../options is not
+   a supported shortcut. Verify the installed in-app Bashio Supervisor helper
+   after authorized access unlock; keep credentials inside that app.
 4. Resolve the discovery observation gap in README. Collect actual SRV targets,
    ports and AAAA from the relevant links; management REST/WebSocket endpoints
    are not accessory advertisements. No arbitrary Supervisor container-exec API
@@ -217,9 +225,11 @@ Later migration back to the original needs its own current-state transfer plan.
 ## Readiness, authority and effort
 
 Current state: package/importer/observations implemented locally; both images build,
-s6 graphs compile and19 synthetic tests pass under released Python3.9.2. Normal
-startup/image-switch continuity, Supervisor persistence/failure, actual diagnostic
-operation, endpoint reconfiguration and real-peer behavior remain unverified. No production
+s6 graphs compile and 21 tests pass under released Python 3.9.2. Synthetic
+same-volume image switching and installed local-only DNS-SD checks pass; 15 mocked
+Supervisor lifecycle/options tests pass. Native Supervisor persistence/backup
+integration, authenticated reconfiguration, normal radio startup and real-peer
+behavior remain unverified. No production
 change was made. The proposal is maintained here; private operational mappings
 remain outside Git. Approval for peer coordination only permits sharing this work.
 
@@ -231,11 +241,11 @@ Network changes, commissioning/actuation, firmware and snapshot restoration are
 not silently bundled. Do not ask for execution approval while hard gates remain.
 
 Planning range before implementation was2–4h agent effort plus20–60min overlapping
-local build/test runtime; the Docker startup blocker is now resolved. Isolated
-Supervisor validation and discovery/control readiness dominate remaining uncertainty. Human decision/approval10–20min and physical
+local build/test runtime; the Docker startup blocker is now resolved. Native
+Supervisor recovery integration and control readiness dominate remaining uncertainty. Human decision/approval10–20min and physical
 commissioning5–15min are separate from an initial30–45min live observation/recovery
-budget. No reliable completion estimate for environment repair or an unselected
-Supervisor test environment is claimed. Stop/reassess if reliable recovery requires
+budget. No reliable completion estimate for native Supervisor recovery integration
+is claimed; the mocked rehearsal does not discharge that gate. Stop/reassess if reliable recovery requires
 privileged machinery disproportionate to this fix.
 
 References: [HA app persistence/configuration](https://developers.home-assistant.io/docs/apps/configuration/),
