@@ -31,8 +31,9 @@ commissioning service. No parallel owner or perpetual import mechanism is needed
    production secrets: package schema/labels, full s6 graph, five runtime hashes,
    entrypoint refusal, normal state-preserving restarts with stub init, and
    same-volume sentinel survival while switching code. Confirm default automatic
-   attach behavior and actual observation binaries. These image checks remain
-   blocked by unavailable Docker at this checkpoint.
+   attach behavior and actual observation binaries. Both images now build, full s6 graphs compile,
+   installed files match and19 tests pass on released Python3.9.2. Normal /init,
+   stub-init image switching and actual diagnostic operation remain unverified.
 2. In an isolated Supervisor test environment, verify stopped-app update and
    failure handling, options persistence, complete current-state backup and
    restoration characteristics. Do not run normal /init with a radio. Source
@@ -160,9 +161,10 @@ Later migration back to the original needs its own current-state transfer plan.
 
 ## Readiness, authority and effort
 
-Current state: package/importer/observations implemented locally,19 synthetic tests
-pass. Actual new image, s6, Supervisor persistence/failure, diagnostic capability,
-endpoint reconfiguration and real-peer behavior remain unverified. No production
+Current state: package/importer/observations implemented locally; both images build,
+s6 graphs compile and19 synthetic tests pass under released Python3.9.2. Normal
+startup/image-switch continuity, Supervisor persistence/failure, actual diagnostic
+operation, endpoint reconfiguration and real-peer behavior remain unverified. No production
 change was made. The proposal is maintained here; private operational mappings
 remain outside Git. Approval for peer coordination only permits sharing this work.
 
@@ -174,8 +176,8 @@ Network changes, commissioning/actuation, firmware and snapshot restoration are
 not silently bundled. Do not ask for execution approval while hard gates remain.
 
 Planning range before implementation was2–4h agent effort plus20–60min overlapping
-local build/test runtime; Docker availability and isolated Supervisor validation
-now dominate remaining uncertainty. Human decision/approval10–20min and physical
+local build/test runtime; the Docker startup blocker is now resolved. Isolated
+Supervisor validation and discovery/control readiness dominate remaining uncertainty. Human decision/approval10–20min and physical
 commissioning5–15min are separate from an initial30–45min live observation/recovery
 budget. No reliable completion estimate for environment repair or an unselected
 Supervisor test environment is claimed. Stop/reassess if reliable recovery requires

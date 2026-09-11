@@ -100,13 +100,14 @@ retaining only interface, service, target, address and port, not TXT/instance da
 Logs remain private. A command failure, timeout, OpenThread Error response or
 missing binary is explicit rather than interpreted as an empty topology.
 
-Readiness limit: Avahi client/daemon availability in the released image is NOT
-established (upstream uses mDNSResponder). The observation code reports missing
-Avahi but does not solve that dependency. Select an existing compatible discovery
+Image inspection now confirms ot-ctl, ip, avahi-browse and dns-sd are installed.
+Avahi daemon/socket availability and actual resolved advertisements remain
+unverified (upstream uses mDNSResponder). Client presence alone does not establish
+a functioning discovery observation path. Select an existing compatible discovery
 client or approved observation point after image inspection; do not install an
 Avahi daemon or reflector into the radio app simply to satisfy this script.
-Actual OT CLI commands/socket, s6 graph, AppArmor and host namespace observations
-also require released-image validation before live use.
+The full fixed and recovery s6 graphs now compile. Actual OT CLI commands/socket,
+AppArmor and host namespace observations still need runtime verification.
 
 ## Evidence, 2026-09-11
 
@@ -121,11 +122,23 @@ also require released-image validation before live use.
   archive/state-lifecycle issues; it did not independently execute tests.
 - Upstream still lists1.0.2; latest add-on-path changes found were the May6 README
   and1.0.2 update. No released artifact containing this exact fix was established.
-- Docker engine was unavailable. An ordinary Desktop startup did not make it
-  available during this preparation; no repair was attempted. Therefore NO new
-  image build, complete s6 graph compile, released-Python tests, image-switch
-  sentinel test or Supervisor persistence/failure rehearsal has passed.
+- Docker initially blocked image validation. Reusing the prior successful runtime-
+  directory quarantine restored the engine; its settings were unchanged and all
+  five retained OTBR images were present. An isolated hello-world test passed.
+- Both generated images built from the pinned base. Their full s6 graphs compile,
+  installed preparation Python files match source, and all five fixed runtime
+  files match the focused overlay. Recovery has the explicit OTBR-off environment.
+- All19 tests also pass under the fixed image's Python3.9.2. Containers used no
+  network, a read-only root, no capabilities, no-new-privileges and no radio or
+  host mounts. Normal /init and real radio services were never executed.
+- Fixed local image manifest-list digest:
+  `sha256:1ddfa4bcc9e4f89d06ec01ac74d6076bab42544749694d8ef236675a87fa2370`.
+  Recovery local image manifest-list digest:
+  `sha256:0bb322481674051d9171f5e07a3f74cf73fa9899c75f44523865f149a90212c0`.
+  Neither image is published or installed in HA.
 
-Stop here until the image-validation blocker is resolved. This source-level
-increment is useful but does not make activation execution-ready. No production
-installation, restart, radio test or networking modification was performed.
+Remaining gates: state continuity across code-image switches, isolated Supervisor
+persistence/failure rehearsal, real discovery/OT socket operation, authenticated
+control and endpoint reconfiguration. Synthetic tests do not prove radio-state
+integrity or successful Supervisor recovery. No production installation, restart,
+radio test or network modification was performed.
