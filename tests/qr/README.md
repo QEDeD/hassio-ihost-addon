@@ -1,6 +1,6 @@
 # Local commissioning QR regression checks
 
-The add-on patch targets SiliconLabs/simplicity_sdk commit
+The app patch targets SiliconLabs/simplicity_sdk commit
 `da661283f301b53eec04d1016009e60bc7e34a1f`, under
 `util/third_party/ot-br-posix/src/web/web-service/frontend`.
 It is applied in the existing SDK patch stage of the multiprotocol Dockerfile.
@@ -100,4 +100,4 @@ With Chrome already installed, use another terminal:
 
 Stop the loopback server when finished. The workflow `local-commissioning-qr.yml`
 runs these checks with a 15-minute limit and automatic server/browser cleanup.
-It does not build the native add-on, deploy it, or upload screenshots/artifacts.
+It does not build the native app, deploy it, or upload screenshots/artifacts.
