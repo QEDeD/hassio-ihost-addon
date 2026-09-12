@@ -107,17 +107,18 @@ def drain(stream):
 
 
 def members(stream, budget=MAX_ARCHIVE):
-    """Small strict tar reader: reject extension/link/sparse headers, duplicates.
+    """Bounded tar reader: permit only timestamp-only per-file PAX metadata.
 
-    HA's observed archives use plain directory/regular headers. Unlike TarFile's
-    extension processing, no attacker-sized PAX/long-name allocation can occur.
+    Paths/sizes never come from extension records; links, sparse files and other
+    extensions remain rejected. PAX allocation is bounded to 128 bytes.
     """
-    seen, used = set(), 0
+    seen, used, pending_timestamp = set(), 0, False
     for _ in range(256):
         block = exact(stream, 512)
         used += 512
         require(used <= budget, 'archive work limit')
         if block == bytes(512):
+            require(not pending_timestamp, 'dangling PAX timestamp')
             require(exact(stream, 512) == bytes(512), 'invalid archive end')
             used += 512
             while True:
@@ -127,6 +128,19 @@ def members(stream, budget=MAX_ARCHIVE):
                 used += len(tail)
                 require(used <= budget and not any(tail), 'invalid archive tail')
         info = tarfile.TarInfo.frombuf(block, 'utf-8', 'strict')
+        if info.type == tarfile.XHDTYPE:
+            require(not pending_timestamp, 'consecutive PAX headers')
+            require(0 < info.size <= 128, 'unsupported PAX metadata size')
+            require(used + 512 <= budget, 'archive work limit')
+            record = exact(stream, info.size)
+            require(re.fullmatch(rb'[1-9][0-9]* mtime=-?[0-9]+(?:\.[0-9]+)?\n', record)
+                    is not None, 'unsupported PAX metadata')
+            require(int(record.split(b' ', 1)[0]) == len(record), 'invalid PAX record length')
+            require(not any(exact(stream, 512 - info.size)), 'invalid PAX padding')
+            used += 512
+            pending_timestamp = True
+            continue
+        pending_timestamp = False
         require(info.type in (tarfile.REGTYPE, tarfile.AREGTYPE, tarfile.DIRTYPE),
                 'unsupported archive member type')
         name = info.name

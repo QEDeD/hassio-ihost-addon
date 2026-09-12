@@ -239,5 +239,39 @@ class StateTests(unittest.TestCase):
             start.assert_called_once_with('/init', ['/init'])
 
 
+
+class PaxTimestampTests(unittest.TestCase):
+    def archive(self, record):
+        header = tarfile.TarInfo('././@PaxHeader')
+        header.type = tarfile.XHDTYPE
+        header.size = len(record)
+        prefix = header.tobuf(format=tarfile.USTAR_FORMAT) + record + bytes((-len(record)) % 512)
+        return prefix, tar_bytes([('data/state', b'synthetic', tarfile.REGTYPE)])
+
+    def test_real_format_timestamp_only_is_ignored(self):
+        record = b'28 mtime=1788895961.2191470\n'
+        self.assertEqual(len(record), 28)
+        prefix, body = self.archive(record)
+        result = []
+        for name, info, payload in g.members(io.BytesIO(prefix + body)):
+            result.append((name, payload.read(info.size)))
+        self.assertEqual(result, [('data/state', b'synthetic')])
+
+    def test_unsafe_or_malformed_metadata_rejected(self):
+        for record in [b'20 path=../../evil\n', b'12 size=999\n', b'12 mtime=1\n',
+                       b'11 mtime=1\n11 mtime=2\n', b'x' * 129, b'']:
+            with self.subTest(record=record):
+                prefix, body = self.archive(record)
+                with self.assertRaises(ValueError):
+                    list(g.members(io.BytesIO(prefix + body)))
+
+    def test_dangling_consecutive_and_budget_rejected(self):
+        prefix, body = self.archive(b'11 mtime=1\n')
+        for archive, budget in [(prefix + bytes(1024), 4096),
+                                (prefix + prefix + body, 4096),
+                                (prefix + body, 512)]:
+            with self.assertRaises(ValueError):
+                list(g.members(io.BytesIO(archive), budget=budget))
+
 if __name__ == '__main__':
     unittest.main()

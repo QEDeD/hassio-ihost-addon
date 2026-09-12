@@ -31,7 +31,7 @@ def generate(destination, recovery=False):
             raise ValueError('focused runtime identity mismatch: ' + name)
     config = json.loads((HERE / 'config.template.json').read_text())
     if recovery:
-        config['version'] = '0.1.1-recovery'
+        config['version'] = '0.1.3-recovery'
     destination.mkdir(parents=True)
     def write(name, value):
         path = destination / name

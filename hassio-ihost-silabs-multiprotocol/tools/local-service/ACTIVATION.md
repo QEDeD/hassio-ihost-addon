@@ -111,6 +111,28 @@ The next preparation is a concrete current-state-preserving candidate handover a
 recovery check, followed by separate approval for the Zigbee interruption/activation.
 No radio cutover was authorized by this fixture test.
 
+## September 12 candidate preparation
+
+Both actual fixed and recovery packages built successfully on HA without starting
+radio services. The fixed candidate is installed, stopped, manual-boot, in prepare
+mode with no radio configured. Original radio, Zigbee2MQTT and Matter remain running.
+
+A full read of the retained Thread backup exposed a timestamp-only per-file PAX
+header rejected by the original importer. The parser now accepts only one bounded,
+length-validated mtime record (maximum 128 bytes); path/size overrides, global PAX,
+links, sparse entries, malformed padding and consecutive/dangling extensions remain
+rejected. All 24 preparation tests pass, and the complete retained archive now
+passes bounded validation without importing radio state. Independent review of the
+parser logic found no required changes. Source fingerprints remain private.
+
+Package versions advance to 0.1.2-local and 0.1.3-recovery for this compatibility
+correction. A fresh stopped-original Zigbee backup must still be captured during
+approved handover; a running-state or older archive is not a substitute. Z2M uses
+the original app hostname and will need its endpoint switched during that handover.
+No radio start, state import, integration replacement or Zigbee interruption has
+been performed. The actual-device acceptance checks remain part of the approved
+activation window, not additional unrelated preparation projects.
+
 ## Pre-activation gates
 
 1. Generate fixed/recovery contexts from the reviewed source. Validate both on

@@ -73,8 +73,8 @@ The importer selects newer retained Thread state and fresh stopped-original
 Zigbee state independently. It never imports another app's options or image. It
 reads through the complete archives, including members after the desired files,
 to reject late duplicates and invalid gzip/tar endings. Image bytes are streamed
-and discarded, not extracted or buffered in memory. It refuses links, sparse or
-extension headers, unsafe paths, unexpected destination state, and selected-file
+and discarded, not extracted or buffered in memory. It accepts bounded per-file PAX metadata only when it contains a single timestamp.
+It refuses links, sparse or other extension headers, unsafe paths, unexpected destination state, and selected-file
 fingerprint mismatches. Maximum outer/decompressed archive work is 512 MiB per
 source, fewer than 256 headers, selected files at most 1 MiB. Unsupported future
 backup formats fail closed; these bounds are not promises of general backup
