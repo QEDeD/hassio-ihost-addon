@@ -216,6 +216,7 @@ RUN \
     && echo "88 openthread" > /etc/iproute2/rt_tables.d/openthread.conf \
     # Mimic otbr_install \
     && (./script/cmake-build \
+        -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_TESTING=OFF \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DOTBR_FEATURE_FLAGS=ON \
