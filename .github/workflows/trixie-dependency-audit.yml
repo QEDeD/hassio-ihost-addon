@@ -1,0 +1,34 @@
+name: Isolated PR79 Trixie dependency and full-build audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/trixie-dependency-audit-20260912]
+    paths:
+      - .github/workflows/trixie-dependency-audit.yml
+      - hassio-ihost-silabs-multiprotocol/Dockerfile
+      - hassio-ihost-silabs-multiprotocol/build.yaml
+      - hassio-ihost-silabs-multiprotocol/otbr-patches/**
+      - hassio-ihost-silabs-multiprotocol/zigbeed-patches/**
+      - hassio-ihost-silabs-multiprotocol/tests/trixie-audit/**
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  inventory-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Inventory pinned images and attempt complete AMD64 PR79 build
+        shell: bash
+        run: |
+          audit=hassio-ihost-silabs-multiprotocol/tests/trixie-audit
+          bash -n "$audit/run.sh"
+          bash -n "$audit/inventory.sh"
+          shellcheck -x -P SCRIPTDIR "$audit/run.sh" "$audit/inventory.sh"
+          python3 -m py_compile "$audit/prepare.py"
+          bash "$audit/run.sh"
