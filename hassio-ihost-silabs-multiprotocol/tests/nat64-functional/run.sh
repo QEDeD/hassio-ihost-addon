@@ -6,7 +6,10 @@ if [[ ${GITHUB_ACTIONS:-} != true || ${RUNNER_ENVIRONMENT:-} != github-hosted ]]
     exit 1
 fi
 sdk_revision=da661283f301b53eec04d1016009e60bc7e34a1f
-fixture_dir="$(mktemp -d "${RUNNER_TEMP:?}/otbr-functional.XXXXXX")"
+# dumpcap drops DAC-override capabilities. Use a traversable scratch hierarchy,
+# without changing permissions on GitHub's runner-owned home/work directories.
+fixture_dir="$(mktemp -d /tmp/otbr-functional.XXXXXX)"
+chmod 755 "$fixture_dir"
 sdk="$fixture_dir/sdk"
 venv="$fixture_dir/venv"
 
@@ -45,6 +48,21 @@ sudo mkdir -p /tmp/thread-wireshark
 for tool in dumpcap tshark mergecap; do
     sudo ln -s "$(command -v "$tool")" "/tmp/thread-wireshark/$tool"
 done
+
+# Fail cheaply before compilation if the exact capture working directory is not
+# usable. Capture only an isolated dummy interface, never runner/Internet traffic.
+namei -l "$ot"
+sudo chown root "$ot"
+sudo ip link add otbr-preflight type dummy
+trap 'sudo ip link delete otbr-preflight 2>/dev/null || true' EXIT
+sudo ip link set otbr-preflight up
+sudo timeout 10 dumpcap -i otbr-preflight -a duration:1 -w "$ot/preflight.pcap"
+sudo test -s "$ot/preflight.pcap"
+sudo rm "$ot/preflight.pcap"
+sudo ip link delete otbr-preflight
+trap - EXIT
+sudo chown "$(id -u):$(id -g)" "$ot"
+printf 'PASS: capture access in exact functional-test directory before build\n'
 
 export THREAD_VERSION=1.4 VIRTUAL_TIME=0 PACKET_VERIFICATION=0
 export REFERENCE_DEVICE=1 BORDER_ROUTING=1 NAT64=1
