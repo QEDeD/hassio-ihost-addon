@@ -39,6 +39,7 @@ done
 printf 'CPC_EFFECTIVE_BUILD_SETTINGS\n'
 find /audit/cpc-build -name flags.make -exec cat {} \;
 grep -E 'CMAKE_(C|CXX)_COMPILER|CMAKE_(C|CXX)_FLAGS|CMAKE_SYSTEM_PROCESSOR' /audit/cpc-build/CMakeCache.txt || true
+find /audit/cpc-build -name CMakeSystem.cmake -exec cat {} \;
 printf 'ZIGBEE_GENERATED_BUILD_SETTINGS\n'
 grep -nE 'C_FLAGS|CFLAGS|CPPFLAGS|TIME_BITS|FILE_OFFSET_BITS|march|mfloat|\.a([[:space:]]|$)' "$zigbee/zigbeed.Makefile" || true
 printf 'ZIGBEE_ARCHIVE_LIST\n'

@@ -39,7 +39,7 @@ timeout 180s docker pull --platform "$platform" "$base"
 docker image inspect --format '{{.Architecture}} {{.Os}} {{json .RepoDigests}}' "$base"
 container="$(docker create --platform "$platform" --entrypoint /bin/true "$base")"
 trap 'docker rm -f "$container" >/dev/null 2>&1 || true' EXIT
-docker cp "$container:/etc/os-release" "$AUDIT_CONTEXT/base-os-release"
+docker cp -L "$container:/etc/os-release" "$AUDIT_CONTEXT/base-os-release"
 cat "$AUDIT_CONTEXT/base-os-release"
 grep -q 'VERSION_CODENAME=trixie' "$AUDIT_CONTEXT/base-os-release"
 docker rm "$container" >/dev/null
