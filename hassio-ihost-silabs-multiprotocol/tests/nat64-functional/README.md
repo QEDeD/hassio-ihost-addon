@@ -40,3 +40,8 @@ The disposable checkout normalizes one pinned node.py argument: three sysctls
 were passed as a single value to Popen. It now passes each through its own
 --sysctl option. Intended settings and test assertions remain unchanged; an exact
 source-match assertion prevents silently applying this adaptation elsewhere.
+
+Fixture compatibility: capture uses a traversable `/tmp` checkout and first
+verifies dumpcap access on an isolated dummy interface. Ubuntu 22.04 provides the
+BIND SysV service as `named`; a test-image-only `bind9` alias preserves the pinned
+DNS test's service commands without changing its assertions or protocol waits.

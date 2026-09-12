@@ -72,7 +72,7 @@ export PORT_OFFSET=47 OTBR_DOCKER_IMAGE=otbr-nat64-functional
 # BASE_IMAGE is an existing upstream argument. Jammy is a simulation-only base;
 # this does not upgrade the iHost image or alter the pinned OTBR/OpenThread source.
 # SDK root is required by Silicon Labs' modified COPY paths.
-docker build --progress=plain -t "$OTBR_DOCKER_IMAGE" \
+docker build --progress=plain -t "${OTBR_DOCKER_IMAGE}-compiled" \
     -f "$sdk/util/third_party/ot-br-posix/etc/docker/Dockerfile" \
     --build-arg BASE_IMAGE=ubuntu:22.04 \
     --build-arg INFRA_IF_NAME=eth0 --build-arg BORDER_ROUTING=1 \
@@ -82,6 +82,13 @@ docker build --progress=plain -t "$OTBR_DOCKER_IMAGE" \
     --build-arg MDNS=mDNSResponder --build-arg WEB_GUI=0 --build-arg REST_API=0 \
     --build-arg 'OTBR_OPTIONS=-DOTBR_FEATURE_FLAGS=ON -DOTBR_NAT64=ON -DOTBR_DNS_UPSTREAM_QUERY=ON -DOTBR_TREL=OFF' \
     "$sdk"
+
+# Jammy packages the SysV service as named; pinned tests still call bind9.
+# Supply only a test-image alias so the upstream test source stays unchanged.
+docker build --progress=plain -t "$OTBR_DOCKER_IMAGE" - <<DOCKERFILE
+FROM ${OTBR_DOCKER_IMAGE}-compiled
+RUN test -x /etc/init.d/named && test ! -e /etc/init.d/bind9 && ln -s named /etc/init.d/bind9
+DOCKERFILE
 
 docker run --rm --network none --entrypoint bash "$OTBR_DOCKER_IMAGE" -ec '
     for option in OTBR_FEATURE_FLAGS OTBR_NAT64 OTBR_DNS_UPSTREAM_QUERY; do
