@@ -98,3 +98,28 @@ jobs:
 
       - name: Verify released s6 NAT64 startup and restart behavior
         run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-s6.sh
+
+  nat64-packets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Verify scoped IPv4 packets in isolated namespaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          addon=hassio-ihost-silabs-multiprotocol
+          shellcheck -x -P SCRIPTDIR "$addon/tests/test-otbr-nat64-kernel.sh"
+          docker build -f "$addon/tests/nat64-kernel/Dockerfile" \
+            -t local/otbr-nat64-kernel "$addon"
+          docker run --rm --network none --read-only \
+            --cap-drop ALL --cap-add NET_ADMIN --cap-add NET_RAW --cap-add SYS_ADMIN \
+            --security-opt no-new-privileges --pids-limit 128 \
+            --sysctl net.ipv4.ip_forward=1 \
+            --sysctl net.ipv4.conf.all.rp_filter=0 \
+            --sysctl net.ipv4.conf.default.rp_filter=0 \
+            --tmpfs /run:rw,nosuid,nodev,noexec,size=1m \
+            --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
+            local/otbr-nat64-kernel
