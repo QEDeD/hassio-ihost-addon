@@ -1,7 +1,7 @@
 ARG BUILDER_IMAGE
 FROM --platform=linux/amd64 ${BUILDER_IMAGE}
 ARG SDK_REVISION
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates git python3 cmake crossbuild-essential-armhf
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates git python3 cmake make crossbuild-essential-armhf
 WORKDIR /probe
 RUN git clone --depth 1 --filter=blob:none --sparse --branch v2024.12.1-0 https://github.com/SiliconLabs/simplicity_sdk.git sdk \
     && test "$(git -C sdk rev-parse HEAD)" = "$SDK_REVISION" \
