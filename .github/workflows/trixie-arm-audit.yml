@@ -1,0 +1,33 @@
+name: Isolated Trixie ARM cross-build and ABI audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/trixie-dependency-audit-20260912]
+    paths:
+      - .github/workflows/trixie-arm-audit.yml
+      - hassio-ihost-silabs-multiprotocol/tests/arm-audit/**
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  cross-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [armv7, aarch64]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+      - name: Validate bounded audit scripts
+        run: |
+          audit=hassio-ihost-silabs-multiprotocol/tests/arm-audit
+          bash -n "$audit/run.sh"
+          bash -n "$audit/probe.sh"
+          shellcheck -x -P SCRIPTDIR "$audit/run.sh" "$audit/probe.sh"
+      - name: Build actual CPC and generated Zigbee for target and inspect ABI
+        run: bash hassio-ihost-silabs-multiprotocol/tests/arm-audit/run.sh "${{ matrix.architecture }}"
