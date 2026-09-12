@@ -29,5 +29,10 @@ jobs:
           bash -n "$audit/run.sh"
           bash -n "$audit/probe.sh"
           shellcheck -x -P SCRIPTDIR "$audit/run.sh" "$audit/probe.sh"
-      - name: Build actual CPC and generated Zigbee for target and inspect ABI
+      - name: Enable ARM emulation on this disposable runner
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130
+        with:
+          image: tonistiigi/binfmt@sha256:400a4873b838d1b89194d982c45e5fb3cda4593fbfd7e08a02e76b03b21166f0
+          platforms: arm,arm64
+      - name: Build complete target image and inspect isolated runtime
         run: bash hassio-ihost-silabs-multiprotocol/tests/arm-audit/run.sh "${{ matrix.architecture }}"

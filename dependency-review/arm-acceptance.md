@@ -46,3 +46,26 @@ final runtime linkage, physical coexistence and HAOS kernel acceptance.
 Commands: tests/arm-audit/run.sh armv7 and aarch64 via trixie-arm-audit.yml.
 Inputs and runtime bounds are in the scripts. No artifact upload or credentials
 are needed; logs contain public source/build metadata only.
+
+## First execution and next cycle
+
+Run34721866430 at02cf539 stopped before compilation: docker cp did not follow
+/etc/os-release's symlink. Fixture correction7be6deb uses docker cp -L.
+https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34721942831 passed both
+actual cross builds at7be6deb. Both target images identify as Trixie. All three
+inspected artifacts (cpcd, libcpc, zigbeed) match their ARM machine/class; ARMv7
+is hard-float. Default and explicit time64 probes both measured time_t/off_t8,
+timespec/timeval16, alignments8 and member offsets8 on both architectures.
+ARMv7 defines _TIME_BITS64 and _FILE_OFFSET_BITS64 by default; its compiled
+binaries reference glibc time64 entry points. The inaccurate CMake processor
+label persisted but did not cause wrong-machine binaries in this build.
+
+The first archive search found no archives under output; it did not establish
+vendor-archive compatibility. Source/log inspection shows SDK-relative inputs.
+Next cycle resolves .a inputs from the actual make dry-run and requires archive
+hash/member/symbol inspection rather than silently treating no matches as a pass.
+Then it builds the complete unchanged target image (including native OTBR) under
+pinned QEMU, with a20-minute build bound, and reuses installed linkage inventory
+and no-radio native web probes. This adds no physical-radio or HAOS-kernel claim.
+The QEMU registration runs only on disposable hosted runners. No changes to the
+operator's Docker installation or production deployment are involved.

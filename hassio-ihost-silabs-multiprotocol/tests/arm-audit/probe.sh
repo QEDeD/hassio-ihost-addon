@@ -42,8 +42,7 @@ grep -E 'CMAKE_(C|CXX)_COMPILER|CMAKE_(C|CXX)_FLAGS|CMAKE_SYSTEM_PROCESSOR' /aud
 find /audit/cpc-build -name CMakeSystem.cmake -exec cat {} \;
 printf 'ZIGBEE_GENERATED_BUILD_SETTINGS\n'
 grep -nE 'C_FLAGS|CFLAGS|CPPFLAGS|TIME_BITS|FILE_OFFSET_BITS|march|mfloat|\.a([[:space:]]|$)' "$zigbee/zigbeed.Makefile" || true
-printf 'ZIGBEE_ARCHIVE_LIST\n'
-find "$zigbee" -name '*.a' -print
+cat "$zigbee/zigbeed.Makefile"
 # Target object symbol sizes reveal ABI without executing target binaries.
 cat > /tmp/abi.c <<'C'
 #include <stddef.h>
@@ -68,11 +67,31 @@ for mode in default explicit64; do
     printf 'ABI_MACROS mode=%s\n' "$mode"
     "$compiler" -std=gnu99 "${flags[@]}" -dM -E /tmp/abi.c | grep -E '_TIME_BITS|_FILE_OFFSET_BITS|__TIMESIZE|__USE_TIME_BITS64|__WORDSIZE'
 done
-printf 'VENDOR_ARCHIVE_TIME_REFERENCES\n'
-# Undefined symbol names are clues, not proof of every private ABI boundary.
-find "$zigbee" -name '*.a' -print0 | while IFS= read -r -d '' archive; do
+printf 'ACTUAL_ZIGBEE_BUILD_COMMANDS\n'
+cd "$zigbee"
+make -n -B -f zigbeed.Makefile AR="${DEBIAN_CROSS_PREFIX}-ar" \
+    CC="$compiler" LD="$compiler" CXX="${DEBIAN_CROSS_PREFIX}-g++" \
+    C_FLAGS='-std=gnu99 -DEMBER_MULTICAST_TABLE_SIZE=16' debug > /tmp/zigbee-build-commands.txt
+cat /tmp/zigbee-build-commands.txt
+python3 - <<'PY'
+from pathlib import Path
+import shlex
+archives = set()
+for line in Path('/tmp/zigbee-build-commands.txt').read_text().splitlines():
+    for token in shlex.split(line):
+        if token.endswith('.a'):
+            archives.add(str(Path(token).resolve(strict=True)))
+assert archives, 'No linked archives resolved; inspect actual linker inputs'
+Path('/tmp/linked-archives').write_text('\n'.join(sorted(archives))+'\n')
+PY
+printf 'ACTUALLY_LINKED_VENDOR_ARCHIVES\n'
+while IFS= read -r archive; do
     printf 'ARCHIVE %s\n' "$archive"
     sha256sum "$archive"
-    "$nm" -A -u "$archive" 2>/dev/null | grep -Ei 'time|stat|select|poll' || true
-done
+    "${DEBIAN_CROSS_PREFIX}-ar" t "$archive"
+    "$nm" -A -u "$archive" > /tmp/archive-symbols
+    cat /tmp/archive-symbols
+    printf 'ARCHIVE_TIME_REFERENCES %s\n' "$archive"
+    grep -Ei 'time|stat|select|poll' /tmp/archive-symbols || true
+done < /tmp/linked-archives
 printf 'PASS: ARM cross-build machine identity and measured ABI; no target runtime or radio acceptance\n'

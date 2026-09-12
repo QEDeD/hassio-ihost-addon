@@ -52,3 +52,19 @@ timeout --kill-after=30s 1800s docker build --progress=plain --platform linux/am
 timeout 90s docker run --rm -i --network none --read-only --cap-drop ALL \
     --security-opt no-new-privileges --pids-limit 128 --tmpfs /tmp:rw,nosuid,nodev,size=16m \
     --entrypoint /bin/bash "local/trixie-cross-$arch" < "$audit_dir/probe.sh"
+
+# Cross-stage gate passed. Build unchanged native OTBR in its target runtime.
+# QEMU is installed only on the disposable runner by the pinned workflow action.
+timeout --kill-after=30s 1200s docker build --progress=plain --platform "$platform" \
+    --build-arg "BUILD_FROM=$base" --build-arg "BUILD_ARCH=$arch" \
+    --build-arg CPCD_VERSION=v4.6.1 --build-arg GECKO_SDK_VERSION=v2024.12.1-0 \
+    --tag "local/trixie-full-$arch" "$AUDIT_CONTEXT"
+printf 'ARM_FULL_IMAGE %s\n' "$arch"
+docker image inspect --format '{{.Architecture}} {{.Os}} {{.Id}}' "local/trixie-full-$arch"
+timeout 180s docker run --rm -i --platform "$platform" --network none --read-only --cap-drop ALL \
+    --security-opt no-new-privileges --pids-limit 128 --env AUDIT_REQUIRE_APPLICATIONS=1 \
+    --entrypoint /bin/bash "local/trixie-full-$arch" < "$audit_dir/../trixie-audit/inventory.sh"
+timeout 90s docker run --rm -i --platform "$platform" --network none --read-only --cap-drop ALL \
+    --security-opt no-new-privileges --pids-limit 128 --tmpfs /tmp:rw,nosuid,nodev,size=16m \
+    --entrypoint python3 "local/trixie-full-$arch" < "$audit_dir/../trixie-audit/web-probe.py"
+printf 'PASS: full ARM target image build, installed linkage and isolated native web under emulation; no physical-radio acceptance\n'
