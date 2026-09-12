@@ -187,3 +187,64 @@ Passing results close these narrow application acceptance gaps, not full browser
 interaction, successful radio-backed API calls, ARM/time ABI, enabled NAT64/DNS
 traffic or physical coexistence. Only a demonstrated failure warrants another
 implementation cycle. SDK/CPC stay fixed. Results will be recorded after CI.
+
+First follow-up run at 4a422e6:
+https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34718749383 .
+The full AMD64 build, existing lifecycle/firewall/readiness regressions and utility
+comparison passed. New Bashio primary/missing-primary/malformed-JSON probes ran.
+The HTTP 503 assertion failed because it incorrectly required empty stdout on a
+failed call; actual Bashio returned status 1 with its diagnostic on stdout.
+Official Bashio v0.17.0 logs to stderr; v0.17.5 preserves original stdout in a
+logging descriptor. This is an intentional logging-channel change, not evidence
+that the failed call supplied a usable interface. Source references:
+https://github.com/hassio-addons/bashio/blob/v0.17.0/lib/log.sh and
+https://github.com/hassio-addons/bashio/blob/v0.17.5/lib/log.sh .
+
+Correction db4aef1 requires status 1 plus the expected diagnostic on either
+stream, retaining strict successful-value assertions. Independent application
+probes now finish before reporting aggregate failure. The first run did not
+reach native web or released-image application checks; no pass is claimed for
+those cases from that run. The existing run script falls back to eth0 when
+backbone_if is empty. The old/new comparison must establish whether malformed
+JSON behavior is inherited before treating it as an upgrade regression.
+
+### Follow-up outcome
+
+PASS at db4aef1c97e284e4488588eed13fe22f123fe82e:
+https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34719118756 .
+Job runtime was 5m37s, including the fresh full AMD64 build and existing runtime
+regressions. Both the pinned release and candidate passed the new probes:
+
+- Bashio selected the first primary interface, preserved false/zero values and
+  distinguished missing options. HTTP 503 and connection refusal returned status 1
+  with diagnostics. The newer Bashio diagnostic uses stdout; on refusal curl also
+  writes stderr. Successful interface output remained clean.
+- Missing primary and malformed network JSON both returned status 0 with empty
+  output in both images. The malformed case emitted a parsing diagnostic. Source
+  inspection confirms an empty value would select eth0 if execution reaches the
+  existing fallback; full startup was not exercised. This is inherited behavior,
+  not a demonstrated Trixie regression. A separate narrow
+  improvement could distinguish invalid API data from a valid no-primary result.
+  No error-handling application change was added to this upgrade audit.
+- Five native static-asset requests covered four distinct files and matched each
+  image's own installed bytes, including the large
+  Angular asset. Missing and traversal paths returned 400 without exposing passwd.
+  Absent-agent QR metadata returned failed JSON; this endpoint generated no QR and
+  contacted no external service. Empty/malformed commission JSON returned error 11.
+  The native server remained responsive after errors in both images.
+
+The application probes used no radio, OT control socket, Supervisor, real token,
+external connectivity or writable root filesystem. Docker containers were removed
+at exit. Production and upstream repositories remain unchanged.
+
+Decision: continue with Trixie, keeping SDK/CPC fixed. No compatibility patch is
+justified by these results. These tests close the narrow Bashio and native web
+error-path gaps called out above; they do not close complete browser interaction,
+successful radio-backed serialization, ARM/time ABI, enabled NAT64/DNS traffic,
+generated-feature comparison or physical coexistence. Those are still explicit
+acceptance gates, not implied by a green AMD64 run. The next useful base-upgrade
+check is ARM build/ABI acceptance; optional feature acceptance remains separate.
+
+An independent evidence review checked the final application log and production
+fallback source; the report retains its distinctions between isolated execution,
+source-based inference and untested live behavior.
