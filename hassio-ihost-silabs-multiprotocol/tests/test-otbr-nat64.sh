@@ -149,5 +149,5 @@ if run_check true 0 0 1; then fail 'failed configuration reported ready'; fi
 [[ $(cat "$work/exitcode") == 1 && -f "$work/halt" && -f "$work/config-failed" && -f "$work/service-down" ]] || fail 'configuration failure did not halt'
 if run_check true 0 0 0; then fail 'failed service became ready while stopping'; fi
 [[ $(wc -l < "$work/configurations") == 3 ]] || fail 'failed configuration retried while stopping'
-grep -Fq 'Could not configure NAT64/upstream DNS; stopping the add-on.' "$work/errors" || fail 'shutdown diagnostic missing'
+grep -Fq 'Could not configure NAT64/upstream DNS; stopping the app.' "$work/errors" || fail 'shutdown diagnostic missing'
 printf 'PASS: scoped NAT64 lifecycle, bounded CLI configuration and per-start readiness\n'

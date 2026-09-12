@@ -31,7 +31,7 @@ for scenario in off on error error-stall; do
         [[ "$result" == 1 ]] || { echo "Expected configuration failure exit 1, got $result" >&2; exit 1; }
         log="$(timeout 10s docker logs "$container" 2>&1)"
         printf '%s\n' "$log"
-        [[ "$log" == *"Could not configure NAT64/upstream DNS; stopping the add-on."* ]]
+        [[ "$log" == *"Could not configure NAT64/upstream DNS; stopping the app."* ]]
         [[ "$log" == *"Error 7: InvalidState"* ]]
         [[ "$log" != *NAT64_FIXTURE_PREMATURE_READY* ]]
         [[ "$log" != *"service otbr-agent successfully started"* ]]

@@ -84,7 +84,7 @@ host-wide IPv6 `FORWARD` policy or invoke `ip6tables-legacy`.
 
 Only one OTBR implementation may manage `wpan0` and the globally named OTBR
 chains and ipsets at a time. Stop another OTBR before starting or disabling
-this add-on so its guarded cleanup can safely reconcile its own state.
+this app so its guarded cleanup can safely reconcile its own state.
 
 #### Optional NAT64 and upstream DNS
 
@@ -96,11 +96,11 @@ implicitly enable NAT64. It is not required for ordinary local Matter traffic.
 This option reserves **192.168.255.0/24 exclusively for OTBR** while enabled.
 Startup refuses overlapping IPv4 interface networks or nondefault routes in
 any routing table, including narrower and covering routes. Default routes are
-allowed. The add-on does not remove conflicts. Keep this pool unused by other
+allowed. The app does not remove conflicts. Keep this pool unused by other
 services throughout operation; the startup check cannot detect conflicts added
-later. Restart the add-on after changing this option. Configuration is reapplied
+later. Restart the app after changing this option. Configuration is reapplied
 when the agent process restarts. After an in-process Thread factory reset (for
-example REST `DELETE /node`), restart the add-on to reapply this option.
+example REST `DELETE /node`), restart the app to reapply this option.
 
 IPv4 forwarding matches the Thread interface, backbone interface and reserved
 pool; return traffic must be established or related. Masquerading is scoped to

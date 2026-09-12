@@ -18,7 +18,7 @@ fi
 nat64_enabled=false
 if bashio::config.true 'otbr_nat64'; then nat64_enabled=true; fi
 if ! otbr_nat64_configure "$nat64_enabled"; then
-    bashio::log.error "Could not configure NAT64/upstream DNS; stopping the add-on."
+    bashio::log.error "Could not configure NAT64/upstream DNS; stopping the app."
     # Abort the container rather than declare a partial configuration ready.
     echo 1 > /run/otbr-agent-config-failed
     echo 1 > /run/s6-linux-init-container-results/exitcode

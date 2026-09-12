@@ -66,10 +66,10 @@ support nor the newer resolver's no-infrastructure-interface behavior.
 after readiness and starts anew for each daemon incarnation. The pinned vendor's
 [REST resource](https://github.com/SiliconLabs/simplicity_sdk/blob/da661283f301b53eec04d1016009e60bc7e34a1f/util/third_party/ot-br-posix/src/rest/resource.cpp)
 uses an in-process reset for DELETE /node. That does not launch another checker.
-After an intentional Thread factory reset, restart the add-on to reapply its saved
+After an intentional Thread factory reset, restart the app to reapply its saved
 NAT64/DNS option. No reset monitor is added.
 
-A full add-on image build, ARM compatibility, physical shared-radio NAT64 traffic
+A full app image build, ARM compatibility, physical shared-radio NAT64 traffic
 and host-reboot ordering remain unverified. Existing successful Matter commissioning
 and OTA do not establish this new IPv4 capability. Production acceptance must preserve
 current radio state and use a suitable IPv4-only consumer; it is a separate gate
