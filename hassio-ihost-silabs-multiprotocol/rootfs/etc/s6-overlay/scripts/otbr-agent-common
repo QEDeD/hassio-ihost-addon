@@ -405,6 +405,8 @@ otbr_firewall_setup()
         return 2
     fi
 
+    # The compiled OTBR firewall producer updates these sets even when ingress
+    # filtering is disabled; without matching rules they do not filter traffic.
     for ipset_name in "${otbr_firewall_ipsets[@]}"; do
         if ! ipset create -exist "${ipset_name}" hash:net family inet6; then
             _otbr_firewall_rollback

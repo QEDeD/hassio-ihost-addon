@@ -43,3 +43,7 @@ command stall, and forced finish-timeout expiry must retain the daemon's failure
 status and prevent another start. It uses no host networking, devices or host
 mounts. Logs and container inspection remain in a temporary directory; set
 `OTBR_S6_EVIDENCE_DIR` to choose it. CI reports synthetic test output in its log.
+
+The forced-expiry case enlarges global shutdown grace to isolate the service
+finish timeout. It does not establish shutdown timing under the default global
+grace period.
