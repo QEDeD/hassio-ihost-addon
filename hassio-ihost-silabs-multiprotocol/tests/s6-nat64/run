@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/usr/bin/with-contenv bashio
 # shellcheck shell=bash
 set -eu
 case "${NAT64_CASE}" in
@@ -6,7 +6,13 @@ case "${NAT64_CASE}" in
     on|error) enabled=true ;;
     *) exit 2 ;;
 esac
-printf '{"otbr_enable":true,"otbr_nat64":%s}\n' "$enabled" > /data/options.json
+# Released Bashio 0.17.0 reads addon.config from this cache before Supervisor.
+# Seed through its own API so the fixture does not assume a cache directory.
+printf -v options '{"otbr_enable":true,"otbr_nat64":%s}' "$enabled"
+bashio::cache.set 'addons.self.options.config' "$options"
+[[ "$(bashio::config otbr_enable)" == true ]]
+[[ "$(bashio::config otbr_nat64)" == "$enabled" ]]
+printf 'NAT64_FIXTURE_OPTIONS=%s\n' "$enabled"
 printf '127.0.0.1\n18081\n' > /tmp/otbr-agent-rest-api
 # Exact production notifyoncheck arguments, replacing only the radio daemon.
 exec s6-notifyoncheck -d -s 300 -w 300 -n 0 python3 -u /fixture/daemon.py

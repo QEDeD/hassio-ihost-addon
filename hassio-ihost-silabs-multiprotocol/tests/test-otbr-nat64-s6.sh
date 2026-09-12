@@ -38,6 +38,9 @@ for scenario in off on error; do
         [[ "$result" == 0 ]] || { echo "Expected clean shutdown, got $result" >&2; exit 1; }
         timeout 10s docker logs "$container"
     fi
+    log="$(timeout 10s docker logs "$container" 2>&1)"
+    [[ "$log" != *"Something went wrong contacting the API"* ]]
+    [[ "$log" != *"Could not resolve host: supervisor"* ]]
     timeout 15s docker rm "$container" >/dev/null
     container=""
     printf 'PASS: released init NAT64 scenario=%s\n' "$scenario"

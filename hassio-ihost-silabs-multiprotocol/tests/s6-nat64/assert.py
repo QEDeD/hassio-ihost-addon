@@ -38,9 +38,12 @@ for generation in range(1, 3 if scenario != 'error' else 2):
         print('NAT64_FIXTURE_ERROR_ARMED', flush=True)
         break
     subprocess.run(['s6-svwait', '-U', '-t', '15000', service], check=True, timeout=17)
-    assert read_commands() == prior + [f'{generation} {command}' for command in expected]
+    wanted = prior + [f'{generation} {command}' for command in expected]
+    actual = read_commands()
+    assert actual == wanted, f'CLI sequence generation={generation}: actual={actual!r}; expected={wanted!r}'
     time.sleep(1)
-    assert read_commands() == prior + [f'{generation} {command}' for command in expected], 'Checker kept configuring after ready'
+    actual = read_commands()
+    assert actual == wanted, f'CLI after readiness: actual={actual!r}; expected={wanted!r}'
     print(f'NAT64_FIXTURE_READY={generation}', flush=True)
     if generation == 1:
         # The synthetic daemon exits cleanly, exercising the real finish and restart.

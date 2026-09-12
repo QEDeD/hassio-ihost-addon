@@ -34,3 +34,19 @@ has not been run on the development workstation. This tests s6/checker integrati
 not real OTBR CLI semantics, IPv4 forwarding, DNS resolution or hardware behavior.
 The stub response semantics are based on the pinned CLI source; packet and exact
 feature-image acceptance remain separate gates.
+
+## Synthetic Bashio configuration
+
+The pinned image's build history records `BASHIO_VERSION=0.17.0`.
+That version's [config function](https://github.com/hassio-addons/bashio/blob/v0.17.0/lib/config.sh)
+reads `bashio::addon.config`, whose [implementation](https://github.com/hassio-addons/bashio/blob/v0.17.0/lib/addons.sh)
+first reads cache key `addons.self.options.config`; on a miss it requests
+`/addons/self/options/config` from Supervisor. Writing `/data/options.json`
+does not populate this source. Run 34700442152 consequently used missing options:
+the off case happened to pass, but the on case failed its command sequence.
+
+The fixture now uses the released `bashio::cache.set` to seed that key with the
+synthetic JSON options object and asserts both values through real
+`bashio::config` before starting notifyoncheck. No cache path or configuration
+function is replaced, and no Supervisor server, token or networking is needed.
+The runner also rejects the observed Supervisor lookup error diagnostics.
