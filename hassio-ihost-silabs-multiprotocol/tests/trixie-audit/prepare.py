@@ -14,5 +14,7 @@ replace_once("&& curl -O https://www.silabs.com/documents/login/software/slc_cli
              "&& echo '" + os.environ["SLC_SHA256"] + " /usr/src/slc_cli_linux.zip' | sha256sum -c -")
 replace_once("&& mkdir $CPCD_DIR/build", "&& test \"$(git -C $CPCD_DIR rev-parse HEAD)\" = " + os.environ["CPC_REVISION"] + " \\\n    && mkdir $CPCD_DIR/build")
 replace_once("&& cd gecko_sdk", "&& test \"$(git -C gecko_sdk rev-parse HEAD)\" = " + os.environ["SDK_REVISION"] + " \\\n    && cd gecko_sdk")
+# Audit-only source retention permits direct execution after normal source cleanup.
+text += "\nCOPY --from=zigbeed-builder /usr/src/gecko_sdk/util/third_party/openthread/third_party/mbedtls/repo/scripts/config.py /audit/mbedtls-config.py\n"
 path.write_text(text)
 print("Audit-only adaptations: immutable builder/base, checked SLC COPY instead of duplicate mutable download, unchanged CPC/SDK tag identity assertions")

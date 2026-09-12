@@ -52,3 +52,14 @@ bound. No credentials, production data, image publishing or artifact uploads
 are used. Current APT/npm inputs remain upstream behavior, so image pinning alone
 does not freeze every package; exact installed versions/build output are evidence.
 A successful build would not prove ARM or physical shared-radio compatibility.
+
+## Deeper dependency review runtime checks
+
+The workflow also checks pinned firewall/NAT64 and Zigbee-readiness contribution
+fixtures against the built AMD64 Trixie image. Disposable copies change only their
+base-image reference and exact s6 package path. Kernel tests use the runner kernel
+in a separate network namespace; they do not establish HAOS or radio acceptance.
+The audit image retains the exact bundled mbedTLS config.py only for direct
+Python 3.13 present/absent status tests. No application source is upgraded.
+Socket probes use inert loopback echo servers. Optional NAT64 lifecycle/helper
+coverage does not imply that the baseline image enables the NAT64 translator.
