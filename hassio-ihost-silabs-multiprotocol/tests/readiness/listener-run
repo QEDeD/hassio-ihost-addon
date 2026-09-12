@@ -1,0 +1,5 @@
+#!/bin/sh
+# Deterministic version of the released service's pre-listener flushing window.
+while [ ! -e /fixture/listen ]; do sleep 0.1; done
+# A connection would create a marker, making an invasive healthcheck fail tests.
+exec socat "TCP-LISTEN:$(cat /fixture/port),reuseaddr,fork" 'EXEC:touch /fixture/accepted'

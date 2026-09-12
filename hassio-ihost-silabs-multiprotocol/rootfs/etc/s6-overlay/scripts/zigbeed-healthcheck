@@ -1,0 +1,11 @@
+#!/bin/sh
+# Process liveness alone can succeed while zigbeed-tcp is still flushing the PTY.
+[ "$(s6-svstat -u /run/service/zigbeed)" = true ] || exit 1
+
+listener_pid="$(s6-svstat -p /run/service/zigbeed-tcp)" || exit 1
+[ "$listener_pid" -gt 0 ] 2>/dev/null || exit 1
+
+# Inspect the socket owned by this service, at its configured address and port.
+# Connecting to socat would create a client of the Zigbee serial interface.
+listeners="$(ss -H -ltnp)" || exit 1
+printf '%s\n' "$listeners" | grep -qF "pid=${listener_pid},"

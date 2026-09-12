@@ -261,7 +261,7 @@ RUN \
 ENV \
     S6_STAGE2_HOOK=/etc/s6-overlay/scripts/enable-check.sh
 
-HEALTHCHECK --interval=10s --start-period=120s CMD [ "$(s6-svstat -u /run/service/zigbeed)" = "true" ]
+HEALTHCHECK --interval=10s --start-period=120s CMD /etc/s6-overlay/scripts/zigbeed-healthcheck
 
 # use s6-overlay as init system
 WORKDIR /

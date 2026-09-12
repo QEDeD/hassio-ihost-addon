@@ -1,0 +1,31 @@
+name: Zigbeed readiness
+on:
+  pull_request:
+    paths:
+      - hassio-ihost-silabs-multiprotocol/Dockerfile
+      - hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/zigbeed-healthcheck
+      - hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/zigbeed*/**
+      - hassio-ihost-silabs-multiprotocol/tests/readiness/**
+      - hassio-ihost-silabs-multiprotocol/tests/test-zigbeed-readiness.sh
+      - .github/workflows/zigbeed-readiness.yml
+  push:
+    branches: [codex/zigbeed-readiness-20260912]
+    paths:
+      - hassio-ihost-silabs-multiprotocol/**
+      - .github/workflows/zigbeed-readiness.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  released-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - name: Syntax and shell checks
+        run: |
+          bash -n hassio-ihost-silabs-multiprotocol/tests/test-zigbeed-readiness.sh
+          sh -n hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/zigbeed-healthcheck
+          shellcheck hassio-ihost-silabs-multiprotocol/tests/test-zigbeed-readiness.sh hassio-ihost-silabs-multiprotocol/tests/readiness/listener-run hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/zigbeed-healthcheck
+      - name: Isolated released-image regression
+        run: bash hassio-ihost-silabs-multiprotocol/tests/test-zigbeed-readiness.sh
