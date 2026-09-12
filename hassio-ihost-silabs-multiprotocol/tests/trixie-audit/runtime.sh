@@ -3,6 +3,8 @@ set -euo pipefail
 [[ ${GITHUB_ACTIONS:-} == true && ${RUNNER_ENVIRONMENT:-} == github-hosted ]]
 audit_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 # Only disposable fixture copies change. Production source and image are untouched.
+# shellcheck source=inputs.sh
+source "$audit_dir/inputs.sh"
 fixture="$(mktemp -d "$RUNNER_TEMP/trixie-runtime.XXXXXX")"
 cp -a audit-fixtures-nat64/hassio-ihost-silabs-multiprotocol "$fixture/nat64"
 cp -a audit-fixtures-readiness/hassio-ihost-silabs-multiprotocol "$fixture/readiness"
@@ -37,5 +39,12 @@ for spec in 'nat64 test-otbr-s6.sh' 'nat64 test-otbr-nat64-s6.sh' 'readiness tes
     timeout 300s bash "$fixture/$tree/tests/$test_name"
 done
 # Actual utilities and loopback sockets, without a radio or outside connectivity.
-timeout 60s docker run --rm -i --network none --read-only --cap-drop ALL --security-opt no-new-privileges     --pids-limit 128 --tmpfs /tmp:rw,nosuid,nodev,size=4m     --entrypoint /bin/bash local/ihost-trixie-audit < "$audit_dir/utility-probe.sh"
+for image in local/ihost-trixie-audit "$RELEASE_IMAGE"; do
+    query=0
+    [[ "$image" != local/ihost-trixie-audit ]] || query=1
+    printf 'UTILITY_COMPARISON_IMAGE=%s\n' "$image"
+    timeout 60s docker run --rm -i --network none --read-only --cap-drop ALL --cap-add NET_ADMIN --security-opt no-new-privileges \
+        --pids-limit 128 --tmpfs /tmp:rw,nosuid,nodev,size=4m --env "AUDIT_CONFIG_QUERY=$query" \
+        --entrypoint /bin/bash "$image" < "$audit_dir/utility-probe.sh"
+done
 echo 'PASS: isolated Trixie runtime regressions; physical radio and ARM acceptance remain separate'

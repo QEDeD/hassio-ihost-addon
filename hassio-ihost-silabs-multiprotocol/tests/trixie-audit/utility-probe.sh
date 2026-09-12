@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+if [[ ${AUDIT_CONFIG_QUERY:-1} == 1 ]]; then
 python3 - <<'PY'
 import subprocess, sys
 from pathlib import Path
@@ -11,7 +12,9 @@ for symbol, expected in [('MBEDTLS_AES_C', 0), ('MBEDTLS_DES_C', 1)]:
     assert result.returncode == expected and not result.stderr, (symbol, result)
 print('PASS: actual bundled mbedTLS config.py present/absent statuses under Python 3.13')
 PY
-ip -6 route show table openthread
+fi
+ip -6 route add blackhole fd00:dead:beef::1/128 table 88
+ip -6 route show table openthread | grep -F 'blackhole fd00:dead:beef::1'
 socat -V | head -n 3
 socat TCP-LISTEN:19999,reuseaddr,fork EXEC:/bin/cat &
 pid=$!
