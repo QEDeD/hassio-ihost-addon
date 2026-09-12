@@ -3,12 +3,14 @@ ENV DOCKER=1
 # Freeze the build-only Bullseye package inputs at the final LTS day. The live
 # mirrors no longer serve some indexed security packages. Keep signature/hash
 # checks; only snapshot metadata expiry is disabled for these immutable URLs.
+# The release has no CA bundle. Signed APT metadata authenticates this initial
+# HTTP bootstrap; ca-certificates is installed before later HTTPS source access.
 RUN rm -f /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources \
     && printf '%s\n' \
-      'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260831T235959Z/ bullseye main' \
-      'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian-security/20260831T235959Z/ bullseye-security main' \
+      'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/20260831T235959Z/ bullseye main' \
+      'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20260831T235959Z/ bullseye-security main' \
       > /etc/apt/sources.list
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update -o APT::Update::Error-Mode=any && apt-get install -y --no-install-recommends \
     git patch build-essential ninja-build cmake pkg-config ca-certificates \
     libreadline-dev libncurses-dev libcpputest-dev libdbus-1-dev libavahi-common-dev \
     libavahi-client-dev libboost-dev libboost-filesystem-dev libboost-system-dev \
