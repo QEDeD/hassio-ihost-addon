@@ -1,0 +1,24 @@
+name: Isolated ARMv7 compiler comparison
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/trixie-dependency-audit-20260912]
+    paths:
+      - .github/workflows/trixie-arm-compiler-probe.yml
+      - hassio-ihost-silabs-multiprotocol/tests/arm-compiler-probe/**
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+      - name: Compare one pinned SDK translation unit
+        run: |
+          source hassio-ihost-silabs-multiprotocol/tests/trixie-audit/inputs.sh
+          timeout --kill-after=30s 600s docker build --progress=plain --platform linux/amd64 \
+            --build-arg "BUILDER_IMAGE=$BUILDER_IMAGE" --build-arg "SDK_REVISION=$SDK_REVISION" \
+            hassio-ihost-silabs-multiprotocol/tests/arm-compiler-probe
