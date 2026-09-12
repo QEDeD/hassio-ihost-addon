@@ -25,6 +25,7 @@ jobs:
       - name: Syntax and shell checks
         run: |
           bash -n hassio-ihost-silabs-multiprotocol/tests/test-zigbeed-readiness.sh
+          test -x hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/zigbeed-healthcheck
           sh -n hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/zigbeed-healthcheck
           shellcheck hassio-ihost-silabs-multiprotocol/tests/test-zigbeed-readiness.sh hassio-ihost-silabs-multiprotocol/tests/readiness/listener-run hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/zigbeed-healthcheck
       - name: Isolated released-image regression

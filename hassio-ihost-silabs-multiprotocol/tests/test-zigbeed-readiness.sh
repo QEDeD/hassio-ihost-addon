@@ -52,7 +52,16 @@ printf 'PASS: default configured listener is healthy\n'
 docker exec "$container" s6-svc -d /run/service/zigbeed-tcp
 docker exec "$container" s6-svwait -D -t 5000 /run/service/zigbeed-tcp
 assert_unhealthy
-docker exec --detach "$container" socat TCP-LISTEN:9999,reuseaddr,fork 'EXEC:touch /fixture/accepted'
+docker exec --detach "$container" sh -c 'echo $$ > /fixture/foreign.pid; exec socat TCP-LISTEN:9999,reuseaddr,fork "EXEC:touch /fixture/accepted"'
+# Require the detached process to own a real listener before testing rejection.
+# Socket inspection is passive and cannot create a Zigbee serial client.
+docker exec "$container" timeout 5s sh -c '
+    until test -s /fixture/foreign.pid; do sleep 0.1; done
+    foreign_pid=$(cat /fixture/foreign.pid)
+    until ss -H -ltnp "sport = :9999" | grep -qF "pid=${foreign_pid},"; do
+        sleep 0.1
+    done
+'
 assert_unhealthy
 printf 'PASS: a foreign listener on the configured port cannot satisfy health\n'
 
