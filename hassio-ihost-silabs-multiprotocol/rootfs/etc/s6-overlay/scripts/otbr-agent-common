@@ -501,6 +501,10 @@ otbr_firewall_cleanup()
     fi
     deadline_milliseconds=$((REPLY + otbr_cleanup_budget_milliseconds))
 
+    if ! _otbr_nat64_cleanup "${deadline_milliseconds}"; then
+        failed=1
+    fi
+
     if ! _otbr_remove_forward_jumps "${deadline_milliseconds}" \
         -o "${otbr_forward_ingress_chain}"; then
         failed=1
@@ -537,4 +541,128 @@ otbr_firewall_cleanup()
     fi
 
     return "${failed}"
+}
+
+# This IPv4 pool and these chains are reserved for this OTBR while NAT64 is on.
+otbr_nat64_pool="192.168.255.0/24"
+otbr_nat64_forward_chain="OTBR_FORWARD_NAT64"
+otbr_nat64_masquerade_chain="OTBR_NAT64_MASQUERADE"
+
+_otbr_cleanup_iptables()
+{
+    local deadline_milliseconds="$1"
+    shift
+    _otbr_cleanup_run "${deadline_milliseconds}" \
+        iptables -w "${otbr_cleanup_iptables_wait_seconds}" "$@"
+}
+
+_otbr_nat64_cleanup_chain()
+{
+    local deadline_milliseconds="$1" table="$2" parent="$3" chain="$4"
+    local status removed=0
+    if _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -L "$chain" -n >/dev/null 2>&1; then
+        :
+    else
+        status=$?
+        [[ "$status" == 1 ]] && return 0
+        return 1
+    fi
+    while (( removed < otbr_cleanup_max_rule_deletes )); do
+        if _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -C "$parent" -j "$chain" 2>/dev/null; then
+            _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -D "$parent" -j "$chain" || return 1
+            removed=$((removed + 1))
+        else
+            status=$?
+            [[ "$status" == 1 ]] || return 1
+            break
+        fi
+    done
+    if (( removed == otbr_cleanup_max_rule_deletes )); then
+        if _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -C "$parent" -j "$chain" 2>/dev/null; then
+            return 1
+        else
+            status=$?
+            [[ "$status" == 1 ]] || return 1
+        fi
+    fi
+    _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -F "$chain" || return 1
+    _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -X "$chain"
+}
+
+_otbr_nat64_cleanup()
+{
+    local deadline_milliseconds="$1" failed=0
+    _otbr_nat64_cleanup_chain "$deadline_milliseconds" filter FORWARD "$otbr_nat64_forward_chain" || failed=1
+    _otbr_nat64_cleanup_chain "$deadline_milliseconds" nat POSTROUTING "$otbr_nat64_masquerade_chain" || failed=1
+    return "$failed"
+}
+
+otbr_nat64_setup()
+{
+    local backbone="$1"
+    # The fixed pool must not shadow another address or any nondefault route.
+    if ! timeout --kill-after=0.5s 3s python3 /etc/s6-overlay/scripts/otbr-nat64-pool-check; then
+        _otbr_firewall_rollback
+        return 1
+    fi
+    if ! iptables -w "$otbr_iptables_wait_seconds" -t filter -N "$otbr_nat64_forward_chain" \
+        || ! iptables -w "$otbr_iptables_wait_seconds" -t nat -N "$otbr_nat64_masquerade_chain" \
+        || ! iptables -w "$otbr_iptables_wait_seconds" -t filter -A "$otbr_nat64_forward_chain" \
+            -i "$thread_if" -o "$backbone" -s "$otbr_nat64_pool" -j ACCEPT \
+        || ! iptables -w "$otbr_iptables_wait_seconds" -t filter -A "$otbr_nat64_forward_chain" \
+            -i "$backbone" -o "$thread_if" -d "$otbr_nat64_pool" \
+            -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT \
+        || ! iptables -w "$otbr_iptables_wait_seconds" -t nat -A "$otbr_nat64_masquerade_chain" \
+            -s "$otbr_nat64_pool" -o "$backbone" -j MASQUERADE \
+        || ! iptables -w "$otbr_iptables_wait_seconds" -t filter -I FORWARD 1 -j "$otbr_nat64_forward_chain" \
+        || ! iptables -w "$otbr_iptables_wait_seconds" -t nat -I POSTROUTING 1 -j "$otbr_nat64_masquerade_chain"; then
+        _otbr_firewall_rollback
+        return 1
+    fi
+}
+
+_otbr_cli_done()
+{
+    local deadline_milliseconds="$1" output line status done=false
+    shift
+    if output="$(_otbr_cleanup_run "$deadline_milliseconds" ot-ctl "$@" 2>&1)"; then
+        :
+    else
+        status=$?
+        bashio::log.error "NAT64 configuration: ot-ctl $* failed (status ${status}): ${output:0:500}"
+        return 1
+    fi
+    # Pinned ot-ctl exits zero for both Done and Error responses.
+    while IFS= read -r line; do
+        line="${line%$'\r'}"
+        if [[ "$line" == Error\ * ]]; then
+            bashio::log.error "NAT64 configuration: ot-ctl $*: ${line:0:500}"
+            return 1
+        fi
+        if [[ "$line" == Done ]]; then done=true; fi
+    done <<< "$output"
+    if [[ "$done" != true ]]; then
+        bashio::log.error "NAT64 configuration: ot-ctl $* returned no Done response: ${output:0:500}"
+        return 1
+    fi
+}
+
+otbr_nat64_configure()
+{
+    local enabled="$1" deadline_milliseconds failed=0
+    [[ "$enabled" == true || "$enabled" == false ]] || return 2
+    _otbr_clock_milliseconds || return 1
+    deadline_milliseconds=$((REPLY + 8000))
+    # Explicitly restore off state even when previously enabled in this volume.
+    _otbr_cli_done "$deadline_milliseconds" dns server upstream disable || failed=1
+    _otbr_cli_done "$deadline_milliseconds" nat64 disable || failed=1
+    (( failed == 0 )) || return 1
+    if [[ "$enabled" == true ]]; then
+        if ! _otbr_cli_done "$deadline_milliseconds" nat64 enable \
+            || ! _otbr_cli_done "$deadline_milliseconds" dns server upstream enable; then
+            _otbr_cli_done "$deadline_milliseconds" dns server upstream disable || true
+            _otbr_cli_done "$deadline_milliseconds" nat64 disable || true
+            return 1
+        fi
+    fi
 }

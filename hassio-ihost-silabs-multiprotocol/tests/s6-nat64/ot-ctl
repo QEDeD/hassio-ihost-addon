@@ -1,0 +1,16 @@
+#!/bin/bash
+set -eu
+# This must still be startup configuration, before notification, on every call.
+ready="$(s6-svstat -o ready /run/service/otbr-agent)"
+if [[ "$ready" != false ]]; then
+    echo "NAT64_FIXTURE_PREMATURE_READY=$ready" >&2
+    exit 9
+fi
+generation="$(cat /tmp/generation)"
+printf '%s %s\n' "$generation" "$*" >> /tmp/commands
+if [[ "${NAT64_CASE}" == error ]]; then
+    echo 'NAT64_FIXTURE_CLI_ERROR_EXIT_ZERO' >&2
+    printf 'Error 7: InvalidState\r\n'
+    exit 0
+fi
+printf 'Done\r\n'

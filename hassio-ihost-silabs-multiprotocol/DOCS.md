@@ -86,6 +86,39 @@ Only one OTBR implementation may manage `wpan0` and the globally named OTBR
 chains and ipsets at a time. Stop another OTBR before starting or disabling
 this add-on so its guarded cleanup can safely reconcile its own state.
 
+#### Optional NAT64 and upstream DNS
+
+`otbr_nat64` is disabled by default. Enabling it permits Thread clients to
+initiate connections to IPv4 services and enables upstream DNS forwarding.
+It is independent of `otbr_firewall`; disabling ingress filtering does not
+implicitly enable NAT64. It is not required for ordinary local Matter traffic.
+
+This option reserves **192.168.255.0/24 exclusively for OTBR** while enabled.
+Startup refuses overlapping IPv4 interface networks or nondefault routes in
+any routing table, including narrower and covering routes. Default routes are
+allowed. The add-on does not remove conflicts. Keep this pool unused by other
+services throughout operation; the startup check cannot detect conflicts added
+later. Restart the add-on after changing this option. Configuration is reapplied
+when the agent process restarts. After an in-process Thread factory reset (for
+example REST `DELETE /node`), restart the add-on to reapply this option.
+
+IPv4 forwarding matches the Thread interface, backbone interface and reserved
+pool; return traffic must be established or related. Masquerading is scoped to
+the pool and backbone. No packet marks, global policies, unrelated rules or
+conntrack tables are changed. The named OTBR chains are reserved for this single
+OTBR instance and are reconciled on restart even if the option or backbone changes.
+
+Upstream DNS uses the pinned resolver's infrastructure-interface binding. A DNS
+server reached over another interface, such as a Supervisor Docker network,
+requires separate validation; enabling this option does not repair that path.
+DNS forwarding is distinct from DNS64 synthesis: compatible Thread clients must
+synthesize addresses using the advertised NAT64 prefix for IPv4-only services.
+This option does not add a general DNS64 server.
+
+The scoped optional feature follows the NAT64/upstream-DNS subset proposed by
+Arno500 in [PR 78](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/pull/78).
+TREL and unrelated build changes from that proposal are not included here.
+
 ### Web interface (advanced)
 
 There is also a web interface provided by the OTBR. However, the web
@@ -111,6 +144,7 @@ Add-on configuration:
 | otbr_enable        | Enable OpenThread BorderRouter                         |
 | otbr_log_level     | Set the log level of the OpenThread BorderRouter Agent     |
 | otbr_firewall      | Enable OpenThread Border Router firewall to block unnecessary traffic |
+| otbr_nat64         | Optional IPv4 access and upstream DNS; reserves 192.168.255.0/24 |
 
 ## Architecture
 

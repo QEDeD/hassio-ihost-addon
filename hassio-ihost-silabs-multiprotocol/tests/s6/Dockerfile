@@ -19,7 +19,7 @@ COPY --chmod=0755 rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish /etc/s6-overla
 COPY rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish /etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
 COPY --chmod=0755 rootfs/etc/s6-overlay/scripts/otbr-agent-common /etc/s6-overlay/scripts/otbr-agent-common
 COPY --chmod=0755 tests/s6/run /etc/s6-overlay/s6-rc.d/otbr-agent/run
-COPY --chmod=0755 tests/s6/ip6tables tests/s6/ipset tests/s6/timeout /fixture/bin/
+COPY --chmod=0755 tests/s6/ip6tables tests/s6/iptables tests/s6/ipset tests/s6/timeout /fixture/bin/
 # The released built-in top bundle requires both user and user2. Compile the
 # complete graph now; only user contains our fixture, and user2 remains empty.
 RUN s6-rc-compile /tmp/fixture-s6-db \

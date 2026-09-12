@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+"""Refuse to reserve OTBR's fixed NAT64 pool over existing IPv4 state."""
+import ipaddress
+import json
+import subprocess
+import sys
+
+POOL = ipaddress.ip_network("192.168.255.0/24")
+
+
+def inspect(arguments):
+    result = subprocess.run(["ip", "-j", "-4", *arguments], check=True,
+                            capture_output=True, text=True, timeout=1)
+    rows = json.loads(result.stdout)
+    if not isinstance(rows, list):
+        raise ValueError("network inspection did not return a list")
+    return rows
+
+
+def check(addresses, routes):
+    for interface in addresses:
+        for address in interface["addr_info"]:
+            if address["family"] != "inet":
+                raise ValueError("unexpected address family")
+            network = ipaddress.ip_network(
+                f'{address["local"]}/{address["prefixlen"]}', strict=False)
+            if network.overlaps(POOL):
+                raise ValueError(f"NAT64 pool conflicts with interface network {network}")
+    for route in routes:
+        destination = route["dst"]
+        if destination == "default":
+            continue
+        network = ipaddress.ip_network(destination, strict=False)
+        if network.version != 4:
+            raise ValueError("unexpected route family")
+        if network.prefixlen != 0 and network.overlaps(POOL):
+            raise ValueError(f"NAT64 pool conflicts with route {network}")
+
+
+def main():
+    try:
+        check(inspect(["address", "show"]), inspect(["route", "show", "table", "all"]))
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError) as error:
+        print(f"Cannot reserve NAT64 pool: {error}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

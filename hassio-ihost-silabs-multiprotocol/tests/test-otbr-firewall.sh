@@ -17,6 +17,9 @@ readonly ENABLE_CHECK_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-en
 # shellcheck disable=SC1090
 source "${COMMON_SCRIPT}"
 
+# IPv4 lifecycle has its own stateful suite; this suite starts with no IPv4 chains.
+iptables() { return 1; }
+
 declare -A mock_chains
 declare -A mock_jump_counts
 declare -A mock_sets

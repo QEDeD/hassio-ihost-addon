@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+set -eu
+case "${NAT64_CASE}" in
+    off) enabled=false ;;
+    on|error) enabled=true ;;
+    *) exit 2 ;;
+esac
+printf '{"otbr_enable":true,"otbr_nat64":%s}\n' "$enabled" > /data/options.json
+printf '127.0.0.1\n18081\n' > /tmp/otbr-agent-rest-api
+# Exact production notifyoncheck arguments, replacing only the radio daemon.
+exec s6-notifyoncheck -d -s 300 -w 300 -n 0 python3 -u /fixture/daemon.py

@@ -1,6 +1,24 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# Private startup readiness hook: s6-notifyoncheck stops invoking it after success
+# and starts a fresh checker for each supervised otbr-agent incarnation.
+if bashio::config.false 'otbr_enable'; then exit 1; fi
 
-# Check if openthread socket exists
-mapfile -t < /tmp/otbr-agent-rest-api
-test -S /run/openthread-wpan0.sock && nc -z "${MAPFILE[@]}"
-exit
+# Preserve the socket and REST prerequisites before changing runtime features.
+if ! mapfile -t < /tmp/otbr-agent-rest-api; then exit 1; fi
+if ! [[ -S /run/openthread-wpan0.sock ]] || ! nc -z -w 1 "${MAPFILE[@]}"; then
+    exit 1
+fi
+
+# shellcheck source=../../../scripts/otbr-agent-common
+# shellcheck disable=SC1091
+. /etc/s6-overlay/scripts/otbr-agent-common
+nat64_enabled=false
+if bashio::config.true 'otbr_nat64'; then nat64_enabled=true; fi
+if ! otbr_nat64_configure "$nat64_enabled"; then
+    bashio::log.error "Could not configure NAT64/upstream DNS; stopping the add-on."
+    # Abort the container rather than declare a partial configuration ready.
+    echo 1 > /run/s6-linux-init-container-results/exitcode
+    /run/s6/basedir/bin/halt
+    exit 1
+fi
