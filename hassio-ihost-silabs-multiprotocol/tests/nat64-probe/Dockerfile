@@ -1,5 +1,13 @@
 FROM ghcr.io/ihost-open-source-project/hassio-ihost-silabs-multiprotocol-amd64@sha256:f69bd95b16c23c018351b55659e3767f6573edf8f87061c58d1e610a2ce8ccef AS build
 ENV DOCKER=1
+# Freeze the build-only Bullseye package inputs at the final LTS day. The live
+# mirrors no longer serve some indexed security packages. Keep signature/hash
+# checks; only snapshot metadata expiry is disabled for these immutable URLs.
+RUN rm -f /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources \
+    && printf '%s\n' \
+      'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260831T235959Z/ bullseye main' \
+      'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian-security/20260831T235959Z/ bullseye-security main' \
+      > /etc/apt/sources.list
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git patch build-essential ninja-build cmake pkg-config ca-certificates \
     libreadline-dev libncurses-dev libcpputest-dev libdbus-1-dev libavahi-common-dev \

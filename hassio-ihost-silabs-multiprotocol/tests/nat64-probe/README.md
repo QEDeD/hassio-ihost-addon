@@ -35,3 +35,8 @@ link, so it does not cover Supervisor DNS reached over a different interface.
 Exercise that extra route explicitly before selecting the pinned resolver's
 UPSTREAM_DNS_BIND_TO_INFRA_NETIF policy. That test requires the existing broader
 Thread simulation environment; it is intentionally not recreated here.
+
+Build-only APT sources use the official 2026-08-31 Debian snapshot because live
+Bullseye security package URLs returned 404. Package signatures and hashes remain
+verified; snapshot metadata expiry is disabled only on those fixed URLs. The final
+runtime remains the original pinned image. This is not a supported-OS upgrade.
