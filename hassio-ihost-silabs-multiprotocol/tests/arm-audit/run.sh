@@ -49,11 +49,13 @@ timeout --kill-after=30s 1800s docker build --progress=plain --platform linux/am
     --target zigbeed-builder --build-arg "BUILD_FROM=$base" --build-arg "BUILD_ARCH=$arch" \
     --build-arg CPCD_VERSION=v4.6.1 --build-arg GECKO_SDK_VERSION=v2024.12.1-0 \
     --tag "local/trixie-cross-$arch" "$AUDIT_CONTEXT"
+cross_probe_result=0
 timeout 90s docker run --rm -i --network none --read-only --cap-drop ALL \
     --security-opt no-new-privileges --pids-limit 128 --tmpfs /tmp:rw,nosuid,nodev,size=16m \
-    --entrypoint /bin/bash "local/trixie-cross-$arch" < "$audit_dir/probe.sh"
+    --entrypoint /bin/bash "local/trixie-cross-$arch" < "$audit_dir/probe.sh" || cross_probe_result=$?
 
-# Cross-stage gate passed. Build unchanged native OTBR in its target runtime.
+# Cross build passed. Complete independent native OTBR build even if an ABI
+# inspection failed; report that failure after collecting runtime evidence.
 # QEMU is installed only on the disposable runner by the pinned workflow action.
 timeout --kill-after=30s 1200s docker build --progress=plain --platform "$platform" \
     --build-arg "BUILD_FROM=$base" --build-arg "BUILD_ARCH=$arch" \
@@ -68,3 +70,5 @@ timeout 90s docker run --rm -i --platform "$platform" --network none --read-only
     --security-opt no-new-privileges --pids-limit 128 --tmpfs /tmp:rw,nosuid,nodev,size=16m \
     --entrypoint python3 "local/trixie-full-$arch" < "$audit_dir/../trixie-audit/web-probe.py"
 printf 'PASS: full ARM target image build, installed linkage and isolated native web under emulation; no physical-radio acceptance\n'
+printf 'ARM_CROSS_PROBE_STATUS=%s\n' "$cross_probe_result"
+exit "$cross_probe_result"

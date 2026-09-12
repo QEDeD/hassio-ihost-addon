@@ -69,9 +69,12 @@ for mode in default explicit64; do
 done
 printf 'ACTUAL_ZIGBEE_BUILD_COMMANDS\n'
 cd "$zigbee"
+# GNU make $(file ...) runs during recipe expansion, even with -n.
+# Override only its output directory; compilation/link inputs remain unchanged.
+mkdir -p /tmp/zigbee-link-audit
 make -n -B -f zigbeed.Makefile AR="${DEBIAN_CROSS_PREFIX}-ar" \
     CC="$compiler" LD="$compiler" CXX="${DEBIAN_CROSS_PREFIX}-g++" \
-    C_FLAGS='-std=gnu99 -DEMBER_MULTICAST_TABLE_SIZE=16' debug > /tmp/zigbee-build-commands.txt
+    C_FLAGS='-std=gnu99 -DEMBER_MULTICAST_TABLE_SIZE=16' OUTPUT_DIR=/tmp/zigbee-link-audit debug > /tmp/zigbee-build-commands.txt
 cat /tmp/zigbee-build-commands.txt
 python3 - <<'PY'
 from pathlib import Path
