@@ -161,3 +161,29 @@ settings and frontend dependency selections. Then validate ARM and the enabled
 NAT64/DNS build before preparing an approved physical coexistence trial. These
 are targeted acceptance tasks identified by the completed review, not a reason
 to keep rereading every dependency changelog.
+
+## Follow-up acceptance plan: actual application interfaces
+
+Reuse the successful lifecycle/firewall/readiness evidence above. Add two bounded
+probes to the existing disposable CI runtime job, comparing the pinned released
+image with the freshly built AMD64 Trixie image:
+
+1. Installed Bashio with a loopback synthetic Supervisor: primary/missing primary,
+   malformed JSON, HTTP failure, connection refusal, false/zero/missing options.
+   Record actual return status and captured output in the production assignment
+   context; do not classify inherited behavior as a Trixie regression.
+2. Installed native otbr-web with no OT control socket or radio: exact static
+   asset bytes, missing/traversal path rejection, absent-agent JSON serialization,
+   malformed commission JSON, and responsiveness after errors.
+
+Plan review: both probes use network-none read-only containers, dropped
+capabilities, bounded runtime and writable temporary storage only. They exercise
+actual installed consumers rather than replacing Bashio/native code with mocks.
+The comparison is against endpoint versions, not every intermediate release.
+Malformed commission requests cannot reach a real agent. No QR generation,
+external request, credential, production mutation or service cutover is involved.
+
+Passing results close these narrow application acceptance gaps, not full browser
+interaction, successful radio-backed API calls, ARM/time ABI, enabled NAT64/DNS
+traffic or physical coexistence. Only a demonstrated failure warrants another
+implementation cycle. SDK/CPC stay fixed. Results will be recorded after CI.
