@@ -1,5 +1,7 @@
 FROM ghcr.io/ihost-open-source-project/hassio-ihost-silabs-multiprotocol-amd64@sha256:f69bd95b16c23c018351b55659e3767f6573edf8f87061c58d1e610a2ce8ccef AS build
 ENV DOCKER=1
+# Retry transient snapshot gateway failures within the existing bounded CI job.
+RUN printf 'Acquire::Retries "3";\n' > /etc/apt/apt.conf.d/80-probe-retries
 # Freeze the build-only Bullseye package inputs at the final LTS day. The live
 # mirrors no longer serve some indexed security packages. Keep signature/hash
 # checks; only snapshot metadata expiry is disabled for these immutable URLs.
