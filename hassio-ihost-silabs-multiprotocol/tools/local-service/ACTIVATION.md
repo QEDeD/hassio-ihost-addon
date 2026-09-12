@@ -79,6 +79,38 @@ current-state recovery and final firewall-policy gates remain. No source/runtime
 change, new trial authority, automatic monitoring or maintainer contact follows
 from this review.
 
+## September 12 native Supervisor fixture result
+
+The operator-approved disposable app test passed on Supervisor 2026.09.0.
+A separate inert app used only synthetic data: no radio mappings, host networking,
+D-Bus, elevated capabilities, discovery or Supervisor API access. Production
+radio, Zigbee2MQTT and Matter services remained started at final readback.
+
+- Complete nondefault options survived a clean stopped version update; the app
+  remained stopped until explicitly started, and its evolving data survived.
+- Intentional refusal before data writes produced an error state even though the
+  start API returned success. A subsequent successful start proved the refused
+  attempt had not advanced the synthetic history. Always verify actual state.
+- Native backup and partial restore selected only the fixture, explicitly excluding
+  Home Assistant and other folders/apps. Restoration recovered the backed-up
+  history and options, replacing a later synthetic generation. Hash checks passed.
+- The fixture, its source directory and its backup were removed and absence verified.
+
+An inherited radio healthcheck initially caused fixture startup errors. Disabling
+it with HEALTHCHECK NONE still left this fixture in startup; an explicit synthetic
+state-file healthcheck resolved the test lifecycle. This is a fixture limitation,
+not evidence that the production candidate has that fault. Local Docker was
+unavailable; fixture write/refusal logic was tested locally in Python, and actual
+build/lifecycle/backup testing ran on Supervisor.
+
+This discharges the generic native Supervisor data/options/backup acceptance gap.
+It does not validate the actual candidate's radio initialization, two-source import,
+manual OTBR integration transition, code-specific recovery image, or real peers.
+Restoring older radio state remains unsafe; the fixture intentionally used no radio.
+The next preparation is a concrete current-state-preserving candidate handover and
+recovery check, followed by separate approval for the Zigbee interruption/activation.
+No radio cutover was authorized by this fixture test.
+
 ## Pre-activation gates
 
 1. Generate fixed/recovery contexts from the reviewed source. Validate both on
@@ -96,8 +128,9 @@ from this review.
    restoration characteristics. Do not run normal /init with a radio. Source
    contracts below do not replace this acceptance gate. A pinned, isolated
    Supervisor 2026.09.0 mocked rehearsal passed 15 lifecycle/options tests.
-   Docker and save_data were mocked: native backup/restore and durable Supervisor
-   integration remain unverified; the real-container continuity test is separate.
+   Docker and save_data were mocked in that earlier rehearsal. The September 12
+   native fixture test above now verifies generic persistence and backup/restore;
+   candidate-specific recovery and radio behavior remain separate.
 3. Prepare the supported options/reconfiguration client. Full option writes,
    authentication path, explicit Z2M endpoint and existing HA OTBR integration
    reconfiguration must be verified without editing .storage directly. Existing
@@ -115,9 +148,9 @@ from this review.
    Supervisor version matches the pinned source; original radio app and Zigbee
    consumer are running, with OTBR disabled. Full options were retained privately.
    The native backup catalog is readable but does not establish a current backup
-   or successful restoration. No options write, backup creation or service
-   transition was performed. The authenticated read-path gate is discharged;
-   native persistence/recovery acceptance remains separate.
+   or successful restoration. That September 11 read made no options write, backup or service transition. The authenticated read-path gate is discharged;
+   generic native persistence/backup acceptance now passed as described above;
+   current radio-state recovery remains separate.
 
 4. Resolve the discovery observation gap in README. Collect actual SRV targets,
    ports and AAAA from the relevant links; management REST/WebSocket endpoints
@@ -254,10 +287,10 @@ Later migration back to the original needs its own current-state transfer plan.
 Current state: package/importer/observations implemented locally; both images build,
 s6 graphs compile and 21 tests pass under released Python 3.9.2. Synthetic
 same-volume image switching and installed local-only DNS-SD checks pass; 15 mocked
-Supervisor lifecycle/options tests pass. Native Supervisor persistence/backup
-integration, actual options/integration transition, normal radio startup and real-peer
-behavior remain unverified. No production
-change was made. The proposal is maintained here; private operational mappings
+Supervisor lifecycle/options tests pass. Generic native Supervisor persistence/backup integration passed the September 12
+fixture test. Actual radio options/integration transition, candidate recovery, normal
+radio startup and real-peer behavior remain unverified. No production radio
+configuration was changed; the disposable Supervisor fixture was removed. The proposal is maintained here; private operational mappings
 remain outside Git. Approval for peer coordination only permits sharing this work.
 
 A future approval request must name the exact package/window, temporary Zigbee
@@ -271,8 +304,8 @@ Planning range before implementation was2â€“4h agent effort plus20â€“6
 local build/test runtime; the Docker startup blocker is now resolved. Native
 Supervisor recovery integration and control readiness dominate remaining uncertainty. Human decision/approval10â€“20min and physical
 commissioning5â€“15min are separate from an initial30â€“45min live observation/recovery
-budget. No reliable completion estimate for native Supervisor recovery integration
-is claimed; the mocked rehearsal does not discharge that gate. Stop/reassess if reliable recovery requires
+budget. The September 12 fixture now discharges generic native persistence/backup testing;
+remaining candidate-specific recovery and radio validation determine further effort. Stop/reassess if reliable recovery requires
 privileged machinery disproportionate to this fix.
 
 References: [HA app persistence/configuration](https://developers.home-assistant.io/docs/apps/configuration/),

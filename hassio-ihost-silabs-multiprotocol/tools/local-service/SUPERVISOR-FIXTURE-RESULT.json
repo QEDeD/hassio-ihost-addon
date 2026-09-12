@@ -1,0 +1,103 @@
+{
+  "checks_passed": [
+    "complete_options_save",
+    "stopped_update_preserved_data_options",
+    "refusal_before_write",
+    "native_app_only_backup_restore"
+  ],
+  "records": [
+    {
+      "state": {
+        "starts": 1,
+        "history": [
+          "generation-A"
+        ]
+      },
+      "sha256": "4f43199ca3820ffd9bd97ea504392975b8bf7c109835b82bd8dbece5e669d6ab",
+      "options": {
+        "marker": "generation-A",
+        "refuse": false
+      }
+    },
+    {
+      "state": {
+        "history": [
+          "generation-A",
+          "generation-A"
+        ],
+        "starts": 2
+      },
+      "sha256": "f87cd4aff1bcde32aa32c2bee51ec5f087cd01ae14663aa3f6fea3a8185e5bf2",
+      "options": {
+        "marker": "generation-A",
+        "refuse": false
+      }
+    },
+    {
+      "state": {
+        "history": [
+          "generation-A",
+          "generation-A",
+          "generation-A"
+        ],
+        "starts": 3
+      },
+      "sha256": "d39d94baca7a444c982864871e40443d09e4505563b9893a8b1fa531907cecd2",
+      "options": {
+        "marker": "generation-A",
+        "refuse": false
+      }
+    },
+    {
+      "state": {
+        "history": [
+          "generation-A",
+          "generation-A",
+          "generation-A",
+          "generation-A"
+        ],
+        "starts": 4
+      },
+      "sha256": "4f1f2db3e2106618c8df7af649c8666084d2a2bd658c5ca0b766a61fe891251a",
+      "options": {
+        "marker": "generation-A",
+        "refuse": false
+      }
+    },
+    {
+      "state": {
+        "history": [
+          "generation-A",
+          "generation-A",
+          "generation-A",
+          "generation-A",
+          "generation-B"
+        ],
+        "starts": 5
+      },
+      "sha256": "57c2e8094504174aef24f0c24225b73948011860bde660d572fdc82226edc76a",
+      "options": {
+        "marker": "generation-B",
+        "refuse": false
+      }
+    },
+    {
+      "state": {
+        "history": [
+          "generation-A",
+          "generation-A",
+          "generation-A",
+          "generation-A",
+          "generation-A"
+        ],
+        "starts": 5
+      },
+      "sha256": "5f48455a2cafb1a3fb2aad8b7777f5b676af42ae18c064322bbf0ad05652e1e8",
+      "options": {
+        "marker": "generation-A",
+        "refuse": false
+      }
+    }
+  ],
+  "caveat": "Synthetic fixture, not real radio validation"
+}
