@@ -69,3 +69,55 @@ pinned QEMU, with a20-minute build bound, and reuses installed linkage inventory
 and no-radio native web probes. This adds no physical-radio or HAOS-kernel claim.
 The QEMU registration runs only on disposable hosted runners. No changes to the
 operator's Docker installation or production deployment are involved.
+
+### Evidence qualifications from independent review
+
+The passing cross run used GCC 14.2.0 (Debian cross package14.2.0-19cross1),
+target glibc headers/libraries2.41-11cross1, binutils2.44-3 and target kernel
+headers6.12.38-1cross1. The AMD64 build-host glibc was2.41-12+deb13u4; that is
+not the target sysroot version. All six artifact machine/class checks passed.
+The ABI object probes measure normal compiler/header defaults, not every
+translation unit's effective definitions or all vendor-private structures.
+
+ARMv7 zigbeed imports __clock_gettime64, __fstat64_time64 and __select64 alongside
+legacy time@GLIBC_2.4. This is a provenance question, not proof of corruption.
+Rebuilt system-timer.c keeps timespec local and returns a uint32_t tick; CPC's
+public timeout structure likewise does not expose libc time_t. Complete archive
+caller attribution remains necessary before claiming that mixed symbols are safe.
+
+Run34722291698 at2601cff rebuilt both cross targets successfully, then failed
+inside the enhanced inspection: GNU make's $(file ...) writes a linker response
+file even with -n, and the source filesystem was deliberately read-only. Fixture
+correction2b43feb redirects only OUTPUT_DIR to writable /tmp during the dry run.
+Independent full-image checks now execute even if static inspection fails, and
+the aggregate job retains the inspection failure. No application semantic change
+was made in response to either fixture error.
+
+## Complete-image run and independent archive review
+
+Run [34722484706](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34722484706)
+at 2b43feb passed both cross builds and both archive probes. Each target links
+15 distinct SDK archives, all from release_singlenetwork directories.
+ARMv7 libzigbee-pro-stack.a has SHA256
+8ae420936a2ebdc9080f021ff5719c409a1d45726229bfaa7615750d212e3cc8;
+its lower-mac-spinel.c.o imports legacy time. The public SDK tree has no source
+for that object. This identifies a possible 2038 limitation, not a demonstrated
+caller/callee ABI mismatch. The same object on AArch64 imports native 64-bit time.
+Do not claim private ABI compatibility from the successful links.
+
+Complete target images did not pass:
+- ARMv7: native GCC 14.2.0 failed in bundled mbedTLS bignum_core.c,
+  mbedtls_mpi_core_mla, with an inline-assembly register-constraint error through
+  bn_mul.h:785. The failing command has no optimization flag. This is a real
+  build blocker in the unchanged build path, not a probe failure.
+- AArch64: compilation reached OTBR step 314/529 before the 1200-second bound
+  expired (exit 124). No compiler failure was established for this target.
+- Neither reached final-image linkage inventory or the no-radio native web probe.
+
+Next bounded experiment: reproduce only the failing ARMv7 translation unit
+using the pinned SDK and Trixie cross compiler, then compare baseline, -O1 and
+-O2. An optimization explanation is a hypothesis until that comparison runs.
+Native-versus-cross compiler differences must remain explicit. Avoid another
+complete ARMv7 build until this cheaper experiment resolves the blocker.
+For AArch64, consider a native runner or a longer bounded build after the
+ARMv7 result; do not interpret the timeout as either success or incompatibility.
