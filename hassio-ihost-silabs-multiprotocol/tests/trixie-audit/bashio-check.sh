@@ -68,6 +68,15 @@ def run(script, endpoint_override=None):
                                'source /usr/lib/bashio/bashio.sh\n' + script],
                               env=env, capture_output=True, text=True, timeout=8)
 
+# Bashio 0.17.0 logs to stderr; 0.17.5 preserves original stdout in LOG_FD.
+# Errors must fail and carry the expected synthetic diagnostic on either stream.
+def failed_call(case, result, message):
+    assert result.returncode == 1, (case, result)
+    assert message in result.stdout + result.stderr, (case, result)
+    print(f'BASHIO_NETWORK case={case} status=1 '
+          f'stdout_diagnostic={bool(result.stdout)} stderr_diagnostic={bool(result.stderr)} '
+          f'message={message!r}', flush=True)
+
 # Same assignment and jq expression as rootfs/.../otbr-agent/run. Do not wrap
 # the function itself in an `if`: that would change Bash errexit semantics.
 network = '''backbone_if="$(bashio::api.supervisor 'GET' '/network/info' '' 'first(.interfaces[] | select (.primary == true)) .interface')"
@@ -83,11 +92,16 @@ try:
         before = len(requests)
         result = run(network)
         assert requests[before:] == ['/network/info'], (mode, requests[before:])
-        assert (result.returncode, result.stdout) == (expected_status, expected_output), (
-            mode, result.returncode, result.stdout, result.stderr)
-        if mode == 'malformed':
-            assert result.stderr, 'Malformed JSON must expose the jq parse diagnostic'
-        print(f'BASHIO_NETWORK case={mode} status={result.returncode} output={result.stdout!r}', flush=True)
+        if mode == 'http_failure':
+            failed_call(mode, result, 'Got unexpected response from the API: synthetic failure')
+        else:
+            assert (result.returncode, result.stdout) == (expected_status, expected_output), (
+                mode, result.returncode, result.stdout, result.stderr)
+            if mode == 'malformed':
+                assert result.stderr, 'Malformed JSON must expose the jq parse diagnostic'
+            else:
+                assert result.stderr == '', (mode, result.stderr)
+            print(f'BASHIO_NETWORK case={mode} status={result.returncode} output={result.stdout!r}', flush=True)
 
     # has_value tests nonempty text: false and 0 are values; missing is null.
     config = run('''
@@ -121,8 +135,7 @@ finally:
 with socket.socket() as refused:
     refused.bind(('127.0.0.1', 0))
     result = run(network, 'http://127.0.0.1:' + str(refused.getsockname()[1]))
-assert result.returncode == 1 and result.stdout == '', result
-print('BASHIO_NETWORK case=connection_refused status=1 output=empty', flush=True)
+failed_call('connection_refused', result, 'Something went wrong contacting the API')
 print('OBSERVED: missing primary and malformed JSON produce success with empty interface in this call context; compare release and candidate before attributing a regression', flush=True)
 print('PASS: actual installed Bashio against bounded synthetic loopback Supervisor; no full add-on startup or live Supervisor acceptance', flush=True)
 PY

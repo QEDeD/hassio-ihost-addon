@@ -47,6 +47,7 @@ for image in local/ihost-trixie-audit "$RELEASE_IMAGE"; do
         --pids-limit 128 --tmpfs /tmp:rw,nosuid,nodev,size=4m --env "AUDIT_CONFIG_QUERY=$query" \
         --entrypoint /bin/bash "$image" < "$audit_dir/utility-probe.sh"
 done
+application_failed=0
 # Actual installed Bashio and native web binary, tested against both endpoints.
 # Read-only test inputs; no Supervisor, OT control socket, radio or outside route.
 for image in local/ihost-trixie-audit "$RELEASE_IMAGE"; do
@@ -54,11 +55,12 @@ for image in local/ihost-trixie-audit "$RELEASE_IMAGE"; do
     timeout 90s docker run --rm -i --network none --read-only --cap-drop ALL \
         --security-opt no-new-privileges --pids-limit 128 \
         --tmpfs /tmp:rw,nosuid,nodev,size=16m \
-        --entrypoint /bin/bash "$image" < "$audit_dir/bashio-check.sh"
+        --entrypoint /bin/bash "$image" < "$audit_dir/bashio-check.sh" || application_failed=1
     timeout 45s docker run --rm -i --network none --read-only --cap-drop ALL \
         --security-opt no-new-privileges --pids-limit 128 \
         --tmpfs /tmp:rw,nosuid,nodev,size=16m \
-        --entrypoint python3 "$image" < "$audit_dir/web-probe.py"
+        --entrypoint python3 "$image" < "$audit_dir/web-probe.py" || application_failed=1
 done
 
+(( application_failed == 0 )) || { echo 'FAIL: application comparison; see independent case results above'; exit 1; }
 echo 'PASS: isolated Trixie runtime regressions; physical radio and ARM acceptance remain separate'
