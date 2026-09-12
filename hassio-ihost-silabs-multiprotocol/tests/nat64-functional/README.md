@@ -30,11 +30,25 @@ assertions still run, and system Wireshark tools provide the runner's mandatory
 traffic capture. Protocol waits are unchanged (including NAT64's 330-second wait).
 Allow up to 60 minutes for cold builds plus real-time tests.
 
-The baseline DNS host shares the infrastructure link. A passing result does not
-resolve cross-interface Supervisor DNS routing. The next bounded adaptation can
-reuse this three-node topology with a second backbone_network_id and attach the
-BR to that DNS bridge, comparing the default interface-bound resolver against
-binding disabled. Establish these unchanged baselines before adding that case.
+The original DNS test requests a native AAAA record: it proves DNS forwarding,
+not DNS64 synthesis. The separate NAT64 baseline exercises translated traffic
+and counters. A generated sibling DNS test adds a second backbone network and
+connects the BR to it. Before querying from Thread, it proves the ordinary route
+uses that added interface, the infrastructure-bound route is unavailable, and a
+direct DNS query returns the exact expected answer. Only the disposable BR's
+IPv4 default routes are removed to exclude an alternate Docker-host path.
+
+The comparison builds the pinned resolver twice, with default infrastructure
+binding and with OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF=0.
+It replays resolver.cpp's actual compiler command in preprocessing mode to prove
+the effective setting. Both builds must pass the original infrastructure-DNS
+case. The separate-interface case must report precisely the CLI DNS
+ResponseTimeout with default binding and the expected answer when binding is
+disabled. Other exceptions, setup failures and skipped tests fail the job.
+The source hash and exact anchors guard fixture generation; original tests are
+never edited. Independent cases continue after failure, but any failed case
+keeps the overall job failing. This is a controlled topology comparison, not
+proof of full Home Assistant Supervisor integration or a production change.
 
 The disposable checkout normalizes one pinned node.py argument: three sysctls
 were passed as a single value to Popen. It now passes each through its own
