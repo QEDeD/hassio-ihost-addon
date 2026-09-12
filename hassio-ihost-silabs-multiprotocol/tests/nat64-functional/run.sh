@@ -73,11 +73,17 @@ docker run --rm --network none --entrypoint bash "$OTBR_DOCKER_IMAGE" -ec '
 cd "$ot"
 ./script/test build
 
+# dumpcap drops DAC-override privileges, so root-run capture needs a root-owned
+# writable working directory. Keep the runner-owned log directory for tee.
+mkdir "$fixture_dir/logs"
+chmod 755 "$fixture_dir"
+sudo chown root "$ot"
+
 # Keep the upstream tests and their protocol observation waits unchanged.
 # FEATURE_FLAGS defaults are handled by their explicit NAT64/DNS activation.
 for case_name in test_upstream_dns test_single_border_router; do
     test_path="tests/scripts/thread-cert/border_router/internet/$case_name.py"
-    log="$fixture_dir/$case_name.log"
+    log="$fixture_dir/logs/$case_name.log"
     sha256sum "$test_path"
     sudo env PATH="$PATH" \
         THREAD_VERSION="$THREAD_VERSION" VIRTUAL_TIME="$VIRTUAL_TIME" \
