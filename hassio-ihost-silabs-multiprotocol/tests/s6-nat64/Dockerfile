@@ -10,7 +10,7 @@ RUN rm -rf /etc/s6-overlay/s6-rc.d /etc/cont-init.d /etc/cont-finish.d /etc/serv
     && printf 'bundle\n' > /etc/s6-overlay/s6-rc.d/user2/type \
     && touch /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent \
     && printf 'longrun\n' > /etc/s6-overlay/s6-rc.d/otbr-agent/type
-COPY rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/notification-fd rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish /etc/s6-overlay/s6-rc.d/otbr-agent/
+COPY rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/notification-fd rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-kill /etc/s6-overlay/s6-rc.d/otbr-agent/
 COPY --chmod=0755 rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish /etc/s6-overlay/s6-rc.d/otbr-agent/finish
 COPY --chmod=0755 rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check /etc/s6-overlay/s6-rc.d/otbr-agent/data/check
 COPY rootfs/etc/s6-overlay/scripts/otbr-agent-common /etc/s6-overlay/scripts/otbr-agent-common

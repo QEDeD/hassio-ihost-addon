@@ -10,6 +10,14 @@ else
     e="$1"
 fi
 
+# A graceful daemon exit still represents failure if startup configuration failed.
+# finish's permanent-failure result releases an outstanding s6 readiness wait.
+if [[ -f /run/otbr-agent-config-failed ]]; then
+    rm -f /run/otbr-agent-config-failed
+    e=1
+    bashio::log.error "OTBR startup configuration failed."
+fi
+
 fatal_exit=false
 if test "$e" -ne 0; then
     # Persist the service result and initiate container shutdown before

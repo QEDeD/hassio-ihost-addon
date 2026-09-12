@@ -119,6 +119,9 @@ check_script="$(sed \
     -e '\@^\. /etc/s6-overlay/scripts/otbr-agent-common$@d' \
     -e 's@mapfile -t < /tmp/otbr-agent-rest-api@true@' \
     -e 's@\[\[ -S /run/openthread-wpan0.sock \]\]@socket_ready@' \
+    -e 's@\[\[ -f /run/otbr-agent-config-failed \]\]@[[ -f "$work/config-failed" ]]@' \
+    -e 's@echo 1 > /run/otbr-agent-config-failed@echo 1 > "$work/config-failed"@' \
+    -e 's@s6-svc -d /run/service/otbr-agent@touch "$work/service-down"@' \
     -e 's@echo 1 > /run/s6-linux-init-container-results/exitcode@echo 1 > "$work/exitcode"@' \
     -e 's@/run/s6/basedir/bin/halt@touch "$work/halt"@' \
     "$root/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check")"
@@ -143,6 +146,8 @@ run_check true 0 0 0 || fail 'first incarnation failed'
 run_check true 0 0 0 || fail 'next incarnation failed'
 [[ $(wc -l < "$work/configurations") == 2 ]] || fail 'configuration not repeated for next checker'
 if run_check true 0 0 1; then fail 'failed configuration reported ready'; fi
-[[ $(cat "$work/exitcode") == 1 && -f "$work/halt" ]] || fail 'configuration failure did not halt'
+[[ $(cat "$work/exitcode") == 1 && -f "$work/halt" && -f "$work/config-failed" && -f "$work/service-down" ]] || fail 'configuration failure did not halt'
+if run_check true 0 0 0; then fail 'failed service became ready while stopping'; fi
+[[ $(wc -l < "$work/configurations") == 3 ]] || fail 'failed configuration retried while stopping'
 grep -Fq 'Could not configure NAT64/upstream DNS; stopping the add-on.' "$work/errors" || fail 'shutdown diagnostic missing'
 printf 'PASS: scoped NAT64 lifecycle, bounded CLI configuration and per-start readiness\n'

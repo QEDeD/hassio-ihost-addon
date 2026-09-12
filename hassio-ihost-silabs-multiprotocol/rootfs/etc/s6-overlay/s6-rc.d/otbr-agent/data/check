@@ -3,6 +3,8 @@
 # Private startup readiness hook: s6-notifyoncheck stops invoking it after success
 # and starts a fresh checker for each supervised otbr-agent incarnation.
 if bashio::config.false 'otbr_enable'; then exit 1; fi
+# While a failed daemon is stopping, do not retry its configuration.
+if [[ -f /run/otbr-agent-config-failed ]]; then exit 1; fi
 
 # Preserve the socket and REST prerequisites before changing runtime features.
 if ! mapfile -t < /tmp/otbr-agent-rest-api; then exit 1; fi
@@ -18,7 +20,11 @@ if bashio::config.true 'otbr_nat64'; then nat64_enabled=true; fi
 if ! otbr_nat64_configure "$nat64_enabled"; then
     bashio::log.error "Could not configure NAT64/upstream DNS; stopping the add-on."
     # Abort the container rather than declare a partial configuration ready.
+    echo 1 > /run/otbr-agent-config-failed
     echo 1 > /run/s6-linux-init-container-results/exitcode
     /run/s6/basedir/bin/halt
+    # halt waits for the pending startup transaction. Stop this service directly;
+    # finish reports permanent failure, releasing that transaction without ready.
+    s6-svc -d /run/service/otbr-agent
     exit 1
 fi

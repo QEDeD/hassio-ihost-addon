@@ -21,7 +21,7 @@ def wait_for(predicate):
 def read_commands():
     return commands.read_text().splitlines() if commands.exists() else []
 
-for generation in range(1, 3 if scenario != 'error' else 2):
+for generation in range(1, 3 if not scenario.startswith('error') else 2):
     wait_for(lambda: Path('/tmp/generation').exists()
              and Path('/tmp/generation').read_text() == str(generation))
     prior = read_commands()
@@ -34,7 +34,7 @@ for generation in range(1, 3 if scenario != 'error' else 2):
         Path(f'/tmp/{stage}-{generation}').touch()
         if stage == 'allow-socket':
             wait_for(lambda: Path(f'/tmp/socket-{generation}').exists())
-    if scenario == 'error':
+    if scenario.startswith('error'):
         print('NAT64_FIXTURE_ERROR_ARMED', flush=True)
         break
     subprocess.run(['s6-svwait', '-U', '-t', '15000', service], check=True, timeout=17)

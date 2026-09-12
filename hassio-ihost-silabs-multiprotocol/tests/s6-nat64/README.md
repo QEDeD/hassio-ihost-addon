@@ -19,9 +19,21 @@ exact disable/enable sequences are checked and the checker must stop calling the
 CLI. A clean daemon restart through s6 repeats these assertions for generation 2,
 including the real finish script (no firewall ownership claim exists).
 
-A third container returns CLI Error text with exit zero. The test requires the
+Two failure containers return CLI Error text with exit zero. The test requires each
 container to stop with status 1 and emit the configuration-failure diagnostic and
-CLI Error text. It does not substitute a failing process exit for this behavior.
+CLI Error text. One daemon exits cleanly on SIGTERM; the other deliberately ignores
+SIGTERM and requires the copied production 3000-ms timeout-kill. Finish must report
+status 1 in both cases, with signal 0 and signal 9 respectively. The stalled case
+must take at least two seconds, while the existing 20-second shutdown bound stays
+unchanged and no global grace override is added.
+
+After shutdown the runner reads container-local command/generation files through
+Docker's tar stream, requiring exactly the two disable attempts and no daemon
+restart. It also rejects s6-rc's successful-start notification for the agent.
+This checks the permanent-failure path that releases s6-rc's pending startup lock;
+merely requesting halt cannot satisfy these assertions if startup remains pending.
+This covers a responsive finish after clean exit or daemon kill. Forced finish
+expiry before initial readiness is not demonstrated by these scenarios.
 
 Containers have no external networking, host mounts, hardware or network-management
 capabilities. All options, sockets and state are synthetic and container-local.

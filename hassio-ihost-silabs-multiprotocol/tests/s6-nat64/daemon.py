@@ -1,10 +1,18 @@
 """Only synthetic Unix/TCP listeners; no Thread stack or radio access."""
+import os
 from pathlib import Path
 import signal
 import socket
 import time
 
-signal.signal(signal.SIGTERM, lambda *_: exit(0))
+def terminate(*_):
+    if os.environ['NAT64_CASE'] == 'error-stall':
+        print('NAT64_FIXTURE_SIGTERM_IGNORED', flush=True)
+        return
+    print('NAT64_FIXTURE_SIGTERM_CLEAN_EXIT', flush=True)
+    raise SystemExit(0)
+
+signal.signal(signal.SIGTERM, terminate)
 generation_path = Path('/tmp/generation')
 generation = int(generation_path.read_text()) + 1 if generation_path.exists() else 1
 unix_path = Path('/run/openthread-wpan0.sock')

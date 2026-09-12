@@ -8,7 +8,7 @@ if [[ "$ready" != false ]]; then
 fi
 generation="$(cat /tmp/generation)"
 printf '%s %s\n' "$generation" "$*" >> /tmp/commands
-if [[ "${NAT64_CASE}" == error ]]; then
+if [[ "${NAT64_CASE}" == error* ]]; then
     echo 'NAT64_FIXTURE_CLI_ERROR_EXIT_ZERO' >&2
     printf 'Error 7: InvalidState\r\n'
     exit 0

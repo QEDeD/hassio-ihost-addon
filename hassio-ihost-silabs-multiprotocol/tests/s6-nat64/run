@@ -3,7 +3,7 @@
 set -eu
 case "${NAT64_CASE}" in
     off) enabled=false ;;
-    on|error) enabled=true ;;
+    on|error|error-stall) enabled=true ;;
     *) exit 2 ;;
 esac
 # Released Bashio 0.17.0 reads addon.config from this cache before Supervisor.
