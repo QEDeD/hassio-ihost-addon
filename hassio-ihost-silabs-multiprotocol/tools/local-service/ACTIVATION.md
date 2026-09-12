@@ -1,8 +1,58 @@
-# Proposed local-service activation and current-state recovery
+# Local-service activation and current-state recovery
 
-Status: proposed; execution not authorized. This is the maintained, public-safe
-version of the operator proposal. Backup IDs, interface/address assignments,
-phone/accessory identities and approved windows remain in private task context.
+Status: operator-approved activation executed on September 12; post-restart
+service and firewall acceptance passed. Phone/accessory commissioning remains
+unverified. Earlier dated preparation records below are historical, not current
+state or a request to repeat approval. Operational identities, backup references
+and credentials remain in private task evidence.
+
+## September 12 activation evidence
+
+The fixed package is 0.1.4-local; its companion recovery context is
+0.1.5-recovery. The five-file runtime fix is unchanged. Four bounded read-only
+firewall/backend commands were added to the observer; all 24 local tests pass.
+
+- Stopped the original radio app and Zigbee2MQTT, disabled automatic restarts,
+  and created and validated a fresh stopped-original native backup.
+- Imported fresh Zigbee state and the retained newer Thread state through the
+  guarded two-source preparation path. Import completed without radio startup.
+- Started the replacement with Thread disabled and switched Zigbee2MQTT to its
+  endpoint. Its first connection preceded listener readiness and failed with
+  connection refused; retry after actual listener readiness succeeded. Two
+  devices then answered fresh non-actuating state reads.
+- Enabled OTBR with ingress filtering enabled. It attached as leader; border
+  routing ran with an actual advertised OMR prefix. Privately parsed active
+  dataset TLVs exactly matched Home Assistant's preferred network.
+- Added the replacement through the supported manual OTBR integration flow,
+  then removed only the stale original entry. Thread, OTBR and Matter loaded;
+  the Matter server answered a topology request with zero commissioned nodes.
+- Compared host-network firewall snapshots: IPv4 rules were unchanged; IPv6
+  added only scoped OTBR chains and forwarding jumps. Global policies and
+  unrelated rules remained unchanged. Packet counters and generated timestamps
+  are excluded from this comparison. The backend is iptables-nft.
+- A controlled same-volume restart recovered Thread leader/border routing and
+  both physical Zigbee reads. Twenty bounded samples and a final check more than
+  ten minutes after first observed reattachment passed; both devices answered
+  new reads after that window. The restart introduced no duplicate firewall jumps
+  or changes to global policies/unrelated rules.
+- Created a native hot backup of the current candidate. The archive was read
+  through gzip/tar successfully and contains the package image, both radio
+  files, import provenance and first-radio-start marker. This is a retained
+  recovery artifact, not permission to rewind live radio counters.
+
+The replacement's current volume is authoritative from its first runtime
+attempt. The original remains stopped; resuming it or restoring an old VM/radio
+snapshot is unsafe. Recovery continues in this same volume with OTBR disabled.
+Automatic boot is restored for the replacement, with watchdog and automatic
+updates disabled. Zigbee2MQTT has its previous automatic boot/watchdog policy.
+The temporary import manifest was removed. Automatic discovery remains disabled;
+manual integration setup did not create a
+new Thread network. No firmware or phone/network settings changed here.
+
+Observer JSON records can exceed the platform's 16 KiB log-record boundary.
+The private evidence collector reconstructs contiguous fragments before JSON
+parsing; incomplete records are not treated as successful observations. Raw
+firewall snapshots and radio backup content must not be published.
 
 ## Outcome and choice
 
@@ -133,7 +183,7 @@ No radio start, state import, integration replacement or Zigbee interruption has
 been performed. The actual-device acceptance checks remain part of the approved
 activation window, not additional unrelated preparation projects.
 
-## Pre-activation gates
+## Historical pre-activation gates
 
 1. Generate fixed/recovery contexts from the reviewed source. Validate both on
    the released runtime in isolated containers with no radio, host networking or
@@ -182,7 +232,7 @@ activation window, not additional unrelated preparation projects.
    and participant details are reviewable. The historic24h testing permission
    expired; later coordination/SSH permission does not renew production authority.
 
-## Proposed approved handover
+## Approved handover procedure
 
 Before interruption, confirm current owner/options/versions and two fresh
 correlated physical Zigbee baselines; confirm native backup and external VM
@@ -201,8 +251,9 @@ physical reads. From the first attempted runtime handoff onward, its volume is
 authoritative for both radios. Never assume an unsuccessful startup left counters
 unchanged. After privately verifying the intended Thread dataset, enable OTBR
 using ordinary release startup and require attached role, fresh Zigbee reads and
-unchanged global/foreign firewall state. Initial firewall=false reproduces the
-reported bug and historical live trial; it is NOT accepted permanent policy.
+unchanged global/foreign firewall state. Firewall=false was used in the
+historical bug reproduction; firewall=true passed this activation and is the
+accepted operating mode.
 FortiGate filtering does not replace all host/Thread ingress protections.
 
 Observe at least ten minutes after readiness, failing earlier on a concrete
@@ -304,31 +355,19 @@ rollback for every device. If it fails, retain state/evidence and escalate. Do n
 flash, reset, re-pair, restore an old VM snapshot or switch to the stale original.
 Later migration back to the original needs its own current-state transfer plan.
 
-## Readiness, authority and effort
+## Remaining acceptance
 
-Current state: package/importer/observations implemented locally; both images build,
-s6 graphs compile and 21 tests pass under released Python 3.9.2. Synthetic
-same-volume image switching and installed local-only DNS-SD checks pass; 15 mocked
-Supervisor lifecycle/options tests pass. Generic native Supervisor persistence/backup integration passed the September 12
-fixture test. Actual radio options/integration transition, candidate recovery, normal
-radio startup and real-peer behavior remain unverified. No production radio
-configuration was changed; the disposable Supervisor fixture was removed. The proposal is maintained here; private operational mappings
-remain outside Git. Approval for peer coordination only permits sharing this work.
+The HA service/restart/firewall gate is complete. Keep the original app manual
+with its watchdog disabled and preserve the replacement's current state during
+any subsequent recovery. Full VM reboot ordering was not tested; the controlled
+app restart and restored boot policies do not establish every host-reboot path.
 
-A future approval request must name the exact package/window, temporary Zigbee
-outage, stopped backup/two-source import, sole-owner and endpoint changes, Thread
-activation, observation, current-state-preserving recovery and permitted restart,
-including state/counter uncertainty and whether to leave the service running.
-Network changes, commissioning/actuation, firmware and snapshot restoration are
-not silently bundled. Do not ask for execution approval while hard gates remain.
-
-Planning range before implementation was2â€“4h agent effort plus20â€“60min overlapping
-local build/test runtime; the Docker startup blocker is now resolved. Native
-Supervisor recovery integration and control readiness dominate remaining uncertainty. Human decision/approval10â€“20min and physical
-commissioning5â€“15min are separate from an initial30â€“45min live observation/recovery
-budget. The September 12 fixture now discharges generic native persistence/backup testing;
-remaining candidate-specific recovery and radio validation determine further effort. Stop/reassess if reliable recovery requires
-privileged machinery disproportionate to this fix.
+Phone IPv6/Internet/Home Assistant access on the selected SSID belongs to the
+networking workstream. Real accessory commissioning and Matter operation remain
+unproven. These are the next functional acceptance steps; leader status alone
+does not establish end-to-end Thread/Matter communication. Cross-subnet routing
+and any migration away from the operator-maintained local package remain separate
+work. Do not resume the obsolete generic preparation or Docker investigations.
 
 References: [HA app persistence/configuration](https://developers.home-assistant.io/docs/apps/configuration/),
 [local app testing](https://developers.home-assistant.io/docs/apps/testing/),
