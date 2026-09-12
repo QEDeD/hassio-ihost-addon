@@ -43,18 +43,50 @@ def prepare(source):
         ])
         self._start_dns_server(dns_server)
 ''')
-    replace_once("        # Disable the bind9 service on the BR otherwise bind9 may respond to Thread devices' DNS queries\n", '''        # Eliminate a possible path through Docker's host gateway. Only this
-        # disposable BR namespace is changed; both connected networks remain.
-        br.bash('ip -4 route flush default')
+    replace_once("        # Disable the bind9 service on the BR otherwise bind9 may respond to Thread devices' DNS queries\n", '''        # Confirm the ordinary route uses the added DNS-side interface.
         route = json.loads(''.join(br.bash(f'ip -j -4 route get {dns_server_addr}')))
         self.assertEqual(len(route), 1)
         self.assertNotIn(route[0]['dev'], (config.BACKBONE_IFNAME, 'lo'))
-        # A syntax/setup error must not satisfy the negative route prerequisite.
-        with self.assertRaises(subprocess.CalledProcessError) as no_infra_route:
-            br.bash(f'ip -4 route get {dns_server_addr} oif {config.BACKBONE_IFNAME} 2>&1')
-        self.assertIn('Network is unreachable', no_infra_route.exception.output)
+
         answers = br.bash(f'dig +time=2 +tries=1 +short @{dns_server_addr} {TEST_DOMAIN} AAAA')
         self.assertEqual({line.strip() for line in answers}, TEST_DOMAIN_IP6_ADDRESSES)
+        # A forced-oif route lookup can succeed without a reachable DNS server.
+        # Use a real IPv4 UDP DNS exchange, with the resolver's socket binding.
+        bound_probe = """
+import errno
+import socket
+import struct
+import sys
+server, interface, name = sys.argv[1:]
+question = b''.join(bytes([len(label)]) + label.encode('ascii') for label in name.split('.'))
+query = struct.pack('!6H', 0x5144, 0x0100, 1, 0, 0, 0) + question + bytes([0]) + struct.pack('!HH', 28, 1)
+# First require the identical raw query to work unbound; malformed requests or
+# broken probe transport cannot be mistaken for an interface-binding failure.
+with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+    sock.settimeout(2)
+    sock.sendto(query, (server, 53))
+    response, peer = sock.recvfrom(4096)
+    header = struct.unpack('!6H', response[:12])
+    assert peer == (server, 53), peer
+    assert header[0] == 0x5144 and header[1] & 0x8000 and header[1] & 15 == 0 and header[3] > 0, header
+with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+    # Keep setup outside the expected reachability-failure handler.
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, interface.encode('ascii'))
+    sock.settimeout(2)
+    try:
+        sock.sendto(query, (server, 53))
+        sock.recvfrom(4096)
+    except socket.timeout:
+        print('PASS: infra-bound DNS socket timed out; identical unbound query succeeded')
+    except OSError as error:
+        if error.errno not in (errno.ENETUNREACH, errno.EHOSTUNREACH):
+            raise
+        print('PASS: infra-bound DNS socket unreachable, errno=' + str(error.errno))
+    else:
+        raise AssertionError('Infra-bound DNS socket unexpectedly received a response')
+"""
+        br.bash(shlex.join(['timeout', '6s', 'python3', '-c', bound_probe,
+                            dns_server_addr, config.BACKBONE_IFNAME, TEST_DOMAIN]))
 
         # Disable the bind9 service on the BR otherwise bind9 may respond to Thread devices' DNS queries
 ''')
