@@ -45,8 +45,9 @@ else
 fi
 
 if [[ "${fatal_exit}" == "true" ]]; then
-    # Prevent a restart if shutdown has not completed by the time teardown
-    # returns. The shutdown request above protects this decision if teardown
-    # itself reaches timeout-finish.
+    # Report permanent failure and prevent restart. During initial readiness,
+    # this result releases the pending startup transaction. After startup has
+    # completed, the shutdown request also covers a forced finish timeout;
+    # that timeout path is not sufficient to release a pending startup wait.
     exit 125
 fi
