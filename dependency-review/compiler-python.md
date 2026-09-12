@@ -7,7 +7,7 @@
 2026-09-12. Bounded source/evidence review; no application edits, builds, CI runs
 or production access in this review. CPC remains v4.6.1, SDK remains
 `da661283f301b53eec04d1016009e60bc7e34a1f`. Read alongside
-[the dependency assessment](trixie-upgrade-analysis-20260912.md).
+[the dependency assessment](baseline.md).
 
 ## Result and evidence boundary
 
