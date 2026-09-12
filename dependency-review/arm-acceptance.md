@@ -121,3 +121,32 @@ Native-versus-cross compiler differences must remain explicit. Avoid another
 complete ARMv7 build until this cheaper experiment resolves the blocker.
 For AArch64, consider a native runner or a longer bounded build after the
 ARMv7 result; do not interpret the timeout as either success or incompatibility.
+
+## Isolated compiler comparison and candidate correction
+
+Run [34723768432](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34723768432)
+at c60fd34 reproduced the original inline-assembly register-constraint failure
+using captured flags and the pinned SDK with Trixie ARM cross GCC14.2.0. Both
+-O1 and -O2 compiled that same translation unit into ARM ELF32 objects. The
+parent independently inspected the test and CI evidence. No SDK update or
+assembly rewrite was needed for this limited result.
+
+Candidate406e53c adds only -DCMAKE_BUILD_TYPE=Release to the actual OTBR build
+invocation. The pinned cmake-build script passes these arguments to CMake.
+Previously RELEASE=1 was scoped to bootstrap and did not select the subsequent
+CMake build type. Release also defines NDEBUG and changes optimization across
+OTBR; full-image and runtime tests remain required, including AMD64 regression
+checks. Do not treat the one-file compiler result as full crypto or radio validation.
+
+The extended probe measures the installed CMake GNU Release flags before testing
+them against the same translation unit. Broad image CI was deliberately skipped
+for this commit; only the focused workflow was manually dispatched. The next
+release gate is complete ARMv7/AArch64 images and fresh AMD64 regression checks,
+followed by existing isolated runtime tests. Production remains on its previous
+image; the observed physical radio hang is a separate unresolved issue.
+Run34723961919 stopped in test setup because the lean probe image lacked make.
+Probe-only correction8b84404 adds that build tool. The corrected run
+[34724039273](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34724039273)
+passed: installed CMake measured -O3 -DNDEBUG; baseline failed with the expected
+register-constraint diagnostic; -O1, -O2 and Release all compiled. This validates
+the narrow candidate correction, with the full-image gates above still open.
