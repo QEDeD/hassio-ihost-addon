@@ -48,6 +48,11 @@ jobs:
             hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
             hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
             hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe
+            hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh
+            hassio-ihost-silabs-multiprotocol/tests/s6/run
+            hassio-ihost-silabs-multiprotocol/tests/s6/ip6tables
+            hassio-ihost-silabs-multiprotocol/tests/s6/ipset
+            hassio-ihost-silabs-multiprotocol/tests/s6/timeout
           )
           for file in "${runtime_files[@]}" "${test_files[@]}"; do
             bash -n "${file}"
@@ -77,3 +82,6 @@ jobs:
             --tmpfs /run:rw,nosuid,nodev,noexec,size=1m \
             --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
             "${image}"
+
+      - name: Verify released s6 shutdown behavior
+        run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh

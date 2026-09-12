@@ -1,0 +1,8 @@
+#!/bin/bash
+set -eu
+if [[ "${OTBR_S6_CASE}" == finish-timeout ]]; then
+    # Deliberately bypass the helper deadline to exercise actual s6 finish expiry.
+    printf 'S6_TEST_FORCED_FINISH_TIMEOUT status=%s\n' "$(cat /run/s6-linux-init-container-results/exitcode)" > /proc/1/fd/1
+    exec sleep 30
+fi
+exec /usr/bin/timeout "$@"
