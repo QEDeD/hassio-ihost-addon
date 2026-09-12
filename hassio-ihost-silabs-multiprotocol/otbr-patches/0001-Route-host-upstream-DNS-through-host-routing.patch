@@ -1,0 +1,26 @@
+From: iHost add-on contributors
+Subject: [PATCH] Route pinned host-configured upstream DNS through host routing
+
+Use the existing OTBR POSIX configuration header; preserve compiler flags.
+Adapt the host-scoped resolver policy accepted in OpenThread PR #13545
+(commit 82eb4863ade08819cf35c28ff3c8bb9f93a06213), without importing its
+newer IPv6/RDNSS resolver machinery into the pinned Silicon Labs SDK.
+
+--- a/util/third_party/ot-br-posix/src/agent/openthread-otbr-posix-config.h.in
++++ b/util/third_party/ot-br-posix/src/agent/openthread-otbr-posix-config.h.in
+@@ -51,4 +51,15 @@
+     "@PROJECT_SOURCE_DIR@/third_party/openthread/repo/src/posix/platform/openthread.conf.example"
+ #endif
+ 
++/*
++ * Host-configured DNS servers must follow the host routing table. In particular,
++ * Supervisor DNS can be reached through a bridge rather than the Thread backbone.
++ * This pinned resolver has no RDNSS server path. OpenThread PR #13545 separately
++ * preserves infra binding for RDNSS in newer versions; revisit on SDK upgrades.
++ * https://github.com/openthread/openthread/pull/13545
++ */
++#ifndef OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF
++#define OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF 0
++#endif
++
+ #endif // OPENTHREAD_OTBR_POSIX_CONFIG_H_

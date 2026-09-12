@@ -12,11 +12,14 @@ through the vendor's supported Findcpc path. Additional build-only differences
 are compile-command export, a probe output directory, building only otbr-agent
 and ot-ctl, and a separate pinned simulation unit target. Production WEB/REST,
 MultiPAN, vendor transport/CLI, Thread 1.4, FEATURE_FLAGS, NAT64 and upstream-DNS
-settings remain aligned. Original patches are applied.
+settings remain aligned. Production SDK patches, including the host-DNS routing
+configuration patch, are applied.
 
 Actual resolver/RCP compiler commands are replayed as preprocessors to verify
-the fixed pool, enabled feature flags/capabilities and unchanged DNS interface
-binding. Pinned constructors start the translator/prefix manager/upstream query
+the fixed pool, enabled feature flags/capabilities and DNS interface binding `0`.
+The verifier rejects this macro in raw compiler arguments or C/CXX cache flags;
+it must come from the existing generated POSIX configuration header. Compiler
+flags are reported without being overwritten or reconstructed. Pinned constructors start the translator/prefix manager/upstream query
 disabled, and FEATURE_FLAGS excludes the automatic enable block. Those recorded
 source facts do not prove runtime startup or behavior with persisted state.
 
@@ -41,5 +44,5 @@ not a runtime OS upgrade. The final image remains the exact released digest.
 Passing establishes vendor compile/link feasibility, native translator unit
 coverage and loader compatibility on AMD64. IPv4 firewall packets, actual
 translator connectivity, DNS reachability/synthesis, runtime startup, ARM and
-shared-radio behavior require their separate gates. DNS binding remains at its
-pinned default pending the independent interface comparison.
+shared-radio behavior require their separate gates. The new host-routing policy
+must pass the independent cross-interface DNS comparison before acceptance.

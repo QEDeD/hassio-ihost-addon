@@ -40,6 +40,7 @@ Still required before production readiness:
   option disable in an isolated kernel namespace (the inherited kernel suite
   validates IPv6 lifecycle, not NAT64 data-plane acceptance).
 - Rebuild this exact draft and verify feature-disabled startup and pool macro.
-- Resolve DNS across the actual resolver route; no binding-policy change is made.
+- Validate DNS across the actual resolver route; the host-routing configuration
+  patch remains subject to the independent binding-1 versus binding-0 comparison.
 - Validate physical shared-radio traffic and appropriate architectures. Existing
   successful Matter traffic does not establish this new IPv4 capability.

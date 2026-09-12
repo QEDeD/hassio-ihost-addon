@@ -108,9 +108,12 @@ the pool and backbone. No packet marks, global policies, unrelated rules or
 conntrack tables are changed. The named OTBR chains are reserved for this single
 OTBR instance and are reconciled on restart even if the option or backbone changes.
 
-Upstream DNS uses the pinned resolver's infrastructure-interface binding. A DNS
-server reached over another interface, such as a Supervisor Docker network,
-requires separate validation; enabling this option does not repair that path.
+Upstream DNS follows the host routing table to reach configured DNS servers,
+including servers reached over an interface other than the Thread backbone.
+This uses a narrow configuration adaptation of the host-resolver behavior accepted
+in [OpenThread PR 13545](https://github.com/openthread/openthread/pull/13545).
+The pinned resolver has no RDNSS server path; this change does not add one.
+Cross-interface DNS behavior remains an isolated validation gate for this draft.
 DNS forwarding is distinct from DNS64 synthesis: compatible Thread clients must
 synthesize addresses using the advertised NAT64 prefix for IPv4-only services.
 This option does not add a general DNS64 server.

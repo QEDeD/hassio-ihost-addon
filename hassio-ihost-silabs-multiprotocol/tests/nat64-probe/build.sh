@@ -20,6 +20,7 @@ git checkout --detach "$sdk_revision"
 test "$(git rev-parse HEAD)" = "$sdk_revision"
 patch -p1 < /probe-patches/0001-Avoid-writing-to-system-console.patch
 patch -p1 < /probe-patches/0001-rest-support-deleting-the-dataset.patch
+patch -p1 < /probe-patches/0001-Route-host-upstream-DNS-through-host-routing.patch
 cp -a util/third_party/ot-br-posix /usr/src/ot-br-posix
 cp -a util/third_party/openthread /usr/src/openthread
 mkdir -p /usr/src/protocol

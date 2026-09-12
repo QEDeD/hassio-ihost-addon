@@ -28,6 +28,16 @@ for name, value in flags:
 
 entries = json.loads(Path("/probe/compile_commands.json").read_text())
 
+# The DNS override belongs to the existing POSIX header, never raw compiler flags.
+# Keep the exact compile commands for preprocessing; do not reconstruct CXXFLAGS.
+dns_macro = "OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF"
+for name, value in cache.items():
+    if name.startswith(("CMAKE_C_FLAGS", "CMAKE_CXX_FLAGS")):
+        assert dns_macro not in value, (name, value)
+        print(f"COMPILER FLAGS (no DNS override): {name}={value}")
+for entry in entries:
+    assert dns_macro not in entry["command"], entry["file"]
+
 def effective_macros(suffix):
     matches = [entry for entry in entries if entry["file"].endswith(suffix)]
     assert len(matches) == 1, (suffix, len(matches))
@@ -47,8 +57,8 @@ def effective_macros(suffix):
 
 posix = effective_macros("/posix/platform/resolver.cpp")
 assert posix["OPENTHREAD_POSIX_CONFIG_NAT64_CIDR"] == '"192.168.255.0/24"'
-assert posix["OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF"] == "1"
-print("COMPILED: fixed NAT64 pool 192.168.255.0/24; upstream DNS infra binding unchanged at 1")
+assert posix["OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF"] == "0"
+print("COMPILED: fixed NAT64 pool 192.168.255.0/24; host-configured upstream DNS follows host routing (binding=0)")
 rcp = effective_macros("/ncp/rcp_host.cpp")
 for macro in ("OTBR_ENABLE_FEATURE_FLAGS", "OTBR_ENABLE_NAT64", "OTBR_ENABLE_DNS_UPSTREAM_QUERY"):
     assert rcp[macro] == "1", (macro, rcp.get(macro))
