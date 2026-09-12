@@ -84,7 +84,7 @@ host-wide IPv6 `FORWARD` policy or invoke `ip6tables-legacy`.
 
 Only one OTBR implementation may manage `wpan0` and the globally named OTBR
 chains and ipsets at a time. Stop another OTBR before starting or disabling
-this add-on so its guarded cleanup can safely reconcile its own state.
+this app so its guarded cleanup can safely reconcile its own state.
 
 ### Web interface (advanced)
 

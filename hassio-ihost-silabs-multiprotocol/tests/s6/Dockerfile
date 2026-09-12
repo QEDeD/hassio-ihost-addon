@@ -5,7 +5,7 @@ ENV S6_STAGE2_HOOK=""
 HEALTHCHECK NONE
 
 # Remove all application/legacy services. The released /init and s6 built-ins
-# remain; this image cannot launch radio, discovery or add-on initialization.
+# remain; this image cannot launch radio, discovery or app initialization.
 RUN rm -rf /etc/s6-overlay/s6-rc.d /etc/cont-init.d /etc/cont-finish.d /etc/services.d \
     && mkdir -p /etc/s6-overlay/s6-rc.d/user/contents.d \
         /etc/s6-overlay/s6-rc.d/user2/contents.d \
