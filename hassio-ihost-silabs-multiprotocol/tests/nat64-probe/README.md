@@ -44,5 +44,5 @@ not a runtime OS upgrade. The final image remains the exact released digest.
 Passing establishes vendor compile/link feasibility, native translator unit
 coverage and loader compatibility on AMD64. IPv4 firewall packets, actual
 translator connectivity, DNS reachability/synthesis, runtime startup, ARM and
-shared-radio behavior require their separate gates. The new host-routing policy
-must pass the independent cross-interface DNS comparison before acceptance.
+shared-radio behavior require their separate gates. The separate pinned virtual-radio comparison covers same-interface and
+cross-interface host DNS with both binding settings; see ../NAT64-VALIDATION.md.

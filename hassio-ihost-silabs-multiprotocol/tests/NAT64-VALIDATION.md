@@ -1,46 +1,76 @@
-# Optional NAT64 draft validation
+# Optional NAT64 validation
 
-This draft adds no production deployment or release-version claim. The separate
-investigation compiled exact pinned vendor OTBR with NAT64/upstream DNS, passed
-the native NAT64 test, and loaded it against released AMD64 libraries while
-preserving CPC/Zigbee hashes (run 34698275480). That does not validate this draft's
-runtime integration. Virtual-radio DNS/NAT64 baselines and cross-interface DNS
-acceptance remain separate gates.
+The contribution is default-off and has not been deployed to a physical radio.
+The following complementary tests establish different parts of its behavior;
+none alone proves a complete production-image or shared-radio deployment.
 
-Local draft checks cover: interface/route pool conflicts (including other tables,
-exact/narrower/covering routes), default-route allowance, failed inspection,
-scoped IPv4 rules, partial setup rollback, duplicate reconciliation, changed
-backbone, foreign rules/marks preserved, shared IPv4/IPv6 cleanup deadline, CLI
-Error text despite exit zero, missing completion and timeout failure. The inherited
-IPv6 mock suite also passes. These are mock/source checks, not packet tests.
+## Runtime and firewall evidence
 
-The existing private otbr-agent/data/check retains its socket and REST prerequisites,
-then applies NAT64/DNS configuration within an 8-second total deadline before
-returning success. s6-notifyoncheck stops checking after success and starts a fresh
-checker for each supervised daemon incarnation. This is startup configuration,
-not a recurring Docker health probe. There is no new s6 service or dependency.
-OTBR-disabled startup never invokes the CLI through this hook. A configuration
-failure records a nonzero container result and requests halt. The existing finish
-script runs after the agent has exited, so its translator is already gone when
-firewall teardown uses the shared 4-second IPv4/IPv6 cleanup budget.
+[CI 34702234512](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34702234512)
+passed at 971e780, including the DNS header change.
 
-The readiness contract is documented by
-[s6-notifyoncheck](https://skarnet.org/software/s6/s6-notifyoncheck.html).
-The pinned vendor's [REST resource](https://github.com/SiliconLabs/simplicity_sdk/blob/da661283f301b53eec04d1016009e60bc7e34a1f/util/third_party/ot-br-posix/src/rest/resource.cpp)
-calls RcpHost::Reset for DELETE /node; [RcpHost::Reset](https://github.com/SiliconLabs/simplicity_sdk/blob/da661283f301b53eec04d1016009e60bc7e34a1f/util/third_party/ot-br-posix/src/ncp/rcp_host.cpp)
-reinitializes the instance within the same process. This does not launch a new
-startup checker. With FEATURE_FLAGS enabled, Init omits its legacy NAT64/DNS
-auto-enable block. After an intentional in-process Thread factory reset, restart
-the add-on to reapply its saved NAT64/DNS option. This draft adds no reset monitor.
+- Mock regressions cover all-table pool conflicts, failed inspection, default-route
+  allowance, partial rollback, duplicate reconciliation, changed backbone,
+  preservation of foreign rules/marks, and the shared IPv4/IPv6 cleanup deadline.
+- Isolated kernel tests send actual IPv4 UDP/ICMP packets through the scoped rules
+  under FORWARD DROP. They verify masquerading and replies, wrong-source/interface/
+  direction rejection, unrelated traffic preservation, overlap refusal and cleanup.
+  These are synthetic IPv4 peers, not the OpenThread translator.
+- The released AMD64 s6 fixture executes the actual readiness hook and finish path.
+  Option on/off and daemon restart apply the expected commands once per incarnation.
+  CLI Error text despite exit zero, missing Done and timeouts are separately checked.
+  Fatal startup configuration exits the container nonzero without readiness or
+  restart, including a daemon ignoring SIGTERM. The fixture stubs radio and CLI
+  behavior; it does not prove physical configuration acceptance.
 
-Still required before production readiness:
+The private otbr-agent/data/check retains socket and REST prerequisites and applies
+configuration within eight seconds before readiness. On failure it records the
+failure and stops the supervised agent; finish reports permanent failure to release
+pending startup before bounded cleanup and shutdown. A three-second kill timeout
+bounds ignored SIGTERM. The shared cleanup budget is four seconds. Forced finish
+expiry during initial readiness is not covered. No recurring monitor is introduced.
 
-- Execute this exact readiness hook and its failure/restart paths in a released-init fixture.
-- Exercise actual IPv4 packet directions, source-pool reservation, restart and
-  option disable in an isolated kernel namespace (the inherited kernel suite
-  validates IPv6 lifecycle, not NAT64 data-plane acceptance).
-- Rebuild this exact draft and verify feature-disabled startup and pool macro.
-- Validate DNS across the actual resolver route; the host-routing configuration
-  patch remains subject to the independent binding-1 versus binding-0 comparison.
-- Validate physical shared-radio traffic and appropriate architectures. Existing
-  successful Matter traffic does not establish this new IPv4 capability.
+## Compiled translator and DNS evidence
+
+[Pinned vendor probe 34702234482](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34702234482)
+passed at 971e780 with the host-DNS header patch. It checks production CMake options with
+one intentional installed-CPC path adaptation, effective feature/pool macros,
+compile/link and released-runtime loading, native NAT64 tests, and unchanged
+CPC/Zigbee hashes. It also proves effective DNS binding zero comes from the header without a
+compiler-flag override.
+
+[Virtual-radio baseline 34699696491](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34699696491)
+passed the pinned, unmodified upstream DNS and NAT64 tests, including the NAT64
+protocol observation waits. These use virtual HDLC radios, not the CPC shared-radio
+transport. DNS verifies native AAAA forwarding, not DNS64 synthesis.
+
+The independent interface comparison requires working identical unbound DNS probes
+and failed infrastructure-bound probes before comparing actual Thread queries.
+Acceptance requires the default binding to reproduce cross-interface failure, the
+new binding to resolve it, and both variants to retain same-interface DNS success.
+[Comparison 34702011312](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34702011312)
+passed all four DNS cells and the unchanged NAT64 baseline. The copied fixture is
+reproducible with the manual Pinned OpenThread NAT64 and DNS comparison workflow.
+The comparison varies the effective macro through a test-only compiler flag; the
+separate vendor probe verifies the production header produces the same setting.
+
+The header policy follows the host-resolver rationale in
+[OpenThread PR 13545](https://github.com/openthread/openthread/pull/13545).
+The pinned resolver supports IPv4 nameservers, has no RDNSS path, and still requires
+an infrastructure interface to exist. This adaptation adds neither IPv6 nameserver
+support nor the newer resolver's no-infrastructure-interface behavior.
+
+## Reset and remaining deployment limits
+
+[s6-notifyoncheck](https://skarnet.org/software/s6/s6-notifyoncheck.html) stops checking
+after readiness and starts anew for each daemon incarnation. The pinned vendor's
+[REST resource](https://github.com/SiliconLabs/simplicity_sdk/blob/da661283f301b53eec04d1016009e60bc7e34a1f/util/third_party/ot-br-posix/src/rest/resource.cpp)
+uses an in-process reset for DELETE /node. That does not launch another checker.
+After an intentional Thread factory reset, restart the add-on to reapply its saved
+NAT64/DNS option. No reset monitor is added.
+
+A full add-on image build, ARM compatibility, physical shared-radio NAT64 traffic
+and host-reboot ordering remain unverified. Existing successful Matter commissioning
+and OTA do not establish this new IPv4 capability. Production acceptance must preserve
+current radio state and use a suitable IPv4-only consumer; it is a separate gate
+from the isolated evidence above.

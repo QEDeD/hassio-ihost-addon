@@ -113,7 +113,6 @@ including servers reached over an interface other than the Thread backbone.
 This uses a narrow configuration adaptation of the host-resolver behavior accepted
 in [OpenThread PR 13545](https://github.com/openthread/openthread/pull/13545).
 The pinned resolver has no RDNSS server path; this change does not add one.
-Cross-interface DNS behavior remains an isolated validation gate for this draft.
 DNS forwarding is distinct from DNS64 synthesis: compatible Thread clients must
 synthesize addresses using the advertised NAT64 prefix for IPv4-only services.
 This option does not add a general DNS64 server.
