@@ -2,7 +2,7 @@
 
 ## Outcome and scope
 
-Decide which dependency changes affect the iHost Multiprotocol add-on, identify
+Decide which dependency changes affect the iHost Multiprotocol app, identify
 necessary compatibility work and worthwhile improvements, and establish the
 remaining tests before recommending deployment/upstream acceptance. Keep CPC
 v4.6.1 and SDK v2024.12.1-0 fixed to isolate the Debian/HA-base upgrade.

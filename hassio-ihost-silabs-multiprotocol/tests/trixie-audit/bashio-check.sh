@@ -137,5 +137,5 @@ with socket.socket() as refused:
     result = run(network, 'http://127.0.0.1:' + str(refused.getsockname()[1]))
 failed_call('connection_refused', result, 'Something went wrong contacting the API')
 print('OBSERVED: missing primary and malformed JSON produce success with empty interface in this call context; compare release and candidate before attributing a regression', flush=True)
-print('PASS: actual installed Bashio against bounded synthetic loopback Supervisor; no full add-on startup or live Supervisor acceptance', flush=True)
+print('PASS: actual installed Bashio against bounded synthetic loopback Supervisor; no full app startup or live Supervisor acceptance', flush=True)
 PY
