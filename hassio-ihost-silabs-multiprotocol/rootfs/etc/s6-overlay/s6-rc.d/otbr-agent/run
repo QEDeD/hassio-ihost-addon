@@ -5,8 +5,26 @@
 # OpenThread BorderRouter start script
 # ==============================================================================
 
+# shellcheck source=../../scripts/otbr-agent-common
 # shellcheck disable=SC1091
 . /etc/s6-overlay/scripts/otbr-agent-common
+
+if ! otbr_firewall_cleanup_claim_reset; then
+    bashio::exit.nok "Could not reset the OTBR firewall ownership claim."
+fi
+
+if ! otbr_firewall_cleanup_is_safe; then
+    bashio::exit.nok \
+        "Refusing to reconcile OTBR firewall state: ${otbr_cleanup_guard_reason}."
+fi
+
+if ! otbr_firewall_cleanup_claim_create; then
+    bashio::exit.nok "Could not create the OTBR firewall ownership claim."
+fi
+
+if ! otbr_firewall_cleanup; then
+    bashio::exit.nok "Could not clean up stale OTBR firewall state."
+fi
 
 declare backbone_if
 # shellcheck disable=SC2034
@@ -62,42 +80,17 @@ fi
 # shellcheck disable=SC2015
 mkdir -p /data/thread && ln -sft /var/lib /data/thread || bashio::exit.nok "Could not create directory /var/lib/thread to store Thread data."
 
+firewall_enabled=false
 if bashio::config.true 'otbr_firewall'; then
-    bashio::log.info "Setup OTBR firewall..."
-    ipset create -exist otbr-ingress-deny-src hash:net family inet6
-    ipset create -exist otbr-ingress-deny-src-swap hash:net family inet6
-    ipset create -exist otbr-ingress-allow-dst hash:net family inet6
-    ipset create -exist otbr-ingress-allow-dst-swap hash:net family inet6
-
-    # shellcheck disable=SC2086,SC2154
-    ip6tables -N $otbr_forward_ingress_chain
-    # shellcheck disable=SC2086,SC2154
-    ip6tables -I FORWARD 1 -o $thread_if -j $otbr_forward_ingress_chain
-
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_ingress_chain -m pkttype --pkt-type unicast -i ${thread_if} -j DROP
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_ingress_chain -m set --match-set otbr-ingress-deny-src src -j DROP
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_ingress_chain -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_ingress_chain -m pkttype --pkt-type unicast -j DROP
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_ingress_chain -j ACCEPT
-
-    # shellcheck disable=SC2086,SC2154
-    ip6tables -N $otbr_forward_egress_chain
-    # shellcheck disable=SC2086
-    ip6tables -I FORWARD 2 -i $thread_if -j $otbr_forward_egress_chain
-    # shellcheck disable=SC2086
-    ip6tables -A $otbr_forward_egress_chain -j ACCEPT
+    firewall_enabled=true
+    bashio::log.info "Setting up OTBR ingress filtering."
 else
-    # Make sure ip6tables (as used by Docker) allow IP forwarding
-    ip6tables -P FORWARD ACCEPT
-    # HAOS 9.3 and earlier (for 9.4 accept is the default so this won't do anything)
-    ip6tables-legacy -P FORWARD ACCEPT
+    bashio::log.info "OTBR ingress filtering is disabled; allowing scoped Thread forwarding."
 fi
 
+if ! otbr_firewall_setup "${firewall_enabled}"; then
+    bashio::exit.nok "Could not set up OTBR firewall state."
+fi
 otbr_rest_listen="::"
 otbr_rest_listen_port="$(bashio::addon.port 8081)"
 
