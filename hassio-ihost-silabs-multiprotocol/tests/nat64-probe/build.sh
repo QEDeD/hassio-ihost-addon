@@ -71,6 +71,6 @@ cmake -S /usr/src/openthread -B /usr/src/unit-build -GNinja \
     -DOT_PLATFORM=simulation -DBUILD_TESTING=ON -DOT_THREAD_VERSION=1.4 \
     -DOT_BORDER_ROUTER=ON -DOT_BORDER_ROUTING=ON -DOT_NAT64_TRANSLATOR=ON -DOT_NAT64_BORDER_ROUTING=ON
 cmake --build /usr/src/unit-build --target ot-test-nat64 --parallel 2
-ctest --test-dir /usr/src/unit-build --no-tests=error --output-on-failure -R '^ot-test-nat64$' --verbose | tee /probe/nat64-unit.log
+(cd /usr/src/unit-build && ctest --no-tests=error --output-on-failure -R '^ot-test-nat64$' --verbose) | tee /probe/nat64-unit.log
 grep -Fq 'All tests passed' /probe/nat64-unit.log
 printf 'Compiled exact vendor OTBR with NAT64/upstream DNS; native NAT64 unit test passed.\n' > /probe/result.txt
