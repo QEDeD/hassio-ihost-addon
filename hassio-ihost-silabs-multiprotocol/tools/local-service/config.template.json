@@ -1,7 +1,7 @@
 {
   "name": "Local focused Silicon Labs Multiprotocol",
   "description": "Operator-maintained focused compatibility package; import-only by default",
-  "version": "0.1.2-local",
+  "version": "0.1.4-local",
   "slug": "codex_ihost_otbr_focused",
   "arch": [
     "amd64"

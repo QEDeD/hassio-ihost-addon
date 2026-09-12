@@ -135,6 +135,10 @@ def sample(backbone, discover=False):
         'ipv6_addresses': ['ip', '-j', '-6', 'address', 'show'],
         'ipv6_routes': ['ip', '-j', '-6', 'route', 'show', 'table', 'all'],
         'ipv6_rules': ['ip', '-6', 'rule', 'show'],
+        'ipv4_firewall': ['iptables-save'],
+        'ipv6_firewall': ['ip6tables-save'],
+        'ipv4_firewall_backend': ['iptables', '--version'],
+        'ipv6_firewall_backend': ['ip6tables', '--version'],
     }
     for name, argv in commands.items():
         value = capture(argv)
