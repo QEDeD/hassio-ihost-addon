@@ -2,35 +2,35 @@
 
 ## Introduction
 
-Matter Bridge for iHost add-on exposes entities of Home Assistant devices as Matter-enabled devices, enabling them to be integrated with Matter platforms, such as Apple Home, Google Home, and Amazon Alexa.  
-This add-on is based on iHost Matter Bridge and has passed Matter certification to ensure protocol compatibility and long-term availability.
+Matter Bridge for iHost app exposes entities of Home Assistant devices as Matter-enabled devices, enabling them to be integrated with Matter platforms, such as Apple Home, Google Home, and Amazon Alexa.  
+This app is based on iHost Matter Bridge and has passed Matter certification to ensure protocol compatibility and long-term availability.
 
 At the same time, it is compatible with web and mobile terminals.
 
 ## Prerequisite
 
-The **Matter Bridge for iHost add-on** is designed for the **HA over iHost** project **ONLY**, allowing users to expose entities of Home Assistant devices as Matter devices and sync them to supported Matter platforms for control.
+The **Matter Bridge for iHost app** is designed for the **HA over iHost** project **ONLY**, allowing users to expose entities of Home Assistant devices as Matter devices and sync them to supported Matter platforms for control.
 
-Therefore, this add-on is only functional when Home Assistant is running on iHost. Learn [<u>How to run Home Assistant Operating System on iHost?</u>](https://github.com/iHost-Open-Source-Project/ha-operating-system?tab=readme-ov-file#readme)
+Therefore, this app is only functional when Home Assistant is running on iHost. Learn [<u>How to run Home Assistant Operating System on iHost?</u>](https://github.com/iHost-Open-Source-Project/ha-operating-system?tab=readme-ov-file#readme)
 
-## How to Install Matter Bridge Add-on?
+## How to Install Matter Bridge App?
 
-### Add Matter Bridge Add-on to Repositories
+### Add Matter Bridge App to Repositories
 
-Skip this step and simply proceed to the Add-on Store to install the required add-on if you have already added the add-ons from this repository (e.g., iHost Hardware Control).
+Skip this step and simply proceed to the App Store to install the required app if you have already added the apps from this repository (e.g., iHost Hardware Control).
 
 #### Via URL
 
--   Navigate to **Settings > Add-on Store> Click the three-dot menu (⋮) in the top right corner and select Repositories**.
+-   Navigate to **Settings > App Store> Click the three-dot menu (⋮) in the top right corner and select Repositories**.
 -   Enter the repository URL into the input box: [<u>https://github.com/iHost-Open-Source-Project/hassio-ihost-addon</u>](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)
 
 #### Via Button Clicking
 
--   Click this button [![Add Repository](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon) to add the add-on automatically.
+-   Click this button [![Add Repository](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon) to add the app automatically.
 
-### Install Matter Bridge Add-on
+### Install Matter Bridge App
 
-1. Search for **Matter Bridge** in the Add-ons Store.
+1. Search for **Matter Bridge** in the App Store.
 
 ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-matter-bridge-addon/images/search.png)
 
@@ -40,13 +40,13 @@ Skip this step and simply proceed to the Add-on Store to install the required ad
 
 3. Wait for the installation to complete.
 
-## Start the Matter Bridge Add-on
+## Start the Matter Bridge App
 
-After installation, click **Start** to launch the add-on. Wait until the service has fully started before proceeding.
+After installation, click **Start** to launch the app. Wait until the service has fully started before proceeding.
 
 ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-matter-bridge-addon/images/start-addon.png)
 
-## Use the Matter Bridge Add-on to sync Home Assistant devices to Matter Fabrics
+## Use the Matter Bridge App to sync Home Assistant devices to Matter Fabrics
 
 1. Click **Open WEB UI** to access the Matter Bridge Pairing page.  
    Click **Start** to view the preparation for Matter Bridge pairing.  

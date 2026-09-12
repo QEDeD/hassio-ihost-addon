@@ -1,4 +1,4 @@
-# Home Assistant Community Add-on: Advanced SSH & Web Terminal
+# Home Assistant Community App: Advanced SSH & Web Terminal
 
 [![Release][release-shield]][release] ![Project Stage][project-stage-shield] ![Project Maintenance][maintenance-shield]
 
@@ -8,12 +8,12 @@
 
 [![Support Frenck on Patreon][patreon-shield]][patreon]
 
-This add-on allows you to log in to your Home Assistant instance using
+This app allows you to log in to your Home Assistant instance using
 SSH or by using the Web Terminal.
 
 
 ## Installation
-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**
+1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**
 2. Paste the following URL:  
    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)
 3. Or, simply click the button below to add it automatically:
@@ -22,28 +22,28 @@ SSH or by using the Web Terminal.
 
 ## About
 
-This add-on allows you to log in to your Home Assistant instance using
+This app allows you to log in to your Home Assistant instance using
 SSH or a Web Terminal, giving you to access your folders and
 also includes a command-line tool to do things like restart, update,
 and check your instance.
 
 This is an enhanced version of the provided
-[SSH add-on by Home Assistant][hass-ssh] and focuses on security,
+[SSH app by Home Assistant][hass-ssh] and focuses on security,
 usability, flexibility and also provides access using a web interface.
 
 ![Web Terminal in the Home Assistant Frontend][screenshot]
 
 ## WARNING
 
-The advanced SSH & Web Terminal add-on is a really powerful and gives you
+The advanced SSH & Web Terminal app is a really powerful and gives you
 virtually access to all tools and almost all hardware of your system.
 
-While this add-on is created and maintained with care and with security in mind,
+While this app is created and maintained with care and with security in mind,
 in the wrong or inexperienced hands, it could damage your system.
 
 ## Features
 
-This add-on, of course, provides an SSH server, based on [OpenSSH][openssh] and
+This app, of course, provides an SSH server, based on [OpenSSH][openssh] and
 a web-based Terminal (which can be included in your Home Assistant frontend) as
 well. Additionally, it comes out of the box with the following:
 
@@ -57,7 +57,7 @@ well. Additionally, it comes out of the box with the following:
 - SFTP support is disabled by default but is user configurable.
 - Compatible if Home Assistant was installed via the generic Linux installer.
 - Username is configurable, so `root` is no longer mandatory.
-- Persists custom SSH client settings & keys between add-on restarts
+- Persists custom SSH client settings & keys between app restarts
 - Log levels for allowing you to triage issues easier.
 - Hardware access to your audio, uart/serial devices and GPIO pins.
 - Runs with more privileges, allowing you to debug and test more situations.
@@ -66,7 +66,7 @@ well. Additionally, it comes out of the box with the following:
 - Runs on host level network, allowing you to open ports or run little daemons.
 - Have custom Alpine packages installed on start. This allows you to install
   your favorite tools, which will be available every single time you log in.
-- Execute custom commands on add-on start so that you can customize the
+- Execute custom commands on app start so that you can customize the
   shell to your likings.
 - [ZSH][zsh] as its default shell. Easier to use for the beginner, more advanced
   for the more experienced user. It even comes preloaded with

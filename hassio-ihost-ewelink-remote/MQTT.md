@@ -1,8 +1,8 @@
 # **Home Assistant MQTT**
-To enhance compatibility between Home Assistant and eWeLink-Remote devices (such as R5, S-MATE, and other BLE-based scene controllers), this section describes how the Add-on adopts Home Assistant’s official **MQTT Event Integration** and **MQTT Device Trigger Integration** to expose device events and channel actions to HA.
+To enhance compatibility between Home Assistant and eWeLink-Remote devices (such as R5, S-MATE, and other BLE-based scene controllers), this section describes how the App adopts Home Assistant’s official **MQTT Event Integration** and **MQTT Device Trigger Integration** to expose device events and channel actions to HA.
 
   
-The following content explains the MQTT topic structure used by the Add-on, as well as the Event Entities, Trigger Entities, and the mechanism for reporting device availability.
+The following content explains the MQTT topic structure used by the App, as well as the Event Entities, Trigger Entities, and the mechanism for reporting device availability.
 
 # **MQTT Event Integration**
 Each capability of the device—together with each physical channel of that capability—is represented as an **Event Entity** in Home Assistant.

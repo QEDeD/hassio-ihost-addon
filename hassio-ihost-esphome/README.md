@@ -9,14 +9,14 @@
 
 ### Disclaimer
 
-This repository provides **custom-built ESPHome add-ons and container images for armv7** which are no longer supported by the official ESPHome distribution.
+This repository provides **custom-built ESPHome apps and container images for armv7** which are no longer supported by the official ESPHome distribution.
 
 We only maintain compatibility and build infrastructure for the **32-bit architecture**.
 If you encounter issues **unrelated to platform architecture** (such as ESPHome core features, YAML configuration, or device support), please report them to the [official ESPHome repository](https://github.com/esphome/esphome).
 
 
 ## Installation
-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
 2. Paste the following URL:  
    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
 3. Or, simply click the button below to add it automatically:
@@ -25,7 +25,7 @@ If you encounter issues **unrelated to platform architecture** (such as ESPHome 
 
 ## About
 
-This add-on allows you to write configurations and turn your microcontrollers
+This app allows you to write configurations and turn your microcontrollers
 into smart home devices directly through Home Assistant **with no programming experience required**.
 All you need to do is write YAML configuration files; the rest (over-the-air updates, compiling) is all
 handled by ESPHome.

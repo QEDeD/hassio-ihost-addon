@@ -1,11 +1,11 @@
-name: Check HA Addon Version
+name: Check HA App Version
 inputs:
   addon_folder_name:
-    description: "Addon folder name"
+    description: "App folder name"
     required: true
     example: "matter_server"
   config:
-    description: "Addon config file name"
+    description: "App config file name"
     required: false
     example: "config.yaml"
     default: "config.yaml"

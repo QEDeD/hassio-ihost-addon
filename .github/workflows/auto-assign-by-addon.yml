@@ -1,4 +1,4 @@
-name: Auto-assign by Add-on Name
+name: Auto-assign by App Name
 
 on:
   issues:
@@ -11,30 +11,30 @@ jobs:
   assign:
     runs-on: ubuntu-latest
     steps:
-      - name: Auto assign based on Add-on Name
+      - name: Auto assign based on App Name
         uses: actions/github-script@v7
         with:
           script: |
             const issue = context.payload.issue;
             const body = issue.body || "";
 
-            // 1) Parse "Add-on Name" section from issue body
+            // 1) Parse current "App Name" and legacy "Add-on Name" sections from issue body
             // Expected markdown rendered by issue form:
-            // ### Add-on Name
+            // ### App Name
             //
             // eWeLink-Remote Gateway
-            const re = /###\s*Add-on Name\s*\r?\n\r?\n([^\r\n]+)/i;
+            const re = /###\s*(?:App|Add-on) Name\s*\r?\n\r?\n([^\r\n]+)/i;
             const m = body.match(re);
             if (!m) {
-              core.info("Add-on Name section not found. Skip.");
+              core.info("App Name section not found. Skip.");
               return;
             }
 
             const addon = m[1].trim();
-            core.info(`Parsed addon: "${addon}"`);
+            core.info(`Parsed app: "${addon}"`);
 
             // 2) Sentinel option (no real selection)
-            const sentinel = "-- Please select an add-on --";
+            const sentinels = ["-- Please select an app --", "-- Please select an add-on --"];
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const issue_number = issue.number;
@@ -42,8 +42,8 @@ jobs:
             // Optional: label when not selected
             const NOT_SELECTED_LABEL = "needs-addon-selection";
 
-            if (!addon || addon === sentinel) {
-              core.info("Addon not selected. Skip assignment.");
+            if (!addon || sentinels.includes(addon)) {
+              core.info("App not selected. Skip assignment.");
 
               // Add a label to remind user (optional)
               try {
@@ -79,7 +79,7 @@ jobs:
 
             const assignees = mapping[addon];
             if (!assignees || assignees.length === 0 || assignees.includes("REPLACE_ME")) {
-              core.info(`No valid assignees configured for addon "${addon}". Skip assignment.`);
+              core.info(`No valid assignees configured for app "${addon}". Skip assignment.`);
               return;
             }
 

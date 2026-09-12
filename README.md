@@ -1,10 +1,10 @@
-# Hassio iHost Add-ons
+# Hassio iHost Apps
 
 ## About
-This repository contains a set of Home Assistant add-ons developed specifically for **SONOFF iHost**.
+This repository contains a set of Home Assistant apps developed specifically for **SONOFF iHost**.
 
 ## Installation
-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
 2. Paste the following URL:  
    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
 3. Or, simply click the button below to add it automatically:
@@ -13,19 +13,19 @@ This repository contains a set of Home Assistant add-ons developed specifically 
 
 ## 🔄 Updating Repository
 
-If you can only see part of the add-ons after adding this repository, it might be due to outdated local cache.  
+If you can only see part of the apps after adding this repository, it might be due to outdated local cache.  
 To refresh:
 
-1. Go to the Add-on Store  
+1. Go to the App Store  
 2. Click the **More** button (⋮) in the upper-right corner  
 3. Click **Check for updates**
 
-This will force Home Assistant to reload the latest add-on list from all configured repositories.
+This will force Home Assistant to reload the latest app list from all configured repositories.
 
 
 ## License
 
-All add-ons in this repository are released under the [MIT License](./LICENSE).
+All apps in this repository are released under the [MIT License](./LICENSE).
 
 ---
 

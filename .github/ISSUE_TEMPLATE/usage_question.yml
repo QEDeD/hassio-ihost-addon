@@ -1,5 +1,5 @@
 name: "❓ Usage Question"
-description: "Ask a question about how to use an iHost add-on."
+description: "Ask a question about how to use an iHost app."
 title: "[Question]: "
 labels:
   - question
@@ -8,10 +8,10 @@ body:
   - type: dropdown
     id: addon_name
     attributes:
-      label: "Add-on Name"
-      description: "Which add-on is affected?"
+      label: "App Name"
+      description: "Which app is affected?"
       options:
-        - "-- Please select an add-on --"
+        - "-- Please select an app --"
         - "eWeLink Smart Home"
         - "eWeLink-Remote Gateway"
         - "SONOFF Dongle Flasher"

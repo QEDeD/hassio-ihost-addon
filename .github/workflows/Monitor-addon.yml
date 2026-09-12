@@ -1,4 +1,4 @@
-name: Monitor Addon Version
+name: Monitor App Version
 
 on:
 #  schedule:
@@ -18,7 +18,7 @@ jobs:
           cmd:
             yq --version || echo "yq 未安装"
 
-      - name: Check EspHome-Addon release
+      - name: Check EspHome App release
         uses: ./.github/actions/check-release
         with:
           owner: esphome
@@ -36,12 +36,12 @@ jobs:
           owner: home-assistant-libs
           repo: python-matter-server
 
-      - name: Check Matter-Server-Addon release
+      - name: Check Matter-Server App release
         uses: ./.github/actions/check-addon-version
         with:
           addon_folder_name:  matter_server
 
-      - name: Check OTBR-Addon release
+      - name: Check OTBR App release
         uses: ./.github/actions/check-addon-version
         with:
           addon_folder_name: openthread_border_router

@@ -1,29 +1,29 @@
-# iHost Hardware Control  Add-on
+# iHost Hardware Control  App
 
 ## Introduction 
 
-iHost Hardware Control add-on registers buttons and indicators on the iHost as entities in Home Assistant, allowing users to configure automation rules for button and indicator entities directly in Home Assistant for more flexible control of hardware interactions.
+iHost Hardware Control app registers buttons and indicators on the iHost as entities in Home Assistant, allowing users to configure automation rules for button and indicator entities directly in Home Assistant for more flexible control of hardware interactions.
 
 ## Prerequisites 
 
-Booting and running Home Assistant on iHost via a pre-flashed microSD card is required to use the **iHost Hardware Control** add-on, as it enables iHost's button and indicator functions. See the [Operation Guide](https://github.com/iHost-Open-Source-Project/ha-operating-system?tab=readme-ov-file#readme) for more details. 
+Booting and running Home Assistant on iHost via a pre-flashed microSD card is required to use the **iHost Hardware Control** app, as it enables iHost's button and indicator functions. See the [Operation Guide](https://github.com/iHost-Open-Source-Project/ha-operating-system?tab=readme-ov-file#readme) for more details. 
 
-## Install iHost Hardware Control Add-on
+## Install iHost Hardware Control App
 
-#### Install **iHost Hardware Control**  Add-on
+#### Install **iHost Hardware Control**  App
 
-1. Search for **iHost Hardware Control** in the Add-ons Store; 
+1. Search for **iHost Hardware Control** in the App Store; 
 2. Click **Install**;
 
 ![img](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-hardware-control/images/install.png)
 
 3. Wait for the installation to complete.
 
-#### Start **iHost Hardware Control**  Add-on
+#### Start **iHost Hardware Control**  App
 
 Click the “start” button after the installation is complete and wait for the start to finish
 
-Since the iHost Hardware Control add-on relies on MQTT, the Mosquitto broker add-on is automatically installed and started for you when you start the iHost Hardware Control add-on, you need to wait a few minutes to see the Mosquitto broker plugin in the add-ons list.
+Since the iHost Hardware Control app relies on MQTT, the Mosquitto broker app is automatically installed and started for you when you start the iHost Hardware Control app, you need to wait a few minutes to see the Mosquitto broker plugin in the apps list.
 
 ![img](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-hardware-control/images/start.png)
 
@@ -41,7 +41,7 @@ Please go to Settings -> Devices & Services -> click the Add button for MQTT Int
 
 ### Check iHost Buttons and Indicators in MQTT Integrations
 
-After successfully installing and launching the **iHost Hardware Control** add-on as described above, you can see the buttons and indicators on iHost in the **MQTT** integration.
+After successfully installing and launching the **iHost Hardware Control** app as described above, you can see the buttons and indicators on iHost in the **MQTT** integration.
 ![img](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-hardware-control/images/mqtt_devices.png)
 
 #### iHost Buttons and Its Entities

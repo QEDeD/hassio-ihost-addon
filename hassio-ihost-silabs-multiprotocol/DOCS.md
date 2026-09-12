@@ -1,40 +1,40 @@
-# Home Assistant Add-on: Silicon Labs Multiprotocol
+# Home Assistant App: Silicon Labs Multiprotocol
 
 ## Prerequisites
-This addon is compatible with SONOFF dongles utilizing Silicon Labs chips, such as the
-ZBDongle-E (EFR32MG21).Before using this add-on, you must first flash the MultiPAN firmware 
+This app is compatible with SONOFF dongles utilizing Silicon Labs chips, such as the
+ZBDongle-E (EFR32MG21).Before using this app, you must first flash the MultiPAN firmware 
 via [SONOFF Dongle Flasher][sonoff-dongle-flasher]. Another option is flashing firmware 
-via [SONOFF Dongle Flasher Add-on][dongle-flasher-addon].
+via [SONOFF Dongle Flasher App][dongle-flasher-addon].
 
-[![Open your Home Assistant instance and show the dashboard of an add-on.](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=81bc2df9_sonoff_dongle_flasher_for_ihost&repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
+[![Open your Home Assistant instance and show the dashboard of an app.](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=81bc2df9_sonoff_dongle_flasher_for_ihost&repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
 
 ## Installation
 
-Follow these steps to get the add-on installed on your system:
+Follow these steps to get the app installed on your system:
 
-1. Add Silicon Labs Multiprotocol Add-on to Repositories
-      - Go to the Add-on Store → Click the More button (⋮) in the upper-right corner → Select Repositories
+1. Add Silicon Labs Multiprotocol App to Repositories
+      - Go to the App Store → Click the More button (⋮) in the upper-right corner → Select Repositories
         Paste the following URL:https://github.com/iHost-Open-Source-Project/hassio-ihost-addon
       - Or, simply click the button below to add it automatically:
 
-      [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
+      [![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
       
       ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-silabs-multiprotocol/images/description-picture_1.png)
 
-2. Install Silicon Labs Multiprotocol(Mod) Add-on
-      - Search for Silicon Labs Multiprotocol(Mod) Add-on in the Add-ons Store.
+2. Install Silicon Labs Multiprotocol(Mod) App
+      - Search for Silicon Labs Multiprotocol(Mod) App in the App Store.
       - Click "Install" button.  
       - Wait for the installation to complete
 
 ## How to use
 
-The add-on needs a Silicon Labs based wireless module accessible through a 
+The app needs a Silicon Labs based wireless module accessible through a 
 serial port (like ZBDongle-E,iHost MG21 chip or most USB based wireless adapters).
 
 Once the firmware is loaded follow the following steps:
 
-1. Select the correct `device` in the add-on configuration tab and press `Save`.
-2. Start the add-on.
+1. Select the correct `device` in the app configuration tab and press `Save`.
+2. Start the app.
 
 **NOTE:** the Web frontend is only accessible when OpenThread is enabled (see below).
 
@@ -47,8 +47,8 @@ is built on EZSP v16, so it can only be used on Z2M.
 
 To use Zigbee with Z2M configure the Integration as follows:
 
-1. Remember/copy the hostname of the add-on (e.g. c617dadc-hassio-ihost-silabs-multiprotocol).
-2. Open the Zigbee2MQTT add-on → Configuration page.
+1. Remember/copy the hostname of the app (e.g. c617dadc-hassio-ihost-silabs-multiprotocol).
+2. Open the Zigbee2MQTT app → Configuration page.
 3. Configure the device's serial port path, baudrate, adapter type under serial.
 
       ```yaml
@@ -59,7 +59,7 @@ To use Zigbee with Z2M configure the Integration as follows:
       ```
 
 4. click "SAVE" button. 
-5. After completing the configuration,start the Zigbee2MQTT add-on. Wait for about two minutes,
+5. After completing the configuration,start the Zigbee2MQTT app. Wait for about two minutes,
  then you can click to enter the Web UI Console to add and manage devices.
 
 ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-silabs-multiprotocol/images/description-picture_3.png)
@@ -67,11 +67,11 @@ To use Zigbee with Z2M configure the Integration as follows:
 ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-silabs-multiprotocol/images/description-picture_4.png)
 ### OpenThread
 
-At this point OpenThread support is experimental. This add-on makes your Home
+At this point OpenThread support is experimental. This app makes your Home
 Assistant installation an OpenThread Border Router (OTBR). A basic integration
 for Home Assistant Core named `otbr` is currently in the making.
 
-To use the OTBR enable it in the Configuration tab and restart the add-on. Home
+To use the OTBR enable it in the Configuration tab and restart the app. Home
 Assistant should discover the OpenThread border router automatically and
 configure it as necessary.
 
@@ -79,7 +79,7 @@ configure it as necessary.
 
 There is also a web interface provided by the OTBR. However, the web
 interface has caveats (e.g. forming a network does not generate an off-mesh
-routable IPv6 prefix which causes changing IPv6 addressing on first add-on
+routable IPv6 prefix which causes changing IPv6 addressing on first app
 restart). It is still possible to enable the web interface for debugging
 purpose. Make sure to expose both the Web UI port and REST API port (the
 latter needs to be on port 8081) on the host interface. To do so, click on
@@ -88,7 +88,7 @@ and 8081 in the OpenThread REST API port field).
 
 ## Configuration
 
-Add-on configuration:
+App configuration:
 
 | Configuration      | Description                                            |
 |--------------------|--------------------------------------------------------|
@@ -103,8 +103,8 @@ Add-on configuration:
 
 ## Architecture
 
-The add-on runs several service internally. This architecture diagram shows what
-the add-on currently implements.
+The app runs several service internally. This architecture diagram shows what
+the app currently implements.
 
 ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-silabs-multiprotocol/images/architecture.png)
 

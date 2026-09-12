@@ -1,4 +1,4 @@
-# Home Assistant Community Add-on: Node-RED
+# Home Assistant Community App: Node-RED
 
 ![Supports armv7 Architecture](https://img.shields.io/badge/armv7-yes-green.svg)
 
@@ -13,7 +13,7 @@ It provides a browser-based editor that makes it easy to wire together flows usi
 ![](https://raw.githubusercontent.com/hassio-addons/addon-node-red/main/images/screenshot.png)
 
 ## Installation
-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
 2. Paste the following URL:  
    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
 3. Or, simply click the button below to add it automatically:
