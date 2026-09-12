@@ -1,0 +1,23 @@
+name: OTBR NAT64 build probe
+on:
+  push:
+    branches: [codex/otbr-nat64-investigation-20260912]
+    paths:
+      - hassio-ihost-silabs-multiprotocol/tests/nat64-probe/**
+      - hassio-ihost-silabs-multiprotocol/otbr-patches/**
+      - .github/workflows/otbr-nat64-probe.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-vendor-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - name: Static checks
+        run: shellcheck hassio-ihost-silabs-multiprotocol/tests/nat64-probe/*.sh
+      - name: Compile pinned vendor OTBR and run native NAT64 unit test
+        run: docker build --progress=plain -f hassio-ihost-silabs-multiprotocol/tests/nat64-probe/Dockerfile -t otbr-nat64-probe hassio-ihost-silabs-multiprotocol
+      - name: Verify against unchanged released runtime without networking
+        run: docker run --rm --network none --cap-drop ALL otbr-nat64-probe
