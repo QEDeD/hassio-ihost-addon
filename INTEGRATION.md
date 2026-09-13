@@ -16,11 +16,11 @@ The branch review found master only. Relevant open proposals were PR78 at
 
 | Contribution | Current contribution head | Purpose and relationship |
 | --- | --- | --- |
-| Firewall lifecycle | d16cfdf | Scoped setup/cleanup; prerequisite for NAT64 |
+| Firewall lifecycle | 60d3334 | Scoped setup/cleanup; prerequisite for NAT64 |
 | Passive Zigbee readiness | 9536ef0 | Require the owned listener without consuming TCP connections; independent |
 | Local QR generation | e34faa6 | Keep commissioning PSKd/EUI payload in the browser; independent |
 | Debian Trixie | 7c3e607 | Update distribution inputs and explicitly select Release; SDK/CPC fixed |
-| NAT64/upstream DNS | 8cb2ff9 | Opt-in translation and DNS; stacked on firewall, disabled in baseline |
+| NAT64/upstream DNS | 4ff1642 | Opt-in translation and DNS; stacked on firewall, disabled in baseline |
 | HA app terminology | 84fab10 | User-facing wording; preserve technical identifiers; merge last |
 
 PR78's firewall/NAT64/DNS ideas are represented with attribution and additional
@@ -194,3 +194,4 @@ newly generated local fallback wrappers are not replacements for published tags.
 This candidate has not been published or installed. Production acceptance and
 separate NAT64 consumer testing remain incomplete. The previous ARM acceptance
 covers the same compiled software; the added graph edge is tested here on AMD64.
+NAT64 head 4ff1642 incorporates firewall 60d3334. The documentation-only merge conflict retained NAT64 guidance; OTBR lifecycle files and s6 fixtures match integration aca557b. PR draft heads and ARM status are reconciled. Replacement-image publication approval remains pending.
