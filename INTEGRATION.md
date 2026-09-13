@@ -89,9 +89,17 @@ config slug `codex_ihost_otbr_focused` staged at `/addons/codex_ihost_otbr_focus
 Use the established store reload and distinct-version stopped-app update, retaining
 the same authoritative data volume and complete options. No uninstall or seed import.
 
-HA's builder cannot use a tag held only in local WSL Docker. Choose a pullable
-immutable image (publication permission required), or build the combined source on
-HA. Copying a Docker save archive into its build context does not import layers.
+Verified preferred delivery: publish the exact tested wrappers to
+`ghcr.io/qeded/otbr-integration-test-amd64`, then add only that repository's `image`
+field to existing local app metadata. Supervisor 2026.09.0 selects a registry pull
+from store metadata containing `image`, preserving the local app identifier/data.
+Tags match versions: `0.2.0-integrated`, `0.2.1-baseline`, `0.2.2-recovery`.
+Prepared local metadata is under `/tmp/otbr-local-build.NDQvDP/delivery-configs`.
+All three differ only by `image`; independently checked. Actual wrapper labels
+match their versions, type=app and arch=amd64. Publication is not yet approved.
+After publication, record registry manifest digests, verify each resolves to the
+corresponding tested wrapper, and do not retag. Supervisor's config uses version
+tags rather than accepting a digest in the image field. No build on HA is needed.
 Prove the actual candidate and recovery images are available before cutover.
 
 Take a fresh stopped-state backup before update and retain state evolved during
