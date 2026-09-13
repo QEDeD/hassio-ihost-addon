@@ -1,3 +1,7 @@
+> Historical baseline record: this document describes the original six contributions.
+> The current local branch adds un-deployed follow-ups; see [FOLLOWUP.md](FOLLOWUP.md).
+> Original production acceptance does not apply automatically to the modified image.
+
 # Upstream contribution review package
 
 [Open the six current submission drafts and review index](review/README.md).
