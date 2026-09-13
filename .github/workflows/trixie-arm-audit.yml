@@ -1,0 +1,38 @@
+name: Isolated Trixie ARM cross-build and ABI audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/trixie-dependency-audit-20260912]
+    paths:
+      - .github/workflows/trixie-arm-audit.yml
+      - hassio-ihost-silabs-multiprotocol/tests/arm-audit/**
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  cross-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [armv7, aarch64]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+      - name: Validate bounded audit scripts
+        run: |
+          audit=hassio-ihost-silabs-multiprotocol/tests/arm-audit
+          bash -n "$audit/run.sh"
+          bash -n "$audit/probe.sh"
+          shellcheck -x -P SCRIPTDIR "$audit/run.sh" "$audit/probe.sh"
+      - name: Enable ARM emulation on this disposable runner
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130
+        with:
+          image: tonistiigi/binfmt@sha256:400a4873b838d1b89194d982c45e5fb3cda4593fbfd7e08a02e76b03b21166f0
+          platforms: arm,arm64
+      - name: Build complete target image and inspect isolated runtime
+        run: bash hassio-ihost-silabs-multiprotocol/tests/arm-audit/run.sh "${{ matrix.architecture }}"

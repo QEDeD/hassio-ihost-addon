@@ -1,0 +1,51 @@
+name: Isolated PR79 Trixie dependency and full-build audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/trixie-dependency-audit-20260912]
+    paths:
+      - .github/workflows/trixie-dependency-audit.yml
+      - hassio-ihost-silabs-multiprotocol/Dockerfile
+      - hassio-ihost-silabs-multiprotocol/build.yaml
+      - hassio-ihost-silabs-multiprotocol/otbr-patches/**
+      - hassio-ihost-silabs-multiprotocol/zigbeed-patches/**
+      - hassio-ihost-silabs-multiprotocol/tests/trixie-audit/**
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  inventory-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Inventory pinned images and attempt complete AMD64 PR79 build
+        shell: bash
+        run: |
+          audit=hassio-ihost-silabs-multiprotocol/tests/trixie-audit
+          bash -n "$audit/run.sh"
+          bash -n "$audit/inventory.sh"
+          shellcheck -x -P SCRIPTDIR "$audit/run.sh" "$audit/inventory.sh"
+          python3 -m py_compile "$audit/prepare.py"
+          bash "$audit/run.sh"
+      - name: Obtain pinned NAT64 and firewall regression fixtures
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          repository: QEDeD/hassio-ihost-addon
+          ref: 56a5e45fcdbac0b3b78c6d2898a34c2a9fe8d741
+          path: audit-fixtures-nat64
+          persist-credentials: false
+      - name: Obtain pinned Zigbee readiness regression fixtures
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          repository: QEDeD/hassio-ihost-addon
+          ref: 9536ef0ff85d91a1a08e03b03bd91f2c2cd23225
+          path: audit-fixtures-readiness
+          persist-credentials: false
+      - name: Exercise upgraded runtime with existing isolated regressions
+        timeout-minutes: 15
+        run: bash hassio-ihost-silabs-multiprotocol/tests/trixie-audit/runtime.sh
