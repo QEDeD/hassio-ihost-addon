@@ -1,0 +1,3 @@
+#!/bin/sh
+# This lifecycle fixture has no IPv4 NAT64 chains.
+exit 1

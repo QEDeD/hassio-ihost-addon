@@ -1,0 +1,47 @@
+name: Pinned Silicon Labs NAT64 build probe
+on:
+  pull_request:
+    paths:
+      - .github/workflows/otbr-nat64-probe.yml
+      - hassio-ihost-silabs-multiprotocol/Dockerfile
+      - hassio-ihost-silabs-multiprotocol/build.yaml
+      - hassio-ihost-silabs-multiprotocol/otbr-patches/**
+      - hassio-ihost-silabs-multiprotocol/tests/nat64-probe/**
+  push:
+    branches: [codex/otbr-nat64-feature-20260912]
+    paths:
+      - .github/workflows/otbr-nat64-probe.yml
+      - hassio-ihost-silabs-multiprotocol/Dockerfile
+      - hassio-ihost-silabs-multiprotocol/build.yaml
+      - hassio-ihost-silabs-multiprotocol/otbr-patches/**
+      - hassio-ihost-silabs-multiprotocol/tests/nat64-probe/**
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  vendor-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Check probe syntax
+        shell: bash
+        run: |
+          addon=hassio-ihost-silabs-multiprotocol
+          bash -n "$addon/tests/nat64-probe/build.sh"
+          bash -n "$addon/tests/nat64-probe/check.sh"
+          shellcheck "$addon/tests/nat64-probe/build.sh" "$addon/tests/nat64-probe/check.sh"
+          python3 -m py_compile "$addon/tests/nat64-probe/verify.py"
+      - name: Compile pinned vendor configuration and run native NAT64 unit target
+        shell: bash
+        run: |
+          docker build --progress=plain \
+            -f hassio-ihost-silabs-multiprotocol/tests/nat64-probe/Dockerfile \
+            -t otbr-nat64-probe hassio-ihost-silabs-multiprotocol
+      - name: Verify unchanged CPC/Zigbee and released-runtime loader
+        run: docker run --rm --network none --cap-drop ALL otbr-nat64-probe

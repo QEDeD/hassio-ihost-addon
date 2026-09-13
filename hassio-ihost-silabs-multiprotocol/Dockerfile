@@ -116,6 +116,7 @@ RUN \
 COPY --from=cpcd-builder /usr/local/ /usr/${DEBIAN_CROSS_PREFIX}/
 COPY otbr-patches/0001-Avoid-writing-to-system-console.patch /usr/src
 COPY otbr-patches/0001-rest-support-deleting-the-dataset.patch /usr/src
+COPY otbr-patches/0001-Route-host-upstream-DNS-through-host-routing.patch /usr/src
 COPY zigbeed-patches/zigbeed_amd64.patch /usr/src/gecko_sdk/zigbeed_amd64.patch
 
 RUN \
@@ -123,6 +124,7 @@ RUN \
     && cd gecko_sdk \
     && patch -p1 < /usr/src/0001-Avoid-writing-to-system-console.patch \
     && patch -p1 < /usr/src/0001-rest-support-deleting-the-dataset.patch \
+    && patch -p1 < /usr/src/0001-Route-host-upstream-DNS-through-host-routing.patch \
     && if [ "${DEBIAN_ARCH}" = "amd64" ]; then \
         patch -p1 < zigbeed_amd64.patch; \
         fi \
@@ -218,6 +220,9 @@ RUN \
         -DBUILD_TESTING=OFF \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DOTBR_FEATURE_FLAGS=ON \
+        -DOTBR_NAT64=ON \
+        -DOTBR_DNS_UPSTREAM_QUERY=ON \
+        -DOT_POSIX_NAT64_CIDR="192.168.255.0/24" \
         -DOTBR_DNSSD_DISCOVERY_PROXY=ON \
         -DOTBR_SRP_ADVERTISING_PROXY=ON \
         -DOTBR_INFRA_IF_NAME=eth0 \

@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+set -eu
+printf 'S6_TEST_DAEMON_START\n'
+: > /run/otbr-agent-firewall-owned
+# Allow s6 initialization to complete before the deliberately abnormal exit.
+sleep 1
+exit 23

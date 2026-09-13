@@ -1,0 +1,25 @@
+name: Pinned OpenThread NAT64 and DNS comparison
+# Manual: this pinned virtual-radio comparison takes approximately 21 minutes.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pinned-virtual-radio:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+      - name: Static check
+        run: shellcheck hassio-ihost-silabs-multiprotocol/tests/nat64-functional/run.sh
+      - name: Build and run pinned DNS and NAT64 baselines
+        run: bash hassio-ihost-silabs-multiprotocol/tests/nat64-functional/run.sh
+      - name: Failure diagnostics from fixture containers
+        if: failure()
+        run: |
+          docker ps -a --filter name=otbr_47_
+          for container in $(docker ps -aq --filter name=otbr_47_); do
+            docker logs --tail 100 "$container"
+          done

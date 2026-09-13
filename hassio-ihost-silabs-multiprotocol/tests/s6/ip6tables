@@ -1,0 +1,9 @@
+#!/bin/bash
+set -eu
+printf 'S6_TEST_CLEANUP_STATUS=%s\n' "$(cat /run/s6-linux-init-container-results/exitcode)" > /proc/1/fd/1
+if [[ "${OTBR_S6_CASE}" == bounded-stall ]]; then
+    # The real cleanup timeout must kill this command after its TERM grace.
+    trap '' TERM
+    exec sleep 30
+fi
+exit 4
