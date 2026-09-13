@@ -37,10 +37,10 @@ shows receipt, but does not establish that Sigma1 was parsed and rejected.
    request with source IPv6 equal to the actual advertised NAT64 /96 prefix
    plus the collector IPv4 address. Confirm prefix length and the exact
    translator implementation first; do not hardcode a well-known prefix.
-5. Require the correlated plug response at the IPv4 collector AND capture or
-   translation-table evidence of the Thread IPv6 -> translated IPv4 path.
-   Record before/after counters, relevant narrow firewall counters, packet
-   tuples and timestamps. Counters alone are insufficient.
+5. Save the correlated plug response at the IPv4 collector with its tuple and
+   timestamp. Combine it with the unique injected request and same-candidate
+   enabled/disabled comparison. Internal mappings/counters may aid diagnosis,
+   but this behavioral test does not claim individual firewall rule coverage.
 6. Send the second fresh Sigma1 from the collector's SAME IPv4 socket to the
    source address/port observed in that response. Require a new correlated
    rejection from the plug. This proves reverse delivery, not just an ACK
@@ -110,8 +110,9 @@ Local checks on 2026-09-13:
 container with external networking disabled. Do not commit generated packets,
 raw production captures, inventories or credentials.
 
-Still required before the NAT64 trial: finalize narrow mapping/capture evidence
-and obtain concrete approval for candidate/NAT64 activation.
+Still required before the NAT64 trial: concrete approval for candidate/NAT64
+activation under the procedure in ../../INTEGRATION.md. Save exact collector
+responses and use the enabled/disabled behavioral comparison described there.
 ## Ordinary IPv6 control result, 2026-09-13
 
 A single Sigma1 sent from the HA access app to the authorized GRILLPLATS plug

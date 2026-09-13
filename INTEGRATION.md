@@ -13,7 +13,7 @@ both candidate windows; three real Zigbee group commands also returned BUSY.
 These observations do not establish candidate causality. The approved fallback
 installed `0.2.1-baseline` into the same app with current evolved data and complete
 options. Zigbee and Matter resumed. The baseline retained light availability during the 15-minute comparison, then the same light failed two pings and went offline. Its final requested read had no captured response. The dropout therefore occurs on both images; candidate-specific causality is unproven.
-NAT64 remains disabled; a separate suitable Thread consumer is still needed.
+NAT64 remains disabled. An existing authorized Thread plug now provides a verified UDP rejection response for the separately approved translation test.
 
 No upstream PR has been submitted, released or merged. Git pushes and test-image
 publication to the approved QEDeD destinations are authorized through September
@@ -126,10 +126,12 @@ Git/CI under `/tmp/otbr-ordered-trial-20260913`.
    mesh investigation as an implicit prerequisite. Three candidate group-command
    BUSY failures remain unexplained by comparable baseline traffic. A further
    live comparison needs a deliberate window and confirmed response capture.
-2. Test NAT64 separately with a Thread endpoint that initiates traffic to a
-   controlled IPv4 service, including an enabled/disabled comparison. ALPSTUGA
-   reports, local OTBR-originated packets and synthetic IPv4 firewall tests do
-   not establish this end-to-end behavior. Consumer availability is unresolved.
+2. Test NAT64 separately using the existing authorized plug's verified CASE
+   rejection response, including an enabled/disabled comparison on the same
+   candidate. A reply can supply the outgoing Thread IPv6 packet; initiating
+   an application conversation is not required. The ordinary IPv6 control and
+   actual Windows Python collector path passed. Translation remains untested.
+   See tools/nat64-reply-probe/README.md for the bounded procedure and evidence limits.
 3. Reconcile final PR evidence with the resulting tested source and obtain user
    approval before upstream submission.
 
@@ -169,3 +171,46 @@ method failures, not demonstrated plug failures. No new product patch is propose
 from this observation. The known Hue failure predates the candidate trial, as
 confirmed by the separate incident investigation; powered recurrence on both
 images does not prove intrinsic bulb fault or exclude all candidate effects.
+
+
+## NAT64 approval package — 2026-09-13
+
+The ordinary IPv6 control received both a correlated Matter acknowledgement and
+NoSharedTrustRoots from the authorized plug. Its rejection was acknowledged on
+the same UDP socket. The Python IPv4 collector subsequently exchanged an exact
+UDP nonce with HA. Existing Windows rules had changed to Allow; this task did
+not modify them. Collector and control implementations are integration tooling,
+not changes to the published candidate or the six product contribution heads.
+
+Proposed next trial, requiring explicit approval:
+
+1. Verify current health, exact image digest and current authoritative data;
+   take a fresh stopped-state backup and preserve complete options. Reuse the
+   established in-place switch procedure and current-data fallback.
+2. Install the existing 0.2.3-ordered candidate with otbr_nat64=true, preserving
+   other options. Wait for Thread attachment and fresh Zigbee/Matter reports.
+3. Confirm the advertised NAT64 prefix and collector path, then send one
+   synthetic-source Sigma1 to the authorized plug. Save the IPv4 collector's
+   correlated rejection and the response to its single reverse-path Sigma1.
+4. Set otbr_nat64=false on the same candidate and restart the app. Confirm
+   ordinary IPv6 control still works, then repeat the translated-source probe
+   with fresh identifiers. Expect no correlated IPv4 response; verify the
+   feature is disabled and no alternate translator is available before
+   interpreting that absence. Never use silence alone as proof.
+5. Observe fresh Zigbee and Matter traffic for ten minutes after disablement.
+   If healthy, leave the tested candidate running with NAT64 off. On material
+   regression, use the published baseline in the same app with evolved data;
+   do not restore an obsolete volume or reset a network.
+
+Allow roughly 30–45 minutes of agent/tool runtime, including the final observation
+window, with brief Zigbee/Thread interruptions during app switches. No plug load
+switching, device commissioning or firmware changes are included. A failed probe
+is a diagnostic result, not permission to broaden traffic or bypass filtering.
+
+Evidence-plan refinement: exact recorded UDP replies, unique exchange correlation,
+the tested raw sender, and the same-candidate enabled/disabled comparison provide
+an end-to-end behavioral test without installing privileged packet-capture tooling.
+Internal translator mappings and per-rule counters are optional diagnostics if
+needed to explain a failure, not prerequisites for that limited behavioral claim.
+Do not claim individual rule coverage, DNS64, TCP or general Internet reachability
+from this test. Existing isolated firewall evidence remains separately identified.
