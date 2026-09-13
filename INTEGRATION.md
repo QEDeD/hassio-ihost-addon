@@ -152,3 +152,22 @@ change is needed. The remaining delivery constraint is the integrated base image
 HA cannot resolve a tag held only in WSL Docker. Use a pullable immutable image
 (subject to publication permission), or build the combined source on HA. Do not
 assume copying a Docker save archive into the build context imports its layers.
+## Retained local candidate — 2026-09-13
+
+Clean Linux checkout `2d811ea0b59901570cd5bac64587de53510ac99c` passed the complete
+AMD64 build and immutable-image linkage inventory. Base image configuration ID:
+`sha256:31b170b2faf9824990d0c582fadf14c9f62c4b593fe1ae07d0789fc763962156`.
+Unlike the earlier ephemeral CI image, this image is retained in local Docker.
+
+Helper `391bb7c56e01ef34ae5ae0b8cd259f31fdb7d6d0` built these exact wrappers:
+- Candidate: `sha256:97f8753b3f04fc4da59dc732337d8df45971f5a8635711a5c6fd520240d66f09`
+- Baseline: `sha256:d9cf8a40c57f667d23052373e2b7f48d19b1965d6d71b657f0cd704d2cac6a46`
+- Limited recovery: `sha256:718431866692b4a06c59457ad66209a60808a8d330680db17fb37cf6a48f6cf3`
+
+All three complete installed s6 graphs compiled without starting services.
+The exact-image synthetic switch rehearsal passed: evolved radio files and full
+options survived candidate/baseline/candidate switches; OTBR-off recovery worked
+and OTBR-on recovery was refused. Five stub starts occurred; normal radio init
+was never executed. This does not prove real-radio downgrade compatibility.
+Candidate runtime/browser acceptance remains pending. No image was published or
+deployed. Local evidence is retained under `/tmp/otbr-local-build.1KZZGI`.
