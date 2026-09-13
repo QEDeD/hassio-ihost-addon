@@ -6,8 +6,19 @@ audit_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=inputs.sh
 source "$audit_dir/inputs.sh"
 fixture="$(mktemp -d "$RUNNER_TEMP/trixie-runtime.XXXXXX")"
-cp -a audit-fixtures-nat64/hassio-ihost-silabs-multiprotocol "$fixture/nat64"
-cp -a audit-fixtures-readiness/hassio-ihost-silabs-multiprotocol "$fixture/readiness"
+case "${AUDIT_FIXTURE_SOURCE:-pinned}" in
+    current)
+        addon="$(cd "$audit_dir/../.." && pwd)"
+        cp -a "$addon" "$fixture/nat64"
+        cp -a "$addon" "$fixture/readiness"
+        printf 'FIXTURE_SOURCE=current checkout %s\n' "${GITHUB_SHA:?}"
+        ;;
+    pinned)
+        cp -a audit-fixtures-nat64/hassio-ihost-silabs-multiprotocol "$fixture/nat64"
+        cp -a audit-fixtures-readiness/hassio-ihost-silabs-multiprotocol "$fixture/readiness"
+        ;;
+    *) echo 'Unknown AUDIT_FIXTURE_SOURCE' >&2; exit 1;;
+esac
 export fixture
 python3 - <<'PY'
 import os
@@ -34,6 +45,20 @@ docker build -f "$fixture/nat64/Dockerfile.audit" -t local/trixie-regressions "$
 docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges     --pids-limit 128 --tmpfs /tmp:rw,nosuid,nodev,size=32m     local/trixie-regressions -c 'set -e; python3 --version; python3 tests/test-otbr-nat64-pool.py; bash tests/test-otbr-firewall.sh; bash tests/test-otbr-nat64.sh'
 # Real kernel rules inside an isolated network namespace; no host network/devices.
 docker run --rm --network none --read-only --cap-drop ALL --cap-add NET_ADMIN --cap-add NET_RAW     --security-opt no-new-privileges --pids-limit 128     --tmpfs /run:rw,nosuid,nodev,noexec,size=1m --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m     --entrypoint /bin/bash local/trixie-regressions -c     'bash tests/test-otbr-firewall-kernel.sh'
+# Synthetic IPv4 forwarding/SNAT with the combined image's actual tools and
+# installed pool checker. No translator/radio or host network is involved.
+if [[ ${AUDIT_FIXTURE_SOURCE:-pinned} == current ]]; then
+    docker run --rm --network none --read-only --cap-drop ALL \
+        --cap-add NET_ADMIN --cap-add NET_RAW --cap-add SYS_ADMIN \
+        --security-opt no-new-privileges --pids-limit 128 \
+        --sysctl net.ipv4.ip_forward=1 \
+        --sysctl net.ipv4.conf.all.rp_filter=0 \
+        --sysctl net.ipv4.conf.default.rp_filter=0 \
+        --tmpfs /run:rw,nosuid,nodev,noexec,size=1m \
+        --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
+        local/trixie-regressions -ec \
+        'for tool in ping unshare nsenter ip iptables python3; do command -v "$tool"; done; timeout --kill-after=3s 90s bash tests/test-otbr-nat64-kernel.sh'
+fi
 for spec in 'nat64 test-otbr-s6.sh' 'nat64 test-otbr-nat64-s6.sh' 'readiness test-zigbeed-readiness.sh'; do
     read -r tree test_name <<< "$spec"
     timeout 300s bash "$fixture/$tree/tests/$test_name"

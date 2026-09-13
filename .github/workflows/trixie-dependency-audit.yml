@@ -1,15 +1,17 @@
-name: Isolated PR79 Trixie dependency and full-build audit
+name: Isolated Trixie and integrated AMD64 audit
 on:
   workflow_dispatch:
   push:
-    branches: [codex/trixie-dependency-audit-20260912]
+    branches: [codex/trixie-dependency-audit-20260912, codex/otbr-integrated-20260913]
     paths:
       - .github/workflows/trixie-dependency-audit.yml
       - hassio-ihost-silabs-multiprotocol/Dockerfile
       - hassio-ihost-silabs-multiprotocol/build.yaml
       - hassio-ihost-silabs-multiprotocol/otbr-patches/**
       - hassio-ihost-silabs-multiprotocol/zigbeed-patches/**
-      - hassio-ihost-silabs-multiprotocol/tests/trixie-audit/**
+      - hassio-ihost-silabs-multiprotocol/tests/**
+      - hassio-ihost-silabs-multiprotocol/rootfs/**
+      - tests/qr/**
 permissions:
   contents: read
 concurrency:
@@ -18,21 +20,25 @@ concurrency:
 jobs:
   inventory-and-build:
     runs-on: ubuntu-latest
-    timeout-minutes: 110
+    timeout-minutes: 120
+    env:
+      AUDIT_FIXTURE_SOURCE: ${{ github.ref_name == 'codex/otbr-integrated-20260913' && 'current' || 'pinned' }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - name: Inventory pinned images and attempt complete AMD64 PR79 build
+      - name: Inventory pinned images and build complete AMD64 checkout
         shell: bash
         run: |
           audit=hassio-ihost-silabs-multiprotocol/tests/trixie-audit
           bash -n "$audit/run.sh"
           bash -n "$audit/inventory.sh"
-          shellcheck -x -P SCRIPTDIR "$audit/run.sh" "$audit/inventory.sh"
+          bash -n "$audit/runtime.sh"
+          shellcheck -x -P SCRIPTDIR "$audit/run.sh" "$audit/inventory.sh" "$audit/runtime.sh"
           python3 -m py_compile "$audit/prepare.py"
           bash "$audit/run.sh"
       - name: Obtain pinned NAT64 and firewall regression fixtures
+        if: env.AUDIT_FIXTURE_SOURCE == 'pinned'
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           repository: QEDeD/hassio-ihost-addon
@@ -40,6 +46,7 @@ jobs:
           path: audit-fixtures-nat64
           persist-credentials: false
       - name: Obtain pinned Zigbee readiness regression fixtures
+        if: env.AUDIT_FIXTURE_SOURCE == 'pinned'
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           repository: QEDeD/hassio-ihost-addon
@@ -49,3 +56,36 @@ jobs:
       - name: Exercise upgraded runtime with existing isolated regressions
         timeout-minutes: 15
         run: bash hassio-ihost-silabs-multiprotocol/tests/trixie-audit/runtime.sh
+      - name: Extract and check combined-image commissioning frontend
+        if: env.AUDIT_FIXTURE_SOURCE == 'current'
+        shell: bash
+        run: |
+          set -euo pipefail
+          container=$(docker create --network none local/ihost-trixie-audit)
+          trap 'docker rm "$container" >/dev/null' EXIT
+          frontend="$RUNNER_TEMP/combined-frontend"
+          docker cp "$container:/usr/share/otbr-web/frontend" "$frontend"
+          node tests/qr/check.cjs "$frontend" "$frontend/res/js/qrcode.js"
+          test -f "$frontend/res/js/qrcode.LICENSE.txt"
+      - name: Install browser test tools
+        if: env.AUDIT_FIXTURE_SOURCE == 'current'
+        run: npm --prefix "$RUNNER_TEMP/qr-tools" install --ignore-scripts --no-audit --no-fund @playwright/cli@0.1.19 jsqr@1.4.0
+      - name: Check combined-image QR assets with synthetic commissioning data
+        if: env.AUDIT_FIXTURE_SOURCE == 'current'
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          set -euo pipefail
+          cli="$RUNNER_TEMP/qr-tools/node_modules/.bin/playwright-cli"
+          node tests/qr/serve.cjs \
+            "$RUNNER_TEMP/combined-frontend" \
+            "$RUNNER_TEMP/qr-tools/node_modules/jsqr/dist/jsQR.js" &
+          server_pid=$!
+          trap '"$cli" -s=qr-ci close || true; kill "$server_pid" || true' EXIT
+          for _attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:18764/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:18764/ >/dev/null
+          "$cli" -s=qr-ci open http://127.0.0.1:18764 --browser chrome
+          "$cli" -s=qr-ci run-code --filename tests/qr/browser-check.js
