@@ -12,7 +12,7 @@ continued, and the restart shut down cleanly. One light became unavailable in
 both candidate windows; three real Zigbee group commands also returned BUSY.
 These observations do not establish candidate causality. The approved fallback
 installed `0.2.1-baseline` into the same app with current evolved data and complete
-options. Zigbee and Matter resumed. The baseline comparison completed: the light stayed available in all 16 samples over 15 minutes. Its final requested read has no captured response, so that check is inconclusive.
+options. Zigbee and Matter resumed. The baseline retained light availability during the 15-minute comparison, then the same light failed two pings and went offline. Its final requested read had no captured response. The dropout therefore occurs on both images; candidate-specific causality is unproven.
 NAT64 remains disabled; a separate suitable Thread consumer is still needed.
 
 No upstream PR has been submitted, released or merged. Git pushes and test-image
@@ -115,15 +115,17 @@ unavailable around minute 15 and minute 7 respectively. Three group commands in
 the final window failed with BUSY. Power/mesh conditions and candidate causality
 remain unresolved. A fresh backup preserved evolved state before switching to
 the published baseline; no previous volume, snapshot, reset or firmware change
-was used. The initial baseline direct state read succeeded. All 16 samples over 15 minutes retained the initial 109 unavailable entities; the affected light stayed available and Matter CO2 report age remained below 24 seconds. The last unsolicited light report was near the end of the window. A final GET was accepted, but no newer response was captured: final active-read verification is inconclusive. No BUSY appeared in the captured baseline log, but equivalent group-command traffic was not established. Keep the baseline running; the sequential comparison is evidence of a possible regression, not proof of candidate causality.
+was used. The initial baseline direct state read succeeded. All 16 samples over 15 minutes retained the initial 109 unavailable entities; the affected light stayed available and Matter CO2 report age remained below 24 seconds. The last unsolicited light report was near the end of the window. A final GET was accepted, but no newer response was captured: final active-read verification is inconclusive. No BUSY appeared in the captured baseline log, but equivalent group-command traffic was not established. A subsequent baseline log captured two failed pings and the same light going offline at 13:51:47 CEST. Core then confirmed the same four-entity availability loss (113 unavailable total), with all apps started and continuing Matter reports. The earlier healthy interval does not establish sustained recovery. This shared symptom does not demonstrate a candidate-specific regression, although differing rates or causes remain possible. Keep the baseline running pending clarification of physical power and the remaining group-command evidence.
 Raw logs, backups and identifying device details are retained privately outside
 Git/CI under `/tmp/otbr-ordered-trial-20260913`.
 
 ## Remaining acceptance and review
 
-1. Confirm physical power for the affected light and diagnose the unresolved
-   candidate dropout using preserved evidence. Keep the baseline running;
-   another cutover needs a deliberate test window and confirmed response capture.
+1. Confirm physical power for the light that fails on both images. Keep this
+   shared device issue distinct from candidate acceptance; do not start a broad
+   mesh investigation as an implicit prerequisite. Three candidate group-command
+   BUSY failures remain unexplained by comparable baseline traffic. A further
+   live comparison needs a deliberate window and confirmed response capture.
 2. Test NAT64 separately with a Thread endpoint that initiates traffic to a
    controlled IPv4 service, including an enabled/disabled comparison. ALPSTUGA
    reports, local OTBR-originated packets and synthetic IPv4 firewall tests do
@@ -137,3 +139,14 @@ not an independent rerun of tests. Independent production-evidence review agreed
 its initial final-read claim was corrected after timestamp verification. Host-reboot ordering and physical ARM radio behavior remain
 unverified; no claim of universal radio reliability or guaranteed downgrade is
 made. Firewall ownership retains the documented single-OTBR assumption.
+
+## Group-send evidence limit
+
+Zigbee2MQTT 2.14.1 declares zigbee-herdsman 10.9.2. In the matching
+[Ember adapter source](https://github.com/Koenkk/zigbee-herdsman/blob/v10.9.2/src/adapter/ember/adapter/emberAdapter.ts),
+`sendZclFrameToGroup` throws on non-OK status immediately, whereas unicast sends
+have bounded BUSY retry handling. This identifies the reporting path, not the
+cause of radio BUSY. No change to this separate dependency is proposed. The
+retained pre-candidate and baseline Zigbee log captures did not contain BUSY;
+unequal traffic and rolling capture prevent treating absence as a controlled
+comparison. HTTP acceptance of an MQTT publish is not proof of a Zigbee response.
