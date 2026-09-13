@@ -18,7 +18,7 @@ Each draft includes its exact comparison or branch identity. The [integration
 record](../INTEGRATION.md) records the assembled source, image digests, production
 evidence and limitations. Historical CI is labeled with its tested source.
 
-## Remaining decision and acceptance work
+## Acceptance and remaining operator decision
 
 The physical NAT64 UDP trial passed. Three earlier group OFF commands returned
 BUSY during an eight-second sequence of Hue remote presses. The recorded HA
@@ -40,9 +40,14 @@ Recommendation: retain the historical finding as unresolved general Zigbee
 reliability work; do not require another image switch solely for this finding.
 Reopen candidate/baseline comparison if concrete evidence implicates these
 contributions. This is a disposition of the finding, not proof of equivalence
-or completion of the bundle-wide acceptance audit.
+or a claim that the historical issue is fixed. The final bundle audit is complete.
 
 For Trixie, first offer PR79 the credited Release/mbedTLS corrections and exact
 validation evidence. Use the prepared successor branch only if that reduces
 maintainer work. External comments, PR creation, release and merging require the
 operator's approval; none have been sent by preparing this package.
+
+
+Ready for operator review: approve the proposed submissions, including offering
+Trixie corrections/evidence to PR79 first. Approval of this package does not
+implicitly authorize releases, merges or additional production changes.

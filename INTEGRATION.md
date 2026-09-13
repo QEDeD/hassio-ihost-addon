@@ -11,11 +11,14 @@ a reverse exchange and same-candidate disabled comparison. The candidate remains
 running with NAT64 off; Zigbee and Thread/Matter operation passed the final
 21-sample, 629-second observation and closing checks.
 
-Isolated AMD64 checks and ARM build/runtime checks passed as detailed below.
-Full bundle closeout still requires resolution or an explicit disposition of the
-earlier three Zigbee group-command BUSY failures and final reconciliation of PR
-evidence. The known light dropout occurred on both candidate and baseline; its
-cause is not established. Neither finding is explained away by the NAT64 result.
+Isolated AMD64 checks and separately scoped ARM build/runtime checks passed as
+detailed below. The approved lighting replay did not reproduce the earlier BUSY
+failure; independent review found no demonstrated candidate regression and
+retained the historical symptom as unresolved general Zigbee reliability work.
+The six contribution heads and final evidence have been reconciled. The package
+is ready for operator review and approval of upstream submission, with the
+explicit limitations and contribution order below. This is not a release or a
+claim that every historical device issue is fixed.
 
 No upstream PR has been submitted, released or merged. Git pushes and test-image
 publication to the approved QEDeD destinations are authorized through September
@@ -120,23 +123,28 @@ was used. The initial baseline direct state read succeeded. All 16 samples over 
 Raw logs, backups and identifying device details are retained privately outside
 Git/CI under `/tmp/otbr-ordered-trial-20260913`.
 
-## Remaining acceptance and review
+## Acceptance disposition and review
 
-1. Continuous physical power is confirmed for the light that fails on both images. Keep this
-   shared device issue distinct from candidate acceptance; do not start a broad
-   mesh investigation as an implicit prerequisite. Three candidate group-command
-   BUSY failures remain unexplained by comparable baseline traffic. A further
-   live comparison needs a deliberate window and confirmed response capture.
-2. The physical NAT64 UDP enabled/disabled test is complete, including reverse delivery and the final health window. Preserve its limited coverage and the separate isolated DNS evidence in the PR description.
-3. Reconcile final PR evidence with the resulting tested source and obtain user
-   approval before upstream submission.
+The agreed bounded AMD64 production trial, controlled restart, physical NAT64
+UDP comparison, and approved lighting replay are complete. The light dropout
+occurred on both images. The separate BUSY finding was not reproduced; its
+reviewed disposition is recorded below. Neither establishes a candidate-specific
+regression, nor proves identical failure rates or causes across images.
 
-Independent review of final contribution source, integration boundaries and
-shutdown-order changes found no material product findings. It was source review,
-not an independent rerun of tests. Independent production-evidence review agreed that acceptance remains unresolved;
-its initial final-read claim was corrected after timestamp verification. Host-reboot ordering and physical ARM radio behavior remain
-unverified; no claim of universal radio reliability or guaranteed downgrade is
-made. Firewall ownership retains the documented single-OTBR assumption.
+Independent source, integration-boundary, shutdown-order and final evidence
+reviews have no unresolved material contribution finding. The initial baseline
+final-read claim was corrected after timestamp review; that read remains
+inconclusive and is not counted as successful evidence. Current contribution
+heads match the tested source through ancestry or explicitly checked file
+comparisons, not invented exact-head CI claims.
+
+Physical ARM radio behavior, host-reboot ordering, TCP/DNS64/general Internet
+NAT64 behavior and universal downgrade safety are not established. Firewall
+ownership retains the documented single-OTBR assumption. Preserve current
+network data for recovery, including Zigbee2MQTT's external database directory.
+SDK/CPC/firmware upgrades, TREL and unrelated radio-hang investigation remain
+outside this bundle. The remaining gate is operator review and approval before
+upstream submission; no upstream comment, PR, release or merge has been made.
 
 ## Group-send evidence limit
 
@@ -345,3 +353,28 @@ non-reproduction do not justify making another disruptive image comparison
 mandatory by themselves. Reopen comparison if concrete evidence implicates the
 contributions. This does not establish candidate/baseline equivalence, cure the
 historical problem, or replace the remaining bundle-wide completion audit.
+
+
+## Final bundle audit — 2026-09-13
+
+- All six published heads match the review index. Independent provenance review
+  checked ancestry or exact product-file transfer into aca557b, including shared
+  Dockerfile resolutions. Subsequent commits change evidence/drafts/probe tools
+  only; the tested product source is unchanged.
+- Retained build success/source records identify aca557b and its clean source
+  hashes. Build, linkage, runtime and packaged s6 records support the isolated
+  results. Existing synthetic browser and independent source reviews remain
+  applicable; no product change invalidated them.
+- Production records retain 31 initial samples and 11 post-restart samples with
+  changing Matter readings, followed by the independently reviewed NAT64 trial
+  and 21-sample/629-second disabled health window. The additional approved
+  lighting replay and restoration were independently reviewed separately.
+- GitHub confirms the successful AArch64/ARMv7 run at 11bef36. The later mDNS
+  graph edge has separate AMD64 evidence; this is not physical ARM acceptance.
+- Backup/data-continuity limitations, initial baseline findings, feature coverage,
+  upstream overlap/attribution and merge dependencies remain explicit. Six draft
+  PR descriptions now agree with the resulting evidence and finding disposition.
+
+The preparation and bounded validation objective is complete. The operator's
+next decision is approval of the proposed submissions and the PR79 coordination
+route, not authorization for an automatic release or further production testing.
