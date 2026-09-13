@@ -1,188 +1,127 @@
-# Integrated contribution candidate
+# Upstream contribution review package
 
-## Goal and boundaries
-Prepare one combined image for isolated validation and an explicitly approved
-production trial, while retaining separate upstream PRs. This integration branch
-is not an upstream PR or a release. No production deployment is authorized by
-this document. The current local app's radio state remains authoritative.
+## Outcome and current gate
 
-## Source set — 2026-09-13
-Upstream master: 5a8d7dec067f9196ada5879f31f71cbf6d595bff.
-Fresh upstream branch listing contains master only. Open overlapping PRs remain
-78 (03598f9b9c739d0293fa434f6899c1fa1efe5f7d) and
-79 (4c7d63cf10ed0cf70f31c64257663c3bdd8b5983). Existing attribution to
-Arno500 is retained in the contributions. No upstream submission has occurred.
+Prepare separate upstream contributions and one combined candidate, preserving
+reliable Zigbee and Thread/Matter operation. AMD64 isolated acceptance passed.
+Production acceptance is pending; neither deployment nor upstream submission is
+authorized by this document. ARMv7 passed; AArch64 failed and requires resolution.
 
-| Contribution | Integrated source head | Relationship |
+## Source and proposed merge order
+
+Reviewed upstream master: `5a8d7dec067f9196ada5879f31f71cbf6d595bff` (2026-09-13).
+The branch review found master only. Relevant open proposals were PR78 at
+`03598f9b9c739d0293fa434f6899c1fa1efe5f7d` and PR79 at
+`4c7d63cf10ed0cf70f31c64257663c3bdd8b5983`. Preserve Arno500 attribution.
+
+| Contribution | Current contribution head | Purpose and relationship |
 | --- | --- | --- |
-| Scoped firewall lifecycle | d16cfdf | Independent prerequisite for NAT64 |
-| Passive Zigbee TCP readiness | 9536ef0 | Independent |
-| Local QR generation | 4969de6 | Independent; no external credential service |
-| Debian Trixie and Release compilation | fe47277 | Base/runtime upgrade; SDK and CPC held fixed |
-| NAT64/upstream DNS | 8cb2ff9 | Stacked on firewall; default remains disabled |
-| HA app terminology | 84fab10 | Shared wording; technical identifiers preserved |
+| Firewall lifecycle | d16cfdf | Scoped setup/cleanup; prerequisite for NAT64 |
+| Passive Zigbee readiness | 9536ef0 | Require the owned listener without consuming TCP connections; independent |
+| Local QR generation | e34faa6 | Keep commissioning PSKd/EUI payload in the browser; independent |
+| Debian Trixie | fe47277 | Update distribution inputs and explicitly select Release; SDK/CPC fixed |
+| NAT64/upstream DNS | 8cb2ff9 | Opt-in translation and DNS; stacked on firewall, disabled in baseline |
+| HA app terminology | 84fab10 | User-facing wording; preserve technical identifiers; merge last |
 
-Merge resolutions retained both DNS and QR Dockerfile patch installation steps
-and the full NAT64 documentation. Individual contribution branches are unchanged.
+PR78's firewall/NAT64/DNS ideas are represented with attribution and additional
+validation. TREL remains outside this package. Coordinate the Release correction
+and evidence with existing PR79 first; use a credited successor only if it clearly
+improves maintainer review. Do not submit the complete Trixie investigation history
+as a competing PR by default. Its audit workflow is external evidence, not yet a
+permanent upstream CI proposal. Integration-only packaging/recovery tooling does
+not belong in the individual product PRs.
 
-## Acceptance sequence
-1. Build the combined AMD64 source, record exact commit/image identity and check
-   installed linkage. Reuse pinned acquisition checks for the base, SDK, CPC, SLC.
-2. Run lifecycle/readiness/firewall/IPv4 packet fixtures using current integrated
-   source and the combined runtime, not older contribution checkouts. Exercise
-   native web behavior and QR assets extracted from the combined image.
-3. Complete architecture-specific ARM image/runtime validation separately. The
-   prior isolated Release compiler test is not full ARM acceptance.
-4. Review a concrete persistent-app deployment/recovery package preserving
-   current state, including state evolved during trial; obtain cutover approval.
-5. Trial existing Zigbee/Matter operation with NAT64 disabled, then separately
-   validate enabled NAT64 with an appropriate consumer under agreed permissions.
-6. Feed findings into individual PR branches, reassemble and retest affected
-   behavior, obtain independent final review, and present the complete PR bundle.
+The assembled product source first passed at `0999946`. Later integration commits
+add audit/packaging evidence and a browser-test correction; product code remains
+unchanged. The QR head adds the UI-event test correction to earlier product head
+`4969de6`. Merge resolutions retained both QR/DNS Dockerfile patch installation
+steps and the full NAT64 documentation. SDK/CPC/firmware upgrades, TREL and unrelated
+radio-hang work remain deferred unless trial evidence makes them necessary.
 
-## Evidence limitations
-Combined AMD64 isolated validation passed as recorded below; production acceptance remains pending. Earlier individual
-CI runs are evidence for their specified commits/environments only. Synthetic
-fixtures substitute services and do not prove real-radio startup. The QR browser
-fixture verifies installed assets with synthetic endpoint data. Virtual-radio
-NAT64 tests build a separate SDK environment; they are not combined-image tests.
-The radio-hang investigation is parked unless recurrence affects this trial.
+## Verified evidence
 
-Production recovery must not rely on the obsolete original app volume or an old
-VM snapshot. Raw live logs and credentials remain private and outside this branch.
-## Execution status and trial recovery review
+[Combined AMD64 CI34747387036](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34747387036)
+passed at `0999946ab0c826b59ee599194f6dff49269b7b38`. Its image was ephemeral;
+do not confuse that pass with an untested replacement artifact.
 
-At source0999946, local merged firewall/NAT64 lifecycle and all five pool tests
-passed. Separate firewall run34747387027 and QR run34747387037 passed; these
-retain their documented fixture boundaries. Combined AMD64 run34747387036 passed. ARM run34747479789 uses e28c7aa: product source is identical, with only
-ARM build timeout changed from1200 to2700 seconds (job bound85 minutes).
-Do not restart either run simply because log observation is unchanged.
+A clean Linux checkout of `2d811ea0b59901570cd5bac64587de53510ac99c` subsequently
+built the retained local AMD64 image and passed immutable-image linkage inventory.
+Build records capture source revision, dirty/untracked state, copied-context hashes
+and Docker image identity. Helper `391bb7c56e01ef34ae5ae0b8cd259f31fdb7d6d0`
+built the three retained wrappers:
 
-Read-only independent review of the existing local-service packaging found:
-- Keep the same local app slug, source directory, full options and evolving /data;
-  no new app or seed import. Use a distinct-version stopped-app update.
-- Existing make_context.py pins the old release plus exactly five overlay files.
-  It cannot package the integrated image unchanged; preserve those identity
-  safeguards and extend packaging narrowly for the verified combined artifact.
-- Retain the local state guard, start/provenance markers and disabled automatic
-  discovery. Both candidate and recovery schemas must preserve all existing
-  local options and accept otbr_nat64, explicitly false for the initial trial.
-- Adapt the existing synthetic same-volume image-switch check to exact candidate
-  and recovery images. It must preserve evolving files/nondefault options.
-  Stub-init success is not physical-radio or counter-compatibility evidence.
-- Existing recovery enforces OTBR off and restores released Zigbee binaries.
-  This is a limited Zigbee recovery route, NOT verified full Thread/Matter rollback.
-  Resolve the operational rollback scope before cutover approval; do not silently
-  substitute Zigbee-only recovery for preservation of both services.
-- Generic Supervisor stopped-update/options-persistence evidence already exists;
-  reuse it. Verify the actual packaged images and availability on HA, current full
-  options, fresh stopped-state backup and exact installed image/version at cutover.
-- Keep current state even after trial failure. Never restore the stale original
-  app volume or pre-commissioning snapshot. The state guard checks file safety,
-  not semantic integrity or monotonic counters. Fixed SDK/CPC versions reduce
-  compatibility uncertainty but do not prove downgrade safety.
+| Image | Docker configuration identity (not a registry digest) |
+| --- | --- |
+| Combined base | sha256:31b170b2faf9824990d0c582fadf14c9f62c4b593fe1ae07d0789fc763962156 |
+| Candidate | sha256:97f8753b3f04fc4da59dc732337d8df45971f5a8635711a5c6fd520240d66f09 |
+| Baseline | sha256:d9cf8a40c57f667d23052373e2b7f48d19b1965d6d71b657f0cd704d2cac6a46 |
+| Limited recovery | sha256:718431866692b4a06c59457ad66209a60808a8d330680db17fb37cf6a48f6cf3 |
 
-Before asking for approval, specify the interruption window, exact candidate,
-state-preserving recovery actions, normal-operation acceptance, controlled restart
-if included, and whether a passing candidate remains running. NAT64 enablement
-is a separate test; production deployment and firmware/reset actions are not
-implied by this preparation record.
-## Combined AMD64 acceptance — completed
+The exact candidate passed:
+- Complete installed s6 graph compilation for all three wrappers, without services.
+- Candidate/baseline/candidate synthetic image switches preserving evolving files
+  and full options; five stub starts. OTBR-off recovery passed; OTBR-on recovery
+  was refused. No real radio initialization or counter compatibility was tested.
+- Real-kernel firewall lifecycle and synthetic IPv4 forwarding, rejection and
+  cleanup; s6 shutdown and NAT64 off/on/error/stall cases; passive Zigbee listener
+  ownership; installed Bashio and native web failure handling.
+- Browser checks against extracted assets: four viewport/payload combinations,
+  two encoder failures, hostile input retained as data and zero external requests.
+  Two runs passed after test-only correction `e34faa6` used the real QR click.
+  The earlier harness timed out twice when calling Angular outside the UI event;
+  product code and security assertions were unchanged.
 
-Run [34747387036](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34747387036)
-at0999946 passed the complete AMD64 build and all isolated checks. Captured local
-image ID: sha256:30343d24dfd79334fb3aa326d425b7cea31061af1b23395156727f73c5d285be.
-This is the Docker image configuration identity, not a published registry digest.
-The runner did not export or publish the image; deployable artifact packaging and
-retention remain required. The audit image also retains one test-only config.py.
-Do not claim an untested rebuild/wrapper is the identical tested artifact.
+Local evidence: `/tmp/otbr-local-build.1KZZGI` (build record, package identities,
+runtime log and browser-repeat log). Raw production logs/credentials are excluded.
+The audit image contains one retained test-only mbedTLS config.py file.
 
-The log confirms FIXTURE_SOURCE=current at the exact source head. Tests passed
-for merged firewall/NAT64 source behavior, isolated kernel rules and IPv4 packet
-forwarding, s6 lifecycle/readiness, socket ownership, actual Bashio and native web.
-Controller and browser tests used frontend extracted from the built image: four
-viewport/credential-length combinations decoded correctly, hostile text stayed
-data, two encoder-failure paths were checked and seven synthetic QR requests made
-zero external request attempts. No real radio or production operation was tested.
+## ARM work remaining
 
-Local-service fixture preparation d5c156e now requires explicit immutable local
-candidate/baseline/recovery image IDs, checks candidate -> baseline -> candidate
-with evolved synthetic state and OTBR enabled after first guarded handoff, and
-separately checks OTBR-off recovery plus refusal with OTBR enabled. Parent reviewed
-the diff. Syntax/argument and mocked-transport checks passed; exact-image container
-execution remains pending. Stub-init continuity cannot prove radio counter or
-serialized-state compatibility. No production rollback guarantee is claimed.
-## Proposed production acceptance (not deployment authorization)
+[ARM run34747479789](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34747479789)
+at `e28c7aa` completed with an AArch64 failure; ARMv7 passed its complete image build, installed linkage and isolated native web checks. AArch64 failed compiling bundled mbedTLS
+ctr_drbg.c with GCC14.2, -O2 and -Werror=array-bounds. It was not a timeout;
+final-image runtime checks were not reached. Upstream mbedTLS commit
+`292b96c0a69016a6d99ce324837a9e96d59e21f6` addresses this diagnostic. A focused ARM64 cross-compile reproduced the original failure and passed with this upstream backport, retaining -O2 and strict warnings. Integration and full-image verification of the correction remain pending. No ARM acceptance is inferred from AMD64 evidence.
+The previously inspected armv7 vendor archive imports legacy `time`; this identifies
+a possible 2038 limitation, not a demonstrated ABI mismatch.
 
-Before approval, identify the deliverable image and its verified delivery route,
-confirm the currently installed app/options and establish a fresh stopped-state
-backup. Preserve the same local repository app and its evolving data; do not
-uninstall, re-pair, flash firmware or restore an older network state.
+## Delivery and recovery gate
 
-The proposed baseline trial keeps NAT64 disabled. Capture representative fresh
-Zigbee and ALPSTUGA Matter reports before the change, stop the dependent Zigbee
-client and app, perform the distinct-version update, and restart them in the
-established order. Confirm image/version, service readiness, OTBR attachment and
-fresh end-to-end reports rather than relying on process status alone. Exercise a
-safe representative read/control where a suitable device is available.
+Installed identifier `local_codex_ihost_otbr_focused` correctly corresponds to
+config slug `codex_ihost_otbr_focused` staged at `/addons/codex_ihost_otbr_focused`.
+Use the established store reload and distinct-version stopped-app update, retaining
+the same authoritative data volume and complete options. No uninstall or seed import.
 
-Proposed observation: at least 30 minutes of normal operation, extended if this
-fails to include fresh reports from the selected devices. If separately included
-in cutover approval, perform one controlled app/client restart and observe fresh
-reports for another 10 minutes. These windows test ordinary startup and operation;
-they do not establish absence of the previously observed intermittent radio hang.
-A passing candidate should remain running only if that is included in approval.
+HA's builder cannot use a tag held only in local WSL Docker. Choose a pullable
+immutable image (publication permission required), or build the combined source on
+HA. Copying a Docker save archive into its build context does not import layers.
+Prove the actual candidate and recovery images are available before cutover.
 
-If acceptance fails, stop the trial, retain current data and logs, and use the
-baseline wrapper with that same evolved data. Synthetic continuity and fixed
-SDK/CPC versions do not prove real radio-state downgrade compatibility. Establish
-that recovery limitation explicitly before approval. The OTBR-off recovery image
-is only a limited Zigbee fallback, not full Zigbee/Thread recovery.
+Take a fresh stopped-state backup before update and retain state evolved during
+the trial. Candidate/baseline wrappers preserve Thread-enabled options; the limited
+recovery wrapper enforces Thread off and is only a Zigbee fallback. Same SDK/CPC
+versions and synthetic continuity reduce uncertainty but do not prove real-radio
+downgrade safety. Explain that residual risk in the particular cutover approval;
+do not claim guaranteed recovery or restore an obsolete volume/VM snapshot.
 
-NAT64 requires a separate enabled/disabled comparison with a Thread consumer that
+## Proposed production acceptance — approval required
+
+Capture representative fresh Zigbee and ALPSTUGA Matter reports before the change.
+With NAT64 disabled, stop the dependent Zigbee client and app, update, restart in
+the established order, and confirm image/version, readiness, OTBR attachment and
+fresh end-to-end reports. Exercise a safe representative read/control where suitable.
+
+Observe at least 30 minutes, extending if selected devices have not reported. If
+included in approval, perform one controlled app/client restart and observe fresh
+reports for another 10 minutes. These windows test ordinary operation, not absence
+of the parked intermittent radio hang. Specify interruption/recovery actions and
+whether a passing candidate remains running before requesting approval.
+
+NAT64 needs a separate enabled/disabled comparison with a Thread consumer that
 actually initiates traffic to a controlled IPv4 endpoint. ALPSTUGA sensor reports
-alone cannot demonstrate translation. Consumer availability and the specific
-permitted traffic remain to be established; do not waive this requirement by
-substituting synthetic packet tests for production acceptance.
-Delivery review: the installed `local_codex_ihost_otbr_focused` identifier is the
-expected local-repository prefix of config slug `codex_ihost_otbr_focused`.
-Existing staging uses `/addons/codex_ihost_otbr_focused`, store reload and the
-prefixed installed identifier for update. This preserves the same app; no slug
-change is needed. The remaining delivery constraint is the integrated base image:
-HA cannot resolve a tag held only in WSL Docker. Use a pullable immutable image
-(subject to publication permission), or build the combined source on HA. Do not
-assume copying a Docker save archive into the build context imports its layers.
-## Retained local candidate — 2026-09-13
+alone cannot prove translation. Consumer availability and permitted traffic remain
+unresolved; synthetic packet tests do not replace this production requirement.
 
-Clean Linux checkout `2d811ea0b59901570cd5bac64587de53510ac99c` passed the complete
-AMD64 build and immutable-image linkage inventory. Base image configuration ID:
-`sha256:31b170b2faf9824990d0c582fadf14c9f62c4b593fe1ae07d0789fc763962156`.
-Unlike the earlier ephemeral CI image, this image is retained in local Docker.
-
-Helper `391bb7c56e01ef34ae5ae0b8cd259f31fdb7d6d0` built these exact wrappers:
-- Candidate: `sha256:97f8753b3f04fc4da59dc732337d8df45971f5a8635711a5c6fd520240d66f09`
-- Baseline: `sha256:d9cf8a40c57f667d23052373e2b7f48d19b1965d6d71b657f0cd704d2cac6a46`
-- Limited recovery: `sha256:718431866692b4a06c59457ad66209a60808a8d330680db17fb37cf6a48f6cf3`
-
-All three complete installed s6 graphs compiled without starting services.
-The exact-image synthetic switch rehearsal passed: evolved radio files and full
-options survived candidate/baseline/candidate switches; OTBR-off recovery worked
-and OTBR-on recovery was refused. Five stub starts occurred; normal radio init
-was never executed. This does not prove real-radio downgrade compatibility.
-Candidate isolated runtime and browser acceptance passed as detailed below. No image was published or
-deployed. Local evidence is retained under `/tmp/otbr-local-build.1KZZGI`.
-The retained candidate passed the complete local runtime suite: real-kernel
-firewall and synthetic IPv4 forwarding/rejection/cleanup cases, s6 shutdown and
-NAT64 off/on/error/stall cases, passive Zigbee listener ownership, installed
-Bashio and native web behavior. The browser's four viewport/payload combinations,
-two encoder failures and hostile-input case passed twice with zero external
-requests, using frontend extracted from the exact candidate ID above. A test-only
-correction (`e34faa6`, integrated by `da8c52e`) invokes hostile data through the real
-QR click instead of calling Angular outside the UI event. The original harness
-timed out twice locally; product code and security assertions were unchanged.
-
-AArch64 job103697954802 failed compiling bundled mbedTLS ctr_drbg.c with GCC14.2,
--O2 and -Werror=array-bounds; it was not a timeout. Upstream mbedTLS commit
-292b96c0a69016a6d99ce324837a9e96d59e21f6 addresses this diagnostic. A focused
-before/after compile is pending before adopting that backport. ARMv7 remains
-running. Neither ARM architecture is accepted yet.
+After trial findings are resolved, ensure individual branches match the tested
+product changes, complete independent final review, and present the PR bundle for
+approval. No upstream submission, release publication or merge has occurred.
