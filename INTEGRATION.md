@@ -3,7 +3,7 @@
 ## Outcome and current gate
 
 Prepare separate upstream contributions and one combined candidate, preserving
-reliable Zigbee and Thread/Matter operation. AMD64 isolated acceptance passed for the retained pre-backport candidate; the corrected candidate is being rebuilt.
+reliable Zigbee and Thread/Matter operation. The corrected AMD64 candidate passed isolated acceptance; production acceptance remains pending.
 Production acceptance is pending; neither deployment nor upstream submission is
 authorized by this document. ARMv7 passed; AArch64 failed and requires resolution.
 
@@ -31,7 +31,7 @@ as a competing PR by default. Its audit workflow is external evidence, not yet a
 permanent upstream CI proposal. Integration-only packaging/recovery tooling does
 not belong in the individual product PRs.
 
-The assembled product source first passed at `0999946`. Integration `11bef36` now adds the verified mbedTLS backport, retaining the QR and DNS patches. New AMD64 and ARM acceptance is running for that changed product source. The QR head adds the UI-event test correction to earlier product head
+The assembled product source first passed at `0999946`. Integration `11bef36` now adds the verified mbedTLS backport, retaining the QR and DNS patches. New AMD64 isolated acceptance passed for that changed product source; full ARM verification is running. The QR head adds the UI-event test correction to earlier product head
 `4969de6`. Merge resolutions retained both QR/DNS Dockerfile patch installation
 steps and the full NAT64 documentation. SDK/CPC/firmware upgrades, TREL and unrelated
 radio-hang work remain deferred unless trial evidence makes them necessary.
@@ -42,7 +42,7 @@ radio-hang work remain deferred unless trial evidence makes them necessary.
 passed at `0999946ab0c826b59ee599194f6dff49269b7b38`. Its image was ephemeral;
 do not confuse that pass with an untested replacement artifact.
 
-A clean Linux checkout of `2d811ea0b59901570cd5bac64587de53510ac99c` subsequently
+A clean Linux checkout of `11bef3674d0b35e6db87ecf27e2834d894df9d01` subsequently
 built the retained local AMD64 image and passed immutable-image linkage inventory.
 Build records capture source revision, dirty/untracked state, copied-context hashes
 and Docker image identity. Helper `391bb7c56e01ef34ae5ae0b8cd259f31fdb7d6d0`
@@ -50,10 +50,10 @@ built the three retained wrappers:
 
 | Image | Docker configuration identity (not a registry digest) |
 | --- | --- |
-| Combined base | sha256:31b170b2faf9824990d0c582fadf14c9f62c4b593fe1ae07d0789fc763962156 |
-| Candidate | sha256:97f8753b3f04fc4da59dc732337d8df45971f5a8635711a5c6fd520240d66f09 |
-| Baseline | sha256:d9cf8a40c57f667d23052373e2b7f48d19b1965d6d71b657f0cd704d2cac6a46 |
-| Limited recovery | sha256:718431866692b4a06c59457ad66209a60808a8d330680db17fb37cf6a48f6cf3 |
+| Combined base | sha256:8a6bf28c97231f7c596f84a8dd8c78a43ff697f6e74705455f5f86b3f8c1619a |
+| Candidate | sha256:7a5746b91c872b4b8a9b5a9becd7697f1161e15dbe4d20d26190d9fc1b06a2c1 |
+| Baseline | sha256:a54a37aee7b6fb2d219b5e346725ae6d2f4972d0d9c4e1ef0bf4c33c99a46d4b |
+| Limited recovery | sha256:a4bc52f4e8dc826d5d38308b36cf1021ebcb55c05210944a00edeaba2f7d9686 |
 
 The exact candidate passed:
 - Complete installed s6 graph compilation for all three wrappers, without services.
@@ -65,12 +65,11 @@ The exact candidate passed:
   ownership; installed Bashio and native web failure handling.
 - Browser checks against extracted assets: four viewport/payload combinations,
   two encoder failures, hostile input retained as data and zero external requests.
-  Two runs passed after test-only correction `e34faa6` used the real QR click.
+  The corrected image passed using test-only correction `e34faa6` and the real QR click; two prior-image runs also passed.
   The earlier harness timed out twice when calling Angular outside the UI event;
   product code and security assertions were unchanged.
 
-Local evidence: `/tmp/otbr-local-build.1KZZGI` (build record, package identities,
-runtime log and browser-repeat log). Raw production logs/credentials are excluded.
+Local current evidence: `/tmp/otbr-local-build.NDQvDP` (build record, package identities, runtime.log and browser.log). Earlier-image evidence remains at `/tmp/otbr-local-build.1KZZGI`; its image is tagged `local/otbr-trial-candidate:pre-mbedtls-backport`. Raw production logs/credentials are excluded.
 The audit image contains one retained test-only mbedTLS config.py file.
 
 ## ARM work remaining
