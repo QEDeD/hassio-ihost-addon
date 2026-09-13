@@ -3,7 +3,7 @@
 ## Outcome and current gate
 
 Prepare separate upstream contributions and one combined candidate, preserving
-reliable Zigbee and Thread/Matter operation. AMD64 isolated acceptance passed.
+reliable Zigbee and Thread/Matter operation. AMD64 isolated acceptance passed for the retained pre-backport candidate; the corrected candidate is being rebuilt.
 Production acceptance is pending; neither deployment nor upstream submission is
 authorized by this document. ARMv7 passed; AArch64 failed and requires resolution.
 
@@ -19,7 +19,7 @@ The branch review found master only. Relevant open proposals were PR78 at
 | Firewall lifecycle | d16cfdf | Scoped setup/cleanup; prerequisite for NAT64 |
 | Passive Zigbee readiness | 9536ef0 | Require the owned listener without consuming TCP connections; independent |
 | Local QR generation | e34faa6 | Keep commissioning PSKd/EUI payload in the browser; independent |
-| Debian Trixie | fe47277 | Update distribution inputs and explicitly select Release; SDK/CPC fixed |
+| Debian Trixie | 7c3e607 | Update distribution inputs and explicitly select Release; SDK/CPC fixed |
 | NAT64/upstream DNS | 8cb2ff9 | Opt-in translation and DNS; stacked on firewall, disabled in baseline |
 | HA app terminology | 84fab10 | User-facing wording; preserve technical identifiers; merge last |
 
@@ -31,9 +31,7 @@ as a competing PR by default. Its audit workflow is external evidence, not yet a
 permanent upstream CI proposal. Integration-only packaging/recovery tooling does
 not belong in the individual product PRs.
 
-The assembled product source first passed at `0999946`. Later integration commits
-add audit/packaging evidence and a browser-test correction; product code remains
-unchanged. The QR head adds the UI-event test correction to earlier product head
+The assembled product source first passed at `0999946`. Integration `11bef36` now adds the verified mbedTLS backport, retaining the QR and DNS patches. New AMD64 and ARM acceptance is running for that changed product source. The QR head adds the UI-event test correction to earlier product head
 `4969de6`. Merge resolutions retained both QR/DNS Dockerfile patch installation
 steps and the full NAT64 documentation. SDK/CPC/firmware upgrades, TREL and unrelated
 radio-hang work remain deferred unless trial evidence makes them necessary.
@@ -81,7 +79,7 @@ The audit image contains one retained test-only mbedTLS config.py file.
 at `e28c7aa` completed with an AArch64 failure; ARMv7 passed its complete image build, installed linkage and isolated native web checks. AArch64 failed compiling bundled mbedTLS
 ctr_drbg.c with GCC14.2, -O2 and -Werror=array-bounds. It was not a timeout;
 final-image runtime checks were not reached. Upstream mbedTLS commit
-`292b96c0a69016a6d99ce324837a9e96d59e21f6` addresses this diagnostic. A focused ARM64 cross-compile reproduced the original failure and passed with this upstream backport, retaining -O2 and strict warnings. Integration and full-image verification of the correction remain pending. No ARM acceptance is inferred from AMD64 evidence.
+`292b96c0a69016a6d99ce324837a9e96d59e21f6` addresses this diagnostic. A focused ARM64 cross-compile reproduced the original failure and passed with this upstream backport, retaining -O2 and strict warnings. Integration completed at `11bef3674d0b35e6db87ecf27e2834d894df9d01`; full-image verification is running in ARM run34749205311 and the local AMD64 rebuild. No ARM acceptance is inferred from AMD64 evidence.
 The previously inspected armv7 vendor archive imports legacy `time`; this identifies
 a possible 2038 limitation, not a demonstrated ABI mismatch.
 
@@ -125,3 +123,9 @@ unresolved; synthetic packet tests do not replace this production requirement.
 After trial findings are resolved, ensure individual branches match the tested
 product changes, complete independent final review, and present the PR bundle for
 approval. No upstream submission, release publication or merge has occurred.
+
+Clean Trixie contribution `7c3e6076e5f84995ac8b881aea4b4f12855a1e10` contains only
+Dockerfile, build.yaml and the attributed mbedTLS patch. Parent verified all three
+files are byte-identical to investigation `c46ddf9`, which integration `11bef36`
+merges. Audit history remains external evidence. The separate branch preserves
+atomic PR79, Release and mbedTLS-backport changes and is pushed for review.
