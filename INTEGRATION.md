@@ -169,5 +169,20 @@ The exact-image synthetic switch rehearsal passed: evolved radio files and full
 options survived candidate/baseline/candidate switches; OTBR-off recovery worked
 and OTBR-on recovery was refused. Five stub starts occurred; normal radio init
 was never executed. This does not prove real-radio downgrade compatibility.
-Candidate runtime/browser acceptance remains pending. No image was published or
+Candidate isolated runtime and browser acceptance passed as detailed below. No image was published or
 deployed. Local evidence is retained under `/tmp/otbr-local-build.1KZZGI`.
+The retained candidate passed the complete local runtime suite: real-kernel
+firewall and synthetic IPv4 forwarding/rejection/cleanup cases, s6 shutdown and
+NAT64 off/on/error/stall cases, passive Zigbee listener ownership, installed
+Bashio and native web behavior. The browser's four viewport/payload combinations,
+two encoder failures and hostile-input case passed twice with zero external
+requests, using frontend extracted from the exact candidate ID above. A test-only
+correction (`e34faa6`, integrated by `da8c52e`) invokes hostile data through the real
+QR click instead of calling Angular outside the UI event. The original harness
+timed out twice locally; product code and security assertions were unchanged.
+
+AArch64 job103697954802 failed compiling bundled mbedTLS ctr_drbg.c with GCC14.2,
+-O2 and -Werror=array-bounds; it was not a timeout. Upstream mbedTLS commit
+292b96c0a69016a6d99ce324837a9e96d59e21f6 addresses this diagnostic. A focused
+before/after compile is pending before adopting that backport. ARMv7 remains
+running. Neither ARM architecture is accepted yet.
