@@ -5,7 +5,7 @@
 Prepare separate upstream contributions and one combined candidate, preserving
 reliable Zigbee and Thread/Matter operation. The corrected AMD64 candidate passed isolated acceptance; production acceptance remains pending.
 Production acceptance is pending; neither deployment nor upstream submission is
-authorized by this document. ARMv7 passed; AArch64 failed and requires resolution.
+authorized by this document. Corrected AArch64 and ARMv7 build/runtime checks passed; see acceptance update below.
 
 ## Source and proposed merge order
 
@@ -31,7 +31,7 @@ as a competing PR by default. Its audit workflow is external evidence, not yet a
 permanent upstream CI proposal. Integration-only packaging/recovery tooling does
 not belong in the individual product PRs.
 
-The assembled product source first passed at `0999946`. Integration `11bef36` now adds the verified mbedTLS backport, retaining the QR and DNS patches. New AMD64 isolated acceptance passed for that changed product source; full ARM verification is running. The QR head adds the UI-event test correction to earlier product head
+The assembled product source first passed at `0999946`. Integration `11bef36` now adds the verified mbedTLS backport, retaining the QR and DNS patches. New AMD64 isolated acceptance passed for that changed product source; full ARM verification passed in run 34749205311. The QR head adds the UI-event test correction to earlier product head
 `4969de6`. Merge resolutions retained both QR/DNS Dockerfile patch installation
 steps and the full NAT64 documentation. SDK/CPC/firmware upgrades, TREL and unrelated
 radio-hang work remain deferred unless trial evidence makes them necessary.
@@ -72,13 +72,13 @@ The exact candidate passed:
 Local current evidence: `/tmp/otbr-local-build.NDQvDP` (build record, package identities, runtime.log and browser.log). Earlier-image evidence remains at `/tmp/otbr-local-build.1KZZGI`; its image is tagged `local/otbr-trial-candidate:pre-mbedtls-backport`. Raw production logs/credentials are excluded.
 The audit image contains one retained test-only mbedTLS config.py file.
 
-## ARM work remaining
+## ARM verification
 
 [ARM run34747479789](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34747479789)
 at `e28c7aa` completed with an AArch64 failure; ARMv7 passed its complete image build, installed linkage and isolated native web checks. AArch64 failed compiling bundled mbedTLS
 ctr_drbg.c with GCC14.2, -O2 and -Werror=array-bounds. It was not a timeout;
 final-image runtime checks were not reached. Upstream mbedTLS commit
-`292b96c0a69016a6d99ce324837a9e96d59e21f6` addresses this diagnostic. A focused ARM64 cross-compile reproduced the original failure and passed with this upstream backport, retaining -O2 and strict warnings. Integration completed at `11bef3674d0b35e6db87ecf27e2834d894df9d01`; full-image verification is running in ARM run34749205311 and the local AMD64 rebuild. No ARM acceptance is inferred from AMD64 evidence.
+`292b96c0a69016a6d99ce324837a9e96d59e21f6` addresses this diagnostic. A focused ARM64 cross-compile reproduced the original failure and passed with this upstream backport, retaining -O2 and strict warnings. Integration completed at `11bef3674d0b35e6db87ecf27e2834d894df9d01`; full-image verification passed in ARM run34749205311 and the local AMD64 rebuild. No ARM acceptance is inferred from AMD64 evidence.
 The previously inspected armv7 vendor archive imports legacy `time`; this identifies
 a possible 2038 limitation, not a demonstrated ABI mismatch.
 
@@ -108,7 +108,7 @@ versions and synthetic continuity reduce uncertainty but do not prove real-radio
 downgrade safety. Explain that residual risk in the particular cutover approval;
 do not claim guaranteed recovery or restore an obsolete volume/VM snapshot.
 
-## Proposed production acceptance — approval required
+## Approved production acceptance — paused after stop error
 
 Capture representative fresh Zigbee and ALPSTUGA Matter reports before the change.
 With NAT64 disabled, stop the dependent Zigbee client and app, update, restart in
@@ -139,7 +139,7 @@ Independent source review of the six final contributions and integration found
 no material product defects. It checked lifecycle/readiness, NAT64 error gating,
 QR generation, Trixie patch boundaries and relevant test assertions. No additional
 code change was requested. This was a read-only source review, not an independent
-rerun of image tests. Full corrected ARM and production acceptance remain gates;
+rerun of image tests. Corrected ARM checks have passed; production acceptance remains a gate;
 firewall ownership assumes the documented single-OTBR deployment.
 Publication evidence is retained in `publication-evidence-20260913.json` in the
 local OTBR workspace. Candidate platform manifest:
@@ -148,7 +148,7 @@ baseline: `sha256:621c209d7226ed8f3b093b82a1440e63b9f241d384ba8710ec46b5c46d55a8
 recovery: `sha256:a8d614a4260b0b9c660a0e91422ed8054f153db69f4c3251eef247c4b1985fd9`.
 The version tags' OCI index digests are the wrapper identities in the table above.
 The operator completed the visibility change. An anonymous registry-token request (no Docker/GitHub credentials) verified manifest hashes, version/type/architecture labels and HEAD access to all 35 distinct required layer blobs. This establishes registry availability; HA-side download/start is still pending.
-Production cutover remains separately reserved for approval.
+The operator approved the described trial; it stopped at the shutdown preflight gate. No candidate has been installed.
 ## Acceptance update — 2026-09-13
 
 Corrected ARM run [34749205311](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34749205311)
@@ -169,6 +169,6 @@ OTBR and mDNS stop concurrently because OTBR lacks an explicit dependency on
 mDNS, although its build selects mDNSResponder. This is a justified ordering
 concern, not yet a proven source of SIGPIPE. An isolated test using the candidate's
 real libdns_sd (create connection, stop daemon, deallocate or register on the
-existing connection) did not reproduce SIGPIPE. Do not blanket-ignore exit 141.
+existing connection, including removing a registered synthetic AAAA record) did not reproduce SIGPIPE. Do not blanket-ignore exit 141.
 Production acceptance remains blocked pending targeted shutdown investigation;
 NAT64 consumer/testing and final bundle acceptance remain outstanding.
