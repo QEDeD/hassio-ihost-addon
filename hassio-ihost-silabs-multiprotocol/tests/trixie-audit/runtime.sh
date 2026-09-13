@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-[[ ${GITHUB_ACTIONS:-} == true && ${RUNNER_ENVIRONMENT:-} == github-hosted ]]
+[[ ${AUDIT_LOCAL_DOCKER:-} == 1 || ( ${GITHUB_ACTIONS:-} == true && ${RUNNER_ENVIRONMENT:-} == github-hosted ) ]]
 audit_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 # Only disposable fixture copies change. Production source and image are untouched.
 # shellcheck source=inputs.sh
@@ -11,7 +11,7 @@ case "${AUDIT_FIXTURE_SOURCE:-pinned}" in
         addon="$(cd "$audit_dir/../.." && pwd)"
         cp -a "$addon" "$fixture/nat64"
         cp -a "$addon" "$fixture/readiness"
-        printf 'FIXTURE_SOURCE=current checkout %s\n' "${GITHUB_SHA:?}"
+        printf 'FIXTURE_SOURCE=current checkout %s\n' "${AUDIT_SOURCE_REVISION:-${GITHUB_SHA:?}}"
         ;;
     pinned)
         cp -a audit-fixtures-nat64/hassio-ihost-silabs-multiprotocol "$fixture/nat64"

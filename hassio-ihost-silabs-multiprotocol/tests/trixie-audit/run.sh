@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
-[[ ${GITHUB_ACTIONS:-} == true && ${RUNNER_ENVIRONMENT:-} == github-hosted ]] || {
-    echo 'Use only a disposable GitHub-hosted runner.' >&2; exit 1;
+[[ ${AUDIT_LOCAL_DOCKER:-} == 1 || ( ${GITHUB_ACTIONS:-} == true && ${RUNNER_ENVIRONMENT:-} == github-hosted ) ]] || {
+    echo 'Use a disposable GitHub-hosted runner or explicitly opt in with AUDIT_LOCAL_DOCKER=1.' >&2; exit 1;
 }
 audit_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 addon="$(cd "$audit_dir/../.." && pwd)"
@@ -13,7 +13,7 @@ inventory() {
     [[ "$label" != release ]] || required=1
     printf 'IMAGE_BEGIN %s %s\n' "$label" "$image"
     timeout 300s docker pull --platform linux/amd64 "$image" || return
-    docker image inspect --format '{{.Id}} {{.Architecture}} {{json .RepoDigests}} {{json .Config.Labels}}' "$image" || return
+    docker image inspect --format '{{.Id}} {{.Architecture}} {{json .RepoDigests}} {{json .Config}}' "$image" || return
     timeout 120s docker run --rm -i --network none --read-only --cap-drop ALL \
         --security-opt no-new-privileges --pids-limit 128 \
         --env "AUDIT_REQUIRE_APPLICATIONS=$required" --entrypoint /bin/bash "$image" < "$audit_dir/inventory.sh" || return
@@ -57,7 +57,7 @@ if (( result != 0 )); then
     exit "$result"
 fi
 printf 'BUILD_RESULT: complete AMD64 image built; inspecting without starting services\n'
-docker image inspect --format '{{.Id}} {{.Architecture}} {{json .Config.Labels}}' local/ihost-trixie-audit
+docker image inspect --format '{{.Id}} {{.Architecture}} {{json .Config}}' local/ihost-trixie-audit
 timeout 120s docker run --rm -i --network none --read-only --cap-drop ALL \
     --security-opt no-new-privileges --pids-limit 128 --env AUDIT_REQUIRE_APPLICATIONS=1 --entrypoint /bin/bash \
     local/ihost-trixie-audit < "$audit_dir/inventory.sh"
