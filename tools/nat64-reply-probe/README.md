@@ -1,7 +1,8 @@
 # NAT64 reply probe: test preparation
 
-Status: packet preparation and Linux sender validated locally. No production
-packets sent by this preparation. Not yet a ready-to-run production procedure.
+Status: ordinary IPv6 control passed against the authorized Thread plug. NAT64
+was not enabled. The Windows Python collector is blocked by existing inbound
+firewall rules; the translated test is not yet ready to execute.
 Keep these tools on the integration branch; they are not app functionality.
 
 ## Purpose
@@ -109,6 +110,42 @@ Local checks on 2026-09-13:
 container with external networking disabled. Do not commit generated packets,
 raw production captures, inventories or credentials.
 
-Still required before live execution: reachable collector and direct-IPv6 return
-path, capture placement, same-socket acknowledgement handling, current plug
-endpoint confirmation, and concrete approval for candidate/NAT64 activation.
+Still required before the NAT64 trial: resolve the collector's explicit Windows
+firewall block with operator involvement, finalize narrow mapping/capture
+evidence, and obtain concrete approval for candidate/NAT64 activation.
+## Ordinary IPv6 control result, 2026-09-13
+
+A single Sigma1 sent from the HA access app to the authorized GRILLPLATS plug
+received a correlated standalone ACK followed by NoSharedTrustRoots. The control
+sender acknowledged the rejection on the same UDP socket and was removed.
+No switch command, fabric change, NAT64 enablement or app restart occurred.
+Afterward all four Matter nodes were available, the tested plug remained off,
+and the baseline multiprotocol, Zigbee2MQTT and Matter apps were running.
+These observations do not constitute a new extended reliability test.
+
+`control6.c` implements this one-shot control on UDP 5540. Before its live use,
+an isolated mock responder verified the correlated rejection and acknowledgement,
+and rejection of Busy and wrong-identity replies. Matter.js independently decoded
+the generated acknowledgement. The observed live rejection confirms the endpoint
+responded on this port; availability alone was not used as proof of that endpoint.
+
+`collector.py` reuses the offline reply validator, limits the run to 30 seconds
+and eight received datagrams, acknowledges correlated rejections, and sends one
+fresh second Sigma1 through the observed IPv4 source tuple. A Windows loopback
+mock verified both acknowledgements, the second request and socket continuity.
+Generate fresh packets: message counters now reserve room for acknowledgements.
+
+A PowerShell listener successfully exchanged one UDP nonce with HA on the intended
+collector port. The actual bundled Python executable did not receive its separate
+probe. Read-only inspection found two enabled inbound Block rules for that exact
+Python executable. No rules were changed; administrative privileges are absent.
+Therefore the PowerShell result must not be reported as Python collector readiness.
+
+Example collector invocation after resolving that gate (replace placeholders):
+
+```
+python collector.py --bind COLLECTOR_IPV4 --port 55439 --expected-source HA_IPV4 --packets FRESH_PACKET_DIRECTORY --evidence NEW_PRIVATE_EVIDENCE_DIRECTORY
+```
+
+Do not launch this collector as part of the ordinary IPv6 control: its second
+request is specifically intended for the approved NAT64 translation test.

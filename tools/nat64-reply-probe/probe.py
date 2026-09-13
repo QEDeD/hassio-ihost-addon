@@ -16,7 +16,7 @@ def build(out):
     from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
     out.mkdir(parents=True, exist_ok=False)
     source = secrets.randbits(64) or 1
-    base_counter = secrets.randbelow(0xFFFFFFFD)
+    base_counter = secrets.randbelow(0xFFFFFF00)
     exchanges = secrets.SystemRandom().sample(range(1, 65536), 2)
     manifest = {'source_node': str(source), 'probes': []}
     for index, exchange in enumerate(exchanges, 1):
@@ -28,7 +28,7 @@ def build(out):
                + b'\x25\x02' + struct.pack('<H', session)
                + b'\x30\x03\x20' + secrets.token_bytes(32)
                + b'\x30\x04\x41' + key + b'\x18')
-        counter = base_counter + index
+        counter = base_counter + 32 * index
         # SourceNodeID only; unencrypted session 0. Initiator + reliable request.
         packet = struct.pack('<BHBIQ', 4, 0, 0, counter, source)
         packet += struct.pack('<BBHH', 5, 0x30, exchange, 0) + tlv
@@ -75,9 +75,7 @@ def decode(packet):
     return result
 
 
-def inspect(path, manifest_path):
-    result = decode(path.read_bytes())
-    manifest = json.loads(manifest_path.read_text())
+def correlate(result, manifest):
     probe = next((p for p in manifest['probes'] if p['exchange'] == result['exchange']), None)
     if not probe or result['protocol'] != 0 or result['initiator']:
         raise ValueError('Uncorrelated exchange/protocol/direction')
@@ -95,6 +93,11 @@ def inspect(path, manifest_path):
         result['evidence'] = 'correlated NoSharedTrustRoots rejection'
     else:
         raise ValueError('Unexpected reply; stop and inspect')
+    return result
+
+
+def inspect(path, manifest_path):
+    result = correlate(decode(path.read_bytes()), json.loads(manifest_path.read_text()))
     print(json.dumps(result, indent=2))
 
 
