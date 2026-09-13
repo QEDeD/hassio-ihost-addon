@@ -44,6 +44,8 @@ Keep synthetic tests distinct from actual production behavior.
 
 ## AngularJS disposition
 
+The [detailed source/advisory assessment](followup-evidence/frontend-assessment.md)
+records the exact inputs, tests and individual advisory dispositions.
 The exact locked dependency tree has ten recorded Angular advisory entries,
 reported through Angular and Material. Bounded source tracing found no demonstrated
 applicable trigger in the reviewed app paths. This does not prove non-exploitability.
