@@ -41,7 +41,7 @@ and the full NAT64 documentation. Individual contribution branches are unchanged
    behavior, obtain independent final review, and present the complete PR bundle.
 
 ## Evidence limitations
-No integrated build or production acceptance is yet claimed. Earlier individual
+Combined AMD64 isolated validation passed as recorded below; production acceptance remains pending. Earlier individual
 CI runs are evidence for their specified commits/environments only. Synthetic
 fixtures substitute services and do not prove real-radio startup. The QR browser
 fixture verifies installed assets with synthetic endpoint data. Virtual-radio
@@ -54,8 +54,7 @@ VM snapshot. Raw live logs and credentials remain private and outside this branc
 
 At source0999946, local merged firewall/NAT64 lifecycle and all five pool tests
 passed. Separate firewall run34747387027 and QR run34747387037 passed; these
-retain their documented fixture boundaries. Combined AMD64 run34747387036 is
-pending. ARM run34747479789 uses e28c7aa: product source is identical, with only
+retain their documented fixture boundaries. Combined AMD64 run34747387036 passed. ARM run34747479789 uses e28c7aa: product source is identical, with only
 ARM build timeout changed from1200 to2700 seconds (job bound85 minutes).
 Do not restart either run simply because log observation is unchanged.
 
