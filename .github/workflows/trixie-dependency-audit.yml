@@ -1,6 +1,11 @@
 name: Isolated Trixie and integrated AMD64 audit
 on:
   workflow_dispatch:
+    inputs:
+      prepare_trial:
+        description: Build guarded trial/baseline/recovery images and retain tested artifacts
+        type: boolean
+        default: false
   push:
     branches: [codex/trixie-dependency-audit-20260912, codex/otbr-integrated-20260913]
     paths:
@@ -27,9 +32,14 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
+      - name: Require integration source for trial packaging
+        if: inputs.prepare_trial
+        run: test "$AUDIT_FIXTURE_SOURCE" = current
       - name: Inventory pinned images and build complete AMD64 checkout
         shell: bash
         run: |
+          export AUDIT_BUILD_RECORD="$RUNNER_TEMP/trixie-build-record"
+          printf 'AUDIT_BUILD_RECORD=%s\n' "$AUDIT_BUILD_RECORD" >> "$GITHUB_ENV"
           audit=hassio-ihost-silabs-multiprotocol/tests/trixie-audit
           bash -n "$audit/run.sh"
           bash -n "$audit/inventory.sh"
@@ -37,6 +47,22 @@ jobs:
           shellcheck -x -P SCRIPTDIR "$audit/run.sh" "$audit/inventory.sh" "$audit/runtime.sh"
           python3 -m py_compile "$audit/prepare.py"
           bash "$audit/run.sh"
+      - name: Obtain reviewed local trial packaging helper
+        if: inputs.prepare_trial
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          repository: QEDeD/hassio-ihost-addon
+          ref: 391bb7c56e01ef34ae5ae0b8cd259f31fdb7d6d0
+          path: audit-trial-helper
+          persist-credentials: false
+      - name: Package exact images and rehearse synthetic state continuity
+        if: inputs.prepare_trial
+        timeout-minutes: 12
+        run: |
+          script=hassio-ihost-silabs-multiprotocol/tests/trial-package/prepare.sh
+          bash -n "$script"
+          shellcheck "$script"
+          bash "$script" audit-trial-helper/hassio-ihost-silabs-multiprotocol/tools/local-service
       - name: Obtain pinned NAT64 and firewall regression fixtures
         if: env.AUDIT_FIXTURE_SOURCE == 'pinned'
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
@@ -89,3 +115,23 @@ jobs:
           curl --fail --silent http://127.0.0.1:18764/ >/dev/null
           "$cli" -s=qr-ci open http://127.0.0.1:18764 --browser chrome
           "$cli" -s=qr-ci run-code --filename tests/qr/browser-check.js
+      - name: Export only successfully tested images and package metadata
+        if: inputs.prepare_trial
+        timeout-minutes: 8
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/otbr-trial-package"
+          timeout --kill-after=10s 360s docker save local/otbr-trial-candidate:ci \
+            local/otbr-trial-baseline:ci local/otbr-trial-recovery:ci | gzip -1 > "$output/images.tar.gz"
+          cd "$output"
+          sha256sum images.tar.gz > images.tar.gz.sha256
+      - name: Retain trial artifacts without publishing a release
+        if: inputs.prepare_trial
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: otbr-trial-${{ github.sha }}
+          path: ${{ runner.temp }}/otbr-trial-package/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
