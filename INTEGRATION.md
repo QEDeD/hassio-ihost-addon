@@ -172,3 +172,25 @@ real libdns_sd (create connection, stop daemon, deallocate or register on the
 existing connection, including removing a registered synthetic AAAA record) did not reproduce SIGPIPE. Do not blanket-ignore exit 141.
 Production acceptance remains blocked pending targeted shutdown investigation;
 NAT64 consumer/testing and final bundle acceptance remain outstanding.
+## Ordered replacement candidate — local acceptance
+
+Integration `aca557b6eb851af109a2708f55b5b2668314818f` and firewall contribution
+`60d3334` add the mDNS dependency and shutdown-order regression. Independent
+review found no material findings. Real s6 positive case exits 0 after client
+cleanup; removing only the edge in the negative control gives exit 42. Existing
+failure/cleanup timeout scenarios retain exit 23. This does not establish the
+source of production SIGPIPE.
+
+Local build `/tmp/otbr-local-build.XYn1ut` completed successfully. Candidate
+version `0.2.3-ordered`, immutable local image identity
+`sha256:0224cb183592e0e83aac35ce9ed6f350654537b73b73c03b0ebb74a1f972b107`,
+passed installed linkage, full packaged s6 graph compilation, evolving synthetic
+state/options preservation against the exact published baseline/recovery images,
+and the complete isolated runtime suite including the new shutdown-order case.
+Browser checks on extracted candidate assets passed four viewport/payload cases,
+two encoder failures and hostile-input handling with zero external requests.
+The original baseline/recovery images remain the intended fallback artifacts;
+newly generated local fallback wrappers are not replacements for published tags.
+This candidate has not been published or installed. Production acceptance and
+separate NAT64 consumer testing remain incomplete. The previous ARM acceptance
+covers the same compiled software; the added graph edge is tested here on AMD64.
