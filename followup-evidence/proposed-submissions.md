@@ -1,4 +1,4 @@
-# Proposed follow-up submissions — local drafts only
+# Proposed follow-up submissions - local drafts only
 
 These proposals supplement the original six contributions. They have not been
 pushed or submitted. Keep the PR79 coordination route; offer the build-input

@@ -1,4 +1,4 @@
-# Reconciled contribution package â€” 2026-09-13
+# Reconciled contribution package — 2026-09-13
 
 ## Outcome and current authority
 
