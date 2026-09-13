@@ -118,6 +118,7 @@ COPY otbr-patches/0001-Avoid-writing-to-system-console.patch /usr/src
 COPY otbr-patches/0001-rest-support-deleting-the-dataset.patch /usr/src
 COPY otbr-patches/0001-Route-host-upstream-DNS-through-host-routing.patch /usr/src
 COPY otbr-patches/0001-web-generate-commissioning-qr-locally.patch /usr/src
+COPY otbr-patches/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch /usr/src
 COPY zigbeed-patches/zigbeed_amd64.patch /usr/src/gecko_sdk/zigbeed_amd64.patch
 
 RUN \
@@ -127,6 +128,7 @@ RUN \
     && patch -p1 < /usr/src/0001-rest-support-deleting-the-dataset.patch \
     && patch -p1 < /usr/src/0001-Route-host-upstream-DNS-through-host-routing.patch \
     && patch -p1 < /usr/src/0001-web-generate-commissioning-qr-locally.patch \
+    && patch -p1 < /usr/src/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch \
     && if [ "${DEBIAN_ARCH}" = "amd64" ]; then \
         patch -p1 < zigbeed_amd64.patch; \
         fi \
