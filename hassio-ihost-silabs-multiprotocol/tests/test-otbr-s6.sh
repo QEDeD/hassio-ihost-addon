@@ -22,7 +22,7 @@ fail()
 # A build timeout also bounds a failed registry request.
 timeout 300s docker build --file "${TEST_DIR}/s6/Dockerfile" \
     --tag "${IMAGE}" "${ADDON_DIR}"
-for scenario in failure bounded-stall finish-timeout; do
+for scenario in failure bounded-stall finish-timeout shutdown-order; do
     container="otbr-s6-test-$$-${scenario}"
     log="${EVIDENCE_DIR}/${scenario}.log"
     # Only process/identity capabilities needed by init; no NET_ADMIN/NET_RAW,
@@ -33,6 +33,13 @@ for scenario in failure bounded-stall finish-timeout; do
         --cap-add SETGID --cap-add SETUID --cap-add KILL \
         --security-opt no-new-privileges --pids-limit 128 \
         --env "OTBR_S6_CASE=${scenario}" "${IMAGE}" >/dev/null
+    if [[ "${scenario}" == shutdown-order ]]; then
+        timeout 10s docker exec "${container}" sh -c \
+            'until test -f /run/s6-test-client-ready; do sleep 0.1; done' \
+            || fail "${scenario}: client did not become ready"
+        timeout 15s docker stop --time 10 "${container}" >/dev/null \
+            || fail "${scenario}: ordered shutdown timed out"
+    fi
     started_seconds=${SECONDS}
     wait_status=0
     timeout 35s docker wait "${container}" \
@@ -43,11 +50,20 @@ for scenario in failure bounded-stall finish-timeout; do
         > "${EVIDENCE_DIR}/${scenario}.inspect.json" || true
     cat "${log}"
     (( wait_status == 0 )) || fail "${scenario}: container did not stop within 35 seconds"
-    [[ "$(cat "${EVIDENCE_DIR}/${scenario}.exitcode")" == 23 ]] \
+    expected_exit=23
+    if [[ "${scenario}" == shutdown-order ]]; then expected_exit=0; fi
+    [[ "$(cat "${EVIDENCE_DIR}/${scenario}.exitcode")" == "${expected_exit}" ]] \
         || fail "${scenario}: original daemon exit code was not preserved"
     [[ "$(grep -c '^S6_TEST_DAEMON_START$' "${log}" || true)" == 1 ]] \
         || fail "${scenario}: daemon did not start exactly once"
-    if [[ "${scenario}" == finish-timeout ]]; then
+    if [[ "${scenario}" == shutdown-order ]]; then
+        client_line=$(grep -n '^S6_TEST_CLIENT_STOP_COMPLETE$' "${log}" | cut -d: -f1 || true)
+        server_line=$(grep -n '^S6_TEST_MDNS_STOP$' "${log}" | cut -d: -f1 || true)
+        [[ -n "${client_line}" && -n "${server_line}" ]] \
+            || fail "${scenario}: missing shutdown completion markers"
+        (( client_line < server_line )) \
+            || fail "${scenario}: mDNS stopped before its client completed"
+    elif [[ "${scenario}" == finish-timeout ]]; then
         (( elapsed_seconds >= 9 )) || fail "${scenario}: shutdown preceded the 10-second finish timeout"
         grep -q '^S6_TEST_FORCED_FINISH_TIMEOUT status=23$' "${log}" \
             || fail "${scenario}: stalled cleanup did not observe persisted exit status"
