@@ -60,8 +60,8 @@ and locking patches. Detailed integration status is in ../FOLLOWUP.md.
 
 ## Proposed production validation (not authorized or performed)
 
-Because network-response handling changes startup behavior, an optional approved
-follow-up trial should verify the real valid response path, normal start and one
+Because network-response handling changes startup behavior, the recommended
+approved validation before adopting the new image should verify the real valid response path, normal start and one
 controlled restart, then fresh representative Zigbee reads and changing Matter
 reports over a ten-minute observation window. Keep NAT64 off and existing network
 state intact. Do not deliberately corrupt Supervisor responses on production;

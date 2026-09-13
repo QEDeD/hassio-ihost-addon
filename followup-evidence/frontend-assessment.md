@@ -95,3 +95,25 @@ AngularJS package advisories is an acceptance requirement, select a maintained
 replacement or separately review a maintained patched distribution with its
 licensing and compatibility implications. That is a separate material dependency
 migration decision, outside this bounded locking change. No zero-risk claim.
+## Actual Node12 compatibility follow-up
+
+2026-09-13: PASS with Node12.22.12 and npm7.5.2. Node was installed only into
+/tmp/otbr-frontend-inputs-20260913/node12-tools using the existing scratch npm9
+installer. The complete check-lock.py suite passed: unchanged source inputs,
+lock-only rebuild, manifest mismatch failure, corrupt/missing lock failure,
+restored clean install, and matching dependency asset hashes. Process exit 0.
+
+Exact command (WSL, with scratch absolute paths):
+
+```sh
+export PATH=/tmp/otbr-frontend-inputs-20260913/node12-tools/node_modules/.bin:/tmp/otbr-frontend-inputs-20260913/tools/cmake/data/bin:/tmp/otbr-frontend-inputs-20260913/tools/bin:/tmp/otbr-frontend-inputs-20260913/npm7-tools/node_modules/.bin:/home/wsluser/.local/bin:/usr/bin:/bin
+export PYTHONPATH=/tmp/otbr-frontend-inputs-20260913/tools
+node --version # v12.22.12
+npm --version # 7.5.2
+python3 /mnt/c/Users/Kristoffer/Git/otbr/frontend-inputs/tests/qr/check-lock.py /tmp/otbr-frontend-inputs-20260913/locked
+```
+
+This closes the Node12/npm7 lock-tool compatibility gap noted above. It does not
+claim a full Bullseye image build: CMake3.31.6/Ninja1.13.0 still came from existing
+scratch tooling on WSL. No product files, commits, remote state or production
+changed in this follow-up.
