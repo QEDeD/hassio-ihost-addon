@@ -214,3 +214,13 @@ Internal translator mappings and per-rule counters are optional diagnostics if
 needed to explain a failure, not prerequisites for that limited behavioral claim.
 Do not claim individual rule coverage, DNS64, TCP or general Internet reachability
 from this test. Existing isolated firewall evidence remains separately identified.
+
+
+Pre-cutover refresh: upstream still exposes only master at 5a8d7dec; open PR78
+and PR79 retain the heads recorded above. PR92 remains closed and unmerged.
+All six contribution heads match their published remote branches. A focused
+independent read-only review of the probe code and this approval procedure found
+no material issues in correlation, bounded traffic, same-socket reverse delivery,
+negative-control interpretation or current-data recovery. The reviewer did not
+rerun tests; this is design/source review, not NAT64 production acceptance.
+Cutover approval remains pending; no deployment followed this review.
