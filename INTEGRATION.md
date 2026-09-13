@@ -50,3 +50,41 @@ The radio-hang investigation is parked unless recurrence affects this trial.
 
 Production recovery must not rely on the obsolete original app volume or an old
 VM snapshot. Raw live logs and credentials remain private and outside this branch.
+## Execution status and trial recovery review
+
+At source0999946, local merged firewall/NAT64 lifecycle and all five pool tests
+passed. Separate firewall run34747387027 and QR run34747387037 passed; these
+retain their documented fixture boundaries. Combined AMD64 run34747387036 is
+pending. ARM run34747479789 uses e28c7aa: product source is identical, with only
+ARM build timeout changed from1200 to2700 seconds (job bound85 minutes).
+Do not restart either run simply because log observation is unchanged.
+
+Read-only independent review of the existing local-service packaging found:
+- Keep the same local app slug, source directory, full options and evolving /data;
+  no new app or seed import. Use a distinct-version stopped-app update.
+- Existing make_context.py pins the old release plus exactly five overlay files.
+  It cannot package the integrated image unchanged; preserve those identity
+  safeguards and extend packaging narrowly for the verified combined artifact.
+- Retain the local state guard, start/provenance markers and disabled automatic
+  discovery. Both candidate and recovery schemas must preserve all existing
+  local options and accept otbr_nat64, explicitly false for the initial trial.
+- Adapt the existing synthetic same-volume image-switch check to exact candidate
+  and recovery images. It must preserve evolving files/nondefault options.
+  Stub-init success is not physical-radio or counter-compatibility evidence.
+- Existing recovery enforces OTBR off and restores released Zigbee binaries.
+  This is a limited Zigbee recovery route, NOT verified full Thread/Matter rollback.
+  Resolve the operational rollback scope before cutover approval; do not silently
+  substitute Zigbee-only recovery for preservation of both services.
+- Generic Supervisor stopped-update/options-persistence evidence already exists;
+  reuse it. Verify the actual packaged images and availability on HA, current full
+  options, fresh stopped-state backup and exact installed image/version at cutover.
+- Keep current state even after trial failure. Never restore the stale original
+  app volume or pre-commissioning snapshot. The state guard checks file safety,
+  not semantic integrity or monotonic counters. Fixed SDK/CPC versions reduce
+  compatibility uncertainty but do not prove downgrade safety.
+
+Before asking for approval, specify the interruption window, exact candidate,
+state-preserving recovery actions, normal-operation acceptance, controlled restart
+if included, and whether a passing candidate remains running. NAT64 enablement
+is a separate test; production deployment and firmware/reset actions are not
+implied by this preparation record.
