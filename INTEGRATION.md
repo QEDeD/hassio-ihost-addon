@@ -96,7 +96,7 @@ from store metadata containing `image`, preserving the local app identifier/data
 Tags match versions: `0.2.0-integrated`, `0.2.1-baseline`, `0.2.2-recovery`.
 Prepared local metadata is under `/tmp/otbr-local-build.NDQvDP/delivery-configs`.
 All three differ only by `image`; independently checked. Actual wrapper labels
-match their versions, type=app and arch=amd64. Publication was approved and all three wrapper tags were uploaded; GitHub currently marks the package private, so anonymous HA pulling remains blocked until visibility changes.
+match their versions, type=app and arch=amd64. Publication was approved and all three wrapper tags were uploaded; GitHub now reports public visibility. Anonymous registry access verified all three index/platform/config manifests, matching labels and all 35 distinct required layers.
 Registry inspection verified each published OCI index digest equals the corresponding tested local image ID and contains exactly one Linux AMD64 platform manifest. These Docker IDs represent OCI indexes in this store, not image-configuration blobs. Do not retag. Supervisor's config uses version
 tags rather than accepting a digest in the image field. No build on HA is needed.
 Prove the actual candidate and recovery images are available before cutover.
@@ -147,6 +147,5 @@ local OTBR workspace. Candidate platform manifest:
 baseline: `sha256:621c209d7226ed8f3b093b82a1440e63b9f241d384ba8710ec46b5c46d55a891`;
 recovery: `sha256:a8d614a4260b0b9c660a0e91422ed8054f153db69f4c3251eef247c4b1985fd9`.
 The version tags' OCI index digests are the wrapper identities in the table above.
-Public visibility and anonymous pull verification are still pending. Browser
-control failed locally, so the package settings visibility step needs the operator.
+The operator completed the visibility change. An anonymous registry-token request (no Docker/GitHub credentials) verified manifest hashes, version/type/architecture labels and HEAD access to all 35 distinct required layer blobs. This establishes registry availability; HA-side download/start is still pending.
 Production cutover remains separately reserved for approval.
