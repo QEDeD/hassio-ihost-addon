@@ -12,9 +12,13 @@ in the inspected retained directories: generated candidate resolution was accept
 only after that asset comparison. This is asset equivalence, not independent
 verification of the old npm metadata or a new full native/container build.
 
-A proportionate current upstream check found OpenThread main still copies only
-package.json and runs npm install. No suitable existing locking fix was found in
-that checked file. https://raw.githubusercontent.com/openthread/ot-br-posix/main/src/web/web-service/frontend/CMakeLists.txt
+Correction from exact-ref reconciliation: current OpenThread de6cc213 already
+copies package.json and the v3 lock following LJspice's PR3449 (ccabba096).
+It still runs npm install. The earlier raw-page-based claim that current main
+copied only the manifest was stale. The local contribution remains useful for
+strict npm ci enforcement and npm7-compatible lock format, and the pinned SDK
+still needs lock integration. All eight package versions/URLs/integrities match
+upstream. See ../RECONCILIATION.md and the revised proposed submission.
 
 The separate 0002 patch updates the pinned SDK's stale lock, copies both inputs,
 uses npm ci --ignore-scripts, and depends on both source inputs. Version-2 lock

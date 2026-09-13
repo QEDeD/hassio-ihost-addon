@@ -1,0 +1,100 @@
+{
+  "date": "2026-09-13",
+  "otbr_ref": "de6cc2138b5eaaf074b7d2922d81af965e4a07a0",
+  "upstream_lock_blob": "8ba5ee13f5398009c335d5f8925f83190e293244",
+  "upstream_lock_version": 3,
+  "local_lock_version": 2,
+  "package_identity_comparison": [
+    {
+      "name": "angular",
+      "version": "1.8.3",
+      "identical": true
+    },
+    {
+      "name": "angular-animate",
+      "version": "1.8.3",
+      "identical": true
+    },
+    {
+      "name": "angular-aria",
+      "version": "1.8.3",
+      "identical": true
+    },
+    {
+      "name": "angular-messages",
+      "version": "1.8.3",
+      "identical": true
+    },
+    {
+      "name": "angular-material",
+      "version": "1.2.5",
+      "identical": true
+    },
+    {
+      "name": "d3",
+      "version": "3.5.17",
+      "identical": true
+    },
+    {
+      "name": "material-design-lite",
+      "version": "1.3.0",
+      "identical": true
+    },
+    {
+      "name": "qrcode-generator",
+      "version": "2.0.4",
+      "identical": true
+    }
+  ],
+  "local_heads": [
+    {
+      "label": "1ab2356",
+      "sha": "1ab23561d56a711a1293af45c564d045c4941e02"
+    },
+    {
+      "label": "aca557b",
+      "sha": "aca557b6eb851af109a2708f55b5b2668314818f"
+    },
+    {
+      "label": "97277e9",
+      "sha": "97277e94873999c79056dea8778b0b4c120e85d5"
+    },
+    {
+      "label": "60d3334",
+      "sha": "60d3334daca697a57756b9492cdd6ac6f8f777ec"
+    },
+    {
+      "label": "9536ef0",
+      "sha": "9536ef0ff85d91a1a08e03b03bd91f2c2cd23225"
+    },
+    {
+      "label": "e34faa6",
+      "sha": "e34faa674de908f1e208eb71be2f129d7c48636d"
+    },
+    {
+      "label": "7c3e607",
+      "sha": "7c3e6076e5f84995ac8b881aea4b4f12855a1e10"
+    },
+    {
+      "label": "4ff1642",
+      "sha": "4ff16428e8c8919d2c811f1feb59e07e20e8b766"
+    },
+    {
+      "label": "84fab10",
+      "sha": "84fab103614c2eef11a0dc877fb4a12c85df6221"
+    },
+    {
+      "label": "836c2f9",
+      "sha": "836c2f98f1c011b96ed74f5dde0ae22604597260"
+    },
+    {
+      "label": "12eb1fe",
+      "sha": "12eb1fe3ed274f209e112837093832cd1f2b14dd"
+    },
+    {
+      "label": "7b9937f",
+      "sha": "7b9937f3aec10bf4f9e2d6a6dc44654cd131be1d"
+    }
+  ],
+  "method": "Authenticated GitHub contents API at exact ref; compare nonempty version/resolved/integrity to prepared SDK lock; git rev-parse for local refs"
+}

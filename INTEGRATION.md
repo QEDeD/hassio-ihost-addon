@@ -1,3 +1,6 @@
+> Current contribution framing and permissions: [RECONCILIATION.md](RECONCILIATION.md).
+> Any older publication authorization below is historical; the active task is local-only.
+
 > Historical baseline record: this document describes the original six contributions.
 > The current local branch adds un-deployed follow-ups; see [FOLLOWUP.md](FOLLOWUP.md).
 > Original production acceptance does not apply automatically to the modified image.

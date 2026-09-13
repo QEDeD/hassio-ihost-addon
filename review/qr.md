@@ -1,6 +1,22 @@
-# Generate OTBR commissioning QR codes locally
+# Generate commissioning QR codes locally in the pinned SDK
 
 Current head: `e34faa674de908f1e208eb71be2f129d7c48636d`. [Focused comparison](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/compare/5a8d7dec067f9196ada5879f31f71cbf6d595bff...QEDeD:e34faa674de908f1e208eb71be2f129d7c48636d). Product implementation remains f721b35; later commits update terminology and exercise the hostile-input browser case through the real UI click.
+
+## Relationship to upstream
+
+OpenThread already merged [LJspice's PR3449](https://github.com/openthread/ot-br-posix/pull/3449)
+as ccabba096c3fea00a756ab89ab1537c902e0d7dc. It implements browser-local generation
+with qrcode-generator 2.0.4. This contribution addresses the older SDK still built
+by iHost; it is an independently implemented SDK-targeted equivalent, not a literal
+cherry-pick or a claim to have first fixed current OpenThread.
+
+Retained refinements are a four-module quiet zone and responsive intrinsic sizing,
+a fixed Angular template supplied with dialog locals, removal of the QR response
+log, installed encoder MIT license, and focused no-external-request/failure/decode
+tests. Current upstream uses createDataURL(10, 2) and width:40% and still concatenates
+the image into its dialog template. These source differences are verified; the
+upstream implementation was not newly browser-tested here. A direct OpenThread PR
+would contain only justified incremental refinements, not duplicate local encoding.
 
 The OTBR web UI's Join form lets the border router itself join an existing
 Thread network using a user-entered PSKd. Its Get Connect QR Code action

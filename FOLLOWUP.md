@@ -1,3 +1,6 @@
+> Current upstream comparison and contribution disposition: [RECONCILIATION.md](RECONCILIATION.md).
+> Product and original contribution heads remain unchanged.
+
 # Follow-up contribution preparation
 
 ## Goal and authority

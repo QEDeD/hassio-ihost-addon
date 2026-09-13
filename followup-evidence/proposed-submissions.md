@@ -20,14 +20,19 @@ certificate failure, HTTP failure and matching source entries between the
 selected Apple tag and commit archives. The combined AMD64 build and installed
 consumer results belong to the follow-up integration, not exact-head CI here.
 
-## Preserve the tested frontend dependency selection
+## Enforce the reviewed frontend lock in the pinned SDK
 
 Local head: 12eb1fe, based on QR e34faa6.
 
-CMake omits the SDK lockfile and resolves dependencies during every build. Add a
+The pinned SDK CMake omits its lockfile when resolving dependencies. Add a
 reviewed lock matching the validated installed assets, copy both manifest and
 lock into the build directory, depend on both, and use npm ci --ignore-scripts.
-Keep the local QR encoder and existing browser behavior. This does not remove
+Current OpenThread PR3449 already copies an updated v3 lock, but still runs
+npm install. The distinct additions here are strict npm ci installation,
+--ignore-scripts and the v2 format verified with npm7. All eight package versions,
+resolved URLs and integrity values match current OpenThread's selection. Retain
+credit to LJspice/PR3449 for upstream QR and lock integration; this is not a claim
+that current OpenThread ignores its lock. Keep local QR and browser behavior. This does not remove
 all AngularJS advisories; see the separate bounded assessment and limitations.
 
 Tests cover clean CMake installation, lock-only rebuild, invalid/missing/mismatched
@@ -50,6 +55,16 @@ The original malformed-response behavior was reproduced. Twenty-three corrected
 consumer cases pass using real released/Trixie Bashio, curl and jq; the existing
 lifecycle fixture also passes. These consumer checks stop before full service
 startup. No invalid Supervisor responses were injected into production.
+
+## Current upstream relationship for build inputs
+
+Current iHost master remains 5a8d7de and PR79 remains open at 4c7d63c. Both still
+have the SLC overwrite behavior. OpenThread de6cc213 and SDK da661283 both disable
+mDNS TLS certificate verification. OpenThread PR2877 previously improved download
+naming/retry/extraction handling, but did not add these certificate/checksum checks.
+OpenThread now selects mDNSResponder-2881.40.18; the SDK selects 1790.80.10. This
+SDK patch intentionally keeps the latter. Do not submit its release pin unchanged
+against current OpenThread or claim a new mDNS version is included.
 
 ## Merge and validation relationship
 

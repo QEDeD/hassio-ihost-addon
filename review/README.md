@@ -1,3 +1,7 @@
+> Current disposition and authority: [reconciled package](../RECONCILIATION.md).
+> The six drafts below are supplemented by three local follow-up drafts. Historical
+> deployment observations below have not been repeated in this reconciliation.
+
 # Contribution drafts for approval
 
 These are proposed submissions, not published upstream PRs. The product branches
