@@ -1,0 +1,19 @@
+Subject: [PATCH] Verify the pinned mDNSResponder source before extraction
+
+Keep mDNSResponder-1790.80.10, resolved through Apple's release tag to commit
+8769ab51605e465425d33d757f602ce5905ca639. Authenticate HTTPS downloads and reject
+unexpected archive bytes before extraction or compilation.
+
+--- a/util/third_party/ot-br-posix/script/bootstrap
++++ b/util/third_party/ot-br-posix/script/bootstrap
+@@ -71,7 +71,9 @@
+     (MDNS_RESPONDER_SOURCE_NAME=mDNSResponder-1790.80.10 \
+         && MDNS_RESPONDER_PATCH_PATH=$(realpath "$(dirname "$0")"/../third_party/mDNSResponder) \
+         && cd /tmp \
+-        && wget --no-check-certificate https://github.com/apple-oss-distributions/mDNSResponder/archive/refs/tags/$MDNS_RESPONDER_SOURCE_NAME.tar.gz \
++        && wget --https-only --timeout=30 --tries=3 -O "$MDNS_RESPONDER_SOURCE_NAME.tar.gz" \
++            https://codeload.github.com/apple-oss-distributions/mDNSResponder/tar.gz/8769ab51605e465425d33d757f602ce5905ca639 \
++        && echo "fc75ffcb6f67634d8d1a10272317f72ec6d211ef03125c7c181edfc1d0ffee4e  $MDNS_RESPONDER_SOURCE_NAME.tar.gz" | sha256sum -c - \
+         && mkdir -p $MDNS_RESPONDER_SOURCE_NAME \
+         && tar xvf $MDNS_RESPONDER_SOURCE_NAME.tar.gz -C $MDNS_RESPONDER_SOURCE_NAME --strip-components=1 \
+         && cd /tmp/"$MDNS_RESPONDER_SOURCE_NAME" \
