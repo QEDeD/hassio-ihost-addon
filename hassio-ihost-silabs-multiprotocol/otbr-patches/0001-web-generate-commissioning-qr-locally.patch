@@ -1,0 +1,100 @@
+--- a/util/third_party/ot-br-posix/src/web/web-service/frontend/CMakeLists.txt
++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/CMakeLists.txt
+@@ -38,6 +38,7 @@
+     ${CMAKE_CURRENT_BINARY_DIR}/node_modules/angular/angular.min.js
+     ${CMAKE_CURRENT_BINARY_DIR}/node_modules/d3/d3.min.js
+     ${CMAKE_CURRENT_BINARY_DIR}/node_modules/material-design-lite/material.min.js
++    ${CMAKE_CURRENT_BINARY_DIR}/node_modules/qrcode-generator/dist/qrcode.js
+ )
+ 
+ add_custom_target(otbr-web-frontend
+--- a/util/third_party/ot-br-posix/src/web/web-service/frontend/index.html
++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/index.html
+@@ -427,6 +427,7 @@
+   <script src="res/js/angular-aria.min.js"></script>
+   <script src="res/js/angular-material.min.js"></script>
+   <script src="res/js/angular-messages.min.js"></script>
++  <script src="res/js/qrcode.js"></script>
+   <script src="res/js/app.js"></script>
+   <script src="res/js/d3.min.js"></script>
+ </body>
+--- a/util/third_party/ot-br-posix/src/web/web-service/frontend/package.json
++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/package.json
+@@ -15,6 +15,7 @@
+     "angular-material": "^1.1.4",
+     "angular-messages": "^1.6.4",
+     "d3": "^3.5.17",
+-    "material-design-lite": "^1.3.0"
++    "material-design-lite": "^1.3.0",
++    "qrcode-generator": "2.0.4"
+   }
+ }
+--- a/util/third_party/ot-br-posix/src/web/web-service/frontend/res/js/app.js
++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/res/js/app.js
+@@ -220,7 +220,7 @@
+                     '  <md-dialog-content>' +
+                     '  <h6 style="margin: 10px 10px 10px 10px; "><b>Open your OT Commissioner Android App to scan the Connect QR Code</b></h6>' +
+                     '  <div layout="row">' +
+-                    '  <img ng-src="' + image + '" alt="qr code" style="display: block; margin-left: auto; margin-right: auto; width:40%"></img>' +
++                    '  <img ng-src="{{qrImage}}" alt="Connect QR code" style="display: block; margin: 0 auto; max-width: 100%; height: auto; image-rendering: pixelated">' +
+                     '  </div>' +
+                     '  <md-dialog-actions>' +
+                     '    <md-button ng-click="closeDialog()" class="md-primary">' +
+@@ -228,7 +228,9 @@
+                     '    </md-button>' +
+                     '  </md-dialog-actions>' +
+                     '</md-dialog>',
+-                   controller: function DialogController($scope, $mdDialog) {
++                   locals: { qrImage: image },
++                   controller: function DialogController($scope, $mdDialog, qrImage) {
++                    $scope.qrImage = qrImage;
+                     $scope.closeDialog = function() {
+                     $mdDialog.hide();
+                     }
+@@ -278,11 +280,19 @@
+             $scope.qrcode = function() {
+                 $scope.isLoading = false;
+                 $http.get('get_qrcode').then(function(response) {
+-                    console.log(response);
+                     $scope.res = response.data.result;
+                     if (response.data.result == 'successful') {
+-                        var image = "http://api.qrserver.com/v1/create-qr-code/?color=000000&amp;bgcolor=FFFFFF&amp;data=v%3D1%26%26eui%3D" + response.data.eui64 +"%26%26cc%3D" + $scope.thread.pskd +"&amp;qzone=1&amp;margin=0&amp;size=400x400&amp;ecc=L";
+-                        $scope.showQRCode(event, image);
++                        try {
++                            var qr = qrcode(0, 'L');
++                            qr.addData('v=1&&eui=' + response.data.eui64 + '&&cc=' + $scope.thread.pskd, 'Byte');
++                            qr.make();
++                            // Integer-sized modules and a four-module quiet zone.
++                            var cellSize = 6;
++                            var image = qr.createDataURL(cellSize, cellSize * 4);
++                            $scope.showQRCode(event, image);
++                        } catch (error) {
++                            $scope.showQRAlert(event, "sorry, can not generate the QR code.");
++                        }
+                     } else {
+                         $scope.showQRAlert(event, "sorry, can not generate the QR code.");
+                     }   
+--- /dev/null
++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/res/js/qrcode.LICENSE.txt
+@@ -0,0 +1,21 @@
++MIT License
++
++Copyright (c) 2009 Kazuhiko Arase
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in all
++copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++SOFTWARE.
