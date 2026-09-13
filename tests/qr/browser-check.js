@@ -68,7 +68,9 @@ for(const failure of ['missing','throwing']) {
 stage='hostile input';
 await freshJoin();
 const hostile='\"><img src=x onerror=window.qrInjection=1>{{7*7}}';
-await page.evaluate(value=>{const scope=angular.element(document.querySelector('input[name=pskd]')).scope();scope.thread.pskd=value;scope.qrcode();},hostile);
+// Inject hostile data at the real click boundary, retaining Angular event/digest timing.
+await page.evaluate(value=>{const scope=angular.element(document.querySelector('input[name=pskd]')).scope();const original=scope.qrcode;scope.qrcode=function(){scope.thread.pskd=value;return original.apply(this,arguments);};},hostile);
+await page.getByRole('button',{name:'Get Connect QR Code',exact:true}).click();
 const hostileDecoded=await decodeVisible();
 if(hostileDecoded.payload!=='v=1&&eui=0000aBcD0000Ef01&&cc='+hostile) throw Error('Hostile input changed payload');
 if(await page.evaluate(()=>window.qrInjection!==undefined || document.querySelector('img[src=x]')!==null)) throw Error('Template injection');
