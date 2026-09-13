@@ -149,3 +149,26 @@ recovery: `sha256:a8d614a4260b0b9c660a0e91422ed8054f153db69f4c3251eef247c4b1985f
 The version tags' OCI index digests are the wrapper identities in the table above.
 The operator completed the visibility change. An anonymous registry-token request (no Docker/GitHub credentials) verified manifest hashes, version/type/architecture labels and HEAD access to all 35 distinct required layer blobs. This establishes registry availability; HA-side download/start is still pending.
 Production cutover remains separately reserved for approval.
+## Acceptance update — 2026-09-13
+
+Corrected ARM run [34749205311](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34749205311)
+passed for both AArch64 and ARMv7 at source
+`11bef3674d0b35e6db87ecf27e2834d894df9d01`. Both job logs confirm complete image
+builds, installed linkage for all five binaries and isolated native web checks
+under emulation. This closes the corrected ARM build/runtime gate, not physical
+ARM radio acceptance.
+
+The operator approved the concrete AMD64 trial. Preflight reached stopping the
+existing 0.1.4-local app; Supervisor recorded exit 141. No candidate installation
+or fresh backup occurred. Existing services were restarted and fresh Zigbee and
+Matter reports verified. The shutdown log shows OTBR signal 13, propagated by
+its finish script as container exit 141; firewall cleanup and CPC shutdown
+completed. Candidate finish handling has the same behavior.
+
+OTBR and mDNS stop concurrently because OTBR lacks an explicit dependency on
+mDNS, although its build selects mDNSResponder. This is a justified ordering
+concern, not yet a proven source of SIGPIPE. An isolated test using the candidate's
+real libdns_sd (create connection, stop daemon, deallocate or register on the
+existing connection) did not reproduce SIGPIPE. Do not blanket-ignore exit 141.
+Production acceptance remains blocked pending targeted shutdown investigation;
+NAT64 consumer/testing and final bundle acceptance remain outstanding.
