@@ -150,3 +150,31 @@ Probe-only correction8b84404 adds that build tool. The corrected run
 passed: installed CMake measured -O3 -DNDEBUG; baseline failed with the expected
 register-constraint diagnostic; -O1, -O2 and Release all compiled. This validates
 the narrow candidate correction, with the full-image gates above still open.
+
+## Integrated ARM run and bounded mbedTLS backport
+
+Run [34747479789](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34747479789)
+at integration source e28c7aa passed ARMv7 complete-image build, installed linkage
+and isolated native web checks under emulation; ARM_CROSS_PROBE_STATUS=0.
+AArch64 passed the cross/ABI probe but failed native ctr_drbg.c compilation:
+GCC14.2.0 diagnosed array subscript48 outside a48-byte array in mbedtls_xor,
+inlined into ctr_drbg_update_internal. This was not a timeout or runtime test.
+
+Effective bundled mbedTLS Release flags are -O2: its pinned CMakeLists overrides
+CMAKE_C_FLAGS_RELEASE. The earlier isolated probe's -O3 -DNDEBUG measurement is
+the generic CMake GNU default, not the bundled library's effective flags.
+
+A disposable local ARM64 cross-compiler comparison reproduced the exact
+ctr_drbg.c failure with the captured flags, SDK da661283 and GCC14.2.0-19cross1.
+Backporting [upstream292b96c](https://github.com/Mbed-TLS/mbedtls/commit/292b96c0a69016a6d99ce324837a9e96d59e21f6)
+then compiled the same translation unit successfully to ELF64/AArch64 while
+retaining -O2, -Werror and -Wfatal-errors. The upstream fix adds constant-length
+early returns after wide XOR loops and moves its builtin-detection macro above
+use. Only patch context and SDK-relative paths were adapted; GNU patch-p1 was
+verified against the exact pinned source. The resulting header matches the
+header used in the passing focused comparison.
+
+The candidate applies that small backport in the existing SDK patch stage.
+No warning suppression, optimization change or SDK upgrade is included. Complete
+AArch64 image/runtime acceptance and refreshed affected-target checks remain
+required after integration; this focused compiler result is not radio acceptance.
