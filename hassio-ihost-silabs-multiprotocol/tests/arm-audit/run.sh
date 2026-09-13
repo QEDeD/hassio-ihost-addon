@@ -57,7 +57,7 @@ timeout 90s docker run --rm -i --network none --read-only --cap-drop ALL \
 # Cross build passed. Complete independent native OTBR build even if an ABI
 # inspection failed; report that failure after collecting runtime evidence.
 # QEMU is installed only on the disposable runner by the pinned workflow action.
-timeout --kill-after=30s 1200s docker build --progress=plain --platform "$platform" \
+timeout --kill-after=30s 2700s docker build --progress=plain --platform "$platform" \
     --build-arg "BUILD_FROM=$base" --build-arg "BUILD_ARCH=$arch" \
     --build-arg CPCD_VERSION=v4.6.1 --build-arg GECKO_SDK_VERSION=v2024.12.1-0 \
     --tag "local/trixie-full-$arch" "$AUDIT_CONTEXT"
