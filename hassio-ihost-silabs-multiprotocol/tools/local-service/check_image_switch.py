@@ -1,20 +1,37 @@
 #!/usr/bin/env python3
 """Real container image switches; synthetic data and stub /init, never a radio."""
+import argparse
 import hashlib
 import importlib.util
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
 import uuid
 
 HERE = Path(__file__).resolve().parent
-FIXED = 'local/otbr-persistent-prep:0.1.0-dnssd'
-RECOVERY = 'local/otbr-persistent-prep:0.1.1-recovery-dnssd'
+
+
+def image_id(value):
+    if not re.fullmatch(r'sha256:[0-9a-f]{64}', value):
+        raise argparse.ArgumentTypeError('use an explicit immutable local image ID: sha256:<64 lowercase hex digits>')
+    return value
+
+
+def arguments(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--candidate', required=True, type=image_id)
+    parser.add_argument('--baseline', required=True, type=image_id,
+                        help='current production-code image, with the same guarded entrypoint')
+    parser.add_argument('--recovery', required=True, type=image_id,
+                        help='guarded image that enforces OTBR off')
+    return parser.parse_args(argv)
 
 
 def main():
+    args = arguments()
     spec = importlib.util.spec_from_file_location('guard', HERE / 'state_guard.py')
     guard = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(guard)
@@ -45,8 +62,9 @@ print(json.dumps({'stub_init':count}))
             path.chmod(0o600)
             sources[role] = {'size': len(value), 'sha256': hashlib.sha256(value).hexdigest()}
         (data / guard.COMPLETE).write_text(json.dumps({'version': 1, 'sources': sources}))
-        options = {'local_service_mode': 'run', 'otbr_enable': False,
-                   'nondefault_sentinel': 'preserve-this-option'}
+        options = json.loads((HERE / 'config.template.json').read_text())['options']
+        options.update({'local_service_mode': 'run', 'otbr_enable': False,
+                        'otbr_nat64': False, 'nondefault_sentinel': 'preserve-this-option'})
         options_path = data / 'options.json'
         options_path.write_text(json.dumps(options))
         def run(image, expected):
@@ -64,22 +82,38 @@ print(json.dumps({'stub_init':count}))
             if r.returncode != expected:
                 raise RuntimeError('Unexpected fixture container result: ' + r.stdout + r.stderr)
             return r.stdout
-        for image in (FIXED, FIXED, RECOVERY, FIXED):
-            run(image, 0)
-        assert (data / 'stub-starts').read_text() == '4'
-        for role, relative in guard.FILES.items():
-            assert (data / relative).read_bytes() == ('synthetic-' + role).encode() + b'|runtime-1|runtime-2|runtime-3|runtime-4'
-        assert json.loads(options_path.read_text()) == options
+        def verify(starts):
+            assert (data / 'stub-starts').read_text() == str(starts)
+            for role, relative in guard.FILES.items():
+                expected = ('synthetic-' + role).encode()
+                expected += b''.join(b'|runtime-' + str(n).encode() for n in range(1, starts + 1))
+                assert (data / relative).read_bytes() == expected
+            assert json.loads(options_path.read_text()) == options
+
+        # Initial handoff must be OTBR off. Subsequent synthetic starts exercise
+        # production-code rollback with OTBR on; /init remains a stub throughout.
+        run(args.candidate, 0)
+        verify(1)
+        options['otbr_enable'] = True
+        options_path.write_text(json.dumps(options))
+        for starts, selected in enumerate((args.candidate, args.baseline, args.candidate), 2):
+            run(selected, 0)
+            verify(starts)
+
+        # Separately exercise the deliberately OTBR-off recovery package.
+        options['otbr_enable'] = False
+        options_path.write_text(json.dumps(options))
+        run(args.recovery, 0)
+        verify(5)
         # Existing state survives a rejected recovery startup; /init never runs.
         options['otbr_enable'] = True
         options_path.write_text(json.dumps(options))
-        run(RECOVERY, 1)
-        assert (data / 'stub-starts').read_text() == '4'
-        assert json.loads(options_path.read_text()) == options
-        print(json.dumps({'image_switches': [FIXED, FIXED, RECOVERY, FIXED],
-                          'stub_starts': 4, 'radio_states_preserved': True,
+        run(args.recovery, 1)
+        verify(5)
+        print(json.dumps({'image_switches': [args.candidate, args.candidate, args.baseline, args.candidate, args.recovery],
+                          'stub_starts': 5, 'radio_states_preserved': True,
                           'options_preserved': True, 'unsafe_recovery_start_refused': True,
-                          'normal_radio_init_executed': False}))
+                          'normal_radio_init_executed': False, 'real_radio_compatibility_verified': False}))
 
 
 if __name__ == '__main__':
