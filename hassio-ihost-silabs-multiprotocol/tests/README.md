@@ -47,3 +47,25 @@ mounts. Logs and container inspection remain in a temporary directory; set
 The forced-expiry case enlarges global shutdown grace to isolate the service
 finish timeout. It does not establish shutdown timing under the default global
 grace period.
+
+## Supervisor network response
+
+Run the focused consumer regression in an add-on image containing Python 3,
+Bashio, curl and jq. Set `image` to the release or candidate image being checked:
+
+```sh
+addon=hassio-ihost-silabs-multiprotocol
+image=ghcr.io/ihost-open-source-project/hassio-ihost-silabs-multiprotocol-amd64:1.0.2
+docker run --rm --network none --read-only --cap-drop ALL \
+  --security-opt no-new-privileges --pids-limit 128 --tmpfs /tmp \
+  --mount "type=bind,source=$(pwd)/${addon},target=/addon,readonly" \
+  --entrypoint python3 "${image}" /addon/tests/test-otbr-network.py
+```
+
+This executes the production network consumer through its eth0 fallback with
+installed Bashio/curl/jq against a synthetic loopback Supervisor. It checks first
+primary selection, valid no-primary/empty-list fallback, malformed JSON and
+structure, invalid interface fields, API error responses, HTTP failures and
+connection refusal. API failures must exit before fallback; log output must not
+be accepted as an interface. This is a consumer test, not complete service,
+firewall, radio or live Supervisor acceptance.

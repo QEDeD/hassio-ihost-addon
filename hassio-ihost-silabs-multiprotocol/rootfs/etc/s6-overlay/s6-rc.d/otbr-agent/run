@@ -27,6 +27,7 @@ if ! otbr_firewall_cleanup; then
 fi
 
 declare backbone_if
+declare network_info
 # shellcheck disable=SC2034
 declare device
 # shellcheck disable=SC2034
@@ -38,7 +39,24 @@ declare otbr_log_level_int
 declare otbr_rest_listen
 declare otbr_rest_listen_port
 
-backbone_if="$(bashio::api.supervisor 'GET' '/network/info' '' 'first(.interfaces[] | select (.primary == true)) .interface')"
+# Fetch raw JSON: Bashio's filtered API helper can return success after jq fails.
+if ! network_info="$(bashio::api.supervisor 'GET' '/network/info' true)"; then
+    bashio::exit.nok "Could not retrieve Supervisor network information."
+fi
+if ! backbone_if="$(jq --slurp --exit-status --raw-output '
+    if length != 1 then error("Expected one network response") else .[0] end
+    | if .result != "ok" or (.data.interfaces | type) != "array" then
+        error("Invalid network response")
+      else .data.interfaces end
+    | if all(.[]; type == "object"
+        and (.primary | type) == "boolean"
+        and (.interface | type) == "string"
+        and (.interface | length) > 0) then
+        (first(.[] | select(.primary == true)) | .interface) // ""
+      else error("Invalid network interface") end
+' <<< "${network_info}")"; then
+    bashio::exit.nok "Invalid Supervisor network information."
+fi
 
 otbr_log_level=$(bashio::string.lower "$(bashio::config otbr_log_level)")
 case "${otbr_log_level}" in

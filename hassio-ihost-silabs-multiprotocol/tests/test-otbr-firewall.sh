@@ -105,7 +105,10 @@ run_start_script_fixture()
     (
         function bashio::api.supervisor() {
             (( supervisor_status == 0 )) || return "${supervisor_status}"
-            printf '%s' "${supervisor_backbone}"
+            jq -n --arg interface "${supervisor_backbone}" \
+                '{result: "ok", data: {interfaces:
+                    (if $interface == "" then [] else
+                        [{interface: $interface, primary: true}] end)}}'
         }
         function bashio::addon.ip_address() { printf '::1'; }
         function bashio::addon.port() { :; }
