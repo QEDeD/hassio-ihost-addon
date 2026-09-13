@@ -25,18 +25,22 @@ BUSY during an eight-second sequence of Hue remote presses. The recorded HA
 automation targets that Zigbee group alongside four individual lights. This
 identifies a reproducible workload, not the cause or candidate specificity. The operator also recalls similar missed first presses for approximately two to four weeks before the candidate; that is symptom history, not proof of the same BUSY error. The recorded failures occur after the remote event reached HA.
 
-Recommendation: first replay the captured remote sequence once on the current
-candidate, with NAT64 disabled, after explicit approval to change the living-room
-lights temporarily. Preserve and restore the initial physical-light settings.
-Assess actual responses and correlated errors; accepted service calls or
-optimistic state publications alone do not establish physical success. A clean
-single replay cannot exclude an intermittent failure. Decide from its evidence
-whether further observation or a separately approved baseline comparison is
-needed; do not make another image switch an automatic prerequisite.
+The approved single candidate replay is now complete: the seven recorded actions
+were injected at their original offsets, no new BUSY/error/warning appeared in
+the captured window, saved settings were restored for all nine HA light entities,
+and two representative fresh reads confirmed restored state and brightness.
+All three apps remained started, and NAT64 remained disabled. See the integration
+record for exact timing and evidence limitations.
 
-This replay has not been approved or executed. The operator may instead choose
-upstream code review with the finding explicitly unresolved; that is not full
-production acceptance and does not silently complete the existing goal.
+This did not exercise the handheld remote's radio link or establish that every
+physical transition succeeded. The earlier intermittent BUSY finding was not
+reproduced and remains unresolved; candidate/baseline equivalence is not proven.
+Independent evidence review found no new demonstrated candidate regression.
+Recommendation: retain the historical finding as unresolved general Zigbee
+reliability work; do not require another image switch solely for this finding.
+Reopen candidate/baseline comparison if concrete evidence implicates these
+contributions. This is a disposition of the finding, not proof of equivalence
+or completion of the bundle-wide acceptance audit.
 
 For Trixie, first offer PR79 the credited Release/mbedTLS corrections and exact
 validation evidence. Use the prepared successor branch only if that reduces

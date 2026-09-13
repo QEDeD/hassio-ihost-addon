@@ -273,7 +273,7 @@ Zigbee request/response timestamps and availability of all four Matter nodes.
 It supports this trial closeout, not resolution of the earlier group BUSY issue.
 
 
-## Remaining group-command comparison
+## Group-command comparison plan (subsequently executed below)
 
 Focused review of the retained failure log ties all three BUSY responses to
 group 1 OFF commands at 13:21:05, 13:21:07 and 13:21:13 during Hue remote presses.
@@ -305,3 +305,43 @@ three cases. Treat a pre-existing control problem as plausible; do not label it
 a demonstrated candidate regression or assume the earlier symptom has one cause.
 The unresolved question for bundle acceptance is candidate-specific worsening,
 not whether this contribution must cure every historical remote-control failure.
+
+
+## Approved single lighting replay — 2026-09-13
+
+On unchanged candidate 0.2.3-ordered with NAT64 off, seven MQTT action messages
+replayed the recorded automation workload once at 17:18:26–17:18:41 CEST.
+The OFF/OFF/OFF/ON/OFF/OFF/ON offsets were 0, 2, 4, 6, 8, 13 and 15 seconds.
+The live automation matched the saved configuration before execution. This
+injected events at MQTT; it did not exercise the handheld remote's radio link.
+
+The captured window contained 78 new Zigbee2MQTT log lines and no error,
+warning or BUSY match. Intermediate HA snapshots were sometimes mixed while
+commands propagated; optimistic publications do not prove every physical
+transition. All nine physical-light entities matched their saved on/off,
+brightness, active color mode and color values after temporary-scene restoration.
+The temporary scene was deleted. Fresh GETs to a group member and a separate
+bulb were followed by publications at 17:18:56 and 17:18:59 confirming their
+restored ON states and brightness values 1 and 76 respectively. These are
+representative readbacks, not independent observation of all nine light outputs.
+
+All three apps remained started afterward; the candidate version was unchanged
+and otbr_nat64 remained false. Private evidence is retained under
+/tmp/otbr-group-replay-20260913. No image switch or repeated replay was performed.
+The previous BUSY error was not reproduced. A single clean run does not exclude
+intermittent failure or establish candidate/baseline equivalence. The historical
+finding remains unresolved; this result provides no new demonstrated regression.
+
+
+Independent read-only review verified the seven recorded injection offsets,
+seven corresponding group publications, nine matching restored HA light states
+and the two representative request/publication pairs. Scheduling drift was under
+0.5 ms at the pre-API timestamps; those are not radio-transmission timestamps.
+The reviewer found no new demonstrated material candidate regression.
+
+Disposition: retain the earlier BUSY finding as unresolved general Zigbee
+reliability work. The reported pre-candidate symptom history and this bounded
+non-reproduction do not justify making another disruptive image comparison
+mandatory by themselves. Reopen comparison if concrete evidence implicates the
+contributions. This does not establish candidate/baseline equivalence, cure the
+historical problem, or replace the remaining bundle-wide completion audit.
