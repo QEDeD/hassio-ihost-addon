@@ -280,11 +280,21 @@ group 1 OFF commands at 13:21:05, 13:21:07 and 13:21:13 during Hue remote presse
 The recorded automation targets that group alongside four individual lights.
 This identifies the workload; it does not prove overload, duplicate commands,
 a candidate regression or physical recovery from optimistic state publications.
-A bounded candidate/baseline comparison of the same workload is the recommended
-next acceptance step. It needs specific approval for lighting commands and the
-additional image switch. No automation changes or test commands were made by
-this evidence review. Preparing an upstream review with this known limitation
-is an operator option, not an implicit waiver of full production acceptance.
+The next proposed check is one replay on the current candidate, with NAT64 off:
+OFF, OFF, OFF, ON, OFF, OFF, ON at offsets 0, 2, 4, 6, 8, 13 and 15 seconds.
+It requires explicit approval to actuate the affected living-room lights.
+Immediately before execution, capture the physical lights' current settings
+using HA's temporary scene capability; restore those settings afterward and
+verify readback. Abort if target availability or configuration differs materially,
+radio health degrades, or restoration fails. Capture trigger timestamps, command
+errors and fresh physical-device responses; do not infer success from optimistic
+state alone. Do not automatically repeat the sequence or switch images.
+
+A single clean replay does not rule out an intermittent regression. Its evidence
+will determine whether further observation or a separately approved baseline
+comparison is worthwhile. No replay or additional image switch is authorized
+by this record. Preparing an upstream review with the finding unresolved is an
+operator option, not an implicit waiver of full production acceptance.
 
 Operator history: the operator recalls intermittent first-press failures over
 the preceding roughly two to four weeks, before this candidate deployment.

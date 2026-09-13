@@ -25,13 +25,18 @@ BUSY during an eight-second sequence of Hue remote presses. The recorded HA
 automation targets that Zigbee group alongside four individual lights. This
 identifies a reproducible workload, not the cause or candidate specificity. The operator also recalls similar missed first presses for approximately two to four weeks before the candidate; that is symptom history, not proof of the same BUSY error. The recorded failures occur after the remote event reached HA.
 
-Recommendation: perform a bounded comparison of that existing remote/automation
-workload on candidate and baseline before claiming full production acceptance.
-It would affect the living-room lights and require another expressly approved
-image switch. No such comparison or additional device command is authorized by
-this review document. Alternatively, the operator may choose upstream code
-review with the finding explicitly unresolved; that is not full production
-acceptance and does not silently complete the existing goal.
+Recommendation: first replay the captured remote sequence once on the current
+candidate, with NAT64 disabled, after explicit approval to change the living-room
+lights temporarily. Preserve and restore the initial physical-light settings.
+Assess actual responses and correlated errors; accepted service calls or
+optimistic state publications alone do not establish physical success. A clean
+single replay cannot exclude an intermittent failure. Decide from its evidence
+whether further observation or a separately approved baseline comparison is
+needed; do not make another image switch an automatic prerequisite.
+
+This replay has not been approved or executed. The operator may instead choose
+upstream code review with the finding explicitly unresolved; that is not full
+production acceptance and does not silently complete the existing goal.
 
 For Trixie, first offer PR79 the credited Release/mbedTLS corrections and exact
 validation evidence. Use the prepared successor branch only if that reduces
