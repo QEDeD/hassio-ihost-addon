@@ -1,5 +1,8 @@
 # Upstream contribution review package
 
+[Open the six current submission drafts and review index](review/README.md).
+These supersede the standalone draft files previously kept outside this branch.
+
 ## Outcome and current gate
 
 Six separate contributions and the combined candidate are prepared. The approved
@@ -268,3 +271,27 @@ aca557b6eb851af109a2708f55b5b2668314818f; the six contribution heads are unchang
 Independent closing-evidence review verified all 21 health samples, the final
 Zigbee request/response timestamps and availability of all four Matter nodes.
 It supports this trial closeout, not resolution of the earlier group BUSY issue.
+
+
+## Remaining group-command comparison
+
+Focused review of the retained failure log ties all three BUSY responses to
+group 1 OFF commands at 13:21:05, 13:21:07 and 13:21:13 during Hue remote presses.
+The recorded automation targets that group alongside four individual lights.
+This identifies the workload; it does not prove overload, duplicate commands,
+a candidate regression or physical recovery from optimistic state publications.
+A bounded candidate/baseline comparison of the same workload is the recommended
+next acceptance step. It needs specific approval for lighting commands and the
+additional image switch. No automation changes or test commands were made by
+this evidence review. Preparing an upstream review with this known limitation
+is an operator option, not an implicit waiver of full production acceptance.
+
+Operator history: the operator recalls intermittent first-press failures over
+the preceding roughly two to four weeks, before this candidate deployment.
+This is reported symptom history, not archived proof of the same BUSY status.
+For the three retained failures, the remote action reached HA before the group
+command returned BUSY. A missing remote event therefore does not explain those
+three cases. Treat a pre-existing control problem as plausible; do not label it
+a demonstrated candidate regression or assume the earlier symptom has one cause.
+The unresolved question for bundle acceptance is candidate-specific worsening,
+not whether this contribution must cure every historical remote-control failure.

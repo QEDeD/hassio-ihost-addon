@@ -1,0 +1,9 @@
+# Use Home Assistant app terminology in user-facing text
+
+Head: `84fab103614c2eef11a0dc877fb4a12c85df6221`. [Focused comparison](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/compare/5a8d7dec067f9196ada5879f31f71cbf6d595bff...QEDeD:84fab103614c2eef11a0dc877fb4a12c85df6221). No upstream PR has been submitted.
+
+Update shared documentation, English descriptions, issue-template wording, displayed workflow labels and startup messages from add-on terminology to app terminology. The 42-file change preserves technical identifiers, API/function names, repository paths and configuration keys. It changes wording rather than runtime policy or configuration semantics.
+
+The source diff is the primary review evidence for this wording-only contribution. Combined-image validation is recorded in the [integration evidence](../INTEGRATION.md). The unchanged 0.2.3-ordered image passed the physical NAT64 UDP enabled/disabled comparison and the final 21-sample, 629-second health observation; it remains running with NAT64 off. The earlier light dropout also occurred on baseline. Three earlier group-command BUSY failures still lack a controlled comparison or explicit acceptance disposition. ARM build/linkage/native-web checks passed at integration 11bef36 in [CI34749205311](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34749205311); this is not physical ARM radio acceptance. Combined-image evidence must not be presented as CI executed at this individual contribution head.
+
+This is independent of the functional contributions. Merge it last where practical and resolve overlapping documentation/messages without discarding feature-specific instructions or assertions. No new physical acceptance test is required solely for wording; the integrated functional candidate retains its separate production gates.
