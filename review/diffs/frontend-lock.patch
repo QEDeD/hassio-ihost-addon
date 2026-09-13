@@ -1,0 +1,354 @@
+diff --git a/.github/workflows/local-commissioning-qr.yml b/.github/workflows/local-commissioning-qr.yml
+index 7853d04c2295708c6b06940a8321236a92a2395f..fd6c0f4f734def1a975a12ce06226f23dbb71035 100644
+--- a/.github/workflows/local-commissioning-qr.yml
++++ b/.github/workflows/local-commissioning-qr.yml
+@@ -28,6 +28,8 @@ jobs:
+           persist-credentials: false
+       - name: Build and install pinned frontend; check controller
+         run: python3 tests/qr/prepare.py "$RUNNER_TEMP/qr-frontend"
++      - name: Check lock rebuilds and invalid inputs
++        run: python3 tests/qr/check-lock.py "$RUNNER_TEMP/qr-frontend"
+       - name: Install browser test tools
+         run: npm --prefix "$RUNNER_TEMP/qr-tools" install --ignore-scripts --no-audit --no-fund @playwright/cli@0.1.19 jsqr@1.4.0
+       - name: Check rendered QR dialogs with synthetic data
+diff --git a/hassio-ihost-silabs-multiprotocol/Dockerfile b/hassio-ihost-silabs-multiprotocol/Dockerfile
+index ba5caadc4a19f154f185250738d66e101261245a..1f8a03ca9ec77c14ad419685f80c228615eef7ca 100644
+--- a/hassio-ihost-silabs-multiprotocol/Dockerfile
++++ b/hassio-ihost-silabs-multiprotocol/Dockerfile
+@@ -117,6 +117,7 @@ COPY --from=cpcd-builder /usr/local/ /usr/${DEBIAN_CROSS_PREFIX}/
+ COPY otbr-patches/0001-Avoid-writing-to-system-console.patch /usr/src
+ COPY otbr-patches/0001-rest-support-deleting-the-dataset.patch /usr/src
+ COPY otbr-patches/0001-web-generate-commissioning-qr-locally.patch /usr/src
++COPY otbr-patches/0002-web-lock-frontend-dependencies.patch /usr/src
+ COPY zigbeed-patches/zigbeed_amd64.patch /usr/src/gecko_sdk/zigbeed_amd64.patch
+ 
+ RUN \
+@@ -125,6 +126,7 @@ RUN \
+     && patch -p1 < /usr/src/0001-Avoid-writing-to-system-console.patch \
+     && patch -p1 < /usr/src/0001-rest-support-deleting-the-dataset.patch \
+     && patch -p1 < /usr/src/0001-web-generate-commissioning-qr-locally.patch \
++    && patch -p1 < /usr/src/0002-web-lock-frontend-dependencies.patch \
+     && if [ "${DEBIAN_ARCH}" = "amd64" ]; then \
+         patch -p1 < zigbeed_amd64.patch; \
+         fi \
+diff --git a/hassio-ihost-silabs-multiprotocol/otbr-patches/0002-web-lock-frontend-dependencies.patch b/hassio-ihost-silabs-multiprotocol/otbr-patches/0002-web-lock-frontend-dependencies.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..021730dfabe780bfc31672c53967155b6aa58a11
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/otbr-patches/0002-web-lock-frontend-dependencies.patch
+@@ -0,0 +1,158 @@
++--- a/util/third_party/ot-br-posix/src/web/web-service/frontend/CMakeLists.txt
+++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/CMakeLists.txt
++@@ -45,9 +45,12 @@
++     DEPENDS ${NPM_CSS_DEPENDENCIES} ${NPM_JS_DEPENDENCIES})
++ 
++ add_custom_command(OUTPUT ${NPM_CSS_DEPENDENCIES} ${NPM_JS_DEPENDENCIES}
++-    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/package.json .
++-    COMMAND npm install
++-    DEPENDS package.json)
+++    COMMAND ${CMAKE_COMMAND} -E copy
+++        ${CMAKE_CURRENT_SOURCE_DIR}/package.json
+++        ${CMAKE_CURRENT_SOURCE_DIR}/package-lock.json
+++        ${CMAKE_CURRENT_BINARY_DIR}
+++    COMMAND npm ci --ignore-scripts
+++    DEPENDS package.json package-lock.json)
++ 
++ install(FILES index.html join.dialog.html
++     DESTINATION ${OTBR_WEB_DATADIR}/frontend)
++--- a/util/third_party/ot-br-posix/src/web/web-service/frontend/package-lock.json
+++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/package-lock.json
++@@ -1,43 +1,119 @@
++ {
++   "name": "otbr-web",
++   "version": "1.0.0",
++-  "lockfileVersion": 1,
+++  "lockfileVersion": 2,
++   "requires": true,
+++  "packages": {
+++    "": {
+++      "name": "otbr-web",
+++      "version": "1.0.0",
+++      "license": "BSD-3-Clause",
+++      "dependencies": {
+++        "angular": "^1.8.0",
+++        "angular-animate": "^1.6.4",
+++        "angular-aria": "^1.6.4",
+++        "angular-material": "^1.1.4",
+++        "angular-messages": "^1.6.4",
+++        "d3": "^3.5.17",
+++        "material-design-lite": "^1.3.0",
+++        "qrcode-generator": "2.0.4"
+++      }
+++    },
+++    "node_modules/angular": {
+++      "version": "1.8.3",
+++      "resolved": "https://registry.npmjs.org/angular/-/angular-1.8.3.tgz",
+++      "integrity": "sha512-5qjkWIQQVsHj4Sb5TcEs4WZWpFeVFHXwxEBHUhrny41D8UrBAd6T/6nPPAsLngJCReIOqi95W3mxdveveutpZw==",
+++      "deprecated": "For the actively supported Angular, see https://www.npmjs.com/package/@angular/core. AngularJS support has officially ended. For extended AngularJS support options, see https://goo.gle/angularjs-path-forward."
+++    },
+++    "node_modules/angular-animate": {
+++      "version": "1.8.3",
+++      "resolved": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.8.3.tgz",
+++      "integrity": "sha512-/LtTKvy5sD6MZbV0v+nHgOIpnFF0mrUp+j5WIxVprVhcrJriYpuCZf4S7Owj1o76De/J0eRzANUozNJ6hVepnQ==",
+++      "deprecated": "For the actively supported Angular, see https://www.npmjs.com/package/@angular/core. AngularJS support has officially ended. For extended AngularJS support options, see https://goo.gle/angularjs-path-forward."
+++    },
+++    "node_modules/angular-aria": {
+++      "version": "1.8.3",
+++      "resolved": "https://registry.npmjs.org/angular-aria/-/angular-aria-1.8.3.tgz",
+++      "integrity": "sha512-qTXclmTW/KGw5JNKKQPcCKKq6hCBZ39jYINmLgMsjUHBAoxULaMRRTaRj/L2VTOjKvK5f9enkx+EUqRqzXDSFQ==",
+++      "deprecated": "For the actively supported Angular, see https://www.npmjs.com/package/@angular/core. AngularJS support has officially ended. For extended AngularJS support options, see https://goo.gle/angularjs-path-forward."
+++    },
+++    "node_modules/angular-material": {
+++      "version": "1.2.5",
+++      "resolved": "https://registry.npmjs.org/angular-material/-/angular-material-1.2.5.tgz",
+++      "integrity": "sha512-bTTDV0vszpfms1tAMzhLntxBiNMCk/I3Mx/vhbtfhijJILODjpDBfWah0nvWrniFIcxMLcsb1tcPri13hZEaew==",
+++      "deprecated": "For the actively supported Angular Material, see https://www.npmjs.com/package/@angular/material. AngularJS support has officially ended. For extended AngularJS support options, see https://goo.gle/angularjs-path-forward.",
+++      "peerDependencies": {
+++        "angular": "^1.7.2",
+++        "angular-animate": "^1.7.2",
+++        "angular-aria": "^1.7.2",
+++        "angular-messages": "^1.7.2"
+++      }
+++    },
+++    "node_modules/angular-messages": {
+++      "version": "1.8.3",
+++      "resolved": "https://registry.npmjs.org/angular-messages/-/angular-messages-1.8.3.tgz",
+++      "integrity": "sha512-f/ywtg32lqzX8FnXkBJOyn13lbCbo333/xy/5TTFcsH/gZdXoiuERj+dLTOs8xHCkOeFQhFx0VD0DgtMgSag7A=="
+++    },
+++    "node_modules/d3": {
+++      "version": "3.5.17",
+++      "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz",
+++      "integrity": "sha512-yFk/2idb8OHPKkbAL8QaOaqENNoMhIaSHZerk3oQsECwkObkCpJyjYwCe+OHiq6UEdhe1m8ZGARRRO3ljFjlKg=="
+++    },
+++    "node_modules/material-design-lite": {
+++      "version": "1.3.0",
+++      "resolved": "https://registry.npmjs.org/material-design-lite/-/material-design-lite-1.3.0.tgz",
+++      "integrity": "sha512-ao76b0bqSTKcEMt7Pui+J/S3eVF0b3GWfuKUwfe2lP5DKlLZOwBq37e0/bXEzxrw7/SuHAuYAdoCwY6mAYhrsg==",
+++      "engines": {
+++        "node": ">=0.12.0"
+++      }
+++    },
+++    "node_modules/qrcode-generator": {
+++      "version": "2.0.4",
+++      "resolved": "https://registry.npmjs.org/qrcode-generator/-/qrcode-generator-2.0.4.tgz",
+++      "integrity": "sha512-mZSiP6RnbHl4xL2Ap5HfkjLnmxfKcPWpWe/c+5XxCuetEenqmNFf1FH/ftXPCtFG5/TDobjsjz6sSNL0Sr8Z9g=="
+++    }
+++  },
++   "dependencies": {
++     "angular": {
++-      "version": "1.8.0",
++-      "resolved": "https://registry.npmjs.org/angular/-/angular-1.8.0.tgz",
++-      "integrity": "sha512-VdaMx+Qk0Skla7B5gw77a8hzlcOakwF8mjlW13DpIWIDlfqwAbSSLfd8N/qZnzEmQF4jC4iofInd3gE7vL8ZZg=="
+++      "version": "1.8.3",
+++      "resolved": "https://registry.npmjs.org/angular/-/angular-1.8.3.tgz",
+++      "integrity": "sha512-5qjkWIQQVsHj4Sb5TcEs4WZWpFeVFHXwxEBHUhrny41D8UrBAd6T/6nPPAsLngJCReIOqi95W3mxdveveutpZw=="
++     },
++     "angular-animate": {
++-      "version": "1.6.4",
++-      "resolved": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.6.4.tgz",
++-      "integrity": "sha1-0+uQbTmDTy373Zgua416O02QAdI="
+++      "version": "1.8.3",
+++      "resolved": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.8.3.tgz",
+++      "integrity": "sha512-/LtTKvy5sD6MZbV0v+nHgOIpnFF0mrUp+j5WIxVprVhcrJriYpuCZf4S7Owj1o76De/J0eRzANUozNJ6hVepnQ=="
++     },
++     "angular-aria": {
++-      "version": "1.6.4",
++-      "resolved": "https://registry.npmjs.org/angular-aria/-/angular-aria-1.6.4.tgz",
++-      "integrity": "sha1-yGg2ZqzhlmaPaOciCBG9z8nhBuQ="
+++      "version": "1.8.3",
+++      "resolved": "https://registry.npmjs.org/angular-aria/-/angular-aria-1.8.3.tgz",
+++      "integrity": "sha512-qTXclmTW/KGw5JNKKQPcCKKq6hCBZ39jYINmLgMsjUHBAoxULaMRRTaRj/L2VTOjKvK5f9enkx+EUqRqzXDSFQ=="
++     },
++     "angular-material": {
++-      "version": "1.1.4",
++-      "resolved": "https://registry.npmjs.org/angular-material/-/angular-material-1.1.4.tgz",
++-      "integrity": "sha1-J941ZG9UzNMgCArwxwjhtDivh/Y="
+++      "version": "1.2.5",
+++      "resolved": "https://registry.npmjs.org/angular-material/-/angular-material-1.2.5.tgz",
+++      "integrity": "sha512-bTTDV0vszpfms1tAMzhLntxBiNMCk/I3Mx/vhbtfhijJILODjpDBfWah0nvWrniFIcxMLcsb1tcPri13hZEaew==",
+++      "requires": {}
++     },
++     "angular-messages": {
++-      "version": "1.6.4",
++-      "resolved": "https://registry.npmjs.org/angular-messages/-/angular-messages-1.6.4.tgz",
++-      "integrity": "sha1-nsnBOTKTsU3lQWHS+El3ZInpgP4="
+++      "version": "1.8.3",
+++      "resolved": "https://registry.npmjs.org/angular-messages/-/angular-messages-1.8.3.tgz",
+++      "integrity": "sha512-f/ywtg32lqzX8FnXkBJOyn13lbCbo333/xy/5TTFcsH/gZdXoiuERj+dLTOs8xHCkOeFQhFx0VD0DgtMgSag7A=="
++     },
++     "d3": {
++       "version": "3.5.17",
++       "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz",
++-      "integrity": "sha1-vEZ0gAQ3iyGjYMn8fPUjF5B2L7g="
+++      "integrity": "sha512-yFk/2idb8OHPKkbAL8QaOaqENNoMhIaSHZerk3oQsECwkObkCpJyjYwCe+OHiq6UEdhe1m8ZGARRRO3ljFjlKg=="
++     },
++     "material-design-lite": {
++       "version": "1.3.0",
++       "resolved": "https://registry.npmjs.org/material-design-lite/-/material-design-lite-1.3.0.tgz",
++-      "integrity": "sha1-0ATOP+6Zoe63Sni4oyUTSl8RcdM="
+++      "integrity": "sha512-ao76b0bqSTKcEMt7Pui+J/S3eVF0b3GWfuKUwfe2lP5DKlLZOwBq37e0/bXEzxrw7/SuHAuYAdoCwY6mAYhrsg=="
+++    },
+++    "qrcode-generator": {
+++      "version": "2.0.4",
+++      "resolved": "https://registry.npmjs.org/qrcode-generator/-/qrcode-generator-2.0.4.tgz",
+++      "integrity": "sha512-mZSiP6RnbHl4xL2Ap5HfkjLnmxfKcPWpWe/c+5XxCuetEenqmNFf1FH/ftXPCtFG5/TDobjsjz6sSNL0Sr8Z9g=="
++     }
++   }
++ }
+diff --git a/tests/qr/README.md b/tests/qr/README.md
+index a655cd06a306f6653f726b22a7b08f890a556dd1..58bbc665dcb116dd4518a88602bc0e4e06ced5b9 100644
+--- a/tests/qr/README.md
++++ b/tests/qr/README.md
+@@ -13,7 +13,8 @@ The existing CMake npm asset list installs `dist/qrcode.js`; `index.html` loads
+ it before `app.js`. The encoder's notice remains in the unminified script and
+ its full MIT license is installed through `res/js/qrcode.LICENSE.txt`.
+ The license text comes from the encoder project's LICENSE and matches its MIT
+-package metadata. No package lock or unrelated dependency versions are changed.
++package metadata. The follow-up dependency-lock patch preserves the validated frontend assets
++and records the complete npm selection in the SDK package lock.
+ 
+ Encoding uses automatic QR version selection, Byte mode, L error correction,
+ six pixels per module and a four-module white quiet zone. The dialog uses
+@@ -83,8 +84,8 @@ npm --prefix /tmp/qr-test-tools install --ignore-scripts --no-audit --no-fund @p
+ node tests/qr/serve.cjs /tmp/qr-frontend-check/install/share/otbr-web/frontend /tmp/qr-test-tools/node_modules/jsqr/dist/jsQR.js
+ ```
+ 
+-The preparation directory must be new or empty. The script downloads only five
+-pinned SDK files, dry-runs and applies the patch, builds and installs through the
++The preparation directory must be new or empty. The script downloads only six
++pinned SDK files, dry-runs and applies both patches, builds and installs through the
+ actual frontend CMake target, and runs the controller checks on installed assets.
+ The server listens only on `127.0.0.1:18764`. Its fixture uses the actual installed
+ Angular/app/QR assets and join dialog, plus a test-only jsQR decoder. The backend
+@@ -101,3 +102,25 @@ With Chrome already installed, use another terminal:
+ Stop the loopback server when finished. The workflow `local-commissioning-qr.yml`
+ runs these checks with a 15-minute limit and automatic server/browser cleanup.
+ It does not build the native app, deploy it, or upload screenshots/artifacts.
++
++## Locked dependency builds
++
++`0002-web-lock-frontend-dependencies.patch` follows the QR patch. It records
++Angular, animate, aria and messages 1.8.3; Angular Material 1.2.5; D3 3.5.17;
++Material Design Lite 1.3.0; and qrcode-generator 2.0.4. The lock uses format 2
++for npm 7 compatibility. CMake copies both package inputs, runs
++`npm ci --ignore-scripts`, and rebuilds when either input changes. These packages
++supply prebuilt assets; dependency lifecycle scripts are unnecessary.
++
++After `prepare.py`, run `python3 tests/qr/check-lock.py SCRATCH`. This checks
++that installation preserves the inputs, a lock-only edit triggers a rebuild,
++and mismatched, corrupt or missing lock inputs fail even with existing assets.
++It restores the valid inputs, rebuilds, and checks the dependency asset hashes.
++The existing CI runs these checks before the browser fixture.
++
++For an intentional dependency update, edit the manifest and regenerate its lock
++with the supported npm version in a scratch SDK tree, review all resolved
++versions/integrities, and update the patch against the same pinned SDK plus QR
++patch. Run the CMake/controller/lock/browser checks and review asset differences.
++Do not copy the SDK's original stale lock: it selects older Angular assets.
++A lockfile reproduces dependencies; it does not remediate AngularJS advisories.
+diff --git a/tests/qr/check-lock.py b/tests/qr/check-lock.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..44550c95b9618411c9ea1810f3fbe613928b9388
+--- /dev/null
++++ b/tests/qr/check-lock.py
+@@ -0,0 +1,66 @@
++#!/usr/bin/env python3
++"""Check frontend CMake lock inputs and fail-closed behavior in prepared scratch."""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import subprocess
++
++FRONTEND = Path("util/third_party/ot-br-posix/src/web/web-service/frontend")
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("scratch", type=Path)
++    args = parser.parse_args()
++    source = args.scratch / "sdk" / FRONTEND
++    binary = args.scratch / "build" / FRONTEND
++    manifest = source / "package.json"
++    lock = source / "package-lock.json"
++    originals = {path: path.read_bytes() for path in (manifest, lock)}
++    assets = {path.relative_to(binary): hashlib.sha256(path.read_bytes()).hexdigest()
++              for path in (binary / "node_modules").rglob("*")
++              if path.is_file() and (path.name.endswith(".min.js") or
++                                     path.name.endswith(".min.css") or path.name == "qrcode.js")}
++
++    def build(ok):
++        result = subprocess.run(["cmake", "--build", str(args.scratch / "build"),
++                                 "--target", "otbr-web-frontend"], text=True,
++                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
++        assert (result.returncode == 0) == ok, result.stdout
++        return result.stdout
++
++    try:
++        build(True)
++        for path, original in originals.items():
++            assert path.read_bytes() == original, f"source rewritten: {path}"
++        # Editing only the lock must trigger copying and a fresh clean install.
++        lock.write_bytes(originals[lock] + b"\n")
++        build(True)
++        assert (binary / "package-lock.json").read_bytes() == lock.read_bytes()
++        # npm ci rejects a manifest update without its corresponding lock update.
++        data = json.loads(originals[manifest])
++        data["dependencies"]["qrcode-generator"] = "2.0.3"
++        manifest.write_text(json.dumps(data))
++        assert "npm" in build(False).lower()
++        assert manifest.read_text() == json.dumps(data)
++        manifest.write_bytes(originals[manifest])
++        # A corrupt source lock cannot silently reuse already-present assets.
++        lock.write_text("{invalid json")
++        assert "npm" in build(False).lower()
++        lock.unlink()
++        build(False)
++    finally:
++        for path, original in originals.items():
++            path.write_bytes(original)
++        build(True)
++    for relative, digest in assets.items():
++        assert hashlib.sha256((binary / relative).read_bytes()).hexdigest() == digest, relative
++    for path, original in originals.items():
++        assert path.read_bytes() == original
++        assert (binary / path.name).read_bytes() == original
++    print("Frontend lock checks passed: unchanged inputs, lock-only rebuild, manifest mismatch, corrupt/missing lock, restored asset hashes.")
++
++
++if __name__ == "__main__":
++    main()
+\ No newline at end of file
+diff --git a/tests/qr/prepare.py b/tests/qr/prepare.py
+index 24eb0a746ccf72bb1defd97e6e543b86a10d451c..1f4df1b6fe3ad73b876bf23cead981b536898ff6 100644
+--- a/tests/qr/prepare.py
++++ b/tests/qr/prepare.py
+@@ -8,9 +8,12 @@ from urllib.request import urlopen
+ 
+ REF = "da661283f301b53eec04d1016009e60bc7e34a1f"
+ FRONTEND = "util/third_party/ot-br-posix/src/web/web-service/frontend"
+-FILES = ("CMakeLists.txt", "index.html", "package.json", "res/js/app.js", "join.dialog.html")
++FILES = ("CMakeLists.txt", "index.html", "package.json", "package-lock.json", "res/js/app.js", "join.dialog.html")
+ REPO = Path(__file__).resolve().parents[2]
+-PATCH = REPO / "hassio-ihost-silabs-multiprotocol/otbr-patches/0001-web-generate-commissioning-qr-locally.patch"
++PATCHES = [REPO / "hassio-ihost-silabs-multiprotocol/otbr-patches" / name for name in (
++    "0001-web-generate-commissioning-qr-locally.patch",
++    "0002-web-lock-frontend-dependencies.patch",
++)]
+ 
+ 
+ def run(*args, **kwargs):
+@@ -38,9 +41,10 @@ def main():
+         url = f"https://raw.githubusercontent.com/SiliconLabs/simplicity_sdk/{REF}/{FRONTEND}/{name}"
+         with urlopen(url, timeout=60) as response:
+             target.write_bytes(response.read())
+-    for flags in (("--dry-run",), ()):
+-        with PATCH.open("rb") as patch:
+-            run("patch", *flags, "-p1", cwd=sdk, stdin=patch)
++    for path in PATCHES:
++        for flags in (("--dry-run",), ()):
++            with path.open("rb") as patch:
++                run("patch", *flags, "-p1", cwd=sdk, stdin=patch)
+     (sdk / "CMakeLists.txt").write_text(
+         "cmake_minimum_required(VERSION 3.10)\n"
+         "project(qr_frontend_check NONE)\n"

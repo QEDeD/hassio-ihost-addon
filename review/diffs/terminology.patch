@@ -1,0 +1,1633 @@
+diff --git a/.github/ISSUE_TEMPLATE/bug_report.yml b/.github/ISSUE_TEMPLATE/bug_report.yml
+index 166da13a998da9d0db5c1d6e36400c699e4d2de1..5c3e18c9d3c934dd491c1b37838844472dd56f5a 100644
+--- a/.github/ISSUE_TEMPLATE/bug_report.yml
++++ b/.github/ISSUE_TEMPLATE/bug_report.yml
+@@ -1,5 +1,5 @@
+ name: "🐞 Bug Report"
+-description: "Report a bug in an iHost Home Assistant add-on."
++description: "Report a bug in an iHost Home Assistant app."
+ title: "[Bug]: "
+ labels:
+   - bug
+@@ -8,10 +8,10 @@ body:
+   - type: dropdown
+     id: addon_name
+     attributes:
+-      label: "Add-on Name"
+-      description: "Which add-on is affected?"
++      label: "App Name"
++      description: "Which app is affected?"
+       options:
+-        - "-- Please select an add-on --"
++        - "-- Please select an app --"
+         - "eWeLink Smart Home"
+         - "eWeLink-Remote Gateway"
+         - "SONOFF Dongle Flasher"
+diff --git a/.github/ISSUE_TEMPLATE/feature_request.yml b/.github/ISSUE_TEMPLATE/feature_request.yml
+index 1c4721e4640c7c34e71ef05430611fc09ffe166b..dffcf12eb87ac647508dd9b5908b3c8ef7bb04fc 100644
+--- a/.github/ISSUE_TEMPLATE/feature_request.yml
++++ b/.github/ISSUE_TEMPLATE/feature_request.yml
+@@ -1,5 +1,5 @@
+ name: "✨ Feature Request"
+-description: "Suggest a new feature or improvement for an iHost add-on."
++description: "Suggest a new feature or improvement for an iHost app."
+ title: "[Feature]: "
+ labels:
+   - enhancement
+@@ -8,10 +8,10 @@ body:
+   - type: dropdown
+     id: addon_name
+     attributes:
+-      label: "Add-on Name"
+-      description: "Which add-on is affected?"
++      label: "App Name"
++      description: "Which app is affected?"
+       options:
+-        - "-- Please select an add-on --"
++        - "-- Please select an app --"
+         - "eWeLink Smart Home"
+         - "eWeLink-Remote Gateway"
+         - "SONOFF Dongle Flasher"
+diff --git a/.github/ISSUE_TEMPLATE/usage_question.yml b/.github/ISSUE_TEMPLATE/usage_question.yml
+index f11e544505ebb052104618e8f8ccc06654b47977..80338fd0ec4f571865924e581442033fa7879924 100644
+--- a/.github/ISSUE_TEMPLATE/usage_question.yml
++++ b/.github/ISSUE_TEMPLATE/usage_question.yml
+@@ -1,5 +1,5 @@
+ name: "❓ Usage Question"
+-description: "Ask a question about how to use an iHost add-on."
++description: "Ask a question about how to use an iHost app."
+ title: "[Question]: "
+ labels:
+   - question
+@@ -8,10 +8,10 @@ body:
+   - type: dropdown
+     id: addon_name
+     attributes:
+-      label: "Add-on Name"
+-      description: "Which add-on is affected?"
++      label: "App Name"
++      description: "Which app is affected?"
+       options:
+-        - "-- Please select an add-on --"
++        - "-- Please select an app --"
+         - "eWeLink Smart Home"
+         - "eWeLink-Remote Gateway"
+         - "SONOFF Dongle Flasher"
+diff --git a/.github/actions/check-addon-version/action.yaml b/.github/actions/check-addon-version/action.yaml
+index d74292c63db52644b23f4da9af9f634f92f9b958..315b30b8c6bf8fb421c80a19a922b0d1bce206c5 100644
+--- a/.github/actions/check-addon-version/action.yaml
++++ b/.github/actions/check-addon-version/action.yaml
+@@ -1,11 +1,11 @@
+-name: Check HA Addon Version
++name: Check HA App Version
+ inputs:
+   addon_folder_name:
+-    description: "Addon folder name"
++    description: "App folder name"
+     required: true
+     example: "matter_server"
+   config:
+-    description: "Addon config file name"
++    description: "App config file name"
+     required: false
+     example: "config.yaml"
+     default: "config.yaml"
+diff --git a/.github/workflows/Monitor-addon.yml b/.github/workflows/Monitor-addon.yml
+index 6deb1663db8aecedb78dc67bd55686b6bf108308..81a953673baaea5f685deb3e8a3fe048ccbda234 100644
+--- a/.github/workflows/Monitor-addon.yml
++++ b/.github/workflows/Monitor-addon.yml
+@@ -1,4 +1,4 @@
+-name: Monitor Addon Version
++name: Monitor App Version
+ 
+ on:
+ #  schedule:
+@@ -18,7 +18,7 @@ jobs:
+           cmd:
+             yq --version || echo "yq 未安装"
+ 
+-      - name: Check EspHome-Addon release
++      - name: Check EspHome App release
+         uses: ./.github/actions/check-release
+         with:
+           owner: esphome
+@@ -36,12 +36,12 @@ jobs:
+           owner: home-assistant-libs
+           repo: python-matter-server
+ 
+-      - name: Check Matter-Server-Addon release
++      - name: Check Matter-Server App release
+         uses: ./.github/actions/check-addon-version
+         with:
+           addon_folder_name:  matter_server
+ 
+-      - name: Check OTBR-Addon release
++      - name: Check OTBR App release
+         uses: ./.github/actions/check-addon-version
+         with:
+           addon_folder_name: openthread_border_router
+diff --git a/.github/workflows/auto-assign-by-addon.yml b/.github/workflows/auto-assign-by-addon.yml
+index 31a0032635ad0897079ea13264c67e0b58078f04..937ad80e03fa5766aba1dc38ad39c72c2598b8d6 100644
+--- a/.github/workflows/auto-assign-by-addon.yml
++++ b/.github/workflows/auto-assign-by-addon.yml
+@@ -1,4 +1,4 @@
+-name: Auto-assign by Add-on Name
++name: Auto-assign by App Name
+ 
+ on:
+   issues:
+@@ -11,30 +11,30 @@ jobs:
+   assign:
+     runs-on: ubuntu-latest
+     steps:
+-      - name: Auto assign based on Add-on Name
++      - name: Auto assign based on App Name
+         uses: actions/github-script@v7
+         with:
+           script: |
+             const issue = context.payload.issue;
+             const body = issue.body || "";
+ 
+-            // 1) Parse "Add-on Name" section from issue body
++            // 1) Parse current "App Name" and legacy "Add-on Name" sections from issue body
+             // Expected markdown rendered by issue form:
+-            // ### Add-on Name
++            // ### App Name
+             //
+             // eWeLink-Remote Gateway
+-            const re = /###\s*Add-on Name\s*\r?\n\r?\n([^\r\n]+)/i;
++            const re = /###\s*(?:App|Add-on) Name\s*\r?\n\r?\n([^\r\n]+)/i;
+             const m = body.match(re);
+             if (!m) {
+-              core.info("Add-on Name section not found. Skip.");
++              core.info("App Name section not found. Skip.");
+               return;
+             }
+ 
+             const addon = m[1].trim();
+-            core.info(`Parsed addon: "${addon}"`);
++            core.info(`Parsed app: "${addon}"`);
+ 
+             // 2) Sentinel option (no real selection)
+-            const sentinel = "-- Please select an add-on --";
++            const sentinels = ["-- Please select an app --", "-- Please select an add-on --"];
+             const owner = context.repo.owner;
+             const repo = context.repo.repo;
+             const issue_number = issue.number;
+@@ -42,8 +42,8 @@ jobs:
+             // Optional: label when not selected
+             const NOT_SELECTED_LABEL = "needs-addon-selection";
+ 
+-            if (!addon || addon === sentinel) {
+-              core.info("Addon not selected. Skip assignment.");
++            if (!addon || sentinels.includes(addon)) {
++              core.info("App not selected. Skip assignment.");
+ 
+               // Add a label to remind user (optional)
+               try {
+@@ -79,7 +79,7 @@ jobs:
+ 
+             const assignees = mapping[addon];
+             if (!assignees || assignees.length === 0 || assignees.includes("REPLACE_ME")) {
+-              core.info(`No valid assignees configured for addon "${addon}". Skip assignment.`);
++              core.info(`No valid assignees configured for app "${addon}". Skip assignment.`);
+               return;
+             }
+ 
+diff --git a/README.md b/README.md
+index ef79ea8dfbb9b8f3656549c6cccc1b35399ab5ed..f82ad43277a710e64227a3a79e09ee02a6a28b93 100644
+--- a/README.md
++++ b/README.md
+@@ -1,10 +1,10 @@
+-# Hassio iHost Add-ons
++# Hassio iHost Apps
+ 
+ ## About
+-This repository contains a set of Home Assistant add-ons developed specifically for **SONOFF iHost**.
++This repository contains a set of Home Assistant apps developed specifically for **SONOFF iHost**.
+ 
+ ## Installation
+-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
++1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+ 2. Paste the following URL:  
+    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
+ 3. Or, simply click the button below to add it automatically:
+@@ -13,19 +13,19 @@ This repository contains a set of Home Assistant add-ons developed specifically
+ 
+ ## 🔄 Updating Repository
+ 
+-If you can only see part of the add-ons after adding this repository, it might be due to outdated local cache.  
++If you can only see part of the apps after adding this repository, it might be due to outdated local cache.  
+ To refresh:
+ 
+-1. Go to the Add-on Store  
++1. Go to the App Store  
+ 2. Click the **More** button (⋮) in the upper-right corner  
+ 3. Click **Check for updates**
+ 
+-This will force Home Assistant to reload the latest add-on list from all configured repositories.
++This will force Home Assistant to reload the latest app list from all configured repositories.
+ 
+ 
+ ## License
+ 
+-All add-ons in this repository are released under the [MIT License](./LICENSE).
++All apps in this repository are released under the [MIT License](./LICENSE).
+ 
+ ---
+ 
+diff --git a/hassio-ihost-esphome/DOCS.md b/hassio-ihost-esphome/DOCS.md
+index 45ad53d04b2e34dbeea7a91777f92b2345217d00..7982dc3cd655f051956c53a6c5afde5fbd8a0fa6 100644
+--- a/hassio-ihost-esphome/DOCS.md
++++ b/hassio-ihost-esphome/DOCS.md
+@@ -1,21 +1,21 @@
+-# ESPHome Add-on
++# ESPHome App
+ ## Installation
+ 
+-The installation of this add-on is pretty straightforward and not different in comparison to installing any other Home Assistant add-on.
++The installation of this app is pretty straightforward and not different in comparison to installing any other Home Assistant app.
+ 
+-1. Search for the “ESPHome” add-on in the Supervisor add-on store.
+-2. Press install to download the add-on and unpack it on your machine. This can take some time.
+-3. Optional: If you're using SSL/TLS certificates and want to encrypt your communication to this add-on, please enter `true` into the `ssl` field and set the `fullchain` and `certfile` options accordingly.
+-4. Start the add-on, check the logs of the add-on to see if everything went well.
++1. Search for the “ESPHome” app in the Supervisor app store.
++2. Press install to download the app and unpack it on your machine. This can take some time.
++3. Optional: If you're using SSL/TLS certificates and want to encrypt your communication to this app, please enter `true` into the `ssl` field and set the `fullchain` and `certfile` options accordingly.
++4. Start the app, check the logs of the app to see if everything went well.
+ 5. Click "OPEN WEB UI" to open the ESPHome dashboard. You will be asked for your Home Assistant credentials - ESPHome uses Home Assistant's authentication system to log you in.
+ 
+ You can view the ESPHome documentation at https://esphome.io/
+ 
+ ## Configuration
+ 
+-**Note**: _Remember to restart the add-on when the configuration is changed._
++**Note**: _Remember to restart the app when the configuration is changed._
+ 
+-Example add-on configuration:
++Example app configuration:
+ 
+ ```json
+ {
+@@ -27,7 +27,7 @@ Example add-on configuration:
+ 
+ ### Option: `ssl`
+ 
+-Enables or disables encrypted SSL/TLS (HTTPS) connections to the web server of this add-on.
++Enables or disables encrypted SSL/TLS (HTTPS) connections to the web server of this app.
+ Set it to `true` to encrypt communications, `false` otherwise.
+ Please note that if you set this to `true` you must also generate the key and certificate
+ files for encryption. For example using [Let's Encrypt](https://www.home-assistant.io/addons/lets_encrypt/)
+@@ -35,19 +35,19 @@ or [Self-signed certificates](https://www.home-assistant.io/docs/ecosystem/certi
+ 
+ ### Option: `certfile`
+ 
+-The certificate file to use for SSL. If this file doesn't exist, the add-on start will fail.
++The certificate file to use for SSL. If this file doesn't exist, the app start will fail.
+ 
+ **Note**: The file MUST be stored in `/ssl/`, which is the default for Home Assistant
+ 
+ ### Option: `keyfile`
+ 
+-The private key file to use for SSL. If this file doesn't exist, the add-on start will fail.
++The private key file to use for SSL. If this file doesn't exist, the app start will fail.
+ 
+ **Note**: The file MUST be stored in `/ssl/`, which is the default for Home Assistant
+ 
+ ### Option: `leave_front_door_open`
+ 
+-Adding this option to the add-on configuration allows you to disable
++Adding this option to the app configuration allows you to disable
+ authentication by setting it to `true`.
+ 
+ ### Option: `relative_url`
+diff --git a/hassio-ihost-esphome/README.md b/hassio-ihost-esphome/README.md
+index bf2644262a797d1a576afeca2cef5ad7c128fd51..0a8683697d7d6d0c108551352fd179948394afea 100644
+--- a/hassio-ihost-esphome/README.md
++++ b/hassio-ihost-esphome/README.md
+@@ -9,14 +9,14 @@
+ 
+ ### Disclaimer
+ 
+-This repository provides **custom-built ESPHome add-ons and container images for armv7** which are no longer supported by the official ESPHome distribution.
++This repository provides **custom-built ESPHome apps and container images for armv7** which are no longer supported by the official ESPHome distribution.
+ 
+ We only maintain compatibility and build infrastructure for the **32-bit architecture**.
+ If you encounter issues **unrelated to platform architecture** (such as ESPHome core features, YAML configuration, or device support), please report them to the [official ESPHome repository](https://github.com/esphome/esphome).
+ 
+ 
+ ## Installation
+-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
++1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+ 2. Paste the following URL:  
+    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
+ 3. Or, simply click the button below to add it automatically:
+@@ -25,7 +25,7 @@ If you encounter issues **unrelated to platform architecture** (such as ESPHome
+ 
+ ## About
+ 
+-This add-on allows you to write configurations and turn your microcontrollers
++This app allows you to write configurations and turn your microcontrollers
+ into smart home devices directly through Home Assistant **with no programming experience required**.
+ All you need to do is write YAML configuration files; the rest (over-the-air updates, compiling) is all
+ handled by ESPHome.
+diff --git a/hassio-ihost-esphome/translations/en.yaml b/hassio-ihost-esphome/translations/en.yaml
+index 39ac3fd225e00e154facff7bea077ed9d756cf18..e6f202f2c618dfb1bd4a546f1688c2b8d880c4ad 100644
+--- a/hassio-ihost-esphome/translations/en.yaml
++++ b/hassio-ihost-esphome/translations/en.yaml
+@@ -22,14 +22,14 @@ configuration:
+       updated you can enter `dev` here.
+ 
+       Please note that the fork or branch you are using **must** be up to
+-      date with ESPHome dev or the add-on **will not start**.
++      date with ESPHome dev or the app **will not start**.
+   home_assistant_dashboard_integration:
+     name: Home Assistant Dashboard Integration
+     description: >-
+       Enables/Disables the ESPHome dashboard integrating with Home Assistant
+       for automatic configuration of devices and device updates. If you use
+-      multiple version of the ESPHome add-on, make sure it is enabled on a
+-      single add-on only.
++      multiple version of the ESPHome app, make sure it is enabled on a
++      single app only.
+   keyfile:
+     name: Private key file
+     description: >-
+@@ -38,7 +38,7 @@ configuration:
+   leave_front_door_open:
+     name: Disable external authentication
+     description: >-
+-      Disables external authentication when having opened the add-on
++      Disables external authentication when having opened the app
+       on an external port. **WARNING**: This is a security risk!
+   relative_url:
+     name: Relative URL
+diff --git a/hassio-ihost-ewelink-remote/DOCS.md b/hassio-ihost-ewelink-remote/DOCS.md
+index fe7ffafed41662b7214e2a84dad5a29f94666d0f..49f91d668273cc36d91b84bf34cb2f48f5506c91 100644
+--- a/hassio-ihost-ewelink-remote/DOCS.md
++++ b/hassio-ihost-ewelink-remote/DOCS.md
+@@ -1,6 +1,6 @@
+ # eWeLink-Remote Gateway
+ ## 1. Introduction
+-eWeLink-Remote Gateway add-on is an eWeLink-Remote Gateway gateway that supports adding eWeLink-Remote sub-devices and syncing sub-devices  to Home Assistant,such as  **[R5](https://sonoff.tech/product/smart-wall-switches/r5/),[R5W](https://sonoff.tech/product/smart-wall-switches/r5/),[S-Mate](https://sonoff.tech/product/diy-smart-switches/s-mate/),[S-Mate2](https://sonoff.tech/product/diy-smart-switches/s-mate/)**. You can select eWeLink-Remote sub-devices in Home Assistant Automations and trigger automations through single-click,double-click,and long-press events reported by eWeLink-Remote Gateway sub-devices.**[Learn more](https://sonoff.tech/news-and-events/what-is-ewelink-remote-control/)** about eWeLink-Remote.
++eWeLink-Remote Gateway app is an eWeLink-Remote Gateway gateway that supports adding eWeLink-Remote sub-devices and syncing sub-devices  to Home Assistant,such as  **[R5](https://sonoff.tech/product/smart-wall-switches/r5/),[R5W](https://sonoff.tech/product/smart-wall-switches/r5/),[S-Mate](https://sonoff.tech/product/diy-smart-switches/s-mate/),[S-Mate2](https://sonoff.tech/product/diy-smart-switches/s-mate/)**. You can select eWeLink-Remote sub-devices in Home Assistant Automations and trigger automations through single-click,double-click,and long-press events reported by eWeLink-Remote Gateway sub-devices.**[Learn more](https://sonoff.tech/news-and-events/what-is-ewelink-remote-control/)** about eWeLink-Remote.
+ 
+ ## 2. Prerequisite
+ A working Bluetooth, which can be the Bluetooth on the hardware running Home Assistant, a Bluetooth Dongle, or a Bluetooth proxy device 
+@@ -21,31 +21,31 @@ ble_passthrough:
+ ```
+ - Save the file and restart Home Assistant.
+ 
+-## 3. How to Install eWeLink-Remote Gateway Add-on?
+-### 3.1 Add eWeLink-Remote Gateway Add-on to Repositories
+-Skip this step and simply proceed to the Add-on Store to install the required add-on if you have already added the add-ons from this repository (e.g., iHost Hardware Control).
++## 3. How to Install eWeLink-Remote Gateway App?
++### 3.1 Add eWeLink-Remote Gateway App to Repositories
++Skip this step and simply proceed to the App Store to install the required app if you have already added the apps from this repository (e.g., iHost Hardware Control).
+ 1. Via URL
+-- Navigate to Settings > Add-on Store> Click the three-dot menu (⋮) in the top right corner and select Repositories
++- Navigate to Settings > App Store> Click the three-dot menu (⋮) in the top right corner and select Repositories
+ - Enter the repository URL into the input box: https://github.com/iHost-Open-Source-Project/hassio-ihost-addon
+ 2. Via Button Clicking
+-- Click this buttonto add the add-on automatically    
+-[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
+-### 3.2 Install eWeLink-Remote Gateway Add-on
+-1.    Search for eWeLink-Remote Gateway in the Add-ons Store.
++- Click this buttonto add the app automatically    
++[![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
++### 3.2 Install eWeLink-Remote Gateway App
++1.    Search for eWeLink-Remote Gateway in the App Store.
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-ewelink-remote/images/find.png)
+ 2.    Click Install
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-ewelink-remote/images/install_Addon.png)
+ 3.   Wait for the installation to complete
+-### 3.3 Start the eWeLink-Remote Gateway Add-on
+-After installation, click Start to launch the add-on. Wait until the service has fully started before proceeding.
++### 3.3 Start the eWeLink-Remote Gateway App
++After installation, click Start to launch the app. Wait until the service has fully started before proceeding.
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-ewelink-remote/images/start.png)
+-## 4. Add devices via eWeLink-Remote Gateway Add-on
+-1.  Click "Web Interface" to enter the Add-on operation interface.
++## 4. Add devices via eWeLink-Remote Gateway App
++1.  Click "Web Interface" to enter the App operation interface.
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-ewelink-remote/images/open_web_ui1.png)
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-ewelink-remote/images/open_web_ui.png)
+ **Note*:**
+-- Bluetooth must be enabled in Home Assistant to use the eWeLink-Remote Gateway Add-on. If there is no Bluetooth hardware module (configurable Bluetooth Dongle) or Bluetooth integration is not enabled, the Add-on will not work;
+-You can check the log to determine whether the Add-on failed to run because the Bluetooth integration is not enabled. 
++- Bluetooth must be enabled in Home Assistant to use the eWeLink-Remote Gateway App. If there is no Bluetooth hardware module (configurable Bluetooth Dongle) or Bluetooth integration is not enabled, the App will not work;
++You can check the log to determine whether the App failed to run because the Bluetooth integration is not enabled. 
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-ewelink-remote/images/Log-image.png)
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-ewelink-remote/images/Log-Blue.png)
+ - Before clicking "Pair" to start adding eWeLink-Remote sub-devices, you need to configure and enable Bluetooth "[ passive scanning ](https://www.home-assistant.io/integrations/bluetooth/#passive-scanning)  " to detect and connect to eWeLink-Remote sub-devices. If it is not enabled in advance, a prompt page will appear. You can follow the prompt path (Go to Bluetooth Integration > Configuration > Configure Bluetooth Options, check Passive Scanning, and click Submit.) to enable it.
+@@ -72,5 +72,5 @@ Click "Edit" to manage the added devices, select the corresponding device, and c
+ - After the eWeLink-Remote sub-device is successfully configured in Home Assistant Automation, if the entity name is changed, the entity name will be displayed as "Unknown" in the automation configuration information, but it will not affect the automation scene triggering.
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-ewelink-remote/images/UNknow.png)
+ 
+-## 5. eWeLink-Remote Gateway Add-on Home Assistant MQTT
++## 5. eWeLink-Remote Gateway App Home Assistant MQTT
+ - [Home Assistant MQTT Doc](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-ewelink-remote/MQTT.md)
+diff --git a/hassio-ihost-ewelink-remote/MQTT.md b/hassio-ihost-ewelink-remote/MQTT.md
+index f7f37c053ca1d7effe081ccebae6f2e7e284c946..6d005a941f3728084c1c09c3f0b4ff493f409f19 100644
+--- a/hassio-ihost-ewelink-remote/MQTT.md
++++ b/hassio-ihost-ewelink-remote/MQTT.md
+@@ -1,8 +1,8 @@
+ # **Home Assistant MQTT**
+-To enhance compatibility between Home Assistant and eWeLink-Remote devices (such as R5, S-MATE, and other BLE-based scene controllers), this section describes how the Add-on adopts Home Assistant’s official **MQTT Event Integration** and **MQTT Device Trigger Integration** to expose device events and channel actions to HA.
++To enhance compatibility between Home Assistant and eWeLink-Remote devices (such as R5, S-MATE, and other BLE-based scene controllers), this section describes how the App adopts Home Assistant’s official **MQTT Event Integration** and **MQTT Device Trigger Integration** to expose device events and channel actions to HA.
+ 
+   
+-The following content explains the MQTT topic structure used by the Add-on, as well as the Event Entities, Trigger Entities, and the mechanism for reporting device availability.
++The following content explains the MQTT topic structure used by the App, as well as the Event Entities, Trigger Entities, and the mechanism for reporting device availability.
+ 
+ # **MQTT Event Integration**
+ Each capability of the device—together with each physical channel of that capability—is represented as an **Event Entity** in Home Assistant.
+diff --git a/hassio-ihost-ewelink-remote/README.md b/hassio-ihost-ewelink-remote/README.md
+index 25245f7441f818eb5896a78a7b71e8e066dc2290..86f68ab4464a17e04e7ee5ffbec62b398b6e1ce1 100644
+--- a/hassio-ihost-ewelink-remote/README.md
++++ b/hassio-ihost-ewelink-remote/README.md
+@@ -1,4 +1,4 @@
+-# eWeLink-Remote Gateway Add-on
++# eWeLink-Remote Gateway App
+ 
+ 
+ ![Supports armv7 Architecture](https://img.shields.io/badge/armv7-yes-green.svg)
+@@ -7,7 +7,7 @@
+ 
+ 
+ ## About
+-eWeLink-Remote Gateway add-on is an eWeLink-Remote Gateway gateway that supports adding eWeLink-Remote sub-devices and syncing sub-devices  to Home Assistant,such as **[R5](https://sonoff.tech/product/smart-wall-switches/r5/),[R5W](https://sonoff.tech/product/smart-wall-switches/r5/),[S-Mate](https://sonoff.tech/product/diy-smart-switches/s-mate/),[S-Mate2](https://sonoff.tech/product/diy-smart-switches/s-mate/)**. You can select eWeLink-Remote sub-devices in Home Assistant Automations and trigger automations through single-click,double-click,and long-press events reported by eWeLink-Remote Gateway sub-devices.
++eWeLink-Remote Gateway app is an eWeLink-Remote Gateway gateway that supports adding eWeLink-Remote sub-devices and syncing sub-devices  to Home Assistant,such as **[R5](https://sonoff.tech/product/smart-wall-switches/r5/),[R5W](https://sonoff.tech/product/smart-wall-switches/r5/),[S-Mate](https://sonoff.tech/product/diy-smart-switches/s-mate/),[S-Mate2](https://sonoff.tech/product/diy-smart-switches/s-mate/)**. You can select eWeLink-Remote sub-devices in Home Assistant Automations and trigger automations through single-click,double-click,and long-press events reported by eWeLink-Remote Gateway sub-devices.
+ 
+ 
+ ## Prerequisite
+@@ -30,7 +30,7 @@ ble_passthrough:
+ - Save the file and restart Home Assistant.
+ 
+ ## Installation
+-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
++1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+ 2. Paste the following URL:  
+    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
+ 3. Or, simply click the button below to add it automatically:
+diff --git a/hassio-ihost-ewelink-remote/config.json b/hassio-ihost-ewelink-remote/config.json
+index bc7e4ab7e06d962e38785990ea5a7200a96bb985..1886b4df8b3d1e32df09ef56b126acd4f3b8198c 100644
+--- a/hassio-ihost-ewelink-remote/config.json
++++ b/hassio-ihost-ewelink-remote/config.json
+@@ -2,7 +2,7 @@
+   "name": "eWeLink-Remote Gateway",
+   "version": "0.3.1",
+   "slug": "ewelink_remote",
+-  "description": "eWeLink-Remote Gateway Add-on supports adding eWeLink-Remote sub-devices R5, R5W, S-Mate, S-Mate2 to Home Assistant as trigger conditions for automation",
++  "description": "eWeLink-Remote Gateway App supports adding eWeLink-Remote sub-devices R5, R5W, S-Mate, S-Mate2 to Home Assistant as trigger conditions for automation",
+   "startup": "application",
+   "url": "https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-ewelink-remote",
+   "boot": "auto",
+diff --git a/hassio-ihost-hardware-control/DOCS.md b/hassio-ihost-hardware-control/DOCS.md
+index cd7196c6dbee115b32fe0149ed720ac76b6d03e0..50e5dc2898ff50ce7fa7e179f2ac969f8504bc84 100644
+--- a/hassio-ihost-hardware-control/DOCS.md
++++ b/hassio-ihost-hardware-control/DOCS.md
+@@ -1,29 +1,29 @@
+-# iHost Hardware Control  Add-on
++# iHost Hardware Control  App
+ 
+ ## Introduction 
+ 
+-iHost Hardware Control add-on registers buttons and indicators on the iHost as entities in Home Assistant, allowing users to configure automation rules for button and indicator entities directly in Home Assistant for more flexible control of hardware interactions.
++iHost Hardware Control app registers buttons and indicators on the iHost as entities in Home Assistant, allowing users to configure automation rules for button and indicator entities directly in Home Assistant for more flexible control of hardware interactions.
+ 
+ ## Prerequisites 
+ 
+-Booting and running Home Assistant on iHost via a pre-flashed microSD card is required to use the **iHost Hardware Control** add-on, as it enables iHost's button and indicator functions. See the [Operation Guide](https://github.com/iHost-Open-Source-Project/ha-operating-system?tab=readme-ov-file#readme) for more details. 
++Booting and running Home Assistant on iHost via a pre-flashed microSD card is required to use the **iHost Hardware Control** app, as it enables iHost's button and indicator functions. See the [Operation Guide](https://github.com/iHost-Open-Source-Project/ha-operating-system?tab=readme-ov-file#readme) for more details. 
+ 
+-## Install iHost Hardware Control Add-on
++## Install iHost Hardware Control App
+ 
+-#### Install **iHost Hardware Control**  Add-on
++#### Install **iHost Hardware Control**  App
+ 
+-1. Search for **iHost Hardware Control** in the Add-ons Store; 
++1. Search for **iHost Hardware Control** in the App Store; 
+ 2. Click **Install**;
+ 
+ ![img](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-hardware-control/images/install.png)
+ 
+ 3. Wait for the installation to complete.
+ 
+-#### Start **iHost Hardware Control**  Add-on
++#### Start **iHost Hardware Control**  App
+ 
+ Click the “start” button after the installation is complete and wait for the start to finish
+ 
+-Since the iHost Hardware Control add-on relies on MQTT, the Mosquitto broker add-on is automatically installed and started for you when you start the iHost Hardware Control add-on, you need to wait a few minutes to see the Mosquitto broker plugin in the add-ons list.
++Since the iHost Hardware Control app relies on MQTT, the Mosquitto broker app is automatically installed and started for you when you start the iHost Hardware Control app, you need to wait a few minutes to see the Mosquitto broker plugin in the apps list.
+ 
+ ![img](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-hardware-control/images/start.png)
+ 
+@@ -41,7 +41,7 @@ Please go to Settings -> Devices & Services -> click the Add button for MQTT Int
+ 
+ ### Check iHost Buttons and Indicators in MQTT Integrations
+ 
+-After successfully installing and launching the **iHost Hardware Control** add-on as described above, you can see the buttons and indicators on iHost in the **MQTT** integration.
++After successfully installing and launching the **iHost Hardware Control** app as described above, you can see the buttons and indicators on iHost in the **MQTT** integration.
+ ![img](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-hardware-control/images/mqtt_devices.png)
+ 
+ #### iHost Buttons and Its Entities
+diff --git a/hassio-ihost-hardware-control/README.md b/hassio-ihost-hardware-control/README.md
+index dff40a9228c57f2ee3151ba0f8b6d64135d646cf..27bbc80c69f6f1ff77b1cdb4e7f0705e89d16224 100644
+--- a/hassio-ihost-hardware-control/README.md
++++ b/hassio-ihost-hardware-control/README.md
+@@ -6,14 +6,14 @@ Controlling iHost buttons and indicators in Home Assistant
+ 
+ ## About
+ 
+-iHost Hardware Control add-on registers buttons and indicators on the iHost as entities in Home Assistant, allowing users to configure automation rules for button and indicator entities directly in Home Assistant for more flexible control of hardware interactions.
++iHost Hardware Control app registers buttons and indicators on the iHost as entities in Home Assistant, allowing users to configure automation rules for button and indicator entities directly in Home Assistant for more flexible control of hardware interactions.
+ 
+ ## Prerequisites 
+ 
+-Booting and running Home Assistant on iHost via a pre-flashed microSD card is required to use the iHost Hardware Control add-on, See the Operation Guide for more details. 
++Booting and running Home Assistant on iHost via a pre-flashed microSD card is required to use the iHost Hardware Control app, See the Operation Guide for more details. 
+ 
+ ## Installation
+-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
++1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+ 2. Paste the following URL:  
+    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
+ 3. Or, simply click the button below to add it automatically:
+@@ -22,7 +22,7 @@ Booting and running Home Assistant on iHost via a pre-flashed microSD card is re
+ 
+ ## How to use
+ 
+-See “Documentation” for details on how to use the iHost Hardware Control add-on.
++See “Documentation” for details on how to use the iHost Hardware Control app.
+ 
+ ![img](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-hardware-control/images/buttons_device.png)
+ 
+diff --git a/hassio-ihost-hardware-control/config.json b/hassio-ihost-hardware-control/config.json
+index 901dd28acd1f9793c6e80ff48c651aa3be0e3aa0..7aa90fbef11aa80ef1fcedd60e35465defc4abf9 100644
+--- a/hassio-ihost-hardware-control/config.json
++++ b/hassio-ihost-hardware-control/config.json
+@@ -2,7 +2,7 @@
+     "name": "iHost Hardware Control",
+     "version": "1.1.3",
+     "slug": "ihost_hardware_control",
+-    "description": "In the HA over iHost project, the iHost Hardware Control Add-on is used to manage physical buttons and indicator lights on the device. It registers these components as entities in Home Assistant, allowing users to configure automation rules directly in HA for more flexible hardware interaction control.",
++    "description": "In the HA over iHost project, the iHost Hardware Control App is used to manage physical buttons and indicator lights on the device. It registers these components as entities in Home Assistant, allowing users to configure automation rules directly in HA for more flexible hardware interaction control.",
+     "uart": true,
+     "udev": true,
+     "url": "https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-hardware-control",
+diff --git a/hassio-ihost-hardware-control/translations/en.yaml b/hassio-ihost-hardware-control/translations/en.yaml
+index de6a9c48ac52a2cf4e7e2a954e731fd38c8c8ee2..143a39ebf00bfa8eab508284e41b6a0a7df0032f 100644
+--- a/hassio-ihost-hardware-control/translations/en.yaml
++++ b/hassio-ihost-hardware-control/translations/en.yaml
+@@ -3,7 +3,7 @@ configuration:
+   data_path:
+     name: data_path
+     description: >-
+-      Use this folder to store your add-on data. Note: The folder path must be created within the /config/ directory.
++      Use this folder to store your app data. Note: The folder path must be created within the /config/ directory.
+   mqtt:
+     name: MQTT
+     description: >-
+diff --git a/hassio-ihost-matter-bridge-addon/DOCS.md b/hassio-ihost-matter-bridge-addon/DOCS.md
+index 3c5a19279e5669563b8153b2ffae258d7f0f4835..ea0b2fad8f0209284f762dd994f9d4147f38b0f4 100644
+--- a/hassio-ihost-matter-bridge-addon/DOCS.md
++++ b/hassio-ihost-matter-bridge-addon/DOCS.md
+@@ -2,35 +2,35 @@
+ 
+ ## Introduction
+ 
+-Matter Bridge for iHost add-on exposes entities of Home Assistant devices as Matter-enabled devices, enabling them to be integrated with Matter platforms, such as Apple Home, Google Home, and Amazon Alexa.  
+-This add-on is based on iHost Matter Bridge and has passed Matter certification to ensure protocol compatibility and long-term availability.
++Matter Bridge for iHost app exposes entities of Home Assistant devices as Matter-enabled devices, enabling them to be integrated with Matter platforms, such as Apple Home, Google Home, and Amazon Alexa.  
++This app is based on iHost Matter Bridge and has passed Matter certification to ensure protocol compatibility and long-term availability.
+ 
+ At the same time, it is compatible with web and mobile terminals.
+ 
+ ## Prerequisite
+ 
+-The **Matter Bridge for iHost add-on** is designed for the **HA over iHost** project **ONLY**, allowing users to expose entities of Home Assistant devices as Matter devices and sync them to supported Matter platforms for control.
++The **Matter Bridge for iHost app** is designed for the **HA over iHost** project **ONLY**, allowing users to expose entities of Home Assistant devices as Matter devices and sync them to supported Matter platforms for control.
+ 
+-Therefore, this add-on is only functional when Home Assistant is running on iHost. Learn [<u>How to run Home Assistant Operating System on iHost?</u>](https://github.com/iHost-Open-Source-Project/ha-operating-system?tab=readme-ov-file#readme)
++Therefore, this app is only functional when Home Assistant is running on iHost. Learn [<u>How to run Home Assistant Operating System on iHost?</u>](https://github.com/iHost-Open-Source-Project/ha-operating-system?tab=readme-ov-file#readme)
+ 
+-## How to Install Matter Bridge Add-on?
++## How to Install Matter Bridge App?
+ 
+-### Add Matter Bridge Add-on to Repositories
++### Add Matter Bridge App to Repositories
+ 
+-Skip this step and simply proceed to the Add-on Store to install the required add-on if you have already added the add-ons from this repository (e.g., iHost Hardware Control).
++Skip this step and simply proceed to the App Store to install the required app if you have already added the apps from this repository (e.g., iHost Hardware Control).
+ 
+ #### Via URL
+ 
+--   Navigate to **Settings > Add-on Store> Click the three-dot menu (⋮) in the top right corner and select Repositories**.
++-   Navigate to **Settings > App Store> Click the three-dot menu (⋮) in the top right corner and select Repositories**.
+ -   Enter the repository URL into the input box: [<u>https://github.com/iHost-Open-Source-Project/hassio-ihost-addon</u>](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)
+ 
+ #### Via Button Clicking
+ 
+--   Click this button [![Add Repository](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon) to add the add-on automatically.
++-   Click this button [![Add Repository](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon) to add the app automatically.
+ 
+-### Install Matter Bridge Add-on
++### Install Matter Bridge App
+ 
+-1. Search for **Matter Bridge** in the Add-ons Store.
++1. Search for **Matter Bridge** in the App Store.
+ 
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-matter-bridge-addon/images/search.png)
+ 
+@@ -40,13 +40,13 @@ Skip this step and simply proceed to the Add-on Store to install the required ad
+ 
+ 3. Wait for the installation to complete.
+ 
+-## Start the Matter Bridge Add-on
++## Start the Matter Bridge App
+ 
+-After installation, click **Start** to launch the add-on. Wait until the service has fully started before proceeding.
++After installation, click **Start** to launch the app. Wait until the service has fully started before proceeding.
+ 
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-matter-bridge-addon/images/start-addon.png)
+ 
+-## Use the Matter Bridge Add-on to sync Home Assistant devices to Matter Fabrics
++## Use the Matter Bridge App to sync Home Assistant devices to Matter Fabrics
+ 
+ 1. Click **Open WEB UI** to access the Matter Bridge Pairing page.  
+    Click **Start** to view the preparation for Matter Bridge pairing.  
+diff --git a/hassio-ihost-matter-bridge-addon/README.md b/hassio-ihost-matter-bridge-addon/README.md
+index 9ca50b87ce03d002af7f045d1052c2833d015d29..e0e173bd77202937cb32d21c39f5338725557ff9 100644
+--- a/hassio-ihost-matter-bridge-addon/README.md
++++ b/hassio-ihost-matter-bridge-addon/README.md
+@@ -4,18 +4,18 @@
+ 
+ ## About
+ 
+-Matter Bridge for iHost add-on exposes entities of Home Assistant devices as Matter-enabled devices, enabling them to be integrated with Matter platforms, such as Apple Home, Google Home, and Amazon Alexa.  
+-This add-on is based on iHost Matter Bridge and has passed Matter certification to ensure protocol compatibility and long-term availability.
++Matter Bridge for iHost app exposes entities of Home Assistant devices as Matter-enabled devices, enabling them to be integrated with Matter platforms, such as Apple Home, Google Home, and Amazon Alexa.  
++This app is based on iHost Matter Bridge and has passed Matter certification to ensure protocol compatibility and long-term availability.
+ 
+ At the same time, it is compatible with web and mobile terminals.
+ 
+ ## Prerequisites
+ 
+-- The Matter Bridge add-on is designed for the HA over iHost project ONLY, allowing users to expose Home Assistant devices as Matter devices and sync them to supported Matter platforms for control.
++- The Matter Bridge app is designed for the HA over iHost project ONLY, allowing users to expose Home Assistant devices as Matter devices and sync them to supported Matter platforms for control.
+ - The Home Assistant OS version must be 15.2.1 or higher.
+ 
+ ## Installation
+-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
++1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+ 2. Paste the following URL:  
+    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
+ 3. Or, simply click the button below to add it automatically:
+@@ -23,7 +23,7 @@ At the same time, it is compatible with web and mobile terminals.
+ [![Add Repository](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
+ 
+ ## How to use
+-See “[Documentation](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-matter-bridge-addon/DOCS.md)” for details on how to use the SONOFF Dongle Flasher For iHost add-on.
++See “[Documentation](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-matter-bridge-addon/DOCS.md)” for details on how to use the SONOFF Dongle Flasher For iHost app.
+ 
+ 
+ ## Supported entities
+diff --git a/hassio-ihost-matter-bridge-addon/config.json b/hassio-ihost-matter-bridge-addon/config.json
+index a9768d1ac193a04e7f41fb6432b944a5494a1ad0..1ac72aa79bebcae0f20dd0765b53d8e2cc2cc9b1 100644
+--- a/hassio-ihost-matter-bridge-addon/config.json
++++ b/hassio-ihost-matter-bridge-addon/config.json
+@@ -2,7 +2,7 @@
+     "name": "Matter Bridge for iHost",
+     "version": "1.2.0",
+     "slug": "ihost_matter_bridge",
+-    "description": "Matter Bridge add-on exposes Home Assistant devices as Matter-enabled devices, enabling them to be integrated with Matter platforms, such as Apple Home, Google Home, and Amazon Alexa.",
++    "description": "Matter Bridge app exposes Home Assistant devices as Matter-enabled devices, enabling them to be integrated with Matter platforms, such as Apple Home, Google Home, and Amazon Alexa.",
+     "url": "https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-matter-bridge-addon",
+     "startup": "application",
+     "boot": "auto",
+diff --git a/hassio-ihost-matter-server/DOCS.md b/hassio-ihost-matter-server/DOCS.md
+index 7c96639babac36a4a4441939a090960028148d08..e48ded4f6b6c974d9ec77f756eab328439a4515a 100644
+--- a/hassio-ihost-matter-server/DOCS.md
++++ b/hassio-ihost-matter-server/DOCS.md
+@@ -1,19 +1,19 @@
+-# Home Assistant Add-on: Matter Server
++# Home Assistant App: Matter Server
+ 
+ ## Installation
+ 
+-Use the following steps to install this add-on.
++Use the following steps to install this app.
+ 
+-1. Click the Home Assistant My button below to open the add-on page on your
++1. Click the Home Assistant My button below to open the app page on your
+    Home Assistant instance.
+ 
+-   [![Open this add-on in your Home Assistant instance.][addon-badge]][addon]
++   [![Open this app in your Home Assistant instance.][addon-badge]][addon]
+ 
+-1. Click the "Install" button to install the add-on.
++1. Click the "Install" button to install the app.
+ 
+ ## How to use
+ 
+-Start the Matter Server add-on to make the WebSocket available to Home
++Start the Matter Server app to make the WebSocket available to Home
+ Assistant Core. Install the [Matter integration][matter_integration]
+ in Home Assistant Core.
+ 
+@@ -26,7 +26,7 @@ Matter Server WebSocket server port field.
+ 
+ ## Configuration
+ 
+-Add-on configuration:
++App configuration:
+ 
+ | Configuration       | Description                                                 |
+ |---------------------|-------------------------------------------------------------|
+diff --git a/hassio-ihost-matter-server/README.md b/hassio-ihost-matter-server/README.md
+index 8e306b1037d20cd86d6a89653acf71a39fb4d831..7c2199e8dbae15feddc5e7581004e8f2d99ce2a6 100644
+--- a/hassio-ihost-matter-server/README.md
++++ b/hassio-ihost-matter-server/README.md
+@@ -1,15 +1,15 @@
+-# Home Assistant Add-on: Matter Server
++# Home Assistant App: Matter Server
+ 
+ ![Supports armv7 Architecture](https://img.shields.io/badge/armv7-yes-green.svg)
+ 
+-This repository provides **custom-built Matter Server add-ons and container images for armv7** which are not supported by the official Matter Server distribution.
++This repository provides **custom-built Matter Server apps and container images for armv7** which are not supported by the official Matter Server distribution.
+ 
+ ## Prerequisites
+ 
+ - The Home Assistant OS version must be 15.2.1 or higher.
+ 
+ ## Installation
+-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
++1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+ 2. Paste the following URL:  
+    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
+ 3. Or, simply click the button below to add it automatically:
+@@ -21,6 +21,6 @@ This repository provides **custom-built Matter Server add-ons and container imag
+ 
+ Matter Python WebSocket Server for Home Assistant Core. Matter (formerly
+ known as Connected Home over IP or CHIP) is an IPv6 based smart home
+-standard. This add-on provides a Matter Controller which allows you to
++standard. This app provides a Matter Controller which allows you to
+ commission and control of Matter devices. The matching Home Assistant Core
+ integration communicates via WebSocket with this server.
+diff --git a/hassio-ihost-matter-server/RELEASE.md b/hassio-ihost-matter-server/RELEASE.md
+index 66d639186dd91cf28cd2d982cfeeeac8adc543d2..6a212e5bfa6d1e59ecae6ba8ddb61c67b06cae70 100644
+--- a/hassio-ihost-matter-server/RELEASE.md
++++ b/hassio-ihost-matter-server/RELEASE.md
+@@ -2,10 +2,10 @@
+ 
+ ## Matter Server Update Procedure
+ 
+-When updating the server library in the add-on follow these steps:
++When updating the server library in the app follow these steps:
+ 
+ 1. Update the `MATTER_SERVER_VERSION` argument in `build.yaml`.
+ 2. Check if the chip SDK version has changed in the server library.
+-3. If the minimal supported schema version has changed, set the `homeassistant` key in `config.yaml` to the minimum version of Home Assistant Core required to install or update the add-on.
+-4. Update the add-on version in `config.yaml`. Bump to a new major version if the minimum schema version has changed.
++3. If the minimal supported schema version has changed, set the `homeassistant` key in `config.yaml` to the minimum version of Home Assistant Core required to install or update the app.
++4. Update the app version in `config.yaml`. Bump to a new major version if the minimum schema version has changed.
+ 5. Update the changelog in `CHANGELOG.md`. Include a markdown link to the GitHub release of the server in the changelog.
+diff --git a/hassio-ihost-matter-server/config.yaml b/hassio-ihost-matter-server/config.yaml
+index 8c6f4aa6692d3517b70752013b537cf00ab1ab93..e0a99afdf1e03c5acb22ad0e9374489c65516ec2 100644
+--- a/hassio-ihost-matter-server/config.yaml
++++ b/hassio-ihost-matter-server/config.yaml
+@@ -11,7 +11,7 @@ discovery:
+   - matter
+ hassio_api: true
+ homeassistant: 2024.6.0
+-# IPC is only used within the Add-on
++# IPC is only used within the App
+ host_ipc: false
+ host_network: true
+ host_dbus: true
+diff --git a/hassio-ihost-matter-server/rootfs/etc/s6-overlay/scripts/banner.sh b/hassio-ihost-matter-server/rootfs/etc/s6-overlay/scripts/banner.sh
+index 074dc4179e5e3448adc3d7f60a3fca77a89ce2ff..5079b8c890e61ea24da8779ec1a89c458def4028 100755
+--- a/hassio-ihost-matter-server/rootfs/etc/s6-overlay/scripts/banner.sh
++++ b/hassio-ihost-matter-server/rootfs/etc/s6-overlay/scripts/banner.sh
+@@ -1,25 +1,25 @@
+ #!/usr/bin/with-contenv bashio
+ # shellcheck shell=bash
+ # ==============================================================================
+-# Home Assistant Community Add-on: Base Images
+-# Displays a simple add-on banner on startup
++# Home Assistant Community App: Base Images
++# Displays a simple app banner on startup
+ # ==============================================================================
+ if bashio::supervisor.ping; then
+     bashio::log.blue \
+         '-----------------------------------------------------------'
+-    bashio::log.blue " Add-on: $(bashio::addon.name)"
++    bashio::log.blue " App: $(bashio::addon.name)"
+     bashio::log.blue " $(bashio::addon.description)"
+     bashio::log.blue \
+         '-----------------------------------------------------------'
+ 
+-    bashio::log.blue " Add-on version: $(bashio::addon.version)"
++    bashio::log.blue " App version: $(bashio::addon.version)"
+     if bashio::var.true "$(bashio::addon.update_available)"; then
+-        bashio::log.magenta ' There is an update available for this add-on!'
++        bashio::log.magenta ' There is an update available for this app!'
+         bashio::log.magenta \
+-            " Latest add-on version: $(bashio::addon.version_latest)"
++            " Latest app version: $(bashio::addon.version_latest)"
+         bashio::log.magenta ' Please consider upgrading as soon as possible.'
+     else
+-        bashio::log.green ' You are running the latest version of this add-on.'
++        bashio::log.green ' You are running the latest version of this app.'
+     fi
+ 
+     bashio::log.blue " System: $(bashio::info.operating_system)" \
+diff --git a/hassio-ihost-matter-server/translations/en.yaml b/hassio-ihost-matter-server/translations/en.yaml
+index d7e4432f33cd3c113248136ae0ce3105493f8af5..fd67880bf4782f5002867e8a8b211e232ee40662 100644
+--- a/hassio-ihost-matter-server/translations/en.yaml
++++ b/hassio-ihost-matter-server/translations/en.yaml
+@@ -10,7 +10,7 @@ configuration:
+     name: Use the latest beta version
+     description: >-
+       Installs the latest beta of the Python Matter Server. It is recommended
+-      to create a backup before starting the add-on with this flag enabled!
++      to create a backup before starting the app with this flag enabled!
+   enable_test_net_dcl:
+     name: Enable test-net DCL usage.
+     description: >-
+@@ -29,14 +29,14 @@ configuration:
+     description: >-
+       This allows to pass additional command line arguments to the Python Matter
+       Server. Use `--help` to get a list of possible arguments. Note that
+-      arguments are also added by the startup script controlled by other add-on
++      arguments are also added by the startup script controlled by other app
+       options.
+   matter_server_version:
+     name: Matter Server version
+     description: >-
+       Install custom Matter Server version. WARNING: An older version might have
+       an incompatible storage format! Use this feature with caution! Make sure
+-      you have a recent backup of the add-on!
++      you have a recent backup of the app!
+   matter_sdk_wheels_version:
+     name: Matter SDK wheels version
+     description: >-
+diff --git a/hassio-ihost-node-red/DOCS.md b/hassio-ihost-node-red/DOCS.md
+index 34266b3fb9cb0ce58c3fe2505fe398ecef951ce0..f6c780dcaa02aced4e4713a49be16457c95e7201 100644
+--- a/hassio-ihost-node-red/DOCS.md
++++ b/hassio-ihost-node-red/DOCS.md
+@@ -1,5 +1,5 @@
+ # Node-RED for iHost
+ 
+-This add-on is a standalone packaged version of Node-RED, exclusively designed to support the linux/arm/v7 architecture. It has been packaged by the [iHost Open Source Project](https://github.com/iHost-Open-Source-Project), specifically tailored for iHost users.
++This app is a standalone packaged version of Node-RED, exclusively designed to support the linux/arm/v7 architecture. It has been packaged by the [iHost Open Source Project](https://github.com/iHost-Open-Source-Project), specifically tailored for iHost users.
+ 
+ For more detailed information about features, setup, and usage instructions, please refer to the original documentation here: [Node-RED Documentation](https://github.com/hassio-addons/addon-node-red/blob/main/node-red/DOCS.md).
+\ No newline at end of file
+diff --git a/hassio-ihost-node-red/README.md b/hassio-ihost-node-red/README.md
+index 9cdfd09358bcd5c1d8bf46c313434305dc2cf9fe..2d94593c4cb3e7ab7e8ff475fc94f07a5ef7e3ec 100644
+--- a/hassio-ihost-node-red/README.md
++++ b/hassio-ihost-node-red/README.md
+@@ -1,4 +1,4 @@
+-# Home Assistant Community Add-on: Node-RED
++# Home Assistant Community App: Node-RED
+ 
+ ![Supports armv7 Architecture](https://img.shields.io/badge/armv7-yes-green.svg)
+ 
+@@ -13,7 +13,7 @@ It provides a browser-based editor that makes it easy to wire together flows usi
+ ![](https://raw.githubusercontent.com/hassio-addons/addon-node-red/main/images/screenshot.png)
+ 
+ ## Installation
+-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
++1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+ 2. Paste the following URL:  
+    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
+ 3. Or, simply click the button below to add it automatically:
+diff --git a/hassio-ihost-openthread-border-router/DOCS.md b/hassio-ihost-openthread-border-router/DOCS.md
+index 7cdcd8a9d0de86f8ad5f956837bcbb506e9710ae..453dd6c73773289d32e8be904253d31f9238bfe3 100644
+--- a/hassio-ihost-openthread-border-router/DOCS.md
++++ b/hassio-ihost-openthread-border-router/DOCS.md
+@@ -1,26 +1,26 @@
+-# Home Assistant Add-on: OpenThread Border Router
++# Home Assistant App: OpenThread Border Router
+ 
+ ## Installation
+ 
+-Follow these steps to get the add-on installed on your system:
++Follow these steps to get the app installed on your system:
+ 
+-1. Navigate in your Home Assistant frontend to **Settings** -> **Add-ons, Backup & Supervisor** -> **Add-on Store**.
++1. Navigate in your Home Assistant frontend to **Settings** -> **Apps, Backup & Supervisor** -> **App Store**.
+ 2. Click on the top right menu and "Repository"
+-3. Add "https://github.com/home-assistant/addons" to add the "Home Assistant Add-on Repository for Development" repository.
+-4. Find the "OpenThread Border Router" add-on and click it.
++3. Add "https://github.com/home-assistant/addons" to add the "Home Assistant App Repository for Development" repository.
++4. Find the "OpenThread Border Router" app and click it.
+ 5. Click on the "INSTALL" button.
+ 
+ ## How to use
+ 
+ You will need a 802.15.4 capable radio supported by OpenThread. Home Assistant
+ Yellow as well as Home Assistant SkyConnect/Connect ZBT-1 are both capable to run
+-OpenThread. This add-on automatically installs the necessary firmware on these systems.
++OpenThread. This app automatically installs the necessary firmware on these systems.
+ 
+ If you are using Home Assistant Yellow, choose `/dev/ttyAMA1` as device.
+ 
+ > Important!!!
+ >
+-> When using the iHost’s built-in **MG21** chip (located at `/dev/ttyS4`) with this add-on, **hardware flow control must be disabled** for the OpenThread Border Router to function properly.
++> When using the iHost’s built-in **MG21** chip (located at `/dev/ttyS4`) with this app, **hardware flow control must be disabled** for the OpenThread Border Router to function properly.
+ 
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-openthread-border-router/images/otbr_configuration.png)
+ 
+@@ -35,14 +35,14 @@ RCP firmware for the nRF52840 Dongle.
+ 
+ Once the firmware is loaded follow the following steps:
+ 
+-1. Select the correct `device` in the add-on configuration tab and press `Save`.
+-2. Start the add-on.
++1. Select the correct `device` in the app configuration tab and press `Save`.
++2. Start the app.
+ 
+ ### OpenThread Border Router
+ 
+-This add-on makes your Home Assistant installation an OpenThread Border Router
++This app makes your Home Assistant installation an OpenThread Border Router
+ (OTBR). The border router can be used to comission Matter devices which connect
+-through Thread. Home Assistant Core will automatically detect this add-on and
++through Thread. Home Assistant Core will automatically detect this app and
+ create a new integration named "Open Thread Border Router". With Home Assistant
+ Core 2023.3 and newer the OTBR will get configured automatically. The Thread
+ integration allows to inspect the network configuration.
+@@ -51,7 +51,7 @@ integration allows to inspect the network configuration.
+ 
+ There is also a web interface provided by the OTBR. However, the web
+ interface has caveats (e.g. forming a network does not generate an off-mesh
+-routable IPv6 prefix which causes changing IPv6 addressing on first add-on
++routable IPv6 prefix which causes changing IPv6 addressing on first app
+ restart). It is still possible to enable the web interface for debugging
+ purpose. Make sure to expose both the Web UI port and REST API port (the
+ latter needs to be on port 8081) on the host interface. To do so, click on
+@@ -60,7 +60,7 @@ and 8081 in the OpenThread REST API port field).
+ 
+ ## Configuration
+ 
+-Add-on configuration:
++App configuration:
+ 
+ | Configuration      | Description                                            |
+ |--------------------|--------------------------------------------------------|
+diff --git a/hassio-ihost-openthread-border-router/README.md b/hassio-ihost-openthread-border-router/README.md
+index 8d28ccba840967b45013274e3010c385a60ef2a4..7470442d8a78f9c68662eb6022967f32b7be86cf 100644
+--- a/hassio-ihost-openthread-border-router/README.md
++++ b/hassio-ihost-openthread-border-router/README.md
+@@ -1,21 +1,21 @@
+-# Home Assistant Add-on: OpenThread Border Router Add-on
++# Home Assistant App: OpenThread Border Router App
+ 
+ ![Supports armv7 Architecture](https://img.shields.io/badge/armv7-yes-green.svg)
+ 
+-OpenThread Border Router add-on. The add-on uses the upstream OpenThread
+-Border Router implementation and wraps it as an add-on for Home Assistant.
++OpenThread Border Router app. The app uses the upstream OpenThread
++Border Router implementation and wraps it as an app for Home Assistant.
+ 
+ **NOTE:** This requires a supported 802.15.4 capable radio with OpenThread RCP firmware. 
+ 
+ > Important!!!
+ >
+-> When using the iHost’s built-in **MG21** chip (located at `/dev/ttyS4`) with this add-on, **hardware flow control must be disabled** for the OpenThread Border Router to function properly.
++> When using the iHost’s built-in **MG21** chip (located at `/dev/ttyS4`) with this app, **hardware flow control must be disabled** for the OpenThread Border Router to function properly.
+ 
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-openthread-border-router/images/otbr_configuration.png)
+ 
+ ## About
+ 
+-This add-on allows you to form or join a Thread network and make Home Assistant
++This app allows you to form or join a Thread network and make Home Assistant
+ a Thread Border Router.
+ 
+ [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
+@@ -23,7 +23,7 @@ a Thread Border Router.
+ 
+ 
+ ## Installation
+-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
++1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**  
+ 2. Paste the following URL:  
+    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)  
+ 3. Or, simply click the button below to add it automatically:
+diff --git a/hassio-ihost-openthread-border-router/config.yaml b/hassio-ihost-openthread-border-router/config.yaml
+index a5633eb0906be8caad5c3cb868ffd0840f200b9b..02fb1399e756021d9e5da82742d0a01321b61e35 100644
+--- a/hassio-ihost-openthread-border-router/config.yaml
++++ b/hassio-ihost-openthread-border-router/config.yaml
+@@ -2,7 +2,7 @@
+ version: 2.13.0
+ slug: openthread_border_router
+ name: OpenThread Border Router
+-description: OpenThread Border Router add-on
++description: OpenThread Border Router app
+ url: >-
+   https://github.com/home-assistant/addons/tree/master/openthread_border_router
+ arch:
+@@ -12,7 +12,7 @@ gpio: true
+ hassio_api: true
+ discovery:
+   - otbr
+-# IPC is only used within the Add-on
++# IPC is only used within the App
+ host_ipc: false
+ host_network: true
+ host_uts: true
+diff --git a/hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/banner.sh b/hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/banner.sh
+index 074dc4179e5e3448adc3d7f60a3fca77a89ce2ff..5079b8c890e61ea24da8779ec1a89c458def4028 100755
+--- a/hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/banner.sh
++++ b/hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/banner.sh
+@@ -1,25 +1,25 @@
+ #!/usr/bin/with-contenv bashio
+ # shellcheck shell=bash
+ # ==============================================================================
+-# Home Assistant Community Add-on: Base Images
+-# Displays a simple add-on banner on startup
++# Home Assistant Community App: Base Images
++# Displays a simple app banner on startup
+ # ==============================================================================
+ if bashio::supervisor.ping; then
+     bashio::log.blue \
+         '-----------------------------------------------------------'
+-    bashio::log.blue " Add-on: $(bashio::addon.name)"
++    bashio::log.blue " App: $(bashio::addon.name)"
+     bashio::log.blue " $(bashio::addon.description)"
+     bashio::log.blue \
+         '-----------------------------------------------------------'
+ 
+-    bashio::log.blue " Add-on version: $(bashio::addon.version)"
++    bashio::log.blue " App version: $(bashio::addon.version)"
+     if bashio::var.true "$(bashio::addon.update_available)"; then
+-        bashio::log.magenta ' There is an update available for this add-on!'
++        bashio::log.magenta ' There is an update available for this app!'
+         bashio::log.magenta \
+-            " Latest add-on version: $(bashio::addon.version_latest)"
++            " Latest app version: $(bashio::addon.version_latest)"
+         bashio::log.magenta ' Please consider upgrading as soon as possible.'
+     else
+-        bashio::log.green ' You are running the latest version of this add-on.'
++        bashio::log.green ' You are running the latest version of this app.'
+     fi
+ 
+     bashio::log.blue " System: $(bashio::info.operating_system)" \
+diff --git a/hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-agent-configure.sh b/hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-agent-configure.sh
+index d8f96785e92f171692651af3205c8a989a11886e..e52e7e99432ff69b51e5bb7f56b2f69d6155f168 100755
+--- a/hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-agent-configure.sh
++++ b/hassio-ihost-openthread-border-router/rootfs/etc/s6-overlay/scripts/otbr-agent-configure.sh
+@@ -1,7 +1,7 @@
+ #!/usr/bin/with-contenv bashio
+ # shellcheck shell=bash
+ # ==============================================================================
+-# Configure OTBR depending on add-on settings
++# Configure OTBR depending on app settings
+ # ==============================================================================
+ 
+ if bashio::config.true 'nat64'; then
+diff --git a/hassio-ihost-silabs-multiprotocol/DOCS.md b/hassio-ihost-silabs-multiprotocol/DOCS.md
+index 0e319a3a3ede6e96e08b56118290ef47345d843f..00dbcd2c28e0fed9056f861ffd9fc8da76213a0a 100644
+--- a/hassio-ihost-silabs-multiprotocol/DOCS.md
++++ b/hassio-ihost-silabs-multiprotocol/DOCS.md
+@@ -1,40 +1,40 @@
+-# Home Assistant Add-on: Silicon Labs Multiprotocol
++# Home Assistant App: Silicon Labs Multiprotocol
+ 
+ ## Prerequisites
+-This addon is compatible with SONOFF dongles utilizing Silicon Labs chips, such as the
+-ZBDongle-E (EFR32MG21).Before using this add-on, you must first flash the MultiPAN firmware 
++This app is compatible with SONOFF dongles utilizing Silicon Labs chips, such as the
++ZBDongle-E (EFR32MG21).Before using this app, you must first flash the MultiPAN firmware 
+ via [SONOFF Dongle Flasher][sonoff-dongle-flasher]. Another option is flashing firmware 
+-via [SONOFF Dongle Flasher Add-on][dongle-flasher-addon].
++via [SONOFF Dongle Flasher App][dongle-flasher-addon].
+ 
+-[![Open your Home Assistant instance and show the dashboard of an add-on.](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=81bc2df9_sonoff_dongle_flasher_for_ihost&repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
++[![Open your Home Assistant instance and show the dashboard of an app.](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=81bc2df9_sonoff_dongle_flasher_for_ihost&repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
+ 
+ ## Installation
+ 
+-Follow these steps to get the add-on installed on your system:
++Follow these steps to get the app installed on your system:
+ 
+-1. Add Silicon Labs Multiprotocol Add-on to Repositories
+-      - Go to the Add-on Store → Click the More button (⋮) in the upper-right corner → Select Repositories
++1. Add Silicon Labs Multiprotocol App to Repositories
++      - Go to the App Store → Click the More button (⋮) in the upper-right corner → Select Repositories
+         Paste the following URL:https://github.com/iHost-Open-Source-Project/hassio-ihost-addon
+       - Or, simply click the button below to add it automatically:
+ 
+-      [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
++      [![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FiHost-Open-Source-Project%2Fhassio-ihost-addon)
+       
+       ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-silabs-multiprotocol/images/description-picture_1.png)
+ 
+-2. Install Silicon Labs Multiprotocol(Mod) Add-on
+-      - Search for Silicon Labs Multiprotocol(Mod) Add-on in the Add-ons Store.
++2. Install Silicon Labs Multiprotocol(Mod) App
++      - Search for Silicon Labs Multiprotocol(Mod) App in the App Store.
+       - Click "Install" button.  
+       - Wait for the installation to complete
+ 
+ ## How to use
+ 
+-The add-on needs a Silicon Labs based wireless module accessible through a 
++The app needs a Silicon Labs based wireless module accessible through a 
+ serial port (like ZBDongle-E,iHost MG21 chip or most USB based wireless adapters).
+ 
+ Once the firmware is loaded follow the following steps:
+ 
+-1. Select the correct `device` in the add-on configuration tab and press `Save`.
+-2. Start the add-on.
++1. Select the correct `device` in the app configuration tab and press `Save`.
++2. Start the app.
+ 
+ **NOTE:** the Web frontend is only accessible when OpenThread is enabled (see below).
+ 
+@@ -47,8 +47,8 @@ is built on EZSP v16, so it can only be used on Z2M.
+ 
+ To use Zigbee with Z2M configure the Integration as follows:
+ 
+-1. Remember/copy the hostname of the add-on (e.g. c617dadc-hassio-ihost-silabs-multiprotocol).
+-2. Open the Zigbee2MQTT add-on → Configuration page.
++1. Remember/copy the hostname of the app (e.g. c617dadc-hassio-ihost-silabs-multiprotocol).
++2. Open the Zigbee2MQTT app → Configuration page.
+ 3. Configure the device's serial port path, baudrate, adapter type under serial.
+ 
+       ```yaml
+@@ -59,7 +59,7 @@ To use Zigbee with Z2M configure the Integration as follows:
+       ```
+ 
+ 4. click "SAVE" button. 
+-5. After completing the configuration,start the Zigbee2MQTT add-on. Wait for about two minutes,
++5. After completing the configuration,start the Zigbee2MQTT app. Wait for about two minutes,
+  then you can click to enter the Web UI Console to add and manage devices.
+ 
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-silabs-multiprotocol/images/description-picture_3.png)
+@@ -67,11 +67,11 @@ To use Zigbee with Z2M configure the Integration as follows:
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-silabs-multiprotocol/images/description-picture_4.png)
+ ### OpenThread
+ 
+-At this point OpenThread support is experimental. This add-on makes your Home
++At this point OpenThread support is experimental. This app makes your Home
+ Assistant installation an OpenThread Border Router (OTBR). A basic integration
+ for Home Assistant Core named `otbr` is currently in the making.
+ 
+-To use the OTBR enable it in the Configuration tab and restart the add-on. Home
++To use the OTBR enable it in the Configuration tab and restart the app. Home
+ Assistant should discover the OpenThread border router automatically and
+ configure it as necessary.
+ 
+@@ -79,7 +79,7 @@ configure it as necessary.
+ 
+ There is also a web interface provided by the OTBR. However, the web
+ interface has caveats (e.g. forming a network does not generate an off-mesh
+-routable IPv6 prefix which causes changing IPv6 addressing on first add-on
++routable IPv6 prefix which causes changing IPv6 addressing on first app
+ restart). It is still possible to enable the web interface for debugging
+ purpose. Make sure to expose both the Web UI port and REST API port (the
+ latter needs to be on port 8081) on the host interface. To do so, click on
+@@ -88,7 +88,7 @@ and 8081 in the OpenThread REST API port field).
+ 
+ ## Configuration
+ 
+-Add-on configuration:
++App configuration:
+ 
+ | Configuration      | Description                                            |
+ |--------------------|--------------------------------------------------------|
+@@ -103,8 +103,8 @@ Add-on configuration:
+ 
+ ## Architecture
+ 
+-The add-on runs several service internally. This architecture diagram shows what
+-the add-on currently implements.
++The app runs several service internally. This architecture diagram shows what
++the app currently implements.
+ 
+ ![](https://raw.githubusercontent.com/iHost-Open-Source-Project/hassio-ihost-addon/master/hassio-ihost-silabs-multiprotocol/images/architecture.png)
+ 
+diff --git a/hassio-ihost-silabs-multiprotocol/README.md b/hassio-ihost-silabs-multiprotocol/README.md
+index 9dce6364b5fb8faab16adba1265f4def771b7639..224d0a0fd5d0ddb0c1e472c6d5d8b8c98d0414a4 100644
+--- a/hassio-ihost-silabs-multiprotocol/README.md
++++ b/hassio-ihost-silabs-multiprotocol/README.md
+@@ -1,4 +1,4 @@
+-# Home Assistant Add-on: SiliconLabs Zigbee/OpenThread Multiprotocol Add-on
++# Home Assistant App: SiliconLabs Zigbee/OpenThread Multiprotocol App
+ 
+ Zigbee/OpenThread Multiprotocol container for Silicon Labs based radios 
+ such as SONOFF ZBDongle-E.
+@@ -9,10 +9,10 @@ such as SONOFF ZBDongle-E.
+ 
+ ## About
+ 
+-This add-on allows you to use Zigbee and OpenThread protocol simultaneous on a 
++This app allows you to use Zigbee and OpenThread protocol simultaneous on a 
+ single Silicon Labs based radio. The radio needs the RCP Multi-PAN firmware 
+ installed to support multiple IEEE 802.15.4 Personal Area Networks (PAN). The 
+-addon is modified based on the Silicon Labs Multiprotocol Addon and has been 
++app is modified based on the Silicon Labs Multiprotocol App and has been 
+ successfully tested on the SONOFF [ZBDongle-E](https://sonoff.tech/products/sonoff-zigbee-3-0-usb-dongle-plus-zbdongle-e) and [iHost MG21 chip](https://sonoff.tech/products/sonoff-ihost-smart-home-hub).
+ 
+ [armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
+@@ -23,7 +23,7 @@ successfully tested on the SONOFF [ZBDongle-E](https://sonoff.tech/products/sono
+ 
+ 1. Since the ZHA integration currently only supports EZSP v14, while the MultiPAN firmware 
+ is based on EZSP v16,it can only be used with Zigbee2MQTT (Z2M).
+-2. Before using this add-on, you must first flash the MultiPAN firmware via [SONOFF Dongle Flasher][sonoff-dongle-flasher] or [SONOFF Dongle Flasher Add-on](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-sonoff-dongle-flasher).
++2. Before using this app, you must first flash the MultiPAN firmware via [SONOFF Dongle Flasher][sonoff-dongle-flasher] or [SONOFF Dongle Flasher App](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-sonoff-dongle-flasher).
+ 
+ 
+ [sonoff-dongle-flasher]: https://dongle.sonoff.tech/sonoff-dongle-flasher
+diff --git a/hassio-ihost-silabs-multiprotocol/config.yaml b/hassio-ihost-silabs-multiprotocol/config.yaml
+index b2b4bf8d0e938913b852b3ba7d2400fadc1208a6..041f882a4283bc2e441206e95ca80d775e698487 100644
+--- a/hassio-ihost-silabs-multiprotocol/config.yaml
++++ b/hassio-ihost-silabs-multiprotocol/config.yaml
+@@ -2,7 +2,7 @@
+ version: 1.0.2
+ slug: hassio_ihost_silabs_multiprotocol
+ name: Silicon Labs Multiprotocol
+-description: Zigbee and OpenThread multiprotocol add-on
++description: Zigbee and OpenThread multiprotocol app
+ url: >
+   https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-silabs-multiprotocol
+ arch:
+@@ -14,7 +14,7 @@ gpio: true
+ hassio_api: true
+ discovery:
+   - otbr
+-# IPC is only used within the Add-on
++# IPC is only used within the App
+ host_ipc: false
+ host_network: true
+ host_uts: true
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/banner.sh b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/banner.sh
+index 074dc4179e5e3448adc3d7f60a3fca77a89ce2ff..5079b8c890e61ea24da8779ec1a89c458def4028 100755
+--- a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/banner.sh
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/banner.sh
+@@ -1,25 +1,25 @@
+ #!/usr/bin/with-contenv bashio
+ # shellcheck shell=bash
+ # ==============================================================================
+-# Home Assistant Community Add-on: Base Images
+-# Displays a simple add-on banner on startup
++# Home Assistant Community App: Base Images
++# Displays a simple app banner on startup
+ # ==============================================================================
+ if bashio::supervisor.ping; then
+     bashio::log.blue \
+         '-----------------------------------------------------------'
+-    bashio::log.blue " Add-on: $(bashio::addon.name)"
++    bashio::log.blue " App: $(bashio::addon.name)"
+     bashio::log.blue " $(bashio::addon.description)"
+     bashio::log.blue \
+         '-----------------------------------------------------------'
+ 
+-    bashio::log.blue " Add-on version: $(bashio::addon.version)"
++    bashio::log.blue " App version: $(bashio::addon.version)"
+     if bashio::var.true "$(bashio::addon.update_available)"; then
+-        bashio::log.magenta ' There is an update available for this add-on!'
++        bashio::log.magenta ' There is an update available for this app!'
+         bashio::log.magenta \
+-            " Latest add-on version: $(bashio::addon.version_latest)"
++            " Latest app version: $(bashio::addon.version_latest)"
+         bashio::log.magenta ' Please consider upgrading as soon as possible.'
+     else
+-        bashio::log.green ' You are running the latest version of this add-on.'
++        bashio::log.green ' You are running the latest version of this app.'
+     fi
+ 
+     bashio::log.blue " System: $(bashio::info.operating_system)" \
+diff --git a/hassio-ihost-ssh/DOCS.md b/hassio-ihost-ssh/DOCS.md
+index c58815a1fbe8b6ae208ee0b84db63a32a01bdc6e..e090ca3f83b17904b069465f0d817db15966001a 100644
+--- a/hassio-ihost-ssh/DOCS.md
++++ b/hassio-ihost-ssh/DOCS.md
+@@ -1,25 +1,25 @@
+-# Home Assistant Community Add-on: Advanced SSH & Web Terminal
++# Home Assistant Community App: Advanced SSH & Web Terminal
+ 
+-This add-on allows you to log in to your Home Assistant instance using
++This app allows you to log in to your Home Assistant instance using
+ SSH or a Web Terminal, giving you to access your folders and
+ also includes a command-line tool to do things like restart, update,
+ and check your instance.
+ 
+ This is an enhanced version of the provided
+-[SSH add-on by Home Assistant][hass-ssh] and focuses on security,
++[SSH app by Home Assistant][hass-ssh] and focuses on security,
+ usability, flexibility and also provides access using a web interface.
+ 
+ ## WARNING
+ 
+-The advanced SSH & Web Terminal add-on is very powerful and gives you access
++The advanced SSH & Web Terminal app is very powerful and gives you access
+ to almost all tools and hardware of your system.
+ 
+-While this add-on is created and maintained with care and with security in mind,
++While this app is created and maintained with care and with security in mind,
+ in the wrong or inexperienced hands, it could damage your system.
+ 
+ ## Features
+ 
+-This add-on, of course, provides an SSH server, based on [OpenSSH][openssh] and
++This app, of course, provides an SSH server, based on [OpenSSH][openssh] and
+ a web-based Terminal (which can be included in your Home Assistant frontend) as
+ well. Additionally, it comes out of the box with the following:
+ 
+@@ -33,7 +33,7 @@ well. Additionally, it comes out of the box with the following:
+ - SFTP support is disabled by default but is user configurable.
+ - Compatible if Home Assistant was installed via the generic Linux installer.
+ - Username is configurable, so `root` is no longer mandatory.
+-- Persists custom SSH client settings & keys between add-on restarts
++- Persists custom SSH client settings & keys between app restarts
+ - Log levels for allowing you to triage issues easier.
+ - Hardware access to your audio, uart/serial devices and GPIO pins.
+ - Runs with more privileges, allowing you to debug and test more situations.
+@@ -42,7 +42,7 @@ well. Additionally, it comes out of the box with the following:
+ - Runs on host level network, allowing you to open ports or run little daemons.
+ - Have custom Alpine packages installed on start. This allows you to install
+   your favorite tools, which will be available every single time you log in.
+-- Execute custom commands on add-on start so that you can customize the
++- Execute custom commands on app start so that you can customize the
+   shell to your likings.
+ - [ZSH][zsh] as its default shell. Easier to use for the beginner, more advanced
+   for the more experienced user. It even comes preloaded with
+@@ -53,25 +53,25 @@ well. Additionally, it comes out of the box with the following:
+ 
+ ## Installation
+ 
+-The installation of this add-on is pretty straightforward and not different in
+-comparison to installing any other Home Assistant add-on.
++The installation of this app is pretty straightforward and not different in
++comparison to installing any other Home Assistant app.
+ 
+-1. Click the Home Assistant My button below to open the add-on on your Home
++1. Click the Home Assistant My button below to open the app on your Home
+    Assistant instance.
+ 
+-   [![Open this add-on in your Home Assistant instance.][addon-badge]][addon]
++   [![Open this app in your Home Assistant instance.][addon-badge]][addon]
+ 
+-1. Click the "Install" button to install the add-on.
++1. Click the "Install" button to install the app.
+ 1. Configure the `username` and `password`/`authorized_keys` options.
+-1. Start the "Advanced SSH & Web Terminal" add-on.
+-1. Check the logs of the "Advanced SSH & Web Terminal" add-on to see if everything
++1. Start the "Advanced SSH & Web Terminal" app.
++1. Check the logs of the "Advanced SSH & Web Terminal" app to see if everything
+    went well.
+ 
+ ## Configuration
+ 
+-**Note**: _Remember to restart the add-on when the configuration is changed._
++**Note**: _Remember to restart the app when the configuration is changed._
+ 
+-SSH add-on configuration:
++SSH app configuration:
+ 
+ ```yaml
+ log_level: info
+@@ -97,7 +97,7 @@ init_commands:
+ 
+ ### Option: `log_level`
+ 
+-The `log_level` option controls the level of log output by the addon and can
++The `log_level` option controls the level of log output by the app and can
+ be changed to be more or less verbose, which might be useful when you are
+ dealing with an unknown issue. Possible values are:
+ 
+@@ -106,7 +106,7 @@ dealing with an unknown issue. Possible values are:
+ - `info`: Normal (usually) interesting events.
+ - `warning`: Exceptional occurrences that are not errors.
+ - `error`: Runtime errors that do not require immediate action.
+-- `fatal`: Something went terribly wrong. Add-on becomes unusable.
++- `fatal`: Something went terribly wrong. App becomes unusable.
+ 
+ Please note that each level automatically includes log messages from a
+ more severe level, e.g., `debug` also shows `info` messages. By default,
+@@ -154,7 +154,7 @@ about using public/private key pairs and how to create them.
+ 
+ #### Option `ssh`: `sftp`
+ 
+-When set to `true` the addon will enable SFTP support on the SSH daemon.
++When set to `true` the app will enable SFTP support on the SSH daemon.
+ Please only enable it when you plan on using it.
+ 
+ **Note**: _Due to limitations, you will need to set the username to `root` in
+@@ -162,7 +162,7 @@ order to be able to enable the SFTP capabilities._
+ 
+ #### Option `ssh`: `compatibility_mode`
+ 
+-This SSH add-on focuses on security and has therefore only enabled known
++This SSH app focuses on security and has therefore only enabled known
+ secure encryption methods. However, some older clients do not support these.
+ Setting this option to `true` will enable the original default set of methods,
+ allowing those clients to connect.
+@@ -199,9 +199,9 @@ The following options are shared between both the SSH and the Web Terminal.
+ 
+ #### Option: `zsh`
+ 
+-The add-on has ZSH pre-installed and configured as the default shell.
++The app has ZSH pre-installed and configured as the default shell.
+ However, ZSH might not be your preferred choice. By setting this option to
+-`false`, you will disable ZSH and the add-on will fallback to Bash instead.
++`false`, you will disable ZSH and the app will fallback to Bash instead.
+ 
+ #### Option: `share_sessions`
+ 
+@@ -217,13 +217,13 @@ Allows you to specify additional [Alpine packages][alpine-packages] to be
+ installed in your shell environment (e.g., Python, Joe, Irssi).
+ 
+ **Note**: _Adding many packages will result in a longer start-up
+-time for the add-on._
++time for the app._
+ 
+ #### Option: `init_commands`
+ 
+ Customize your shell environment even more with the `init_commands` option.
+ Add one or more shell commands to the list, and they will be executed every
+-single time this add-on starts.
++single time this app starts.
+ 
+ ## Known issues and limitations
+ 
+@@ -250,7 +250,7 @@ Got questions?
+ 
+ You have several options to get them answered:
+ 
+-- The [Home Assistant Community Add-ons Discord chat server][discord] for add-on
++- The [Home Assistant Community Apps Discord chat server][discord] for app
+   support and feature requests.
+ - The [Home Assistant Discord chat server][discord-ha] for general Home
+   Assistant discussions and questions.
+diff --git a/hassio-ihost-ssh/README.md b/hassio-ihost-ssh/README.md
+index 4f94bac4bf8b8a0847ec0eb3af49841ed928a6a4..f13c1c7964035144e31f61f020043583faaba6e4 100644
+--- a/hassio-ihost-ssh/README.md
++++ b/hassio-ihost-ssh/README.md
+@@ -1,4 +1,4 @@
+-# Home Assistant Community Add-on: Advanced SSH & Web Terminal
++# Home Assistant Community App: Advanced SSH & Web Terminal
+ 
+ [![Release][release-shield]][release] ![Project Stage][project-stage-shield] ![Project Maintenance][maintenance-shield]
+ 
+@@ -8,12 +8,12 @@
+ 
+ [![Support Frenck on Patreon][patreon-shield]][patreon]
+ 
+-This add-on allows you to log in to your Home Assistant instance using
++This app allows you to log in to your Home Assistant instance using
+ SSH or by using the Web Terminal.
+ 
+ 
+ ## Installation
+-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**
++1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**
+ 2. Paste the following URL:  
+    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)
+ 3. Or, simply click the button below to add it automatically:
+@@ -22,28 +22,28 @@ SSH or by using the Web Terminal.
+ 
+ ## About
+ 
+-This add-on allows you to log in to your Home Assistant instance using
++This app allows you to log in to your Home Assistant instance using
+ SSH or a Web Terminal, giving you to access your folders and
+ also includes a command-line tool to do things like restart, update,
+ and check your instance.
+ 
+ This is an enhanced version of the provided
+-[SSH add-on by Home Assistant][hass-ssh] and focuses on security,
++[SSH app by Home Assistant][hass-ssh] and focuses on security,
+ usability, flexibility and also provides access using a web interface.
+ 
+ ![Web Terminal in the Home Assistant Frontend][screenshot]
+ 
+ ## WARNING
+ 
+-The advanced SSH & Web Terminal add-on is a really powerful and gives you
++The advanced SSH & Web Terminal app is a really powerful and gives you
+ virtually access to all tools and almost all hardware of your system.
+ 
+-While this add-on is created and maintained with care and with security in mind,
++While this app is created and maintained with care and with security in mind,
+ in the wrong or inexperienced hands, it could damage your system.
+ 
+ ## Features
+ 
+-This add-on, of course, provides an SSH server, based on [OpenSSH][openssh] and
++This app, of course, provides an SSH server, based on [OpenSSH][openssh] and
+ a web-based Terminal (which can be included in your Home Assistant frontend) as
+ well. Additionally, it comes out of the box with the following:
+ 
+@@ -57,7 +57,7 @@ well. Additionally, it comes out of the box with the following:
+ - SFTP support is disabled by default but is user configurable.
+ - Compatible if Home Assistant was installed via the generic Linux installer.
+ - Username is configurable, so `root` is no longer mandatory.
+-- Persists custom SSH client settings & keys between add-on restarts
++- Persists custom SSH client settings & keys between app restarts
+ - Log levels for allowing you to triage issues easier.
+ - Hardware access to your audio, uart/serial devices and GPIO pins.
+ - Runs with more privileges, allowing you to debug and test more situations.
+@@ -66,7 +66,7 @@ well. Additionally, it comes out of the box with the following:
+ - Runs on host level network, allowing you to open ports or run little daemons.
+ - Have custom Alpine packages installed on start. This allows you to install
+   your favorite tools, which will be available every single time you log in.
+-- Execute custom commands on add-on start so that you can customize the
++- Execute custom commands on app start so that you can customize the
+   shell to your likings.
+ - [ZSH][zsh] as its default shell. Easier to use for the beginner, more advanced
+   for the more experienced user. It even comes preloaded with
+diff --git a/hassio-ihost-zigbee2mqtt/DOCS.md b/hassio-ihost-zigbee2mqtt/DOCS.md
+index 6121bd6ad4368a996b5d53acd480e4b0c866ddb0..8ac2119893521b1a3daa8662f8bb75c9a5639851 100644
+--- a/hassio-ihost-zigbee2mqtt/DOCS.md
++++ b/hassio-ihost-zigbee2mqtt/DOCS.md
+@@ -1,29 +1,29 @@
+ # Pairing
+ 
+-By default the add-on has `permit_join` set to `false`. To allow devices to join you need to activate this after the add-on has started. You can now use the [built-in frontend](https://www.zigbee2mqtt.io/information/frontend.html) to achieve this. For details on how to enable the built-in frontent see the next section.
++By default the app has `permit_join` set to `false`. To allow devices to join you need to activate this after the app has started. You can now use the [built-in frontend](https://www.zigbee2mqtt.io/information/frontend.html) to achieve this. For details on how to enable the built-in frontent see the next section.
+ 
+ # Enabling the built-in frontend
+ 
+-Enable `ingress` to have the frontend available in your UI: **Settings → Add-ons → Zigbee2MQTT → Show in sidebar**. You can find more details about the feature on the [Zigbee2MQTT documentation](https://www.zigbee2mqtt.io/information/frontend.html).
++Enable `ingress` to have the frontend available in your UI: **Settings → Apps → Zigbee2MQTT → Show in sidebar**. You can find more details about the feature on the [Zigbee2MQTT documentation](https://www.zigbee2mqtt.io/information/frontend.html).
+ 
+ # Configuration
+ 
+ ## Onboarding
+ 
+-[Onboarding](https://www.zigbee2mqtt.io/guide/getting-started/#onboarding) allows you to setup Zigbee2MQTT without having to manually enter the details in the add-on configuration page. When starting the add-on with a brand new install (no configuration present), the frontend will show a quick setup page, allowing you to select various settings for Zigbee2MQTT to be able to start.
++[Onboarding](https://www.zigbee2mqtt.io/guide/getting-started/#onboarding) allows you to setup Zigbee2MQTT without having to manually enter the details in the app configuration page. When starting the app with a brand new install (no configuration present), the frontend will show a quick setup page, allowing you to select various settings for Zigbee2MQTT to be able to start.
+ 
+ > [!NOTE]
+ > Successful detection of adapters, to select from, may vary based on your setup/network. You may have to enter these [details manually](https://www.zigbee2mqtt.io/guide/configuration/adapter-settings.html#basic-configuration) on the page instead.
+ 
+ > [!TIP]
+-> You can force the onboarding to re-run (e.g. changing adapter) using the toggle available in the add-on configuration page (visible after checking `Show unused optional configuration options`). This will force onboarding to run even after you have successfully configured it for the first time. Make sure to disable it once done.
++> You can force the onboarding to re-run (e.g. changing adapter) using the toggle available in the app configuration page (visible after checking `Show unused optional configuration options`). This will force onboarding to run even after you have successfully configured it for the first time. Make sure to disable it once done.
+ 
+ ## Manual
+ 
+-Configuration required to startup Zigbee2MQTT is available from the add-on configuration. The rest of the options can be configured via the Zigbee2MQTT frontend.
++Configuration required to startup Zigbee2MQTT is available from the app configuration. The rest of the options can be configured via the Zigbee2MQTT frontend.
+ 
+ > [!CAUTION]
+-> Settings configured through the add-on configuration page will take precedence over settings in the `configuration.yaml` page (e.g. you set `rtscts: false` in add-on configuration page and `rtscts: true` in `configuration.yaml`, `rtscts: false` will be used). _If you want to control the entire configuration through YAML, remove them from the add-on configuration page._
++> Settings configured through the app configuration page will take precedence over settings in the `configuration.yaml` page (e.g. you set `rtscts: false` in app configuration page and `rtscts: true` in `configuration.yaml`, `rtscts: false` will be used). _If you want to control the entire configuration through YAML, remove them from the app configuration page._
+ 
+ #### Examples for each configuration section
+ 
+@@ -49,12 +49,12 @@ Configuration required to startup Zigbee2MQTT is available from the add-on confi
+ 
+ # Configuration backup
+ 
+-The add-on will create a backup of your configuration.yml within your data path: `$DATA_PATH/configuration.yaml.bk`. When upgrading, you should use this to fill in the relevant values into your new config, particularly the network key, to avoid breaking your network and having to re-pair all of your devices.
+-The backup of your configuration is created on add-on startup if no previous backup was found.
++The app will create a backup of your configuration.yml within your data path: `$DATA_PATH/configuration.yaml.bk`. When upgrading, you should use this to fill in the relevant values into your new config, particularly the network key, to avoid breaking your network and having to re-pair all of your devices.
++The backup of your configuration is created on app startup if no previous backup was found.
+ 
+ # Enabling the watchdog
+ 
+-To automatically restart Zigbee2MQTT in case of a soft failure (like "adapter disconnected"), the watchdog can be used. It can be enabled by adding the following to the add-on configuration:
++To automatically restart Zigbee2MQTT in case of a soft failure (like "adapter disconnected"), the watchdog can be used. It can be enabled by adding the following to the app configuration:
+ 
+ ```yaml
+ watchdog: default
+@@ -68,7 +68,7 @@ If you are interested in adding support for new devices to Zigbee2MQTT see [How
+ 
+ # Notes
+ 
+-- Depending on your configuration, the MQTT server config may need to include the port, typically `1883` or `8883` for SSL communications. For example, `mqtt://core-mosquitto:1883` for Home Assistant's Mosquitto add-on.
++- Depending on your configuration, the MQTT server config may need to include the port, typically `1883` or `8883` for SSL communications. For example, `mqtt://core-mosquitto:1883` for Home Assistant's Mosquitto app.
+ - To find out which serial ports you have exposed go to **Supervisor → System → Host system → ⋮ → Hardware**
+ 
+ # Socat
+diff --git a/hassio-ihost-zigbee2mqtt/README.md b/hassio-ihost-zigbee2mqtt/README.md
+index e3aebd2603a624f23c207db691ad08ccb4f90e96..41e83bef14dcb1d0a9571fdc4d22ea574bfe7b0d 100644
+--- a/hassio-ihost-zigbee2mqtt/README.md
++++ b/hassio-ihost-zigbee2mqtt/README.md
+@@ -1,4 +1,4 @@
+-# Home Assistant Add-on: Zigbee2MQTT
++# Home Assistant App: Zigbee2MQTT
+ 
+ [![Docker Pulls](https://img.shields.io/docker/pulls/zigbee2mqtt/zigbee2mqtt-amd64.svg?style=flat-square&logo=docker)](https://cloud.docker.com/u/dwelch2101/repository/docker/zigbee2mqtt/zigbee2mqtt-amd64)
+ 
+@@ -9,7 +9,7 @@ It bridges events and allows you to control your Zigbee devices via MQTT. In thi
+ See Documentation tab for more details.
+ 
+ ## Installation
+-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**
++1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**
+ 2. Paste the following URL:  
+    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)
+ 3. Or, simply click the button below to add it automatically:

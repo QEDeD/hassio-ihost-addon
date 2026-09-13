@@ -1,0 +1,110 @@
+diff --git a/hassio-ihost-silabs-multiprotocol/Dockerfile b/hassio-ihost-silabs-multiprotocol/Dockerfile
+index 3a0ae250cc579eba2a53cde87adfdffb47902b2f..b88d74118b4d4e59f0f71f9f8da20ea44ffd3791 100644
+--- a/hassio-ihost-silabs-multiprotocol/Dockerfile
++++ b/hassio-ihost-silabs-multiprotocol/Dockerfile
+@@ -116,6 +116,7 @@ RUN \
+ COPY --from=cpcd-builder /usr/local/ /usr/${DEBIAN_CROSS_PREFIX}/
+ COPY otbr-patches/0001-Avoid-writing-to-system-console.patch /usr/src
+ COPY otbr-patches/0001-rest-support-deleting-the-dataset.patch /usr/src
++COPY otbr-patches/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch /usr/src
+ COPY zigbeed-patches/zigbeed_amd64.patch /usr/src/gecko_sdk/zigbeed_amd64.patch
+ 
+ RUN \
+@@ -123,6 +124,7 @@ RUN \
+     && cd gecko_sdk \
+     && patch -p1 < /usr/src/0001-Avoid-writing-to-system-console.patch \
+     && patch -p1 < /usr/src/0001-rest-support-deleting-the-dataset.patch \
++    && patch -p1 < /usr/src/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch \
+     && if [ "${DEBIAN_ARCH}" = "amd64" ]; then \
+         patch -p1 < zigbeed_amd64.patch; \
+         fi \
+@@ -216,6 +218,7 @@ RUN \
+     && echo "88 openthread" > /etc/iproute2/rt_tables.d/openthread.conf \
+     # Mimic otbr_install \
+     && (./script/cmake-build \
++        -DCMAKE_BUILD_TYPE=Release \
+         -DBUILD_TESTING=OFF \
+         -DCMAKE_INSTALL_PREFIX=/usr \
+         -DOTBR_FEATURE_FLAGS=ON \
+diff --git a/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch b/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..b027bbe79317bbc1e9a8185985111d49bdce7107
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch
+@@ -0,0 +1,76 @@
++From: Keith Packard <keithp@keithp.com>
++Subject: [PATCH] Avoid invalid GCC array-bounds warning in mbedtls_xor
++Upstream-Commit: 292b96c0a69016a6d99ce324837a9e96d59e21f6
++Upstream: https://github.com/Mbed-TLS/mbedtls/commit/292b96c0a69016a6d99ce324837a9e96d59e21f6
++
++Backport the upstream constant-length early returns and move
++MBEDTLS_HAS_BUILTIN before their use. Only patch context and SDK-relative
++paths are adapted for simplicity_sdk da661283f301b53eec04d1016009e60bc7e34a1f.
++Keep optimization and warning policy unchanged.
++
++Signed-off-by: Keith Packard <keithp@keithp.com>
++
++--- a/util/third_party/openthread/third_party/mbedtls/repo/library/common.h
+++++ b/util/third_party/openthread/third_party/mbedtls/repo/library/common.h
++@@ -99,6 +99,12 @@
++  * fall back to the unsafe implementation. */
++ #define ARRAY_LENGTH(array) ARRAY_LENGTH_UNSAFE(array)
++ #endif
+++#if defined(__has_builtin)
+++#define MBEDTLS_HAS_BUILTIN(x) __has_builtin(x)
+++#else
+++#define MBEDTLS_HAS_BUILTIN(x) 0
+++#endif
+++
++ /** Allow library to access its structs' private members.
++  *
++  * Although structs defined in header files are publicly available,
++@@ -208,6 +214,11 @@
++         return;
++     }
++ #endif
+++#if defined(MBEDTLS_COMPILER_IS_GCC) && MBEDTLS_HAS_BUILTIN(__builtin_constant_p)
+++    if (__builtin_constant_p(n) && n % 16 == 0) {
+++        return;
+++    }
+++#endif
++ #elif defined(MBEDTLS_ARCH_IS_X64) || defined(MBEDTLS_ARCH_IS_ARM64)
++     /* This codepath probably only makes sense on architectures with 64-bit registers */
++     for (; (i + 8) <= n; i += 8) {
++@@ -219,6 +230,11 @@
++         return;
++     }
++ #endif
+++#if defined(MBEDTLS_COMPILER_IS_GCC) && MBEDTLS_HAS_BUILTIN(__builtin_constant_p)
+++    if (__builtin_constant_p(n) && n % 8 == 0) {
+++        return;
+++    }
+++#endif
++ #else
++     for (; (i + 4) <= n; i += 4) {
++         uint32_t x = mbedtls_get_unaligned_uint32(a + i) ^ mbedtls_get_unaligned_uint32(b + i);
++@@ -226,6 +242,11 @@
++     }
++ #if defined(__IAR_SYSTEMS_ICC__)
++     if (n % 4 == 0) {
+++        return;
+++    }
+++#endif
+++#if defined(MBEDTLS_COMPILER_IS_GCC) && MBEDTLS_HAS_BUILTIN(__builtin_constant_p)
+++    if (__builtin_constant_p(n) && n % 4 == 0) {
++         return;
++     }
++ #endif
++@@ -365,12 +386,6 @@
++ #define MBEDTLS_STATIC_ASSERT(expr, msg)
++ #endif
++
++-#if defined(__has_builtin)
++-#define MBEDTLS_HAS_BUILTIN(x) __has_builtin(x)
++-#else
++-#define MBEDTLS_HAS_BUILTIN(x) 0
++-#endif
++-
++ /* Define compiler branch hints */
++ #if MBEDTLS_HAS_BUILTIN(__builtin_expect)
++ #define MBEDTLS_LIKELY(x)       __builtin_expect(!!(x), 1)

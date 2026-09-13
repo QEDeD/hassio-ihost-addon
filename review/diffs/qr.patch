@@ -1,0 +1,572 @@
+diff --git a/.github/workflows/local-commissioning-qr.yml b/.github/workflows/local-commissioning-qr.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..7853d04c2295708c6b06940a8321236a92a2395f
+--- /dev/null
++++ b/.github/workflows/local-commissioning-qr.yml
+@@ -0,0 +1,49 @@
++name: Local commissioning QR
++
++on:
++  pull_request:
++    paths:
++      - 'hassio-ihost-silabs-multiprotocol/Dockerfile'
++      - 'hassio-ihost-silabs-multiprotocol/otbr-patches/**'
++      - 'tests/qr/**'
++      - '.github/workflows/local-commissioning-qr.yml'
++  push:
++    paths:
++      - 'hassio-ihost-silabs-multiprotocol/Dockerfile'
++      - 'hassio-ihost-silabs-multiprotocol/otbr-patches/**'
++      - 'tests/qr/**'
++      - '.github/workflows/local-commissioning-qr.yml'
++  workflow_dispatch:
++
++permissions:
++  contents: read
++
++jobs:
++  frontend:
++    runs-on: ubuntu-latest
++    timeout-minutes: 15
++    steps:
++      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
++        with:
++          persist-credentials: false
++      - name: Build and install pinned frontend; check controller
++        run: python3 tests/qr/prepare.py "$RUNNER_TEMP/qr-frontend"
++      - name: Install browser test tools
++        run: npm --prefix "$RUNNER_TEMP/qr-tools" install --ignore-scripts --no-audit --no-fund @playwright/cli@0.1.19 jsqr@1.4.0
++      - name: Check rendered QR dialogs with synthetic data
++        shell: bash
++        run: |
++          set -euo pipefail
++          cli="$RUNNER_TEMP/qr-tools/node_modules/.bin/playwright-cli"
++          node tests/qr/serve.cjs \
++            "$RUNNER_TEMP/qr-frontend/install/share/otbr-web/frontend" \
++            "$RUNNER_TEMP/qr-tools/node_modules/jsqr/dist/jsQR.js" &
++          server_pid=$!
++          trap '"$cli" -s=qr-ci close || true; kill "$server_pid" || true' EXIT
++          for attempt in {1..30}; do
++            if curl --fail --silent http://127.0.0.1:18764/ >/dev/null; then break; fi
++            sleep 1
++          done
++          curl --fail --silent http://127.0.0.1:18764/ >/dev/null
++          "$cli" -s=qr-ci open http://127.0.0.1:18764 --browser chrome
++          "$cli" -s=qr-ci run-code --filename tests/qr/browser-check.js
+diff --git a/hassio-ihost-silabs-multiprotocol/Dockerfile b/hassio-ihost-silabs-multiprotocol/Dockerfile
+index 916802342b5e9df5c97f1530be39f91c248c26af..ba5caadc4a19f154f185250738d66e101261245a 100644
+--- a/hassio-ihost-silabs-multiprotocol/Dockerfile
++++ b/hassio-ihost-silabs-multiprotocol/Dockerfile
+@@ -116,6 +116,7 @@ RUN \
+ COPY --from=cpcd-builder /usr/local/ /usr/${DEBIAN_CROSS_PREFIX}/
+ COPY otbr-patches/0001-Avoid-writing-to-system-console.patch /usr/src
+ COPY otbr-patches/0001-rest-support-deleting-the-dataset.patch /usr/src
++COPY otbr-patches/0001-web-generate-commissioning-qr-locally.patch /usr/src
+ COPY zigbeed-patches/zigbeed_amd64.patch /usr/src/gecko_sdk/zigbeed_amd64.patch
+ 
+ RUN \
+@@ -123,6 +124,7 @@ RUN \
+     && cd gecko_sdk \
+     && patch -p1 < /usr/src/0001-Avoid-writing-to-system-console.patch \
+     && patch -p1 < /usr/src/0001-rest-support-deleting-the-dataset.patch \
++    && patch -p1 < /usr/src/0001-web-generate-commissioning-qr-locally.patch \
+     && if [ "${DEBIAN_ARCH}" = "amd64" ]; then \
+         patch -p1 < zigbeed_amd64.patch; \
+         fi \
+diff --git a/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-web-generate-commissioning-qr-locally.patch b/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-web-generate-commissioning-qr-locally.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..e43d4b263abc415bad86ae6bce41ac96a86a6d66
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-web-generate-commissioning-qr-locally.patch
+@@ -0,0 +1,100 @@
++--- a/util/third_party/ot-br-posix/src/web/web-service/frontend/CMakeLists.txt
+++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/CMakeLists.txt
++@@ -38,6 +38,7 @@
++     ${CMAKE_CURRENT_BINARY_DIR}/node_modules/angular/angular.min.js
++     ${CMAKE_CURRENT_BINARY_DIR}/node_modules/d3/d3.min.js
++     ${CMAKE_CURRENT_BINARY_DIR}/node_modules/material-design-lite/material.min.js
+++    ${CMAKE_CURRENT_BINARY_DIR}/node_modules/qrcode-generator/dist/qrcode.js
++ )
++ 
++ add_custom_target(otbr-web-frontend
++--- a/util/third_party/ot-br-posix/src/web/web-service/frontend/index.html
+++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/index.html
++@@ -427,6 +427,7 @@
++   <script src="res/js/angular-aria.min.js"></script>
++   <script src="res/js/angular-material.min.js"></script>
++   <script src="res/js/angular-messages.min.js"></script>
+++  <script src="res/js/qrcode.js"></script>
++   <script src="res/js/app.js"></script>
++   <script src="res/js/d3.min.js"></script>
++ </body>
++--- a/util/third_party/ot-br-posix/src/web/web-service/frontend/package.json
+++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/package.json
++@@ -15,6 +15,7 @@
++     "angular-material": "^1.1.4",
++     "angular-messages": "^1.6.4",
++     "d3": "^3.5.17",
++-    "material-design-lite": "^1.3.0"
+++    "material-design-lite": "^1.3.0",
+++    "qrcode-generator": "2.0.4"
++   }
++ }
++--- a/util/third_party/ot-br-posix/src/web/web-service/frontend/res/js/app.js
+++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/res/js/app.js
++@@ -220,7 +220,7 @@
++                     '  <md-dialog-content>' +
++                     '  <h6 style="margin: 10px 10px 10px 10px; "><b>Open your OT Commissioner Android App to scan the Connect QR Code</b></h6>' +
++                     '  <div layout="row">' +
++-                    '  <img ng-src="' + image + '" alt="qr code" style="display: block; margin-left: auto; margin-right: auto; width:40%"></img>' +
+++                    '  <img ng-src="{{qrImage}}" alt="Connect QR code" style="display: block; margin: 0 auto; max-width: 100%; height: auto; image-rendering: pixelated">' +
++                     '  </div>' +
++                     '  <md-dialog-actions>' +
++                     '    <md-button ng-click="closeDialog()" class="md-primary">' +
++@@ -228,7 +228,9 @@
++                     '    </md-button>' +
++                     '  </md-dialog-actions>' +
++                     '</md-dialog>',
++-                   controller: function DialogController($scope, $mdDialog) {
+++                   locals: { qrImage: image },
+++                   controller: function DialogController($scope, $mdDialog, qrImage) {
+++                    $scope.qrImage = qrImage;
++                     $scope.closeDialog = function() {
++                     $mdDialog.hide();
++                     }
++@@ -278,11 +280,19 @@
++             $scope.qrcode = function() {
++                 $scope.isLoading = false;
++                 $http.get('get_qrcode').then(function(response) {
++-                    console.log(response);
++                     $scope.res = response.data.result;
++                     if (response.data.result == 'successful') {
++-                        var image = "http://api.qrserver.com/v1/create-qr-code/?color=000000&amp;bgcolor=FFFFFF&amp;data=v%3D1%26%26eui%3D" + response.data.eui64 +"%26%26cc%3D" + $scope.thread.pskd +"&amp;qzone=1&amp;margin=0&amp;size=400x400&amp;ecc=L";
++-                        $scope.showQRCode(event, image);
+++                        try {
+++                            var qr = qrcode(0, 'L');
+++                            qr.addData('v=1&&eui=' + response.data.eui64 + '&&cc=' + $scope.thread.pskd, 'Byte');
+++                            qr.make();
+++                            // Integer-sized modules and a four-module quiet zone.
+++                            var cellSize = 6;
+++                            var image = qr.createDataURL(cellSize, cellSize * 4);
+++                            $scope.showQRCode(event, image);
+++                        } catch (error) {
+++                            $scope.showQRAlert(event, "sorry, can not generate the QR code.");
+++                        }
++                     } else {
++                         $scope.showQRAlert(event, "sorry, can not generate the QR code.");
++                     }   
++--- /dev/null
+++++ b/util/third_party/ot-br-posix/src/web/web-service/frontend/res/js/qrcode.LICENSE.txt
++@@ -0,0 +1,21 @@
+++MIT License
+++
+++Copyright (c) 2009 Kazuhiko Arase
+++
+++Permission is hereby granted, free of charge, to any person obtaining a copy
+++of this software and associated documentation files (the "Software"), to deal
+++in the Software without restriction, including without limitation the rights
+++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+++copies of the Software, and to permit persons to whom the Software is
+++furnished to do so, subject to the following conditions:
+++
+++The above copyright notice and this permission notice shall be included in all
+++copies or substantial portions of the Software.
+++
+++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+++SOFTWARE.
+diff --git a/tests/qr/README.md b/tests/qr/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..a655cd06a306f6653f726b22a7b08f890a556dd1
+--- /dev/null
++++ b/tests/qr/README.md
+@@ -0,0 +1,103 @@
++# Local commissioning QR regression checks
++
++The app patch targets SiliconLabs/simplicity_sdk commit
++`da661283f301b53eec04d1016009e60bc7e34a1f`, under
++`util/third_party/ot-br-posix/src/web/web-service/frontend`.
++It is applied in the existing SDK patch stage of the multiprotocol Dockerfile.
++
++The change keeps `v=1&&eui=<original eui64>&&cc=<original PSKd>` unchanged,
++including casing and leading zeros, and replaces the remote image URL with a
++locally generated GIF data URL. The exact dependency is `qrcode-generator@2.0.4`
++(verified with `npm view qrcode-generator version`). It has no dependencies.
++The existing CMake npm asset list installs `dist/qrcode.js`; `index.html` loads
++it before `app.js`. The encoder's notice remains in the unminified script and
++its full MIT license is installed through `res/js/qrcode.LICENSE.txt`.
++The license text comes from the encoder project's LICENSE and matches its MIT
++package metadata. No package lock or unrelated dependency versions are changed.
++
++Encoding uses automatic QR version selection, Byte mode, L error correction,
++six pixels per module and a four-module white quiet zone. The dialog uses
++natural raster dimensions, responsive max-width, and pixelated scaling. A
++constant Angular template binds a per-dialog local image value. The existing
++generic QR alert handles a missing or throwing encoder; no remote fallback or
++credential logging remains in the QR controller.
++
++## Local checks
++
++Fetch the four modified frontend files (CMakeLists.txt, package.json,
++index.html, res/js/app.js) from the pinned SDK to a scratch SDK-shaped tree,
++then apply the patch with `patch -p1` at that tree's root. The patch also adds
++the license file. Obtain the pinned encoder with `npm pack qrcode-generator@2.0.4`
++and extract its tarball; no full SDK checkout is necessary for controller checks.
++
++```
++node tests/qr/check.cjs FRONTEND_DIR QRCODE_PACKAGE_DIR/dist/qrcode.js
++```
++
++The test executes the actual patched join dialog controller in a VM with API
++and dialog stubs. It checks exact payloads with six- and 32-character valid
++PSKds, zero/leading-zero and mixed-case EUIs, hostile input staying out of the
++template, fixed local request paths, error handling, real encoder raster
++output, and different subsequent credentials producing separate dialog locals.
++It does not claim browser rendering, scanning, Angular safety, or Docker build
++coverage by itself.
++
++## Browser acceptance
++
++Use the actual patched frontend with its npm-installed Angular dependencies,
++and mock only the local get_qrcode response. Decode the rendered QR at its
++actual displayed dimensions for six- and 32-character valid PSKds and a zero
++EUI; compare the decoded text exactly. Repeat with different credentials and
++check no stale QR remains. Record request attempts and reject any external QR
++request, including blocked attempts. Exercise hostile strings containing HTML
++and Angular expressions and verify they are never executed. Remove the encoder,
++then replace it with a throwing encoder, and verify the generic visible alert
++and absence of credential logging or remote fallback. Check narrow and desktop
++viewports for clipping and a readable QR. Real hardware scanning and final
++container integration require their own explicit evidence.
++
++## Current local evidence
++
++- Patch dry-run against the pinned original frontend: passed.
++- Controller regression checks with qrcode-generator 2.0.4: passed.
++- Actual CMake frontend build and install: passed locally with CMake 3.31.6.
++- Chrome browser with CMake-installed assets: decoded screenshot pixels match
++  the payload for 6/32-character PSKds at 1000/360-pixel viewports; repeat QR
++  generation, missing/throwing encoder and hostile-text cases passed. Seven
++  synthetic QR attempts produced zero external request attempts.
++- QR opening animations are completed for screenshot decoding. Viewport tests
++  open the unchanged fixed-width join form at desktop size, then resize the QR
++  dialog; this does not claim a mobile join-form redesign or physical scan.
++- Full native-container and real commissioner-device scanning are not claimed.
++
++Scratch downloads and patched source belong under `output/` and must not be
++staged. The delivery consists of the Dockerfile, the SDK patch, and these tests.
++
++## Reproducible isolated browser harness
++
++On Linux/WSL with Python 3, patch, CMake, Ninja or Make, and Node/npm on PATH:
++
++```sh
++python3 tests/qr/prepare.py /tmp/qr-frontend-check
++npm --prefix /tmp/qr-test-tools install --ignore-scripts --no-audit --no-fund @playwright/cli@0.1.19 jsqr@1.4.0
++node tests/qr/serve.cjs /tmp/qr-frontend-check/install/share/otbr-web/frontend /tmp/qr-test-tools/node_modules/jsqr/dist/jsQR.js
++```
++
++The preparation directory must be new or empty. The script downloads only five
++pinned SDK files, dry-runs and applies the patch, builds and installs through the
++actual frontend CMake target, and runs the controller checks on installed assets.
++The server listens only on `127.0.0.1:18764`. Its fixture uses the actual installed
++Angular/app/QR assets and join dialog, plus a test-only jsQR decoder. The backend
++response is synthetic; it never contacts a Home Assistant or OTBR instance.
++
++With Chrome already installed, use another terminal:
++
++```sh
++/tmp/qr-test-tools/node_modules/.bin/playwright-cli -s=qr-check open http://127.0.0.1:18764 --browser chrome
++/tmp/qr-test-tools/node_modules/.bin/playwright-cli -s=qr-check run-code --filename tests/qr/browser-check.js
++/tmp/qr-test-tools/node_modules/.bin/playwright-cli -s=qr-check close
++```
++
++Stop the loopback server when finished. The workflow `local-commissioning-qr.yml`
++runs these checks with a 15-minute limit and automatic server/browser cleanup.
++It does not build the native app, deploy it, or upload screenshots/artifacts.
+diff --git a/tests/qr/browser-check.js b/tests/qr/browser-check.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..e241fb0e9a984f1d909884a156b9ff584c8ccf7c
+--- /dev/null
++++ b/tests/qr/browser-check.js
+@@ -0,0 +1,86 @@
++async (page) => {
++// Run with Playwright CLI run-code on the isolated fixture described in README.
++// No production service or real credential is used.
++let stage='initial', onRequest, onConsole;
++try {
++const requests = [], messages = [], results = [];
++onRequest=request => requests.push(request.url());
++onConsole=message => messages.push(message.text());
++page.on('request',onRequest);
++page.on('console',onConsole);
++await page.reload();
++await page.getByRole('button', {name: 'Open Join', exact:true}).click();
++await page.getByRole('button', {name: 'Credential Type', exact:true}).click();
++await page.getByRole('option', {name:'PSKd',exact:true}).click();
++const credentials = ['ABC123','123456789ABCDEFGHJKLMNPRSTUVWXY1'];
++if(credentials[1].length!==32) throw Error('Invalid maximum-length fixture');
++async function decodeVisible() {
++    const qr = page.getByRole('img',{name:'Connect QR code',exact:true});
++    await qr.waitFor({state:'visible'});
++    await qr.evaluate(image => image.decode());
++    const shot = await qr.screenshot({animations:'disabled'});
++    return await page.evaluate(async base64 => {
++        const image = new Image(); image.src='data:image/png;base64,'+base64;
++        await image.decode();
++        const canvas=document.createElement('canvas');
++        canvas.width=image.width;canvas.height=image.height;
++        const ctx=canvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);
++        const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);
++        const decoded=jsQR(pixels.data,pixels.width,pixels.height);
++        return {payload:decoded && decoded.data,width:image.width,height:image.height};
++    },shot.toString('base64'));
++}
++let previous;
++for(const width of [1000,360]) {
++    for(const credential of credentials) {
++        stage=`viewport ${width}, credential length ${credential.length}`;
++        await page.setViewportSize({width:1000,height:800});
++        await page.getByRole('textbox',{name:'PSKd *',exact:true}).fill(credential);
++        await page.getByRole('button',{name:'Get Connect QR Code',exact:true}).click();
++        await page.setViewportSize({width,height:800});
++        const decoded=await decodeVisible();
++        if(decoded.payload!=='v=1&&eui=0000aBcD0000Ef01&&cc='+credential) throw Error('Rendered payload mismatch: '+JSON.stringify({viewport:width,credentialLength:credential.length,decoded}));
++        const src=await page.getByRole('img',{name:'Connect QR code',exact:true}).getAttribute('src');
++        if(!src.startsWith('data:image/gif;base64,')) throw Error('Nonlocal QR image');
++        if(previous && previous.credential!==credential && previous.src===src) throw Error('Stale QR image');
++        previous={credential,src};
++        results.push({viewport:width,credentialLength:credential.length,rendered:[decoded.width,decoded.height],decoded:true});
++        await page.getByRole('button',{name:'Close',exact:true}).click();
++        await page.getByRole('img',{name:'Connect QR code',exact:true}).waitFor({state:'detached'});
++    }
++}
++async function freshJoin() {
++    await page.setViewportSize({width:1000,height:800});
++    await page.reload();
++    await page.getByRole('button',{name:'Open Join',exact:true}).click();
++    await page.getByRole('button',{name:'Credential Type',exact:true}).click();
++    await page.getByRole('option',{name:'PSKd',exact:true}).click();
++    await page.getByRole('textbox',{name:'PSKd *',exact:true}).fill('ABC123');
++}
++for(const failure of ['missing','throwing']) {
++    stage='encoder failure '+failure;
++    await freshJoin();
++    await page.evaluate(mode=>{window.qrcode=mode==='missing'?undefined:()=>{throw Error('SYNTHETIC_CREDENTIAL_MUST_NOT_BE_LOGGED');};},failure);
++    await page.getByRole('button',{name:'Get Connect QR Code',exact:true}).click();
++    await page.getByText('sorry, can not generate the QR code.',{exact:true}).waitFor();
++    if(await page.locator('img[alt="Connect QR code"]').count()) throw Error('Failed encoder displayed a QR image');
++}
++stage='hostile input';
++await freshJoin();
++const hostile='\"><img src=x onerror=window.qrInjection=1>{{7*7}}';
++// Inject hostile data at the real click boundary, retaining Angular event/digest timing.
++await page.evaluate(value=>{const scope=angular.element(document.querySelector('input[name=pskd]')).scope();const original=scope.qrcode;scope.qrcode=function(){scope.thread.pskd=value;return original.apply(this,arguments);};},hostile);
++await page.getByRole('button',{name:'Get Connect QR Code',exact:true}).click();
++const hostileDecoded=await decodeVisible();
++if(hostileDecoded.payload!=='v=1&&eui=0000aBcD0000Ef01&&cc='+hostile) throw Error('Hostile input changed payload');
++if(await page.evaluate(()=>window.qrInjection!==undefined || document.querySelector('img[src=x]')!==null)) throw Error('Template injection');
++await page.getByRole('button',{name:'Close',exact:true}).click();
++        await page.getByRole('img',{name:'Connect QR code',exact:true}).waitFor({state:'detached'});
++const external=requests.filter(url=>!url.startsWith('http://127.0.0.1:18764/'));
++if(external.length) throw Error('External request attempted: '+external.join(','));
++if(messages.some(text=>text.includes('SYNTHETIC_CREDENTIAL_MUST_NOT_BE_LOGGED') || credentials.some(value=>text.includes(value)) || text.includes(hostile))) throw Error('Credential logged');
++return {results,encoderFailures:2,hostileInputRenderedAsData:true,externalRequestAttempts:external.length,localQrRequests:requests.filter(url=>url.endsWith('/get_qrcode')).length};
++} catch(error) {throw Error(stage+': '+error.message);}
++finally {if(onRequest) page.off('request',onRequest);if(onConsole) page.off('console',onConsole);}
++
++}
+diff --git a/tests/qr/check.cjs b/tests/qr/check.cjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..4378964d82774e92312895776ec71c27ad1199d2
+--- /dev/null
++++ b/tests/qr/check.cjs
+@@ -0,0 +1,72 @@
++'use strict';
++// Usage: node tests/qr/check.cjs FRONTEND_DIR QRCODE_JS
++const assert = require('node:assert/strict');
++const fs = require('node:fs');
++const path = require('node:path');
++const vm = require('node:vm');
++const frontend = path.resolve(process.argv[2]);
++const encoder = require(path.resolve(process.argv[3]));
++const source = fs.readFileSync(path.join(frontend, 'res/js/app.js'), 'utf8');
++const start = source.indexOf('        function DialogController(');
++const end = source.indexOf('        $scope.showConfirm', start);
++assert(start > 0 && end > start);
++const controller = source.slice(start, end);
++assert(!controller.includes('qrserver'));
++assert(!controller.includes('console.'));
++function setup(qrcode, eui64, pskd) {
++  const scope = {}, dialogs = [], alerts = [], requests = [];
++  const md = { show: value => dialogs.push(value) };
++  const context = { qrcode, event: undefined, document: { querySelector: () => null }, angular: { element: x => x } };
++  vm.createContext(context);
++  vm.runInContext(controller, context);
++  context.DialogController(scope, md, {
++    get: url => {
++      requests.push(url);
++      return { then: cb => cb({ data: { result: 'successful', eui64 } }) };
++    }
++  }, null, { getIndex: () => 0 });
++  scope.thread.pskd = pskd;
++  scope.showQRAlert = (ev, message) => alerts.push(message);
++  return { scope, dialogs, alerts, requests };
++}
++for (const [eui, pskd] of [
++  ['0000000000000000', 'ABC123'],
++  ['0000aBcD0000Ef01', '123456789ABCDEFGHJKLMNPRSTUVWXY1'],
++  ['{{constructor.constructor("globalThis.pwned=1")()}}', '\"><img src=x onerror=globalThis.pwned=1>'],
++]) {
++  const calls = [];
++  const state = setup((version, level) => {
++    assert.equal(version, 0); assert.equal(level, 'L');
++    return { addData: (data, mode) => calls.push([data, mode]), make() {}, createDataURL: (cell, margin) => {
++      assert.equal(cell, 6); assert.equal(margin, cell * 4); return 'data:image/gif;base64,R0lGODlh';
++    } };
++  }, eui, pskd);
++  state.scope.qrcode();
++  assert.deepEqual(calls, [['v=1&&eui=' + eui + '&&cc=' + pskd, 'Byte']]);
++  assert.deepEqual(state.requests, ['get_qrcode']);
++  assert.equal(state.alerts.length, 0);
++  const dialog = state.dialogs[0];
++  assert(dialog.template.includes('ng-src="{{qrImage}}"'));
++  assert(!dialog.template.includes(eui));
++  assert(!dialog.template.includes(pskd));
++  const dialogScope = {};
++  dialog.controller(dialogScope, {}, dialog.locals.qrImage);
++  assert.equal(dialogScope.qrImage, dialog.locals.qrImage);
++}
++for (const failing of [undefined, () => { throw Error('private data'); }, () => ({ addData() { throw Error('private data'); } })]) {
++  const state = setup(failing, '0000000000000000', 'ABC123');
++  state.scope.qrcode();
++  assert.deepEqual(state.alerts, ['sorry, can not generate the QR code.']);
++  assert.equal(state.dialogs.length, 0);
++  assert.deepEqual(state.requests, ['get_qrcode']);
++}
++const state = setup(encoder, '0000aBcD0000Ef01', 'ABC123');
++state.scope.qrcode();
++const first = state.dialogs[0];
++assert(first.locals.qrImage.startsWith('data:image/gif;base64,'));
++state.scope.thread.pskd = '123456789ABCDEFGHJKLMNPRSTUVWXY1';
++state.scope.qrcode();
++assert.notEqual(first.locals.qrImage, state.dialogs[1].locals.qrImage);
++assert.notEqual(first.locals, state.dialogs[1].locals);
++assert.equal(first.template, state.dialogs[1].template);
++console.log('QR controller checks passed (payload, local raster, isolation, constant template, encoder failures).');
+diff --git a/tests/qr/fixture.html b/tests/qr/fixture.html
+new file mode 100644
+index 0000000000000000000000000000000000000000..d69174ca0a32701a33e065b5d04e138840a6d938
+--- /dev/null
++++ b/tests/qr/fixture.html
+@@ -0,0 +1 @@
++<!doctype html><html ng-app="StarterApp"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Isolated OTBR QR verification</title><link rel="stylesheet" href="res/css/angular-material.min.css"></head><body ng-controller="AppCtrl"><button ng-click="showJoinDialog($event,0,{})">Open Join</button><script src="res/js/angular.min.js"></script><script src="res/js/angular-animate.min.js"></script><script src="res/js/angular-aria.min.js"></script><script src="res/js/angular-material.min.js"></script><script src="res/js/angular-messages.min.js"></script><script src="res/js/qrcode.js"></script><script src="res/js/app.js"></script><script src="res/js/jsQR.js"></script></body></html>
+\ No newline at end of file
+diff --git a/tests/qr/prepare.py b/tests/qr/prepare.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..24eb0a746ccf72bb1defd97e6e543b86a10d451c
+--- /dev/null
++++ b/tests/qr/prepare.py
+@@ -0,0 +1,62 @@
++#!/usr/bin/env python3
++"""Prepare and verify the pinned, patched OTBR frontend in a fresh scratch directory."""
++import argparse
++from pathlib import Path
++import shutil
++import subprocess
++from urllib.request import urlopen
++
++REF = "da661283f301b53eec04d1016009e60bc7e34a1f"
++FRONTEND = "util/third_party/ot-br-posix/src/web/web-service/frontend"
++FILES = ("CMakeLists.txt", "index.html", "package.json", "res/js/app.js", "join.dialog.html")
++REPO = Path(__file__).resolve().parents[2]
++PATCH = REPO / "hassio-ihost-silabs-multiprotocol/otbr-patches/0001-web-generate-commissioning-qr-locally.patch"
++
++
++def run(*args, **kwargs):
++    subprocess.run([str(arg) for arg in args], check=True, **kwargs)
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("scratch", type=Path, help="new or empty scratch directory")
++    args = parser.parse_args()
++    scratch = args.scratch.resolve()
++    if scratch.exists() and any(scratch.iterdir()):
++        parser.error("scratch directory must be empty; existing files are never removed")
++    for command in ("patch", "cmake", "node", "npm"):
++        if not shutil.which(command):
++            parser.error(f"required command is missing: {command}")
++    generator = "Ninja" if shutil.which("ninja") else "Unix Makefiles"
++    if generator == "Unix Makefiles" and not shutil.which("make"):
++        parser.error("ninja or make is required")
++    sdk = scratch / "sdk"
++    frontend = sdk / FRONTEND
++    for name in FILES:
++        target = frontend / name
++        target.parent.mkdir(parents=True, exist_ok=True)
++        url = f"https://raw.githubusercontent.com/SiliconLabs/simplicity_sdk/{REF}/{FRONTEND}/{name}"
++        with urlopen(url, timeout=60) as response:
++            target.write_bytes(response.read())
++    for flags in (("--dry-run",), ()):
++        with PATCH.open("rb") as patch:
++            run("patch", *flags, "-p1", cwd=sdk, stdin=patch)
++    (sdk / "CMakeLists.txt").write_text(
++        "cmake_minimum_required(VERSION 3.10)\n"
++        "project(qr_frontend_check NONE)\n"
++        "set(OTBR_WEB_DATADIR share/otbr-web)\n"
++        f"add_subdirectory({FRONTEND})\n", encoding="utf-8")
++    build = scratch / "build"
++    install = scratch / "install"
++    run("cmake", "-S", sdk, "-B", build, "-G", generator,
++        f"-DCMAKE_INSTALL_PREFIX={install}")
++    run("cmake", "--build", build, "--target", "otbr-web-frontend")
++    run("cmake", "--install", build)
++    installed = install / "share/otbr-web/frontend"
++    run("node", REPO / "tests/qr/check.cjs", installed, installed / "res/js/qrcode.js")
++    assert (installed / "res/js/qrcode.LICENSE.txt").is_file()
++    print(f"Installed frontend ready: {installed}")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/tests/qr/serve.cjs b/tests/qr/serve.cjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..2ab34095621e91bbd3f2bab0ea0131c72c0a4044
+--- /dev/null
++++ b/tests/qr/serve.cjs
+@@ -0,0 +1,30 @@
++'use strict';
++// Serve only a synthetic fixture and installed assets on loopback.
++const http = require('node:http');
++const fs = require('node:fs');
++const path = require('node:path');
++if (process.argv.length !== 4) throw Error('Usage: node serve.cjs INSTALLED_FRONTEND JSQR_JS');
++const frontend = path.resolve(process.argv[2]);
++const decoder = path.resolve(process.argv[3]);
++for (const file of [path.join(frontend, 'res/js/app.js'), decoder]) fs.accessSync(file);
++http.createServer((req, res) => {
++  const pathname = new URL(req.url, 'http://127.0.0.1').pathname;
++  if (pathname === '/get_qrcode') {
++    res.setHeader('Content-Type', 'application/json');
++    res.end(JSON.stringify({result: 'successful', eui64: '0000aBcD0000Ef01'}));
++    return;
++  }
++  let file;
++  if (pathname === '/' || pathname === '/index.html') file = path.join(__dirname, 'fixture.html');
++  else if (pathname === '/res/js/jsQR.js') file = decoder;
++  else if (pathname === '/join.dialog.html' || pathname.startsWith('/res/')) {
++    file = path.resolve(frontend, '.' + pathname);
++    if (!file.startsWith(frontend + path.sep)) { res.writeHead(403); res.end(); return; }
++  } else { res.writeHead(404); res.end(); return; }
++  fs.readFile(file, (error, data) => {
++    if (error) { res.writeHead(404); res.end(); return; }
++    const types = {'.js': 'application/javascript', '.css': 'text/css', '.html': 'text/html', '.png': 'image/png', '.svg': 'image/svg+xml'};
++    res.setHeader('Content-Type', types[path.extname(file)] || 'application/octet-stream');
++    res.end(data);
++  });
++}).listen(18764, '127.0.0.1', () => console.log('Synthetic QR test server on http://127.0.0.1:18764'));

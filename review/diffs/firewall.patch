@@ -1,0 +1,2760 @@
+diff --git a/.github/workflows/test-silabs-otbr-firewall.yml b/.github/workflows/test-silabs-otbr-firewall.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..7bebebf0cd9fa6acf59f6c2106c05264427f439e
+--- /dev/null
++++ b/.github/workflows/test-silabs-otbr-firewall.yml
+@@ -0,0 +1,87 @@
++name: Test Silicon Labs OTBR firewall
++
++on:
++  pull_request:
++    paths:
++      - ".github/workflows/test-silabs-otbr-firewall.yml"
++      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/**"
++      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
++      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh"
++      - "hassio-ihost-silabs-multiprotocol/tests/**"
++  push:
++    paths:
++      - ".github/workflows/test-silabs-otbr-firewall.yml"
++      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/**"
++      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
++      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh"
++      - "hassio-ihost-silabs-multiprotocol/tests/**"
++  workflow_dispatch:
++
++permissions:
++  contents: read
++
++concurrency:
++  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
++  cancel-in-progress: true
++
++jobs:
++  lifecycle:
++    runs-on: ubuntu-latest
++    timeout-minutes: 15
++    steps:
++      - name: Check out repository
++        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
++        with:
++          persist-credentials: false
++
++      - name: Validate scripts
++        shell: bash
++        run: |
++          set -euo pipefail
++          runtime_files=(
++            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
++            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
++            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
++            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
++          )
++          test_files=(
++            hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
++            hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
++            hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe
++            hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh
++            hassio-ihost-silabs-multiprotocol/tests/s6/run
++            hassio-ihost-silabs-multiprotocol/tests/s6/ip6tables
++            hassio-ihost-silabs-multiprotocol/tests/s6/ipset
++            hassio-ihost-silabs-multiprotocol/tests/s6/timeout
++          )
++          for file in "${runtime_files[@]}" "${test_files[@]}"; do
++            bash -n "${file}"
++          done
++          shellcheck --shell=bash --severity=warning -x -P SCRIPTDIR "${runtime_files[@]}"
++
++      - name: Run mocked firewall lifecycle test
++        run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
++
++      - name: Run isolated kernel firewall test
++        shell: bash
++        run: |
++          set -euo pipefail
++          addon=hassio-ihost-silabs-multiprotocol
++          image="local/silabs-otbr-kernel-test:${GITHUB_SHA}"
++
++          docker build --pull --tag "${image}" \
++            --file "${addon}/tests/kernel/Dockerfile" "${addon}"
++          docker run --rm \
++            --cap-drop ALL \
++            --cap-add NET_ADMIN \
++            --cap-add NET_RAW \
++            --network none \
++            --read-only \
++            --pids-limit 128 \
++            --security-opt no-new-privileges \
++            --tmpfs /run:rw,nosuid,nodev,noexec,size=1m \
++            --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
++            "${image}"
++
++      - name: Verify released s6 shutdown behavior
++        run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh
+diff --git a/hassio-ihost-silabs-multiprotocol/DOCS.md b/hassio-ihost-silabs-multiprotocol/DOCS.md
+index 0e319a3a3ede6e96e08b56118290ef47345d843f..3af77aea294f7cfef1874d64bf34ace78a26355d 100644
+--- a/hassio-ihost-silabs-multiprotocol/DOCS.md
++++ b/hassio-ihost-silabs-multiprotocol/DOCS.md
+@@ -75,6 +75,17 @@ To use the OTBR enable it in the Configuration tab and restart the add-on. Home
+ Assistant should discover the OpenThread border router automatically and
+ configure it as necessary.
+ 
++#### Firewall behavior
++
++`otbr_firewall` controls OTBR ingress filtering. When it is disabled, the
++add-on still permits forwarding into and out of `wpan0` through its own IPv6
++chains, but does not apply the ingress filtering rules. It does not change the
++host-wide IPv6 `FORWARD` policy or invoke `ip6tables-legacy`.
++
++Only one OTBR implementation may manage `wpan0` and the globally named OTBR
++chains and ipsets at a time. Stop another OTBR before starting or disabling
++this app so its guarded cleanup can safely reconcile its own state.
++
+ ### Web interface (advanced)
+ 
+ There is also a web interface provided by the OTBR. However, the web
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/mdns b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/mdns
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
+index 78a78bf56f86b597b890024648faf9db3355aa10..4cbb34793a732312b7dfd00c0753977bb8541d7c 100755
+--- a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
+@@ -4,65 +4,50 @@
+ #==============================================================================
+ # OpenThread BorderRouter Daemon finish script
+ #==============================================================================
+-bashio::log.info "otbr-agent ended with exit code ${1} (signal ${2})..."
+-
+-
+-# shellcheck disable=SC1091
+-. /etc/s6-overlay/scripts/otbr-agent-common
+-
+-ipset_destroy_if_exist()
+-{
+-    # The ipset seems to be in use by the kernel for a brief period,
+-    # retry destroying it
+-    while ipset list -n "$1" 2> /dev/null; do
+-        ipset destroy "$1" || true
+-    done
+-}
+-
+-# shellcheck disable=SC2086,SC2154
+-while ip6tables -C FORWARD -o $thread_if -j $otbr_forward_ingress_chain 2> /dev/null; do
+-    # shellcheck disable=SC2086
+-    ip6tables -D FORWARD -o $thread_if -j $otbr_forward_ingress_chain
+-done
+-
+-# shellcheck disable=SC2086
+-if ip6tables -L $otbr_forward_ingress_chain 2> /dev/null; then
+-    # shellcheck disable=SC2086
+-    ip6tables -w -F $otbr_forward_ingress_chain
+-    # shellcheck disable=SC2086
+-    ip6tables -w -X $otbr_forward_ingress_chain
+-fi
+-
+-ipset_destroy_if_exist otbr-ingress-deny-src
+-ipset_destroy_if_exist otbr-ingress-deny-src-swap
+-ipset_destroy_if_exist otbr-ingress-allow-dst
+-ipset_destroy_if_exist otbr-ingress-allow-dst-swap
+-
+-# shellcheck disable=SC2086,SC2154
+-while ip6tables -C FORWARD -i $thread_if -j $otbr_forward_egress_chain 2> /dev/null; do
+-    # shellcheck disable=SC2086
+-    ip6tables -D FORWARD -i $thread_if -j $otbr_forward_egress_chain
+-done
+-
+-# shellcheck disable=SC2086
+-if ip6tables -L $otbr_forward_egress_chain 2> /dev/null; then
+-    # shellcheck disable=SC2086
+-    ip6tables -w -F $otbr_forward_egress_chain
+-    # shellcheck disable=SC2086
+-    ip6tables -w -X $otbr_forward_egress_chain
+-fi
+-bashio::log.info "OTBR firewall teardown completed."
+-
+ if test "$1" -eq 256 ; then
+-  e=$((128 + $2))
++    e=$((128 + $2))
+ else
+-  e="$1"
++    e="$1"
+ fi
+ 
++fatal_exit=false
+ if test "$e" -ne 0; then
+-    bashio::log.warning "otbr-agent exited with code $e (by signal $2)."
++    # Persist the service result and initiate container shutdown before
++    # best-effort teardown. s6 may SIGKILL an overdue finish script.
+     echo "$e" > /run/s6-linux-init-container-results/exitcode
+-    exec /run/s6/basedir/bin/halt
++    /run/s6/basedir/bin/halt
++    fatal_exit=true
++    bashio::log.warning "otbr-agent exited with code $e (by signal $2)."
+ else
+     bashio::log.info "otbr-agent exited with code $e (by signal $2)."
+ fi
++
++# shellcheck source=../../scripts/otbr-agent-common
++# shellcheck disable=SC1091
++. /etc/s6-overlay/scripts/otbr-agent-common
++
++declare cleanup_claim_status
++if otbr_firewall_cleanup_claim_consume; then
++    if otbr_firewall_cleanup; then
++        bashio::log.info "OTBR firewall teardown completed."
++    else
++        bashio::log.warning "OTBR firewall teardown was incomplete."
++    fi
++else
++    cleanup_claim_status=$?
++    if (( cleanup_claim_status == 1 )); then
++        bashio::log.info \
++            "Skipping OTBR firewall teardown because startup did not claim the firewall state."
++    else
++        bashio::log.warning \
++            "Skipping OTBR firewall teardown because its ownership claim could not be consumed."
++    fi
++fi
++
++if [[ "${fatal_exit}" == "true" ]]; then
++    # Report permanent failure and prevent restart. During initial readiness,
++    # this result releases the pending startup transaction. After startup has
++    # completed, the shutdown request also covers a forced finish timeout;
++    # that timeout path is not sufficient to release a pending startup wait.
++    exit 125
++fi
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+index b3bb2f7067c7e4094449dc1855442111f0493837..5c498a3bd490b2d509914144fc4808ce6a134c1e 100755
+--- a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+@@ -5,9 +5,27 @@
+ # OpenThread BorderRouter start script
+ # ==============================================================================
+ 
++# shellcheck source=../../scripts/otbr-agent-common
+ # shellcheck disable=SC1091
+ . /etc/s6-overlay/scripts/otbr-agent-common
+ 
++if ! otbr_firewall_cleanup_claim_reset; then
++    bashio::exit.nok "Could not reset the OTBR firewall ownership claim."
++fi
++
++if ! otbr_firewall_cleanup_is_safe; then
++    bashio::exit.nok \
++        "Refusing to reconcile OTBR firewall state: ${otbr_cleanup_guard_reason}."
++fi
++
++if ! otbr_firewall_cleanup_claim_create; then
++    bashio::exit.nok "Could not create the OTBR firewall ownership claim."
++fi
++
++if ! otbr_firewall_cleanup; then
++    bashio::exit.nok "Could not clean up stale OTBR firewall state."
++fi
++
+ declare backbone_if
+ # shellcheck disable=SC2034
+ declare device
+@@ -62,42 +80,17 @@ fi
+ # shellcheck disable=SC2015
+ mkdir -p /data/thread && ln -sft /var/lib /data/thread || bashio::exit.nok "Could not create directory /var/lib/thread to store Thread data."
+ 
++firewall_enabled=false
+ if bashio::config.true 'otbr_firewall'; then
+-    bashio::log.info "Setup OTBR firewall..."
+-    ipset create -exist otbr-ingress-deny-src hash:net family inet6
+-    ipset create -exist otbr-ingress-deny-src-swap hash:net family inet6
+-    ipset create -exist otbr-ingress-allow-dst hash:net family inet6
+-    ipset create -exist otbr-ingress-allow-dst-swap hash:net family inet6
+-
+-    # shellcheck disable=SC2086,SC2154
+-    ip6tables -N $otbr_forward_ingress_chain
+-    # shellcheck disable=SC2086,SC2154
+-    ip6tables -I FORWARD 1 -o $thread_if -j $otbr_forward_ingress_chain
+-
+-    # shellcheck disable=SC2086
+-    ip6tables -A $otbr_forward_ingress_chain -m pkttype --pkt-type unicast -i ${thread_if} -j DROP
+-    # shellcheck disable=SC2086
+-    ip6tables -A $otbr_forward_ingress_chain -m set --match-set otbr-ingress-deny-src src -j DROP
+-    # shellcheck disable=SC2086
+-    ip6tables -A $otbr_forward_ingress_chain -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT
+-    # shellcheck disable=SC2086
+-    ip6tables -A $otbr_forward_ingress_chain -m pkttype --pkt-type unicast -j DROP
+-    # shellcheck disable=SC2086
+-    ip6tables -A $otbr_forward_ingress_chain -j ACCEPT
+-
+-    # shellcheck disable=SC2086,SC2154
+-    ip6tables -N $otbr_forward_egress_chain
+-    # shellcheck disable=SC2086
+-    ip6tables -I FORWARD 2 -i $thread_if -j $otbr_forward_egress_chain
+-    # shellcheck disable=SC2086
+-    ip6tables -A $otbr_forward_egress_chain -j ACCEPT
++    firewall_enabled=true
++    bashio::log.info "Setting up OTBR ingress filtering."
+ else
+-    # Make sure ip6tables (as used by Docker) allow IP forwarding
+-    ip6tables -P FORWARD ACCEPT
+-    # HAOS 9.3 and earlier (for 9.4 accept is the default so this won't do anything)
+-    ip6tables-legacy -P FORWARD ACCEPT
++    bashio::log.info "OTBR ingress filtering is disabled; allowing scoped Thread forwarding."
+ fi
+ 
++if ! otbr_firewall_setup "${firewall_enabled}"; then
++    bashio::exit.nok "Could not set up OTBR firewall state."
++fi
+ otbr_rest_listen="::"
+ otbr_rest_listen_port="$(bashio::addon.port 8081)"
+ 
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
+new file mode 100644
+index 0000000000000000000000000000000000000000..5caff40c4a0ce4ed0dcb3aa983da623641af1b06
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
+@@ -0,0 +1 @@
++10000
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+index e4d4669a9e41578107f320f55e4be3c25ff82d50..40cb5ad81ed538fed03559c8bbb0c127f770b544 100644
+--- a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+@@ -1,9 +1,540 @@
+-#!/bin/sh
++#!/bin/bash
++# shellcheck shell=bash
+ 
+-declare thread_if
+-declare otbr_forward_ingress_chain
+-declare otbr_forward_egress_chain
+ thread_if="wpan0"
+ otbr_forward_ingress_chain="OTBR_FORWARD_INGRESS"
+ otbr_forward_egress_chain="OTBR_FORWARD_EGRESS"
++otbr_firewall_ipsets=(
++    "otbr-ingress-deny-src"
++    "otbr-ingress-deny-src-swap"
++    "otbr-ingress-allow-dst"
++    "otbr-ingress-allow-dst-swap"
++)
++otbr_firewall_cleanup_claim_file="/run/otbr-agent-firewall-owned"
+ 
++otbr_iptables_wait_seconds=5
++otbr_cleanup_iptables_wait_seconds=1
++otbr_cleanup_max_rule_deletes=64
++otbr_ipset_destroy_attempts=20
++otbr_ipset_destroy_delay_milliseconds=100
++otbr_cleanup_budget_milliseconds=4000
++otbr_cleanup_kill_grace_milliseconds=500
++otbr_owner_probe_timeout_milliseconds=1000
++
++otbr_firewall_cleanup_claim_reset()
++{
++    rm -f -- "${otbr_firewall_cleanup_claim_file}"
++}
++
++otbr_firewall_cleanup_claim_create()
++{
++    : > "${otbr_firewall_cleanup_claim_file}"
++}
++
++otbr_firewall_cleanup_claim_consume()
++{
++    if [[ ! -e "${otbr_firewall_cleanup_claim_file}" ]]; then
++        return 1
++    fi
++
++    if ! rm -f -- "${otbr_firewall_cleanup_claim_file}"; then
++        return 2
++    fi
++}
++
++_otbr_clock_milliseconds()
++{
++    local uptime
++    local uptime_seconds
++    local uptime_fraction
++
++    if ! IFS= read -r uptime < /proc/uptime; then
++        return 1
++    fi
++
++    if [[ ! "${uptime}" =~ ^([0-9]+)\.([0-9]+)[[:space:]] ]]; then
++        return 1
++    fi
++
++    uptime_seconds="${BASH_REMATCH[1]}"
++    uptime_fraction="${BASH_REMATCH[2]}"
++    uptime_fraction="${uptime_fraction}000"
++    REPLY=$((
++        (10#${uptime_seconds} * 1000)
++        + 10#${uptime_fraction:0:3}
++    ))
++}
++
++_otbr_cleanup_has_time()
++{
++    local deadline_milliseconds="$1"
++
++    if ! _otbr_clock_milliseconds; then
++        return 1
++    fi
++    (( REPLY < deadline_milliseconds ))
++}
++
++_otbr_cleanup_run()
++{
++    local deadline_milliseconds="$1"
++    local kill_grace_duration
++    local now_milliseconds
++    local remaining_milliseconds
++    local timeout_duration
++    shift
++
++    if ! _otbr_clock_milliseconds; then
++        return 124
++    fi
++    now_milliseconds="${REPLY}"
++    remaining_milliseconds=$((deadline_milliseconds - now_milliseconds))
++    if (( remaining_milliseconds <= 0 )); then
++        return 124
++    fi
++
++    printf -v timeout_duration '%d.%03ds' \
++        "$((remaining_milliseconds / 1000))" \
++        "$((remaining_milliseconds % 1000))"
++    printf -v kill_grace_duration '%d.%03ds' \
++        "$((otbr_cleanup_kill_grace_milliseconds / 1000))" \
++        "$((otbr_cleanup_kill_grace_milliseconds % 1000))"
++
++    timeout --foreground \
++        --kill-after="${kill_grace_duration}" \
++        "${timeout_duration}" "$@"
++}
++
++_otbr_cleanup_ip6tables()
++{
++    local deadline_milliseconds="$1"
++    shift
++
++    _otbr_cleanup_run "${deadline_milliseconds}" \
++        ip6tables -w "${otbr_cleanup_iptables_wait_seconds}" "$@"
++}
++
++_otbr_remove_forward_jumps()
++{
++    local deadline_milliseconds="$1"
++    local interface_flag="$2"
++    local chain_name="$3"
++    local removed=0
++    local command_status
++
++    # With the nft-backed xtables implementation, checking a jump whose target
++    # chain does not exist exits 2 rather than the usual "rule absent" status 1.
++    # A dangling jump cannot outlive its target chain, so an absent owned chain
++    # is already a clean state.
++    if _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
++        -L "${chain_name}" -n >/dev/null 2>&1; then
++        command_status=0
++    else
++        command_status=$?
++    fi
++
++    case "${command_status}" in
++        0)
++            ;;
++        1)
++            return 0
++            ;;
++        *)
++            return 1
++            ;;
++    esac
++
++    while (( removed < otbr_cleanup_max_rule_deletes )); do
++        if _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
++            -C FORWARD "${interface_flag}" "${thread_if}" \
++            -j "${chain_name}" 2>/dev/null; then
++            command_status=0
++        else
++            command_status=$?
++        fi
++
++        case "${command_status}" in
++            0)
++                ;;
++            1)
++                return 0
++                ;;
++            *)
++                return 1
++                ;;
++        esac
++
++        if ! _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
++            -D FORWARD "${interface_flag}" "${thread_if}" \
++            -j "${chain_name}"; then
++            return 1
++        fi
++
++        removed=$((removed + 1))
++    done
++
++    # Refuse to loop indefinitely if state is unexpectedly duplicated many times.
++    if _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
++        -C FORWARD "${interface_flag}" "${thread_if}" \
++        -j "${chain_name}" 2>/dev/null; then
++        return 1
++    else
++        command_status=$?
++    fi
++
++    if (( command_status == 1 )); then
++        return 0
++    fi
++
++    return 1
++}
++
++_otbr_delete_chain_if_exist()
++{
++    local deadline_milliseconds="$1"
++    local chain_name="$2"
++    local command_status
++    local failed=0
++
++    if _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
++        -L "${chain_name}" -n >/dev/null 2>&1; then
++        command_status=0
++    else
++        command_status=$?
++    fi
++
++    case "${command_status}" in
++        0)
++            ;;
++        1)
++            return 0
++            ;;
++        *)
++            return 1
++            ;;
++    esac
++
++    if ! _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
++        -F "${chain_name}"; then
++        failed=1
++    fi
++
++    if ! _otbr_cleanup_ip6tables "${deadline_milliseconds}" \
++        -X "${chain_name}"; then
++        failed=1
++    fi
++
++    return "${failed}"
++}
++
++_otbr_list_all_ipsets()
++{
++    local deadline_milliseconds="$1"
++    local command_status
++    local ipset_names
++
++    if ipset_names="$(
++        _otbr_cleanup_run "${deadline_milliseconds}" \
++            ipset list -n 2>/dev/null
++    )"; then
++        command_status=0
++    else
++        command_status=$?
++    fi
++
++    if (( command_status != 0 )); then
++        return "${command_status}"
++    fi
++
++    REPLY="${ipset_names}"
++}
++
++_otbr_ipset_list_contains()
++{
++    local ipset_names="$1"
++    local ipset_name="$2"
++    local listed_name
++
++    while IFS= read -r listed_name; do
++        if [[ "${listed_name}" == "${ipset_name}" ]]; then
++            return 0
++        fi
++    done <<< "${ipset_names}"
++
++    return 1
++}
++
++_otbr_destroy_owned_ipsets()
++{
++    local deadline_milliseconds="$1"
++    local ipset_names="$2"
++    local -a pending_ipsets=()
++    local -a retry_ipsets=()
++    local attempt=1
++    local command_status
++    local delay_duration
++    local failed=0
++    local ipset_name
++
++    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
++        if _otbr_ipset_list_contains "${ipset_names}" "${ipset_name}"; then
++            pending_ipsets+=("${ipset_name}")
++        fi
++    done
++
++    while (( ${#pending_ipsets[@]} > 0 \
++        && attempt <= otbr_ipset_destroy_attempts )); do
++        retry_ipsets=()
++
++        # Give every owned set one destroy attempt per round. A referenced set
++        # must not consume the shared deadline before independent sets are tried.
++        for ipset_name in "${pending_ipsets[@]}"; do
++            if _otbr_cleanup_run "${deadline_milliseconds}" \
++                ipset destroy "${ipset_name}" >/dev/null 2>&1; then
++                command_status=0
++            else
++                command_status=$?
++            fi
++
++            case "${command_status}" in
++                0)
++                    ;;
++                1)
++                    retry_ipsets+=("${ipset_name}")
++                    ;;
++                *)
++                    failed=1
++                    ;;
++            esac
++        done
++
++        if (( ${#retry_ipsets[@]} == 0 )); then
++            break
++        fi
++
++        if ! _otbr_list_all_ipsets "${deadline_milliseconds}"; then
++            failed=1
++            break
++        fi
++        ipset_names="${REPLY}"
++
++        pending_ipsets=()
++        for ipset_name in "${retry_ipsets[@]}"; do
++            if _otbr_ipset_list_contains "${ipset_names}" "${ipset_name}"; then
++                pending_ipsets+=("${ipset_name}")
++            fi
++        done
++
++        if (( ${#pending_ipsets[@]} == 0 )); then
++            break
++        fi
++
++        if (( attempt >= otbr_ipset_destroy_attempts )); then
++            failed=1
++            break
++        fi
++
++        printf -v delay_duration '%d.%03ds' \
++            "$((otbr_ipset_destroy_delay_milliseconds / 1000))" \
++            "$((otbr_ipset_destroy_delay_milliseconds % 1000))"
++        if ! _otbr_cleanup_run "${deadline_milliseconds}" \
++            sleep "${delay_duration}"; then
++            failed=1
++            break
++        fi
++
++        attempt=$((attempt + 1))
++    done
++
++    return "${failed}"
++}
++
++# Callers read otbr_cleanup_guard_reason after this probe.
++# shellcheck disable=SC2034
++otbr_firewall_cleanup_is_safe()
++{
++    local deadline_milliseconds
++    local link_line
++    local link_name
++    local link_output
++
++    otbr_cleanup_guard_reason=""
++
++    if ! _otbr_clock_milliseconds; then
++        otbr_cleanup_guard_reason="the monotonic clock could not be read"
++        return 1
++    fi
++    deadline_milliseconds=$((REPLY + otbr_owner_probe_timeout_milliseconds))
++
++    if ! link_output="$(
++        _otbr_cleanup_run "${deadline_milliseconds}" \
++            ip -o link show 2>/dev/null
++    )"; then
++        otbr_cleanup_guard_reason="network interfaces could not be inspected"
++        return 1
++    fi
++
++    while IFS= read -r link_line; do
++        link_name="${link_line#*: }"
++        link_name="${link_name%%:*}"
++        link_name="${link_name%%@*}"
++
++        if [[ "${link_name}" == "${thread_if}" ]]; then
++            otbr_cleanup_guard_reason="${thread_if} already exists and may be managed by another OTBR implementation"
++            return 1
++        fi
++    done <<< "${link_output}"
++
++    return 0
++}
++
++_otbr_firewall_rollback()
++{
++    # Preserve the setup failure as the caller-facing result. Cleanup is best
++    # effort here; a subsequent startup will retry reconciliation before setup.
++    otbr_firewall_cleanup >/dev/null 2>&1 || true
++}
++
++otbr_firewall_setup()
++{
++    local firewall_enabled="$1"
++    local ipset_name
++
++    if [[ "${firewall_enabled}" != "true" \
++        && "${firewall_enabled}" != "false" ]]; then
++        return 2
++    fi
++
++    # The compiled OTBR firewall producer updates these sets even when ingress
++    # filtering is disabled; without matching rules they do not filter traffic.
++    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
++        if ! ipset create -exist "${ipset_name}" hash:net family inet6; then
++            _otbr_firewall_rollback
++            return 1
++        fi
++    done
++
++    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++        -N "${otbr_forward_ingress_chain}"; then
++        _otbr_firewall_rollback
++        return 1
++    fi
++
++    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++        -I FORWARD 1 -o "${thread_if}" \
++        -j "${otbr_forward_ingress_chain}"; then
++        _otbr_firewall_rollback
++        return 1
++    fi
++
++    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++        -N "${otbr_forward_egress_chain}"; then
++        _otbr_firewall_rollback
++        return 1
++    fi
++
++    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++        -I FORWARD 2 -i "${thread_if}" \
++        -j "${otbr_forward_egress_chain}"; then
++        _otbr_firewall_rollback
++        return 1
++    fi
++
++    if [[ "${firewall_enabled}" == "true" ]]; then
++        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++            -A "${otbr_forward_ingress_chain}" \
++            -m pkttype --pkt-type unicast -i "${thread_if}" -j DROP; then
++            _otbr_firewall_rollback
++            return 1
++        fi
++
++        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++            -A "${otbr_forward_ingress_chain}" \
++            -m set --match-set otbr-ingress-deny-src src -j DROP; then
++            _otbr_firewall_rollback
++            return 1
++        fi
++
++        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++            -A "${otbr_forward_ingress_chain}" \
++            -m set --match-set otbr-ingress-allow-dst dst -j ACCEPT; then
++            _otbr_firewall_rollback
++            return 1
++        fi
++
++        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++            -A "${otbr_forward_ingress_chain}" \
++            -m pkttype --pkt-type unicast -j DROP; then
++            _otbr_firewall_rollback
++            return 1
++        fi
++
++        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++            -A "${otbr_forward_ingress_chain}" -j ACCEPT; then
++            _otbr_firewall_rollback
++            return 1
++        fi
++    else
++        if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++            -A "${otbr_forward_ingress_chain}" -j ACCEPT; then
++            _otbr_firewall_rollback
++            return 1
++        fi
++    fi
++
++    if ! ip6tables -w "${otbr_iptables_wait_seconds}" \
++        -A "${otbr_forward_egress_chain}" -j ACCEPT; then
++        _otbr_firewall_rollback
++        return 1
++    fi
++}
++
++otbr_firewall_cleanup()
++{
++    local deadline_milliseconds
++    local ipset_names
++    local ipset_name
++    local failed=0
++
++    if ! _otbr_clock_milliseconds; then
++        return 1
++    fi
++    deadline_milliseconds=$((REPLY + otbr_cleanup_budget_milliseconds))
++
++    if ! _otbr_remove_forward_jumps "${deadline_milliseconds}" \
++        -o "${otbr_forward_ingress_chain}"; then
++        failed=1
++    fi
++
++    if ! _otbr_remove_forward_jumps "${deadline_milliseconds}" \
++        -i "${otbr_forward_egress_chain}"; then
++        failed=1
++    fi
++
++    if ! _otbr_delete_chain_if_exist "${deadline_milliseconds}" \
++        "${otbr_forward_ingress_chain}"; then
++        failed=1
++    fi
++
++    if ! _otbr_delete_chain_if_exist "${deadline_milliseconds}" \
++        "${otbr_forward_egress_chain}"; then
++        failed=1
++    fi
++
++    if _otbr_list_all_ipsets "${deadline_milliseconds}"; then
++        ipset_names="${REPLY}"
++
++        if ! _otbr_destroy_owned_ipsets \
++            "${deadline_milliseconds}" "${ipset_names}"; then
++            failed=1
++        fi
++    else
++        failed=1
++    fi
++
++    if ! _otbr_cleanup_has_time "${deadline_milliseconds}"; then
++        failed=1
++    fi
++
++    return "${failed}"
++}
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
+index 8cd2c2d30dc5658d2b9966fe77a578381d784ed4..1de305ce94861f8e8484d29d8812b43ca4fc1a21 100755
+--- a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
+@@ -5,6 +5,18 @@
+ # ==============================================================================
+ 
+ if bashio::config.false 'otbr_enable'; then
++    # shellcheck source=otbr-agent-common
++    # shellcheck disable=SC1091
++    . /etc/s6-overlay/scripts/otbr-agent-common
++
++    if otbr_firewall_cleanup_is_safe; then
++        if ! otbr_firewall_cleanup; then
++            bashio::log.warning "Could not completely clean up stale OTBR firewall state while disabling OTBR."
++        fi
++    else
++        bashio::log.warning "Skipping stale OTBR firewall cleanup while disabling OTBR: ${otbr_cleanup_guard_reason}."
++    fi
++
+     rm /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent
+     rm /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-web
+     rm /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent-rest-discovery
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/README.md b/hassio-ihost-silabs-multiprotocol/tests/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..877f89ef860706f0f1ed0e3eddbd1442060a4535
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/README.md
+@@ -0,0 +1,49 @@
++# OTBR lifecycle tests
++
++Run the mocked lifecycle test from the repository root:
++
++```sh
++bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
++```
++
++The real-kernel smoke test is isolated in a disposable Docker network namespace.
++Run it only on a development machine with Docker available, from the repository root:
++
++```sh
++addon=hassio-ihost-silabs-multiprotocol
++image="local/silabs-otbr-kernel-test:local"
++docker build --pull --tag "${image}" --file "${addon}/tests/kernel/Dockerfile" "${addon}"
++docker run --rm \
++  --cap-drop ALL \
++  --cap-add NET_ADMIN \
++  --cap-add NET_RAW \
++  --network none \
++  --read-only \
++  --pids-limit 128 \
++  --security-opt no-new-privileges \
++  --tmpfs /run:rw,nosuid,nodev,noexec,size=1m \
++  --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
++  "${image}"
++```
++
++Never use host networking or run this kernel test directly against a production host.
++The kernel suite verifies rule installation, ordering and preservation in the real
++network namespace; it does not send packets. Its xtables-lock scenario uses a
++controlled lock probe, not a claim about native nft lock contention.
++
++The released-image s6 test exercises actual container shutdown without a radio:
++
++```sh
++bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh
++```
++
++This requires AMD64 Docker. It starts one inert service under the released s6
++runtime and uses the production finish/helper files. Cleanup failure, a bounded
++command stall, and forced finish-timeout expiry must retain the daemon's failure
++status and prevent another start. It uses no host networking, devices or host
++mounts. Logs and container inspection remain in a temporary directory; set
++`OTBR_S6_EVIDENCE_DIR` to choose it. CI reports synthetic test output in its log.
++
++The forced-expiry case enlarges global shutdown grace to isolate the service
++finish timeout. It does not establish shutdown timing under the default global
++grace period.
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/kernel/Dockerfile b/hassio-ihost-silabs-multiprotocol/tests/kernel/Dockerfile
+new file mode 100644
+index 0000000000000000000000000000000000000000..6021e9a86b80a123e8a0b2d2edf910be2ea5da5f
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/kernel/Dockerfile
+@@ -0,0 +1,28 @@
++FROM debian:bookworm-slim@sha256:7b140f374b289a7c2befc338f42ebe6441b7ea838a042bbd5acbfca6ec875818
++
++RUN \
++    set -eux \
++    && printf '%s\n' \
++       'Acquire::Retries "3";' \
++       'Acquire::http::Timeout "30";' \
++       'Acquire::https::Timeout "30";' \
++       > /etc/apt/apt.conf.d/80-network-bounds \
++    && apt-get update \
++    && apt-get install -y --no-install-recommends \
++       bash \
++       coreutils \
++       ipset \
++       iptables \
++       util-linux \
++    && rm -rf /var/lib/apt/lists/*
++
++WORKDIR /addon
++
++COPY rootfs/etc/s6-overlay/scripts/otbr-agent-common \
++    rootfs/etc/s6-overlay/scripts/otbr-agent-common
++COPY --chmod=0755 tests/kernel/ip6tables-lock-probe \
++    /usr/local/libexec/otbr-lock-probe/ip6tables
++COPY tests/test-otbr-firewall-kernel.sh \
++    tests/test-otbr-firewall-kernel.sh
++
++ENTRYPOINT ["/bin/bash", "/addon/tests/test-otbr-firewall-kernel.sh"]
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe b/hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe
+new file mode 100644
+index 0000000000000000000000000000000000000000..aeb7f86058c5ae8c11e235e75ad05b874196bda8
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe
+@@ -0,0 +1,29 @@
++#!/bin/bash
++set -euo pipefail
++
++declare -a arguments=("$@")
++declare -i index
++declare wait_seconds=""
++
++for ((index = 0; index < ${#arguments[@]}; index++)); do
++    case "${arguments[index]}" in
++        -w)
++            (( index + 1 < ${#arguments[@]} )) || exit 2
++            wait_seconds="${arguments[index + 1]}"
++            break
++            ;;
++        -w[0-9]*)
++            wait_seconds="${arguments[index]#-w}"
++            break
++            ;;
++    esac
++done
++
++[[ "${wait_seconds}" =~ ^[0-9]+$ ]] || exit 2
++: "${XTABLES_LOCKFILE:?XTABLES_LOCKFILE must name the probe lock}"
++
++# Execute in place so GNU timeout cannot leave a waiter behind. The real
++# ip6tables command uses its default lock after this deterministic probe lock.
++exec flock --exclusive --no-fork --timeout "${wait_seconds}" \
++    "${XTABLES_LOCKFILE}" env -u XTABLES_LOCKFILE \
++    /usr/sbin/ip6tables "$@"
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6/Dockerfile b/hassio-ihost-silabs-multiprotocol/tests/s6/Dockerfile
+new file mode 100644
+index 0000000000000000000000000000000000000000..636993f520d6499eb37678ec7e9b3cd11b65049e
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6/Dockerfile
+@@ -0,0 +1,41 @@
++FROM ghcr.io/ihost-open-source-project/hassio-ihost-silabs-multiprotocol-amd64@sha256:f69bd95b16c23c018351b55659e3767f6573edf8f87061c58d1e610a2ce8ccef
++
++# Disable the released application enable-check hook and Zigbee health probe.
++ENV S6_STAGE2_HOOK=""
++HEALTHCHECK NONE
++
++# Remove all application/legacy services. The released /init and s6 built-ins
++# remain; this image cannot launch radio, discovery or app initialization.
++RUN rm -rf /etc/s6-overlay/s6-rc.d /etc/cont-init.d /etc/cont-finish.d /etc/services.d \
++    && mkdir -p /etc/s6-overlay/s6-rc.d/user/contents.d \
++        /etc/s6-overlay/s6-rc.d/user2/contents.d \
++        /etc/s6-overlay/s6-rc.d/otbr-agent /fixture/bin \
++    && printf 'bundle\n' > /etc/s6-overlay/s6-rc.d/user/type \
++    && printf 'bundle\n' > /etc/s6-overlay/s6-rc.d/user2/type \
++    && touch /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent \
++    && printf 'longrun\n' > /etc/s6-overlay/s6-rc.d/otbr-agent/type
++
++# Use the production edge with a synthetic Unix-socket mDNS service.
++COPY rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/mdns /etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/mdns
++COPY tests/s6/shutdown-order.py /fixture/shutdown-order.py
++RUN mkdir -p /etc/s6-overlay/s6-rc.d/mdns \
++    && printf 'longrun\n' > /etc/s6-overlay/s6-rc.d/mdns/type \
++    && printf '#!/bin/sh\nexec python3 /fixture/shutdown-order.py server\n' > /etc/s6-overlay/s6-rc.d/mdns/run \
++    && chmod 0755 /etc/s6-overlay/s6-rc.d/mdns/run \
++    && touch /etc/s6-overlay/s6-rc.d/user/contents.d/mdns
++
++COPY --chmod=0755 rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish /etc/s6-overlay/s6-rc.d/otbr-agent/finish
++COPY rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish /etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
++COPY --chmod=0755 rootfs/etc/s6-overlay/scripts/otbr-agent-common /etc/s6-overlay/scripts/otbr-agent-common
++COPY --chmod=0755 tests/s6/run /etc/s6-overlay/s6-rc.d/otbr-agent/run
++COPY --chmod=0755 tests/s6/ip6tables tests/s6/ipset tests/s6/timeout /fixture/bin/
++# The released built-in top bundle requires both user and user2. Compile the
++# complete graph now; only user contains our fixture, and user2 remains empty.
++RUN s6-rc-compile /tmp/fixture-s6-db \
++        /package/admin/s6-overlay-3.1.6.2/etc/s6-rc/sources \
++        /etc/s6-overlay/s6-rc.d \
++    && rm -rf /tmp/fixture-s6-db
++ENV PATH="/fixture/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
++# Let the service's 10-second finish timeout expire before global shutdown grace.
++ENV S6_SERVICES_GRACETIME=15000
++ENTRYPOINT ["/init"]
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6/README.md b/hassio-ihost-silabs-multiprotocol/tests/s6/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..15511a50fac11eebaccf3d11a5989cbcec996f50
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6/README.md
+@@ -0,0 +1,21 @@
++# Released s6 lifecycle regression
++
++Run `bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh`.
++The fixture uses the pinned released init and production OTBR finish handler,
++with application services replaced and no radio access or networking.
++
++The shutdown-order case copies the production `otbr-agent -> mdns` dependency.
++A synthetic client uses a Unix-socket service during graceful TERM cleanup.
++The test requires that request to succeed, the client to finish before the
++server receives TERM, and container exit status to remain zero. The other
++three cases still require daemon failure status 23, including stalled cleanup.
++
++For the local negative control, the same image was started with `/bin/sh` as
++entrypoint and `rm /etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/mdns; exec /init`.
++After `/run/s6-test-client-ready` appeared, ordinary `docker stop` stopped the
++server before client cleanup: the request failed and container exit was 42.
++With the dependency present, cleanup succeeded and container exit was zero.
++
++This checks the service lifetime contract. It does not reproduce the observed
++production SIGPIPE or demonstrate that mDNS shutdown caused that signal.
++It does not exercise the real DNS-SD protocol or guarantee daemon readiness.
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6/ip6tables b/hassio-ihost-silabs-multiprotocol/tests/s6/ip6tables
+new file mode 100644
+index 0000000000000000000000000000000000000000..4cb379596721a3a54c0b6cfb66ace21f65bc5ac0
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6/ip6tables
+@@ -0,0 +1,9 @@
++#!/bin/bash
++set -eu
++printf 'S6_TEST_CLEANUP_STATUS=%s\n' "$(cat /run/s6-linux-init-container-results/exitcode)" > /proc/1/fd/1
++if [[ "${OTBR_S6_CASE}" == bounded-stall ]]; then
++    # The real cleanup timeout must kill this command after its TERM grace.
++    trap '' TERM
++    exec sleep 30
++fi
++exit 4
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6/ipset b/hassio-ihost-silabs-multiprotocol/tests/s6/ipset
+new file mode 100644
+index 0000000000000000000000000000000000000000..832fa08adf6e71782aee75ee3a03e9182b2ede93
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6/ipset
+@@ -0,0 +1,3 @@
++#!/bin/bash
++# No sets exist in this fixture. The only expected command is list -n.
++[[ "$*" == 'list -n' ]] || exit 2
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6/run b/hassio-ihost-silabs-multiprotocol/tests/s6/run
+new file mode 100644
+index 0000000000000000000000000000000000000000..57b39f4e18a0db7ca4a3744d4e9f30625823f8d1
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6/run
+@@ -0,0 +1,10 @@
++#!/usr/bin/with-contenv bash
++set -eu
++printf 'S6_TEST_DAEMON_START\n'
++if [[ "${OTBR_S6_CASE}" == shutdown-order ]]; then
++    exec python3 /fixture/shutdown-order.py client
++fi
++: > /run/otbr-agent-firewall-owned
++# Allow s6 initialization to complete before the deliberately abnormal exit.
++sleep 1
++exit 23
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6/shutdown-order.py b/hassio-ihost-silabs-multiprotocol/tests/s6/shutdown-order.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..beaccb23d4c291a6c20da11132a36465da187ad6
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6/shutdown-order.py
+@@ -0,0 +1,60 @@
++"""Exercise s6 shutdown ordering, not the real mDNS protocol or SIGPIPE."""
++import pathlib
++import signal
++import socket
++import sys
++import time
++
++SOCKET = "/run/s6-test-mdns.sock"
++
++
++def request():
++    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
++        client.settimeout(2)
++        client.connect(SOCKET)
++        client.sendall(b"goodbye")
++        if client.recv(2) != b"ok":
++            raise RuntimeError("missing server response")
++
++
++def stop_server(_signal, _frame):
++    print("S6_TEST_MDNS_STOP", flush=True)
++    sys.exit(0)
++
++
++def stop_client(_signal, _frame):
++    # Let an incorrectly concurrent server stop finish before using it.
++    time.sleep(0.5)
++    try:
++        request()
++    except (OSError, RuntimeError) as error:
++        print(f"S6_TEST_DEPENDENCY_GONE: {error}", flush=True)
++        sys.exit(42)
++    print("S6_TEST_CLIENT_STOP_COMPLETE", flush=True)
++    sys.exit(0)
++
++
++if sys.argv[1] == "server":
++    signal.signal(signal.SIGTERM, stop_server)
++    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as server:
++        server.bind(SOCKET)
++        server.listen(1)
++        while True:
++            connection, _ = server.accept()
++            with connection:
++                connection.recv(64)
++                connection.sendall(b"ok")
++else:
++    signal.signal(signal.SIGTERM, stop_client)
++    for attempt in range(100):
++        try:
++            request()
++            break
++        except OSError:
++            time.sleep(0.05)
++    else:
++        raise RuntimeError("fixture server did not become ready")
++    pathlib.Path("/run/s6-test-client-ready").touch()
++    print("S6_TEST_CLIENT_READY", flush=True)
++    while True:
++        signal.pause()
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6/timeout b/hassio-ihost-silabs-multiprotocol/tests/s6/timeout
+new file mode 100644
+index 0000000000000000000000000000000000000000..8d347d3e38228f81b45523f089e38060beb16efd
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6/timeout
+@@ -0,0 +1,8 @@
++#!/bin/bash
++set -eu
++if [[ "${OTBR_S6_CASE}" == finish-timeout ]]; then
++    # Deliberately bypass the helper deadline to exercise actual s6 finish expiry.
++    printf 'S6_TEST_FORCED_FINISH_TIMEOUT status=%s\n' "$(cat /run/s6-linux-init-container-results/exitcode)" > /proc/1/fd/1
++    exec sleep 30
++fi
++exec /usr/bin/timeout "$@"
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..e7f07e8d8986989c1969f0387069cbe37af6287d
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
+@@ -0,0 +1,356 @@
++#!/bin/bash
++set -euo pipefail
++
++TEST_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++readonly TEST_DIR
++ADDON_DIR="$(cd -- "${TEST_DIR}/.." && pwd)"
++readonly ADDON_DIR
++readonly COMMON_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
++readonly LOCK_PROBE_PATH="/usr/local/libexec/otbr-lock-probe"
++readonly SYSTEM_PATH="${PATH}"
++readonly FOREIGN_CHAIN="OTBR-FOREIGN-SENTINEL"
++readonly EXTERNAL_REFERENCE_CHAIN="OTBR-EXTERNAL-REFERENCE"
++readonly FOREIGN_IPSET="otbr-foreign-sentinel"
++readonly FOREIGN_IP="fd00:cafe::1"
++readonly FOREIGN_FORWARD_POLICY="DROP"
++
++# shellcheck source=../rootfs/etc/s6-overlay/scripts/otbr-agent-common
++# shellcheck disable=SC1090
++source "${COMMON_SCRIPT}"
++
++xtables_lock_pid=""
++original_path=""
++original_forward_policy=""
++
++fail()
++{
++    printf 'FAIL: %s\n' "$*" >&2
++    exit 1
++}
++
++release_xtables_lock()
++{
++    if [[ -n "${xtables_lock_pid}" ]] \
++        && kill -0 "${xtables_lock_pid}" 2>/dev/null; then
++        kill "${xtables_lock_pid}" 2>/dev/null || true
++    fi
++    if [[ -n "${xtables_lock_pid}" ]]; then
++        wait "${xtables_lock_pid}" 2>/dev/null || true
++    fi
++    xtables_lock_pid=""
++}
++
++cleanup_foreign_state()
++{
++    if ip6tables -w 1 -L "${EXTERNAL_REFERENCE_CHAIN}" \
++        -n >/dev/null 2>&1; then
++        ip6tables -w 1 -F "${EXTERNAL_REFERENCE_CHAIN}"
++        ip6tables -w 1 -X "${EXTERNAL_REFERENCE_CHAIN}"
++    fi
++    if ip6tables -w 1 -C FORWARD -i lo \
++        -j "${FOREIGN_CHAIN}" >/dev/null 2>&1; then
++        ip6tables -w 1 -D FORWARD -i lo -j "${FOREIGN_CHAIN}"
++    fi
++    if ip6tables -w 1 -L "${FOREIGN_CHAIN}" -n >/dev/null 2>&1; then
++        ip6tables -w 1 -F "${FOREIGN_CHAIN}"
++        ip6tables -w 1 -X "${FOREIGN_CHAIN}"
++    fi
++    if ipset list "${FOREIGN_IPSET}" >/dev/null 2>&1; then
++        ipset destroy "${FOREIGN_IPSET}"
++    fi
++    if [[ -n "${original_forward_policy}" ]]; then
++        ip6tables -w 1 -P FORWARD "${original_forward_policy}"
++    fi
++}
++
++best_effort_cleanup()
++{
++    set +e
++    release_xtables_lock
++    if [[ -n "${original_path}" ]]; then
++        PATH="${original_path}"
++        export PATH
++        original_path=""
++    fi
++    unset XTABLES_LOCKFILE
++    PATH="${SYSTEM_PATH}"
++    otbr_cleanup_budget_milliseconds=4000
++    cleanup_foreign_state >/dev/null 2>&1
++    otbr_firewall_cleanup >/dev/null 2>&1 || true
++}
++
++trap best_effort_cleanup EXIT
++
++assert_absent()
++{
++    local chain_name
++    local ipset_name
++
++    for chain_name in \
++        "${otbr_forward_ingress_chain}" \
++        "${otbr_forward_egress_chain}"; do
++        if ip6tables -w 1 -L "${chain_name}" -n >/dev/null 2>&1; then
++            fail "chain ${chain_name} still exists"
++        fi
++    done
++
++    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
++        if ipset list "${ipset_name}" >/dev/null 2>&1; then
++            fail "ipset ${ipset_name} still exists"
++        fi
++    done
++}
++
++assert_chain_rule_count()
++{
++    local chain_name="$1"
++    local expected="$2"
++    local actual
++
++    actual="$(
++        ip6tables -w 1 -S "${chain_name}" \
++            | awk '$1 == "-A" { count++ } END { print count + 0 }'
++    )"
++    [[ "${actual}" == "${expected}" ]] \
++        || fail "${chain_name} has ${actual} rules; expected ${expected}"
++}
++
++assert_chain_rules()
++{
++    local chain_name="$1"
++    shift
++    local -a actual_rules
++    local -a expected_suffixes=("$@")
++    local expected_rule
++    local index
++
++    mapfile -t actual_rules < <(
++        ip6tables -w 1 -S "${chain_name}" | awk '$1 == "-A"'
++    )
++    [[ "${#actual_rules[@]}" == "$#" ]] \
++        || fail "${chain_name} has ${#actual_rules[@]} rules; expected $#"
++
++    for index in "${!expected_suffixes[@]}"; do
++        expected_rule="-A ${chain_name} ${expected_suffixes[index]}"
++        [[ "${actual_rules[index]}" == "${expected_rule}" ]] \
++            || fail "${chain_name} rule $((index + 1)) is '${actual_rules[index]}'; expected '${expected_rule}'"
++    done
++}
++
++assert_owned_forward_jump_order()
++{
++    local -a forward_rules
++    local -a expected_rules=(
++        "-A FORWARD -o ${thread_if} -j ${otbr_forward_ingress_chain}"
++        "-A FORWARD -i ${thread_if} -j ${otbr_forward_egress_chain}"
++        "-A FORWARD -i lo -j ${FOREIGN_CHAIN}"
++    )
++    local index
++
++    mapfile -t forward_rules < <(
++        ip6tables -w 1 -S FORWARD | awk '$1 == "-A"'
++    )
++    [[ "${#forward_rules[@]}" == "${#expected_rules[@]}" ]] \
++        || fail "FORWARD has ${#forward_rules[@]} rules; expected ${#expected_rules[@]}"
++
++    for index in "${!expected_rules[@]}"; do
++        [[ "${forward_rules[index]}" == "${expected_rules[index]}" ]] \
++            || fail "FORWARD rule $((index + 1)) is '${forward_rules[index]}'; expected '${expected_rules[index]}'"
++    done
++}
++
++assert_foreign_state_preserved()
++{
++    local forward_policy
++
++    ip6tables -w 1 -C FORWARD -i lo -j "${FOREIGN_CHAIN}" \
++        || fail "unrelated FORWARD jump was removed"
++    ip6tables -w 1 -C "${FOREIGN_CHAIN}" \
++        -m set --match-set "${FOREIGN_IPSET}" src -j ACCEPT \
++        || fail "unrelated chain rule was removed"
++    ipset test "${FOREIGN_IPSET}" "${FOREIGN_IP}" >/dev/null 2>&1 \
++        || fail "unrelated IPv6 ipset entry was removed"
++
++    forward_policy="$(
++        ip6tables -w 1 -S FORWARD \
++            | awk '$1 == "-P" { print $3 }'
++    )"
++    [[ "${forward_policy}" == "${FOREIGN_FORWARD_POLICY}" ]] \
++        || fail "FORWARD policy changed to ${forward_policy}"
++}
++
++forward_jump_count()
++{
++    local interface_flag="$1"
++    local chain_name="$2"
++
++    ip6tables -w 1 -S FORWARD \
++        | awk -v needle="${interface_flag} ${thread_if} -j ${chain_name}" \
++            'index($0, needle) { count++ } END { print count + 0 }'
++}
++
++for command_name in awk flock ip6tables ipset timeout; do
++    command -v "${command_name}" >/dev/null \
++        || fail "required command ${command_name} is unavailable"
++done
++[[ -x "${LOCK_PROBE_PATH}/ip6tables" ]] \
++    || fail "required ip6tables lock probe is unavailable"
++
++[[ "$(ip6tables --version)" == *"nf_tables"* ]] \
++    || fail "kernel smoke test requires the nft-backed iptables frontend"
++
++# Seed unrelated host-owned netfilter state. Every lifecycle transition must
++# leave this chain, jump, ipset, and deliberately restrictive policy intact.
++original_forward_policy="$(
++    ip6tables -w 1 -S FORWARD \
++        | awk '$1 == "-P" { print $3 }'
++)"
++[[ -n "${original_forward_policy}" ]] \
++    || fail "could not capture the original FORWARD policy"
++ipset create "${FOREIGN_IPSET}" hash:ip family inet6
++ipset add "${FOREIGN_IPSET}" "${FOREIGN_IP}"
++ip6tables -w 1 -N "${FOREIGN_CHAIN}"
++ip6tables -w 1 -A "${FOREIGN_CHAIN}" \
++    -m set --match-set "${FOREIGN_IPSET}" src -j ACCEPT
++ip6tables -w 1 -I FORWARD 1 -i lo -j "${FOREIGN_CHAIN}"
++ip6tables -w 1 -P FORWARD "${FOREIGN_FORWARD_POLICY}"
++assert_foreign_state_preserved
++
++# Absent state is a successful, idempotent cleanup.
++otbr_firewall_cleanup
++otbr_firewall_cleanup
++assert_absent
++assert_foreign_state_preserved
++
++# Filtering-enabled setup creates every owned object and the full ingress
++# policy, then teardown removes all of it.
++otbr_firewall_setup true
++for ipset_name in "${otbr_firewall_ipsets[@]}"; do
++    ipset list "${ipset_name}" >/dev/null \
++        || fail "enabled setup did not create ${ipset_name}"
++done
++ip6tables -w 1 -C FORWARD -o "${thread_if}" \
++    -j "${otbr_forward_ingress_chain}"
++ip6tables -w 1 -C FORWARD -i "${thread_if}" \
++    -j "${otbr_forward_egress_chain}"
++assert_chain_rules "${otbr_forward_ingress_chain}" \
++    "-i ${thread_if} -m pkttype --pkt-type unicast -j DROP" \
++    "-m set --match-set otbr-ingress-deny-src src -j DROP" \
++    "-m set --match-set otbr-ingress-allow-dst dst -j ACCEPT" \
++    "-m pkttype --pkt-type unicast -j DROP" \
++    "-j ACCEPT"
++assert_chain_rules "${otbr_forward_egress_chain}" "-j ACCEPT"
++assert_owned_forward_jump_order
++assert_foreign_state_preserved
++otbr_firewall_cleanup
++assert_absent
++assert_foreign_state_preserved
++
++# Filtering-disabled setup remains interface-scoped and has only permissive
++# rules in the two owned chains.
++otbr_firewall_setup false
++ip6tables -w 1 -C FORWARD -o "${thread_if}" \
++    -j "${otbr_forward_ingress_chain}"
++ip6tables -w 1 -C FORWARD -i "${thread_if}" \
++    -j "${otbr_forward_egress_chain}"
++ip6tables -w 1 -C "${otbr_forward_ingress_chain}" -j ACCEPT
++ip6tables -w 1 -C "${otbr_forward_egress_chain}" -j ACCEPT
++assert_chain_rule_count "${otbr_forward_ingress_chain}" 1
++assert_chain_rule_count "${otbr_forward_egress_chain}" 1
++assert_owned_forward_jump_order
++assert_foreign_state_preserved
++
++# Teardown removes every duplicate owned jump, not only the first one.
++ip6tables -w 1 -I FORWARD 1 -o "${thread_if}" \
++    -j "${otbr_forward_ingress_chain}"
++ip6tables -w 1 -I FORWARD 1 -i "${thread_if}" \
++    -j "${otbr_forward_egress_chain}"
++[[ "$(forward_jump_count -o "${otbr_forward_ingress_chain}")" == "2" ]] \
++    || fail "duplicate ingress jump was not installed"
++[[ "$(forward_jump_count -i "${otbr_forward_egress_chain}")" == "2" ]] \
++    || fail "duplicate egress jump was not installed"
++otbr_firewall_cleanup
++assert_absent
++assert_foreign_state_preserved
++
++# An unexpected external reference must make teardown fail explicitly without
++# preventing independent owned objects from being removed. Once the reference
++# is released, a subsequent reconciliation must complete.
++otbr_firewall_setup true
++ip6tables -w 1 -N "${EXTERNAL_REFERENCE_CHAIN}"
++ip6tables -w 1 -A "${EXTERNAL_REFERENCE_CHAIN}" \
++    -j "${otbr_forward_ingress_chain}"
++if otbr_firewall_cleanup >/dev/null 2>&1; then
++    fail "cleanup ignored an unexpected external owned-chain reference"
++fi
++ip6tables -w 1 -L "${otbr_forward_ingress_chain}" -n >/dev/null 2>&1 \
++    || fail "externally referenced ingress chain was unexpectedly removed"
++if ip6tables -w 1 -L "${otbr_forward_egress_chain}" \
++    -n >/dev/null 2>&1; then
++    fail "independent egress chain was starved by an external reference"
++fi
++for ipset_name in "${otbr_firewall_ipsets[@]}"; do
++    if ipset list "${ipset_name}" >/dev/null 2>&1; then
++        fail "independent ipset ${ipset_name} was starved by an external reference"
++    fi
++done
++ip6tables -w 1 -F "${EXTERNAL_REFERENCE_CHAIN}"
++ip6tables -w 1 -X "${EXTERNAL_REFERENCE_CHAIN}"
++otbr_firewall_cleanup
++assert_absent
++assert_foreign_state_preserved
++
++# Some iptables-nft builds skip the historical global lock. Put a narrow probe
++# shim in PATH for this case so -w contention is deterministic while the real
++# ip6tables binary still performs every operation after acquiring the lock.
++# The outer timeout must bound the wait and return control promptly.
++otbr_firewall_setup true
++export XTABLES_LOCKFILE=/tmp/otbr-xtables-probe.lock
++rm -f "${XTABLES_LOCKFILE}" /tmp/otbr-xtables-lock-ready
++original_path="${PATH}"
++PATH="${LOCK_PROBE_PATH}:${PATH}"
++export PATH
++
++flock --exclusive --no-fork "${XTABLES_LOCKFILE}" \
++    sh -c 'touch /tmp/otbr-xtables-lock-ready; exec sleep 10' &
++xtables_lock_pid=$!
++
++for ((attempt = 0; attempt < 100; attempt++)); do
++    [[ -e /tmp/otbr-xtables-lock-ready ]] && break
++    sleep 0.01
++done
++[[ -e /tmp/otbr-xtables-lock-ready ]] \
++    || fail "could not acquire the xtables lock for the bounded-wait test"
++
++otbr_cleanup_budget_milliseconds=500
++_otbr_clock_milliseconds \
++    || fail "could not read the monotonic clock before lock test"
++lock_test_started="${REPLY}"
++if otbr_firewall_cleanup; then
++    fail "cleanup unexpectedly succeeded while the xtables lock was held"
++fi
++_otbr_clock_milliseconds \
++    || fail "could not read the monotonic clock after lock test"
++lock_test_elapsed=$((REPLY - lock_test_started))
++(( lock_test_elapsed >= 300 )) \
++    || fail "xtables lock cleanup returned too early after ${lock_test_elapsed}ms"
++(( lock_test_elapsed < 2500 )) \
++    || fail "xtables lock cleanup took ${lock_test_elapsed}ms"
++
++release_xtables_lock
++PATH="${original_path}"
++export PATH
++original_path=""
++unset XTABLES_LOCKFILE
++ip6tables -w 1 -L "${otbr_forward_ingress_chain}" -n >/dev/null 2>&1 \
++    || fail "firewall state vanished while xtables was locked"
++assert_foreign_state_preserved
++
++otbr_cleanup_budget_milliseconds=4000
++otbr_firewall_cleanup
++assert_absent
++assert_foreign_state_preserved
++
++cleanup_foreign_state
++trap - EXIT
++printf 'PASS: real-kernel OTBR firewall lifecycle\n'
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..8539f3ed20c9b7567dc8c3b59543a7efe5f7e8d6
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+@@ -0,0 +1,1098 @@
++#!/bin/bash
++set -euo pipefail
++
++TEST_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++readonly TEST_DIR
++ADDON_DIR="$(cd -- "${TEST_DIR}/.." && pwd)"
++readonly ADDON_DIR
++readonly COMMON_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
++readonly RUN_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run"
++readonly FINISH_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish"
++readonly TIMEOUT_FINISH_FILE="${ADDON_DIR}/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish"
++readonly ENABLE_CHECK_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh"
++
++# The test invokes the shared functions with stateful command mocks. The service
++# scripts themselves are checked for syntax and caller-level invariants below.
++# shellcheck source=../rootfs/etc/s6-overlay/scripts/otbr-agent-common
++# shellcheck disable=SC1090
++source "${COMMON_SCRIPT}"
++
++declare -A mock_chains
++declare -A mock_jump_counts
++declare -A mock_sets
++declare -A mock_set_destroy_failures
++declare -A mock_chain_rule_counts
++declare -A mock_ip6_operation_status
++declare -A mock_timeout_command_status
++declare -a mock_ingress_rules
++declare -a mock_egress_rules
++declare -a mock_command_log
++declare -i mock_ip6_call_count
++declare -i mock_fail_ip6_call
++declare -i mock_ip6_elapsed_milliseconds
++declare -i mock_ipset_destroy_calls
++declare -i mock_ipset_create_calls
++declare -i mock_ipset_list_status
++declare -i mock_fail_ipset_create_call
++declare -i mock_ip_link_status
++declare -i mock_thread_if_present
++declare mock_ip_link_output
++declare -i mock_now_milliseconds
++declare -i mock_rule_delete_calls
++declare -i mock_sleep_calls
++declare -i mock_fail_rule_delete
++declare -i mock_fail_chain_delete
++
++fail()
++{
++    printf 'FAIL: %s\n' "$*" >&2
++    exit 1
++}
++
++assert_eq()
++{
++    local expected="$1"
++    local actual="$2"
++    local description="$3"
++
++    [[ "${actual}" == "${expected}" ]] \
++        || fail "${description}: expected '${expected}', got '${actual}'"
++}
++
++assert_contains()
++{
++    local needle="$1"
++    local haystack="$2"
++    local description="$3"
++
++    [[ "${haystack}" == *"${needle}"* ]] \
++        || fail "${description}: missing '${needle}'"
++}
++
++assert_not_contains()
++{
++    local needle="$1"
++    local haystack="$2"
++    local description="$3"
++
++    [[ "${haystack}" != *"${needle}"* ]] \
++        || fail "${description}: unexpectedly contained '${needle}'"
++}
++
++run_start_script_fixture()
++{
++    local cleanup_status="$1"
++    local setup_status="$2"
++    local firewall_config_true="${3:-false}"
++    local configured_backbone="${4-}"
++    local supervisor_backbone="${5-eth0}"
++    local existing_interfaces="${6-eth0}"
++    local supervisor_status="${7:-0}"
++    local cleanup_guard_status="${8:-0}"
++    local cleanup_claim_reset_status="${9:-0}"
++    local cleanup_claim_create_status="${10:-0}"
++    local script
++
++    script="$(sed \
++        -e 's#^[[:space:]]*\. /etc/s6-overlay/scripts/otbr-agent-common.*$#    :#' \
++        -e 's#^mkdir -p /data/thread.*$#:#' \
++        -e '\@/tmp/otbr-agent-rest-api@c\:' \
++        "${RUN_SCRIPT}")"
++
++    (
++        function bashio::api.supervisor() {
++            (( supervisor_status == 0 )) || return "${supervisor_status}"
++            printf '%s' "${supervisor_backbone}"
++        }
++        function bashio::addon.ip_address() { printf '::1'; }
++        function bashio::addon.port() { :; }
++        function bashio::config() {
++            case "$1" in
++                backbone_interface)
++                    printf '%s' "${configured_backbone}"
++                    ;;
++                otbr_log_level)
++                    printf 'notice'
++                    ;;
++                *)
++                    return 2
++                    ;;
++            esac
++        }
++        function bashio::config.has_value() {
++            [[ "$1" == "backbone_interface" \
++                && -n "${configured_backbone}" ]]
++        }
++        function bashio::config.true() {
++            [[ "$1" == "otbr_firewall" \
++                && "${firewall_config_true}" == "true" ]]
++        }
++        function bashio::exit.nok() {
++            printf 'EXIT: %s EVENTS:%s\n' \
++                "${1:-startup failed}" "${otbr_test_events:-}" >&2
++            exit 42
++        }
++        function bashio::log.info() { :; }
++        function bashio::log.warning() { :; }
++        function bashio::string.lower() { printf '%s' "$1"; }
++        function bashio::var.has_value() { return 1; }
++        function ip() {
++            [[ "$*" == "link show dev "* ]] || return 2
++            [[ " ${existing_interfaces} " == *" ${4:-} "* ]]
++        }
++
++        otbr_firewall_cleanup_claim_reset() {
++            otbr_test_events+="claim-reset;"
++            return "${cleanup_claim_reset_status}"
++        }
++        otbr_firewall_cleanup_is_safe() {
++            otbr_cleanup_guard_reason="fixture guard"
++            otbr_test_events+="guard;"
++            return "${cleanup_guard_status}"
++        }
++        otbr_firewall_cleanup_claim_create() {
++            otbr_test_events+="claim-create;"
++            return "${cleanup_claim_create_status}"
++        }
++        otbr_firewall_cleanup() {
++            otbr_test_events+="cleanup;"
++            return "${cleanup_status}"
++        }
++        otbr_firewall_setup() {
++            otbr_test_events+="setup:$1;"
++            return "${setup_status}"
++        }
++        exec() {
++            otbr_test_events+="exec;"
++            otbr_test_exec_args="$*"
++        }
++
++        otbr_test_events=""
++        otbr_test_exec_args=""
++
++        eval "${script}"
++        printf '%s|%s\n' "${otbr_test_events}" "${otbr_test_exec_args}"
++    )
++}
++
++run_finish_script_fixture()
++{
++    local cleanup_status="$1"
++    local run_status="$2"
++    local run_signal="$3"
++    local cleanup_claim_status="${4:-0}"
++    local script
++
++    script="$(sed \
++        -e 's#^[[:space:]]*\. /etc/s6-overlay/scripts/otbr-agent-common.*$#    :#' \
++        -e 's#^[[:space:]]*echo "\$e" > /run/s6-linux-init-container-results/exitcode.*$#    otbr_test_written_exitcode="\$e"; otbr_test_events+="exitcode;"#' \
++        -e 's#^[[:space:]]*/run/s6/basedir/bin/halt.*$#    otbr_test_halt_called=1; otbr_test_events+="halt;"#' \
++        -e 's#^[[:space:]]*exit 125.*$#    otbr_test_finish_status=125#' \
++        "${FINISH_SCRIPT}")"
++
++    (
++        function bashio::log.info() { :; }
++        function bashio::log.warning() { :; }
++
++        otbr_firewall_cleanup_claim_consume() {
++            otbr_test_events+="claim-consume;"
++            return "${cleanup_claim_status}"
++        }
++        otbr_firewall_cleanup() {
++            otbr_test_events+="cleanup;"
++            return "${cleanup_status}"
++        }
++        otbr_test_halt_called=0
++        otbr_test_written_exitcode=""
++        otbr_test_finish_status=0
++        otbr_test_events=""
++        set -- "${run_status}" "${run_signal}"
++
++        eval "${script}"
++        printf '%s|%s|%s|%s\n' \
++            "${otbr_test_written_exitcode:-none}" \
++            "${otbr_test_halt_called}" \
++            "${otbr_test_finish_status}" \
++            "${otbr_test_events}"
++    )
++}
++
++run_disabled_script_fixture()
++{
++    local guard_status="$1"
++    local cleanup_status="$2"
++    local script
++
++    script="$(sed \
++        -e 's#^[[:space:]]*\. /etc/s6-overlay/scripts/otbr-agent-common.*$#    :#' \
++        -e 's#^[[:space:]]*rm /etc/s6-overlay/.*$#    :#' \
++        -e 's#^[[:space:]]*bashio::exit.ok.*$#    return 0#' \
++        "${ENABLE_CHECK_SCRIPT}")"
++
++    (
++        function bashio::config.false() { return 0; }
++        function bashio::log.info() { :; }
++        function bashio::log.warning() {
++            otbr_test_warnings+="$*;"
++        }
++
++        otbr_firewall_cleanup_is_safe() {
++            otbr_cleanup_guard_reason="fixture guard"
++            return "${guard_status}"
++        }
++        otbr_firewall_cleanup() {
++            otbr_test_cleanup_calls=$((otbr_test_cleanup_calls + 1))
++            return "${cleanup_status}"
++        }
++
++        otbr_test_cleanup_calls=0
++        otbr_test_warnings=""
++
++        otbr_test_run_enable_check()
++        {
++            eval "${script}"
++        }
++
++        otbr_test_run_enable_check
++        printf '%s|%s\n' \
++            "${otbr_test_cleanup_calls}" "${otbr_test_warnings}"
++    )
++}
++
++mock_reset()
++{
++    mock_chains=()
++    mock_chains["${otbr_forward_ingress_chain}"]=0
++    mock_chains["${otbr_forward_egress_chain}"]=0
++
++    mock_jump_counts=()
++    mock_jump_counts["-o|${otbr_forward_ingress_chain}"]=0
++    mock_jump_counts["-i|${otbr_forward_egress_chain}"]=0
++
++    mock_sets=()
++    mock_set_destroy_failures=()
++    mock_ip6_operation_status=()
++    mock_timeout_command_status=()
++
++    mock_chain_rule_counts=()
++    mock_chain_rule_counts["${otbr_forward_ingress_chain}"]=0
++    mock_chain_rule_counts["${otbr_forward_egress_chain}"]=0
++
++    mock_ingress_rules=()
++    mock_egress_rules=()
++    mock_command_log=()
++
++    mock_ip6_call_count=0
++    mock_fail_ip6_call=0
++    mock_ip6_elapsed_milliseconds=0
++    mock_ipset_destroy_calls=0
++    mock_ipset_create_calls=0
++    mock_ipset_list_status=0
++    mock_fail_ipset_create_call=0
++    mock_ip_link_status=0
++    mock_thread_if_present=0
++    mock_ip_link_output=""
++    mock_now_milliseconds=0
++    mock_rule_delete_calls=0
++    mock_sleep_calls=0
++    mock_fail_rule_delete=0
++    mock_fail_chain_delete=0
++}
++
++ip6tables()
++{
++    mock_command_log+=("ip6tables $*")
++    mock_ip6_call_count=$((mock_ip6_call_count + 1))
++
++    local -a args=("$@")
++    if [[ "${args[0]:-}" != "-w" ]] \
++        || ! [[ "${args[1]:-}" =~ ^[1-9][0-9]*$ ]]; then
++        fail "ip6tables command did not use the configured xtables wait: $*"
++    fi
++    local wait_seconds="${args[1]}"
++    args=("${args[@]:2}")
++
++    local operation="${args[0]:-}"
++    local chain_name
++    local interface_flag
++    local jump_key
++    local rule
++    local forced_status
++
++    case "${operation}" in
++        -N|-I|-A)
++            assert_eq "${otbr_iptables_wait_seconds}" "${wait_seconds}" \
++                "setup xtables wait"
++            ;;
++        *)
++            if (( wait_seconds > otbr_cleanup_iptables_wait_seconds )); then
++                fail "cleanup xtables wait exceeded its cap: $*"
++            fi
++            ;;
++    esac
++
++    mock_now_milliseconds=$((
++        mock_now_milliseconds + mock_ip6_elapsed_milliseconds
++    ))
++
++    if (( mock_fail_ip6_call > 0 \
++        && mock_ip6_call_count == mock_fail_ip6_call )); then
++        return 1
++    fi
++
++    forced_status="${mock_ip6_operation_status["${operation}"]:-0}"
++    if (( forced_status != 0 )); then
++        return "${forced_status}"
++    fi
++
++    case "${operation}" in
++        -N)
++            chain_name="${args[1]:-}"
++            [[ ${mock_chains["${chain_name}"]:-0} -eq 0 ]] || return 1
++            mock_chains["${chain_name}"]=1
++            mock_chain_rule_counts["${chain_name}"]=0
++            ;;
++        -I)
++            interface_flag="${args[3]:-}"
++            chain_name="${args[6]:-}"
++            jump_key="${interface_flag}|${chain_name}"
++            mock_jump_counts["${jump_key}"]=$((
++                ${mock_jump_counts["${jump_key}"]:-0} + 1
++            ))
++            ;;
++        -A)
++            chain_name="${args[1]:-}"
++            [[ ${mock_chains["${chain_name}"]:-0} -eq 1 ]] || return 1
++            mock_chain_rule_counts["${chain_name}"]=$((
++                ${mock_chain_rule_counts["${chain_name}"]:-0} + 1
++            ))
++            rule="${args[*]:2}"
++            if [[ "${chain_name}" == "${otbr_forward_ingress_chain}" ]]; then
++                mock_ingress_rules+=("${rule}")
++            else
++                mock_egress_rules+=("${rule}")
++            fi
++            ;;
++        -C)
++            interface_flag="${args[2]:-}"
++            chain_name="${args[5]:-}"
++            jump_key="${interface_flag}|${chain_name}"
++            # iptables-nft reports a missing custom jump target as an
++            # operational error, not as an ordinary absent-rule result.
++            [[ ${mock_chains["${chain_name}"]:-0} -eq 1 ]] || return 2
++            [[ ${mock_jump_counts["${jump_key}"]:-0} -gt 0 ]]
++            ;;
++        -D)
++            interface_flag="${args[2]:-}"
++            chain_name="${args[5]:-}"
++            jump_key="${interface_flag}|${chain_name}"
++            mock_rule_delete_calls=$((mock_rule_delete_calls + 1))
++            (( mock_fail_rule_delete == 0 )) || return 1
++            [[ ${mock_jump_counts["${jump_key}"]:-0} -gt 0 ]] || return 1
++            mock_jump_counts["${jump_key}"]=$((
++                mock_jump_counts["${jump_key}"] - 1
++            ))
++            ;;
++        -L)
++            chain_name="${args[1]:-}"
++            [[ ${mock_chains["${chain_name}"]:-0} -eq 1 ]]
++            ;;
++        -F)
++            chain_name="${args[1]:-}"
++            [[ ${mock_chains["${chain_name}"]:-0} -eq 1 ]] || return 1
++            mock_chain_rule_counts["${chain_name}"]=0
++            if [[ "${chain_name}" == "${otbr_forward_ingress_chain}" ]]; then
++                mock_ingress_rules=()
++            else
++                mock_egress_rules=()
++            fi
++            ;;
++        -X)
++            chain_name="${args[1]:-}"
++            (( mock_fail_chain_delete == 0 )) || return 1
++            [[ ${mock_chains["${chain_name}"]:-0} -eq 1 ]] || return 1
++            mock_chains["${chain_name}"]=0
++            ;;
++        *)
++            fail "unsupported mock ip6tables operation: $*"
++            ;;
++    esac
++}
++
++ipset()
++{
++    mock_command_log+=("ipset $*")
++
++    local operation="$1"
++    shift
++    local ipset_name
++
++    case "${operation}" in
++        create)
++            [[ "${1:-}" == "-exist" ]] || return 1
++            ipset_name="${2:-}"
++            mock_ipset_create_calls=$((mock_ipset_create_calls + 1))
++            if (( mock_fail_ipset_create_call > 0 \
++                && mock_ipset_create_calls == mock_fail_ipset_create_call )); then
++                return 1
++            fi
++            mock_sets["${ipset_name}"]=1
++            ;;
++        list)
++            [[ "${1:-}" == "-n" && -z "${2:-}" ]] || return 2
++            (( mock_ipset_list_status == 0 )) \
++                || return "${mock_ipset_list_status}"
++            for ipset_name in "${!mock_sets[@]}"; do
++                if [[ ${mock_sets["${ipset_name}"]:-0} -eq 1 ]]; then
++                    printf '%s\n' "${ipset_name}"
++                fi
++            done
++            ;;
++        destroy)
++            ipset_name="${1:-}"
++            mock_ipset_destroy_calls=$((mock_ipset_destroy_calls + 1))
++            if [[ ${mock_set_destroy_failures["${ipset_name}"]:-0} -gt 0 ]]; then
++                mock_set_destroy_failures["${ipset_name}"]=$((
++                    mock_set_destroy_failures["${ipset_name}"] - 1
++                ))
++                return 1
++            fi
++            [[ ${mock_sets["${ipset_name}"]:-0} -eq 1 ]] || return 1
++            mock_sets["${ipset_name}"]=0
++            ;;
++        *)
++            fail "unsupported mock ipset operation: ${operation} $*"
++            ;;
++    esac
++}
++
++ip()
++{
++    [[ "$*" == "-o link show" ]] || return 2
++    (( mock_ip_link_status == 0 )) || return "${mock_ip_link_status}"
++
++    if [[ -n "${mock_ip_link_output}" ]]; then
++        printf '%s' "${mock_ip_link_output}"
++        return
++    fi
++
++    printf '1: lo: <LOOPBACK,UP> mtu 65536\n'
++    if (( mock_thread_if_present != 0 )); then
++        printf '7: %s@if8: <BROADCAST,UP> mtu 1280\n' "${thread_if}"
++    fi
++}
++
++timeout()
++{
++    local command_name
++    local forced_status
++    local kill_grace_duration
++
++    printf -v kill_grace_duration '%d.%03ds' \
++        "$((otbr_cleanup_kill_grace_milliseconds / 1000))" \
++        "$((otbr_cleanup_kill_grace_milliseconds % 1000))"
++
++    [[ "${1:-}" == "--foreground" ]] || return 2
++    shift
++    [[ "${1:-}" == "--kill-after=${kill_grace_duration}" ]] || return 2
++    shift
++    [[ "${1:-}" =~ ^[0-9]+\.[0-9]{3}s$ ]] || return 2
++    shift
++
++    command_name="${1:-}"
++    forced_status="${mock_timeout_command_status["${command_name}"]:-0}"
++    if (( forced_status != 0 )); then
++        return "${forced_status}"
++    fi
++
++    "$@"
++}
++
++_otbr_clock_milliseconds()
++{
++    REPLY="${mock_now_milliseconds}"
++}
++
++sleep()
++{
++    local delay_duration
++
++    printf -v delay_duration '%d.%03ds' \
++        "$((otbr_ipset_destroy_delay_milliseconds / 1000))" \
++        "$((otbr_ipset_destroy_delay_milliseconds % 1000))"
++    assert_eq "${delay_duration}" "${1:-}" "ipset retry delay"
++
++    mock_sleep_calls=$((mock_sleep_calls + 1))
++    mock_now_milliseconds=$((
++        mock_now_milliseconds + otbr_ipset_destroy_delay_milliseconds
++    ))
++}
++
++assert_firewall_state_clean()
++{
++    local ipset_name
++
++    assert_eq 0 "${mock_chains["${otbr_forward_ingress_chain}"]:-0}" \
++        "ingress chain cleanup"
++    assert_eq 0 "${mock_chains["${otbr_forward_egress_chain}"]:-0}" \
++        "egress chain cleanup"
++    assert_eq 0 "${mock_jump_counts["-o|${otbr_forward_ingress_chain}"]:-0}" \
++        "ingress jump cleanup"
++    assert_eq 0 "${mock_jump_counts["-i|${otbr_forward_egress_chain}"]:-0}" \
++        "egress jump cleanup"
++
++    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
++        assert_eq 0 "${mock_sets["${ipset_name}"]:-0}" \
++            "${ipset_name} cleanup"
++    done
++}
++
++assert_setup_jump_positions()
++{
++    local ingress_jump
++    local egress_jump
++
++    ingress_jump="ip6tables -w ${otbr_iptables_wait_seconds} -I FORWARD 1 -o ${thread_if} -j ${otbr_forward_ingress_chain}"
++    egress_jump="ip6tables -w ${otbr_iptables_wait_seconds} -I FORWARD 2 -i ${thread_if} -j ${otbr_forward_egress_chain}"
++
++    assert_eq "${ingress_jump}" "${mock_command_log[5]:-}" \
++        "ingress FORWARD jump position"
++    assert_eq "${egress_jump}" "${mock_command_log[7]:-}" \
++        "egress FORWARD jump position"
++}
++
++test_disabled_setup_is_scoped()
++{
++    mock_reset
++    otbr_firewall_setup false
++
++    assert_eq 1 "${mock_jump_counts["-o|${otbr_forward_ingress_chain}"]}" \
++        "disabled ingress jump count"
++    assert_eq 1 "${mock_jump_counts["-i|${otbr_forward_egress_chain}"]}" \
++        "disabled egress jump count"
++    assert_eq 1 "${#mock_ingress_rules[@]}" \
++        "disabled ingress rule count"
++    assert_eq 1 "${#mock_egress_rules[@]}" \
++        "disabled egress rule count"
++    assert_eq '-j ACCEPT' "${mock_ingress_rules[0]}" \
++        "disabled ingress rule"
++    assert_eq '-j ACCEPT' "${mock_egress_rules[0]}" \
++        "disabled egress rule"
++    assert_setup_jump_positions
++
++    local ipset_name
++    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
++        assert_eq 1 "${mock_sets["${ipset_name}"]:-0}" \
++            "${ipset_name} creation in disabled mode"
++    done
++
++    local commands
++    commands="$(printf '%s\n' "${mock_command_log[@]}")"
++    assert_not_contains 'ip6tables-legacy' "${commands}" \
++        "legacy backend invocation"
++    assert_not_contains 'ip6tables -P FORWARD' "${commands}" \
++        "global FORWARD policy mutation"
++}
++
++test_enabled_setup_preserves_filtering()
++{
++    mock_reset
++    otbr_firewall_setup true
++
++    assert_eq 5 "${#mock_ingress_rules[@]}" \
++        "enabled ingress rule count"
++    assert_eq 1 "${#mock_egress_rules[@]}" \
++        "enabled egress rule count"
++    assert_eq "-m pkttype --pkt-type unicast -i ${thread_if} -j DROP" \
++        "${mock_ingress_rules[0]}" "enabled ingress rule 1"
++    assert_eq '-m set --match-set otbr-ingress-deny-src src -j DROP' \
++        "${mock_ingress_rules[1]}" "enabled ingress rule 2"
++    assert_eq '-m set --match-set otbr-ingress-allow-dst dst -j ACCEPT' \
++        "${mock_ingress_rules[2]}" "enabled ingress rule 3"
++    assert_eq '-m pkttype --pkt-type unicast -j DROP' \
++        "${mock_ingress_rules[3]}" "enabled ingress rule 4"
++    assert_eq '-j ACCEPT' "${mock_ingress_rules[4]}" \
++        "enabled ingress rule 5"
++    assert_eq '-j ACCEPT' "${mock_egress_rules[0]}" \
++        "enabled egress rule"
++    assert_setup_jump_positions
++}
++
++test_cleanup_removes_duplicate_state()
++{
++    local ipset_name
++
++    mock_reset
++    mock_jump_counts["-o|${otbr_forward_ingress_chain}"]=3
++    mock_jump_counts["-i|${otbr_forward_egress_chain}"]=2
++    mock_chains["${otbr_forward_ingress_chain}"]=1
++    mock_chains["${otbr_forward_egress_chain}"]=1
++    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
++        mock_sets["${ipset_name}"]=1
++    done
++
++    mock_set_destroy_failures["otbr-ingress-deny-src"]=2
++    otbr_firewall_cleanup
++
++    assert_eq 2 "${mock_sleep_calls}" "transient ipset retry count"
++    assert_firewall_state_clean
++}
++
++test_cleanup_failures_are_bounded()
++{
++    mock_reset
++    mock_jump_counts["-o|${otbr_forward_ingress_chain}"]=1
++    mock_chains["${otbr_forward_ingress_chain}"]=1
++    mock_fail_rule_delete=1
++    if otbr_firewall_cleanup; then
++        fail "cleanup unexpectedly succeeded with an undeletable jump"
++    fi
++    assert_eq 1 "${mock_rule_delete_calls}" \
++        "undeletable jump attempt count"
++
++    mock_reset
++    mock_sets["otbr-ingress-deny-src"]=1
++    mock_set_destroy_failures["otbr-ingress-deny-src"]=999
++    if otbr_firewall_cleanup; then
++        fail "cleanup unexpectedly succeeded with a persistent ipset reference"
++    fi
++    assert_eq "$((otbr_ipset_destroy_attempts - 1))" \
++        "${mock_sleep_calls}" "persistent ipset retry delay count"
++
++    mock_reset
++    mock_jump_counts["-o|${otbr_forward_ingress_chain}"]=$((
++        otbr_cleanup_max_rule_deletes + 1
++    ))
++    mock_chains["${otbr_forward_ingress_chain}"]=1
++    if otbr_firewall_cleanup; then
++        fail "cleanup unexpectedly accepted excessive duplicate jumps"
++    fi
++    assert_eq "${otbr_cleanup_max_rule_deletes}" \
++        "${mock_rule_delete_calls}" "duplicate jump deletion bound"
++
++    mock_reset
++    mock_chains["${otbr_forward_ingress_chain}"]=1
++    mock_fail_chain_delete=1
++    if otbr_firewall_cleanup; then
++        fail "cleanup unexpectedly succeeded with an undeletable chain"
++    fi
++    assert_eq 1 "${mock_chains["${otbr_forward_ingress_chain}"]}" \
++        "undeletable chain remains visible for the next reconciliation attempt"
++}
++
++test_busy_ipset_does_not_starve_independent_sets()
++{
++    local busy_ipset="${otbr_firewall_ipsets[0]}"
++    local ipset_name
++
++    mock_reset
++    for ipset_name in "${otbr_firewall_ipsets[@]}"; do
++        mock_sets["${ipset_name}"]=1
++    done
++    mock_set_destroy_failures["${busy_ipset}"]=999
++
++    if otbr_firewall_cleanup; then
++        fail "cleanup unexpectedly succeeded with a persistently busy ipset"
++    fi
++
++    assert_eq 1 "${mock_sets["${busy_ipset}"]}" \
++        "persistently busy ipset remains"
++    for ipset_name in "${otbr_firewall_ipsets[@]:1}"; do
++        assert_eq 0 "${mock_sets["${ipset_name}"]}" \
++            "${ipset_name} was not starved by the busy ipset"
++    done
++    assert_eq "$((otbr_ipset_destroy_attempts - 1))" \
++        "${mock_sleep_calls}" "busy ipset retry delay count"
++}
++
++test_cleanup_probe_statuses_are_preserved()
++{
++    local status
++
++    mock_reset
++    otbr_firewall_cleanup \
++        || fail "missing iptables and ipset objects should be a clean state"
++    otbr_firewall_cleanup \
++        || fail "repeated cleanup of missing objects should remain idempotent"
++
++    for status in 2 3 4; do
++        mock_reset
++        mock_chains["${otbr_forward_ingress_chain}"]=1
++        mock_chains["${otbr_forward_egress_chain}"]=1
++        mock_ip6_operation_status["-C"]="${status}"
++        if otbr_firewall_cleanup; then
++            fail "cleanup ignored ip6tables -C status ${status}"
++        fi
++    done
++
++    for status in 2 3 4; do
++        mock_reset
++        mock_ip6_operation_status["-L"]="${status}"
++        if otbr_firewall_cleanup; then
++            fail "cleanup ignored ip6tables -L status ${status}"
++        fi
++    done
++
++    for status in 1 2 3 4; do
++        mock_reset
++        mock_sets["otbr-ingress-deny-src"]=1
++        mock_ipset_list_status="${status}"
++        if otbr_firewall_cleanup; then
++            fail "cleanup ignored all-ipset listing status ${status}"
++        fi
++        assert_eq 0 "${mock_ipset_destroy_calls}" \
++            "ipset destroy calls after an unverified listing"
++    done
++}
++
++test_cleanup_command_timeouts_are_preserved()
++{
++    mock_reset
++    mock_timeout_command_status["ip6tables"]=124
++    if otbr_firewall_cleanup; then
++        fail "cleanup ignored a timed-out ip6tables command"
++    fi
++    assert_eq 0 "${mock_ip6_call_count}" \
++        "timed-out ip6tables command execution"
++
++    mock_reset
++    mock_sets["otbr-ingress-deny-src"]=1
++    mock_timeout_command_status["ipset"]=124
++    if otbr_firewall_cleanup; then
++        fail "cleanup ignored a timed-out ipset command"
++    fi
++    assert_eq 0 "${mock_ipset_destroy_calls}" \
++        "ipset destroy calls after a timed-out listing"
++}
++
++test_cleanup_uses_one_shared_deadline()
++{
++    mock_reset
++    mock_jump_counts["-o|${otbr_forward_ingress_chain}"]=100
++    mock_chains["${otbr_forward_ingress_chain}"]=1
++    mock_ip6_elapsed_milliseconds=1000
++
++    if otbr_firewall_cleanup; then
++        fail "cleanup unexpectedly completed after exhausting its deadline"
++    fi
++
++    assert_eq "${otbr_cleanup_budget_milliseconds}" \
++        "${mock_now_milliseconds}" "cleanup wall-clock deadline"
++    assert_eq 4 "${mock_ip6_call_count}" \
++        "commands admitted before the shared deadline"
++    assert_eq 0 "${mock_ipset_destroy_calls}" \
++        "ipset work after the shared deadline"
++}
++
++test_cleanup_owner_guard()
++{
++    local fixture_result
++
++    mock_reset
++    mock_thread_if_present=1
++    if otbr_firewall_cleanup_is_safe; then
++        fail "cleanup ignored an existing ${thread_if}"
++    fi
++    assert_contains "${thread_if} already exists" \
++        "${otbr_cleanup_guard_reason}" "foreign-owner guard reason"
++
++    mock_reset
++    mock_ip_link_output=$'1: lo: <LOOPBACK,UP> mtu 65536\n7: wpan0: <BROADCAST,UP> mtu 1280\n'
++    if otbr_firewall_cleanup_is_safe; then
++        fail "cleanup ignored an unqualified ${thread_if} name"
++    fi
++
++    mock_reset
++    mock_ip_link_output=$'1: lo: <LOOPBACK,UP> mtu 65536\n7: upstream-wpan0@if8: <BROADCAST,UP> mtu 1280\n8: wpan00: <BROADCAST,UP> mtu 1280\n'
++    otbr_firewall_cleanup_is_safe \
++        || fail "cleanup misidentified a similarly named interface"
++
++    mock_reset
++    mock_ip_link_status=4
++    if otbr_firewall_cleanup_is_safe; then
++        fail "cleanup proceeded after interface inspection failed"
++    fi
++    assert_contains "could not be inspected" \
++        "${otbr_cleanup_guard_reason}" "interface-probe guard reason"
++
++    mock_reset
++    otbr_firewall_cleanup_is_safe \
++        || fail "cleanup was blocked with no ${thread_if}"
++
++    fixture_result="$(run_disabled_script_fixture 1 0)"
++    assert_contains '0|Skipping stale OTBR firewall cleanup' \
++        "${fixture_result}" "guarded disabled caller policy"
++
++    fixture_result="$(run_disabled_script_fixture 0 1)"
++    assert_contains '1|Could not completely clean up stale OTBR firewall state' \
++        "${fixture_result}" "best-effort disabled caller policy"
++}
++
++test_cleanup_claim_lifecycle()
++{
++    local claim_status
++    local original_claim_file="${otbr_firewall_cleanup_claim_file}"
++    local test_claim_file
++
++    test_claim_file="$(mktemp)"
++    otbr_firewall_cleanup_claim_file="${test_claim_file}"
++
++    otbr_firewall_cleanup_claim_reset \
++        || fail "cleanup claim reset failed"
++    [[ ! -e "${test_claim_file}" ]] \
++        || fail "cleanup claim reset left a marker"
++
++    otbr_firewall_cleanup_claim_create \
++        || fail "cleanup claim creation failed"
++    [[ -f "${test_claim_file}" ]] \
++        || fail "cleanup claim creation left no marker"
++
++    otbr_firewall_cleanup_claim_consume \
++        || fail "cleanup claim consumption failed"
++    [[ ! -e "${test_claim_file}" ]] \
++        || fail "cleanup claim consumption left a marker"
++
++    if otbr_firewall_cleanup_claim_consume; then
++        fail "missing cleanup claim was accepted"
++    else
++        claim_status=$?
++    fi
++    assert_eq 1 "${claim_status}" "missing cleanup claim status"
++
++    otbr_firewall_cleanup_claim_file="${original_claim_file}"
++    rm -f -- "${test_claim_file}"
++}
++
++test_service_caller_failure_policies()
++{
++    local fixture_result
++    local fixture_status
++
++    if fixture_result="$(
++        run_start_script_fixture 0 0 false "" eth0 eth0 0 0 1 0 2>&1
++    )"; then
++        fail "run script continued after cleanup claim reset failed"
++    else
++        fixture_status=$?
++    fi
++    assert_eq 42 "${fixture_status}" "run cleanup claim reset status"
++    assert_contains "EVENTS:claim-reset;" "${fixture_result}" \
++        "cleanup claim reset failure order"
++    assert_not_contains "guard;" "${fixture_result}" \
++        "ownership probe after cleanup claim reset failure"
++
++    if fixture_result="$(
++        run_start_script_fixture 0 0 false "" eth0 eth0 0 1 2>&1
++    )"; then
++        fail "run script reconciled firewall state while ${thread_if} was owned"
++    else
++        fixture_status=$?
++    fi
++    assert_eq 42 "${fixture_status}" "run ownership guard status"
++    assert_contains "Refusing to reconcile OTBR firewall state" \
++        "${fixture_result}" "run ownership guard diagnostic"
++    assert_contains "EVENTS:claim-reset;guard;" "${fixture_result}" \
++        "run ownership guard event order"
++    assert_not_contains "claim-create;" "${fixture_result}" \
++        "firewall ownership claim with a possible foreign owner"
++    assert_not_contains "cleanup;" "${fixture_result}" \
++        "firewall cleanup with a possible foreign owner"
++
++    if fixture_result="$(
++        run_start_script_fixture 0 0 false "" eth0 eth0 0 0 0 1 2>&1
++    )"; then
++        fail "run script continued after cleanup claim creation failed"
++    else
++        fixture_status=$?
++    fi
++    assert_eq 42 "${fixture_status}" "run cleanup claim creation status"
++    assert_contains "EVENTS:claim-reset;guard;claim-create;" \
++        "${fixture_result}" "cleanup claim creation failure order"
++    assert_not_contains "cleanup;" "${fixture_result}" \
++        "firewall cleanup after cleanup claim creation failure"
++
++    if run_start_script_fixture 1 0 2>/dev/null; then
++        fail "run script continued after stale cleanup failed"
++    else
++        fixture_status=$?
++    fi
++    assert_eq 42 "${fixture_status}" "run cleanup failure policy"
++
++    if run_start_script_fixture 0 1 2>/dev/null; then
++        fail "run script continued after firewall setup failed"
++    else
++        fixture_status=$?
++    fi
++    assert_eq 42 "${fixture_status}" "run setup failure policy"
++
++    fixture_result="$(run_finish_script_fixture 1 7 0)"
++    assert_eq '7|1|125|exitcode;halt;claim-consume;cleanup;' \
++        "${fixture_result}" \
++        "fatal process exit is persisted before cleanup"
++
++    fixture_result="$(run_finish_script_fixture 1 256 15)"
++    assert_eq '143|1|125|exitcode;halt;claim-consume;cleanup;' \
++        "${fixture_result}" \
++        "fatal signal exit is persisted before cleanup"
++
++    fixture_result="$(run_finish_script_fixture 1 0 0)"
++    assert_eq 'none|0|0|claim-consume;cleanup;' "${fixture_result}" \
++        "successful process exit cleans up and remains restartable"
++
++    fixture_result="$(run_finish_script_fixture 1 42 0 1)"
++    assert_eq '42|1|125|exitcode;halt;claim-consume;' \
++        "${fixture_result}" \
++        "pre-ownership startup failure must not clean foreign firewall state"
++
++    fixture_result="$(run_finish_script_fixture 1 42 0 2)"
++    assert_eq '42|1|125|exitcode;halt;claim-consume;' \
++        "${fixture_result}" \
++        "unconsumable ownership claim must fail closed"
++}
++
++test_service_caller_successful_modes()
++{
++    local exec_args
++    local fixture_result
++    local lifecycle_events
++
++    fixture_result="$(run_start_script_fixture 0 0 true)"
++    lifecycle_events="${fixture_result%%|*}"
++    exec_args="${fixture_result#*|}"
++    assert_eq \
++        "claim-reset;guard;claim-create;cleanup;setup:true;exec;" \
++        "${lifecycle_events}" \
++        "enabled caller lifecycle"
++    assert_contains "/usr/sbin/otbr-agent -I wpan0 -B eth0" "${exec_args}" \
++        "enabled caller otbr-agent exec"
++
++    fixture_result="$(run_start_script_fixture 0 0 false)"
++    lifecycle_events="${fixture_result%%|*}"
++    exec_args="${fixture_result#*|}"
++    assert_eq \
++        "claim-reset;guard;claim-create;cleanup;setup:false;exec;" \
++        "${lifecycle_events}" \
++        "disabled caller lifecycle"
++    assert_contains "/usr/sbin/otbr-agent -I wpan0 -B eth0" "${exec_args}" \
++        "disabled caller otbr-agent exec"
++}
++
++test_finish_timeout_has_cleanup_headroom()
++{
++    local cleanup_finish_headroom_milliseconds=3000
++    local finish_timeout_milliseconds
++
++    finish_timeout_milliseconds="$(
++        tr -d '[:space:]' < "${TIMEOUT_FINISH_FILE}"
++    )"
++    [[ "${finish_timeout_milliseconds}" =~ ^[1-9][0-9]*$ ]] \
++        || fail "timeout-finish must contain positive milliseconds"
++
++    if (( otbr_cleanup_budget_milliseconds \
++        + otbr_cleanup_kill_grace_milliseconds \
++        + cleanup_finish_headroom_milliseconds \
++        >= finish_timeout_milliseconds )); then
++        fail "cleanup budget and kill grace do not leave finish headroom"
++    fi
++}
++
++test_setup_failure_rolls_back_partial_state()
++{
++    local firewall_enabled
++    local ip6_setup_calls
++    local setup_call
++
++    mock_reset
++    if otbr_firewall_setup invalid; then
++        fail "setup unexpectedly accepted an invalid firewall mode"
++    else
++        assert_eq 2 "$?" "invalid firewall mode return code"
++    fi
++    assert_firewall_state_clean
++
++    for firewall_enabled in false true; do
++        for ((setup_call = 1; setup_call <= ${#otbr_firewall_ipsets[@]}; setup_call++)); do
++            mock_reset
++            mock_fail_ipset_create_call="${setup_call}"
++            if otbr_firewall_setup "${firewall_enabled}"; then
++                fail "setup unexpectedly succeeded after ipset failure ${setup_call} in ${firewall_enabled} mode"
++            fi
++            assert_firewall_state_clean
++        done
++
++        if [[ "${firewall_enabled}" == "true" ]]; then
++            ip6_setup_calls=10
++        else
++            ip6_setup_calls=6
++        fi
++
++        for ((setup_call = 1; setup_call <= ip6_setup_calls; setup_call++)); do
++            mock_reset
++            mock_fail_ip6_call="${setup_call}"
++            if otbr_firewall_setup "${firewall_enabled}"; then
++                fail "setup unexpectedly succeeded after ip6tables failure ${setup_call} in ${firewall_enabled} mode"
++            fi
++            assert_firewall_state_clean
++        done
++    done
++}
++
++test_restart_and_mode_transitions()
++{
++    mock_reset
++    otbr_firewall_setup true
++    otbr_firewall_cleanup
++    otbr_firewall_setup false
++    assert_eq 1 "${#mock_ingress_rules[@]}" \
++        "enabled-to-disabled ingress rule replacement"
++    otbr_firewall_cleanup
++    assert_firewall_state_clean
++
++    otbr_firewall_setup false
++    otbr_firewall_cleanup
++    otbr_firewall_setup true
++    assert_eq 5 "${#mock_ingress_rules[@]}" \
++        "disabled-to-enabled ingress rule replacement"
++    otbr_firewall_cleanup
++    assert_firewall_state_clean
++}
++
++test_service_script_invariants()
++{
++    local file
++    for file in "${COMMON_SCRIPT}" "${RUN_SCRIPT}" \
++        "${FINISH_SCRIPT}" "${ENABLE_CHECK_SCRIPT}"; do
++        bash -n "${file}"
++    done
++
++    if grep -RqsE 'ip6tables-legacy|ip6tables[[:space:]]+-P[[:space:]]+FORWARD' \
++        "${COMMON_SCRIPT}" "${RUN_SCRIPT}" "${FINISH_SCRIPT}" \
++        "${ENABLE_CHECK_SCRIPT}"; then
++        fail "obsolete legacy or host-wide FORWARD policy command remains"
++    fi
++
++
++}
++
++main()
++{
++    test_disabled_setup_is_scoped
++    test_enabled_setup_preserves_filtering
++    test_cleanup_removes_duplicate_state
++    test_cleanup_failures_are_bounded
++    test_busy_ipset_does_not_starve_independent_sets
++    test_cleanup_probe_statuses_are_preserved
++    test_cleanup_command_timeouts_are_preserved
++    test_cleanup_uses_one_shared_deadline
++    test_cleanup_owner_guard
++    test_cleanup_claim_lifecycle
++    test_service_caller_failure_policies
++    test_service_caller_successful_modes
++    test_finish_timeout_has_cleanup_headroom
++    test_setup_failure_rolls_back_partial_state
++    test_restart_and_mode_transitions
++    test_service_script_invariants
++    printf 'PASS: OTBR firewall lifecycle tests\n'
++}
++
++main "$@"
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..4f1ca96bafc1f58c350ffd6a8c0349c51471c5c5
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh
+@@ -0,0 +1,83 @@
++#!/bin/bash
++# Actual released s6 lifecycle; no radio services, devices or host networking.
++set -euo pipefail
++TEST_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++ADDON_DIR="$(cd -- "${TEST_DIR}/.." && pwd)"
++IMAGE="local/otbr-s6-test:$$"
++EVIDENCE_DIR="${OTBR_S6_EVIDENCE_DIR:-$(mktemp -d)}"
++mkdir -p -- "${EVIDENCE_DIR}"
++container=""
++cleanup()
++{
++    if [[ -n "${container}" ]]; then
++        timeout 15s docker rm --force "${container}" >/dev/null 2>&1 || true
++    fi
++}
++trap cleanup EXIT
++fail()
++{
++    printf 'FAIL: %s (evidence: %s)\n' "$*" "${EVIDENCE_DIR}" >&2
++    exit 1
++}
++# A build timeout also bounds a failed registry request.
++timeout 300s docker build --file "${TEST_DIR}/s6/Dockerfile" \
++    --tag "${IMAGE}" "${ADDON_DIR}"
++for scenario in failure bounded-stall finish-timeout shutdown-order; do
++    container="otbr-s6-test-$$-${scenario}"
++    log="${EVIDENCE_DIR}/${scenario}.log"
++    # Only process/identity capabilities needed by init; no NET_ADMIN/NET_RAW,
++    # privileged mode, devices, volumes or host namespace sharing.
++    timeout 30s docker run --detach --name "${container}" \
++        --network none --cap-drop ALL \
++        --cap-add CHOWN --cap-add DAC_OVERRIDE --cap-add FOWNER \
++        --cap-add SETGID --cap-add SETUID --cap-add KILL \
++        --security-opt no-new-privileges --pids-limit 128 \
++        --env "OTBR_S6_CASE=${scenario}" "${IMAGE}" >/dev/null
++    if [[ "${scenario}" == shutdown-order ]]; then
++        timeout 10s docker exec "${container}" sh -c \
++            'until test -f /run/s6-test-client-ready; do sleep 0.1; done' \
++            || fail "${scenario}: client did not become ready"
++        timeout 15s docker stop --time 10 "${container}" >/dev/null \
++            || fail "${scenario}: ordered shutdown timed out"
++    fi
++    started_seconds=${SECONDS}
++    wait_status=0
++    timeout 35s docker wait "${container}" \
++        > "${EVIDENCE_DIR}/${scenario}.exitcode" || wait_status=$?
++    elapsed_seconds=$((SECONDS - started_seconds))
++    timeout 10s docker logs "${container}" > "${log}" 2>&1 || true
++    timeout 10s docker inspect "${container}" \
++        > "${EVIDENCE_DIR}/${scenario}.inspect.json" || true
++    cat "${log}"
++    (( wait_status == 0 )) || fail "${scenario}: container did not stop within 35 seconds"
++    expected_exit=23
++    if [[ "${scenario}" == shutdown-order ]]; then expected_exit=0; fi
++    [[ "$(cat "${EVIDENCE_DIR}/${scenario}.exitcode")" == "${expected_exit}" ]] \
++        || fail "${scenario}: original daemon exit code was not preserved"
++    [[ "$(grep -c '^S6_TEST_DAEMON_START$' "${log}" || true)" == 1 ]] \
++        || fail "${scenario}: daemon did not start exactly once"
++    if [[ "${scenario}" == shutdown-order ]]; then
++        client_line=$(grep -n '^S6_TEST_CLIENT_STOP_COMPLETE$' "${log}" | cut -d: -f1 || true)
++        server_line=$(grep -n '^S6_TEST_MDNS_STOP$' "${log}" | cut -d: -f1 || true)
++        [[ -n "${client_line}" && -n "${server_line}" ]] \
++            || fail "${scenario}: missing shutdown completion markers"
++        (( client_line < server_line )) \
++            || fail "${scenario}: mDNS stopped before its client completed"
++    elif [[ "${scenario}" == finish-timeout ]]; then
++        (( elapsed_seconds >= 9 )) || fail "${scenario}: shutdown preceded the 10-second finish timeout"
++        grep -q '^S6_TEST_FORCED_FINISH_TIMEOUT status=23$' "${log}" \
++            || fail "${scenario}: stalled cleanup did not observe persisted exit status"
++        if grep -q 'OTBR firewall teardown was incomplete\|OTBR firewall teardown completed' "${log}"; then
++            fail "${scenario}: cleanup returned instead of reaching s6 finish expiry"
++        fi
++    else
++        grep -q '^S6_TEST_CLEANUP_STATUS=23$' "${log}" \
++            || fail "${scenario}: cleanup did not observe persisted exit status"
++        grep -q 'OTBR firewall teardown was incomplete' "${log}" \
++            || fail "${scenario}: real cleanup failure did not return to finish"
++    fi
++    timeout 15s docker rm "${container}" >/dev/null
++    container=""
++    printf 'PASS: released s6 shutdown (%s)\n' "${scenario}"
++done
++printf 's6 evidence: %s\n' "${EVIDENCE_DIR}"

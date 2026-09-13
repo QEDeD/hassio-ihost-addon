@@ -1,0 +1,190 @@
+diff --git a/hassio-ihost-silabs-multiprotocol/BUILDING.md b/hassio-ihost-silabs-multiprotocol/BUILDING.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b352a981c6242b0b3c250be47c5e9699168902c
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/BUILDING.md
+@@ -0,0 +1,62 @@
++# Reviewed build inputs
++
++## Silicon Labs Configurator (SLC)
++
++Supply `slc_cli_linux.zip` in this build directory before building. The Dockerfile
++checks it before extraction and does not replace it with a network download.
++The accepted archive is SLC 5.11.0.0 (215063443 bytes), with SHA-256:
++
++```
++5fc88e5f7e3a782a9181716bf173285d4794ea6d2282dde0c992179e3ab955f8
++```
++
++This is the archive used in the validated Trixie builds with SDK
++`da661283f301b53eec04d1016009e60bc7e34a1f` and Java 21. Its embedded SLC changelog
++identifies 5.11.0.0 and the Java 21 transition. The recorded acquisition source is
++[Silicon Labs](https://www.silabs.com/documents/login/software/slc_cli_linux.zip).
++That URL is mutable: it is a retrieval location, not a version guarantee. If it
++serves different bytes, obtain the reviewed version from a trusted retained copy
++or deliberately validate an update; do not bypass or automatically refresh the
++checksum. The checksum is a reviewed content pin, not a vendor signature.
++
++For an intentional update, establish the official source and release identity,
++review SDK/Java compatibility and licensing, update the checksum and version in
++this document and Dockerfile together, and repeat SLC generation and Zigbeed
++compilation for the supported architectures. Retain the acquisition provenance
++and results. Do not commit the binary archive or private download credentials.
++
++These controls preserve the selected generator. They do not make APT packages,
++all other build inputs, or the complete image byte-for-byte reproducible.
++
++## mDNSResponder
++
++The bootstrap patch retains Apple's mDNSResponder-1790.80.10 release, resolved
++to commit `8769ab51605e465425d33d757f602ce5905ca639`. It downloads the commit archive
++over certificate-verified HTTPS with bounded network retries and verifies SHA-256
++`fc75ffcb6f67634d8d1a10272317f72ec6d211ef03125c7c181edfc1d0ffee4e`
++before extraction. The source is from Apple's official GitHub repository; the
++checksum is a reviewed content pin, not a vendor signature. A changed response,
++HTTP failure or certificate failure must stop the build rather than bypass
++verification. For an intentional update, verify the official tag/commit, review
++release compatibility and the existing OpenThread patches, update the archive
++pin, then build and test the resulting mDNS integration.
++
++## Acquisition regression checks
++
++From this directory on a Docker-enabled Linux host, with the reviewed SLC archive
++present (read-only mounts below):
++
++```sh
++docker build -t local/otbr-build-input-tests tests/build-inputs
++docker run --rm \
++  -v "$PWD:/product:ro" \
++  -v "$PWD/slc_cli_linux.zip:/slc.zip:ro" \
++  local/otbr-build-input-tests python3 /product/tests/build-inputs/check.py
++```
++
++The fixture applies the patch to the pinned vendor bootstrap and executes its
++actual download/checksum commands. It verifies a real HTTPS download, checksum
++failure before extraction, the Dockerfile's valid/incorrect/missing SLC check,
++untrusted TLS rejection and HTTP failure. It uses temporary files and a local
++synthetic TLS server; it does not contact Home Assistant or start OTBR. These
++checks do not replace full image, generator or radio validation.
+diff --git a/hassio-ihost-silabs-multiprotocol/Dockerfile b/hassio-ihost-silabs-multiprotocol/Dockerfile
+index b88d74118b4d4e59f0f71f9f8da20ea44ffd3791..7f4816afb494c05bb71f743c31eed6e3014da779 100644
+--- a/hassio-ihost-silabs-multiprotocol/Dockerfile
++++ b/hassio-ihost-silabs-multiprotocol/Dockerfile
+@@ -90,6 +90,7 @@ FROM --platform=linux/amd64 cross-builder-${BUILD_ARCH} AS zigbeed-builder
+ 
+ ARG GECKO_SDK_VERSION
+ 
++# SLC 5.11.0.0: keep the supplied, verified archive; do not replace it at build time.
+ COPY slc_cli_linux.zip /usr/src/slc_cli_linux.zip
+ 
+ RUN \
+@@ -101,7 +102,7 @@ RUN \
+        openjdk-21-jre \
+        git-lfs \
+        unzip \
+-    && curl -O https://www.silabs.com/documents/login/software/slc_cli_linux.zip \
++    && echo '5fc88e5f7e3a782a9181716bf173285d4794ea6d2282dde0c992179e3ab955f8  slc_cli_linux.zip' | sha256sum -c - \
+     && unzip slc_cli_linux.zip \
+     && cd slc_cli/ && chmod +x slc
+  
+@@ -117,6 +118,7 @@ COPY --from=cpcd-builder /usr/local/ /usr/${DEBIAN_CROSS_PREFIX}/
+ COPY otbr-patches/0001-Avoid-writing-to-system-console.patch /usr/src
+ COPY otbr-patches/0001-rest-support-deleting-the-dataset.patch /usr/src
+ COPY otbr-patches/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch /usr/src
++COPY otbr-patches/0001-verify-mdns-source-download.patch /usr/src
+ COPY zigbeed-patches/zigbeed_amd64.patch /usr/src/gecko_sdk/zigbeed_amd64.patch
+ 
+ RUN \
+@@ -125,6 +127,7 @@ RUN \
+     && patch -p1 < /usr/src/0001-Avoid-writing-to-system-console.patch \
+     && patch -p1 < /usr/src/0001-rest-support-deleting-the-dataset.patch \
+     && patch -p1 < /usr/src/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch \
++    && patch -p1 < /usr/src/0001-verify-mdns-source-download.patch \
+     && if [ "${DEBIAN_ARCH}" = "amd64" ]; then \
+         patch -p1 < zigbeed_amd64.patch; \
+         fi \
+diff --git a/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-verify-mdns-source-download.patch b/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-verify-mdns-source-download.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..c43a2932657a955ca08ebbe473e7dbbc41751280
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-verify-mdns-source-download.patch
+@@ -0,0 +1,19 @@
++Subject: [PATCH] Verify the pinned mDNSResponder source before extraction
++
++Keep mDNSResponder-1790.80.10, resolved through Apple's release tag to commit
++8769ab51605e465425d33d757f602ce5905ca639. Authenticate HTTPS downloads and reject
++unexpected archive bytes before extraction or compilation.
++
++--- a/util/third_party/ot-br-posix/script/bootstrap
+++++ b/util/third_party/ot-br-posix/script/bootstrap
++@@ -71,7 +71,9 @@
++     (MDNS_RESPONDER_SOURCE_NAME=mDNSResponder-1790.80.10 \
++         && MDNS_RESPONDER_PATCH_PATH=$(realpath "$(dirname "$0")"/../third_party/mDNSResponder) \
++         && cd /tmp \
++-        && wget --no-check-certificate https://github.com/apple-oss-distributions/mDNSResponder/archive/refs/tags/$MDNS_RESPONDER_SOURCE_NAME.tar.gz \
+++        && wget --https-only --timeout=30 --tries=3 -O "$MDNS_RESPONDER_SOURCE_NAME.tar.gz" \
+++            https://codeload.github.com/apple-oss-distributions/mDNSResponder/tar.gz/8769ab51605e465425d33d757f602ce5905ca639 \
+++        && echo "fc75ffcb6f67634d8d1a10272317f72ec6d211ef03125c7c181edfc1d0ffee4e  $MDNS_RESPONDER_SOURCE_NAME.tar.gz" | sha256sum -c - \
++         && mkdir -p $MDNS_RESPONDER_SOURCE_NAME \
++         && tar xvf $MDNS_RESPONDER_SOURCE_NAME.tar.gz -C $MDNS_RESPONDER_SOURCE_NAME --strip-components=1 \
++         && cd /tmp/"$MDNS_RESPONDER_SOURCE_NAME" \
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/build-inputs/Dockerfile b/hassio-ihost-silabs-multiprotocol/tests/build-inputs/Dockerfile
+new file mode 100644
+index 0000000000000000000000000000000000000000..453a1bc567fbb105f5f05294549adfe2136d87d7
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/build-inputs/Dockerfile
+@@ -0,0 +1,2 @@
++FROM debian:trixie
++RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates wget patch make gcc libc6-dev python3 openssl && rm -rf /var/lib/apt/lists/*
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/build-inputs/check.py b/hassio-ihost-silabs-multiprotocol/tests/build-inputs/check.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..dd4e3bdb3483ae6132e8a2e1e209e77c5d80bd48
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/build-inputs/check.py
+@@ -0,0 +1,46 @@
++"""Isolated checks of the Dockerfile/SDK-patch acquisition commands.
++
++Run using the adjacent Dockerfile as documented in BUILDING.md.
++"""
++import pathlib,subprocess,re,tempfile,os,ssl,http.server,threading,json,urllib.request
++repo=pathlib.Path('/product')
++def run(args,**kw):return subprocess.run(args,capture_output=True,text=True,timeout=90,**kw)
++with tempfile.TemporaryDirectory() as d:
++ work=pathlib.Path(d);sdk=work/'sdk/util/third_party/ot-br-posix/script';sdk.mkdir(parents=True)
++ url='https://raw.githubusercontent.com/SiliconLabs/simplicity_sdk/da661283f301b53eec04d1016009e60bc7e34a1f/util/third_party/ot-br-posix/script/bootstrap'
++ (sdk/'bootstrap').write_bytes(urllib.request.urlopen(url,timeout=30).read())
++ patch=repo/'otbr-patches/0001-verify-mdns-source-download.patch'
++ r=run(['patch','--batch','-p1','-i',str(patch)],cwd=work/'sdk');assert r.returncode==0,r.stderr
++ patched=(sdk/'bootstrap').read_text()
++ assert run(['bash','-n',str(sdk/'bootstrap')]).returncode==0
++ begin=patched.index('        && wget --https-only');end=patched.index('        && mkdir -p $MDNS_RESPONDER_SOURCE_NAME',begin)
++ block=patched[begin:end].strip()[3:].rstrip().removesuffix('\\').rstrip()
++ cmd='MDNS_RESPONDER_SOURCE_NAME=mDNSResponder-1790.80.10; '+block
++ r=run(['bash','-ec',cmd],cwd=work);assert r.returncode==0,r.stderr
++ print('PASS exact patched HTTPS download and checksum',flush=True)
++ archive=work/'mDNSResponder-1790.80.10.tar.gz';archive.write_bytes(b'invalid source')
++ checksum=next(l.strip()[3:].rstrip().removesuffix('\\').rstrip() for l in patched.splitlines() if 'sha256sum -c -' in l)
++ r=run(['bash','-ec','MDNS_RESPONDER_SOURCE_NAME=mDNSResponder-1790.80.10; '+checksum+' && touch EXTRACTED'],cwd=work)
++ assert r.returncode!=0 and not (work/'EXTRACTED').exists();print('PASS bad source rejected before extraction')
++ docker=(repo/'Dockerfile').read_text();slc=next(l.strip()[3:].rstrip().removesuffix('\\').rstrip() for l in docker.splitlines() if 'sha256sum -c -' in l)
++ os.symlink('/slc.zip',work/'slc_cli_linux.zip');r=run(['bash','-ec',slc],cwd=work);assert r.returncode==0,r.stderr
++ (work/'slc_cli_linux.zip').unlink();(work/'slc_cli_linux.zip').write_bytes(b'wrong generator')
++ r=run(['bash','-ec',slc+' && touch GENERATED'],cwd=work);assert r.returncode!=0 and not (work/'GENERATED').exists()
++ (work/'slc_cli_linux.zip').unlink();assert run(['bash','-ec',slc],cwd=work).returncode!=0
++ print('PASS exact SLC check: tested archive accepted; incorrect and missing rejected')
++ cert=work/'cert.pem';key=work/'key.pem'
++ r=run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-keyout',str(key),'-out',str(cert),'-days','1','-subj','/CN=localhost']);assert r.returncode==0
++ class Handler(http.server.BaseHTTPRequestHandler):
++  def do_GET(self):self.send_response(200);self.end_headers();self.wfile.write(b'untrusted')
++  def log_message(self,*a):pass
++ class Server(http.server.ThreadingHTTPServer):
++  def handle_error(self,request,client_address):
++   import sys
++   if not isinstance(sys.exception(),(BrokenPipeError,ConnectionResetError,ssl.SSLError)): super().handle_error(request,client_address)
++ server=Server(('127.0.0.1',0),Handler);ctx=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);ctx.load_cert_chain(cert,key);server.socket=ctx.wrap_socket(server.socket,server_side=True)
++ t=threading.Thread(target=server.serve_forever,daemon=True);t.start()
++ r=run(['wget','--https-only','--timeout=30','--tries=3','-O',str(work/'untrusted'),f'https://localhost:{server.server_port}/source']);server.shutdown();server.server_close()
++ assert r.returncode==5,(r.returncode,r.stderr);print('PASS untrusted TLS certificate rejected')
++ r=run(['wget','--https-only','--timeout=30','--tries=1','-O',str(work/'missing'),'https://codeload.github.com/apple-oss-distributions/mDNSResponder/tar.gz/0000000000000000000000000000000000000000'])
++ assert r.returncode==8,(r.returncode,r.stderr);print('PASS HTTP failure rejected')
++print('PASS acquisition checks; not a full image/generator/runtime test')

@@ -1,9 +1,20 @@
 # Use Home Assistant app terminology in user-facing text
 
-Head: `84fab103614c2eef11a0dc877fb4a12c85df6221`. [Focused comparison](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/compare/5a8d7dec067f9196ada5879f31f71cbf6d595bff...QEDeD:84fab103614c2eef11a0dc877fb4a12c85df6221). No upstream PR has been submitted.
+## Submission identity (operator reference)
 
-Update shared documentation, English descriptions, issue-template wording, displayed workflow labels and startup messages from add-on terminology to app terminology. The 42-file change preserves technical identifiers, API/function names, repository paths and configuration keys. Issue routing also accepts both current and legacy form labels/sentinels. This is a narrow parser-compatibility adjustment; device runtime policy and configuration semantics are unchanged.
+Destination: iHost-Open-Source-Project/hassio-ihost-addon, target master.
+Source branch: `QEDeD:codex/ha-app-terminology-20260912`.
+Exact head: `84fab103614c2eef11a0dc877fb4a12c85df6221`. Review base: `5a8d7dec067f9196ada5879f31f71cbf6d595bff`.
+[Exact local diff](diffs/terminology.patch). Independent iHost PR; merge after overlapping text changes.
 
-The source diff is the primary review evidence for this terminology and issue-form compatibility contribution. The [integration evidence](../INTEGRATION.md) records the exact combined image, successful AMD64 production observation/restart and NAT64 UDP comparison, and separately scoped ARM build/linkage/native-web results. The approved group-command replay did not reproduce BUSY; independent review retains the historical finding as unresolved general Zigbee reliability work, without evidence requiring another candidate/baseline switch. These results are not exact-head CI for this individual contribution, physical ARM radio acceptance, or a claim that historical device failures are fixed.
+## Final submission text
 
-This is independent of the functional contributions. Merge it last where practical and resolve overlapping documentation/messages without discarding feature-specific instructions or assertions. No new physical acceptance test is required solely for wording; the integrated functional candidate retains its separate production gates.
+Update documentation, English descriptions, issue-form wording, displayed workflow labels and startup messages from add-on terminology to app terminology.
+
+Preserve technical identifiers, API/function names, repository paths and configuration keys. Issue routing accepts both old and new form labels and sentinels so existing reports remain compatible. This is a 42-file wording change with a narrow parser-compatibility adjustment; runtime policy and configuration semantics are unchanged.
+
+Validation is source-diff review of terminology and preserved technical identifiers. Physical radio tests do not validate this wording/parser change and are not claimed as its evidence. This contribution is independent; resolve overlapping documentation and messages without discarding feature-specific instructions.
+
+## Operator notes - do not paste
+
+Ready for approval. Merge after overlapping text changes where practical; this is conflict management, not a functional dependency.

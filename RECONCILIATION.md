@@ -1,5 +1,8 @@
 # Reconciled contribution package — 2026-09-13
 
+Final submission texts, exact local diffs and approval sequence: [review package](review/README.md).
+Preparation refreshed on 2026-09-14; product heads unchanged.
+
 ## Outcome and current authority
 
 All nine prepared contributions retain justified value for the actual pinned SDK

@@ -1,0 +1,2130 @@
+diff --git a/.github/workflows/otbr-nat64-functional.yml b/.github/workflows/otbr-nat64-functional.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..6323724d633e5b586006c48277d6d5314fabdd20
+--- /dev/null
++++ b/.github/workflows/otbr-nat64-functional.yml
+@@ -0,0 +1,25 @@
++name: Pinned OpenThread NAT64 and DNS comparison
++# Manual: this pinned virtual-radio comparison takes approximately 21 minutes.
++on:
++  workflow_dispatch:
++permissions:
++  contents: read
++jobs:
++  pinned-virtual-radio:
++    runs-on: ubuntu-22.04
++    timeout-minutes: 60
++    steps:
++      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
++        with:
++          persist-credentials: false
++      - name: Static check
++        run: shellcheck hassio-ihost-silabs-multiprotocol/tests/nat64-functional/run.sh
++      - name: Build and run pinned DNS and NAT64 baselines
++        run: bash hassio-ihost-silabs-multiprotocol/tests/nat64-functional/run.sh
++      - name: Failure diagnostics from fixture containers
++        if: failure()
++        run: |
++          docker ps -a --filter name=otbr_47_
++          for container in $(docker ps -aq --filter name=otbr_47_); do
++            docker logs --tail 100 "$container"
++          done
+diff --git a/.github/workflows/otbr-nat64-probe.yml b/.github/workflows/otbr-nat64-probe.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..4d73ac15e82b5a24b9f7b29b79a068596749bb3f
+--- /dev/null
++++ b/.github/workflows/otbr-nat64-probe.yml
+@@ -0,0 +1,47 @@
++name: Pinned Silicon Labs NAT64 build probe
++on:
++  pull_request:
++    paths:
++      - .github/workflows/otbr-nat64-probe.yml
++      - hassio-ihost-silabs-multiprotocol/Dockerfile
++      - hassio-ihost-silabs-multiprotocol/build.yaml
++      - hassio-ihost-silabs-multiprotocol/otbr-patches/**
++      - hassio-ihost-silabs-multiprotocol/tests/nat64-probe/**
++  push:
++    branches: [codex/otbr-nat64-feature-20260912]
++    paths:
++      - .github/workflows/otbr-nat64-probe.yml
++      - hassio-ihost-silabs-multiprotocol/Dockerfile
++      - hassio-ihost-silabs-multiprotocol/build.yaml
++      - hassio-ihost-silabs-multiprotocol/otbr-patches/**
++      - hassio-ihost-silabs-multiprotocol/tests/nat64-probe/**
++  workflow_dispatch:
++permissions:
++  contents: read
++concurrency:
++  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
++  cancel-in-progress: true
++jobs:
++  vendor-build:
++    runs-on: ubuntu-latest
++    timeout-minutes: 60
++    steps:
++      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
++        with:
++          persist-credentials: false
++      - name: Check probe syntax
++        shell: bash
++        run: |
++          addon=hassio-ihost-silabs-multiprotocol
++          bash -n "$addon/tests/nat64-probe/build.sh"
++          bash -n "$addon/tests/nat64-probe/check.sh"
++          shellcheck "$addon/tests/nat64-probe/build.sh" "$addon/tests/nat64-probe/check.sh"
++          python3 -m py_compile "$addon/tests/nat64-probe/verify.py"
++      - name: Compile pinned vendor configuration and run native NAT64 unit target
++        shell: bash
++        run: |
++          docker build --progress=plain \
++            -f hassio-ihost-silabs-multiprotocol/tests/nat64-probe/Dockerfile \
++            -t otbr-nat64-probe hassio-ihost-silabs-multiprotocol
++      - name: Verify unchanged CPC/Zigbee and released-runtime loader
++        run: docker run --rm --network none --cap-drop ALL otbr-nat64-probe
+diff --git a/.github/workflows/test-silabs-otbr-firewall.yml b/.github/workflows/test-silabs-otbr-firewall.yml
+index 7bebebf0cd9fa6acf59f6c2106c05264427f439e..01633ab5078177559c20b8782531efde7066d023 100644
+--- a/.github/workflows/test-silabs-otbr-firewall.yml
++++ b/.github/workflows/test-silabs-otbr-firewall.yml
+@@ -7,6 +7,7 @@ on:
+       - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/**"
+       - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
+       - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh"
++      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-nat64-*"
+       - "hassio-ihost-silabs-multiprotocol/tests/**"
+   push:
+     paths:
+@@ -14,6 +15,7 @@ on:
+       - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/**"
+       - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
+       - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh"
++      - "hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-nat64-*"
+       - "hassio-ihost-silabs-multiprotocol/tests/**"
+   workflow_dispatch:
+ 
+@@ -41,15 +43,18 @@ jobs:
+           runtime_files=(
+             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
++            hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check
+             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+             hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-enable-check.sh
+           )
+           test_files=(
++            hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64.sh
+             hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+             hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall-kernel.sh
+             hassio-ihost-silabs-multiprotocol/tests/kernel/ip6tables-lock-probe
+             hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh
+             hassio-ihost-silabs-multiprotocol/tests/s6/run
++            hassio-ihost-silabs-multiprotocol/tests/s6/iptables
+             hassio-ihost-silabs-multiprotocol/tests/s6/ip6tables
+             hassio-ihost-silabs-multiprotocol/tests/s6/ipset
+             hassio-ihost-silabs-multiprotocol/tests/s6/timeout
+@@ -62,6 +67,11 @@ jobs:
+       - name: Run mocked firewall lifecycle test
+         run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+ 
++      - name: Run NAT64 reservation and lifecycle regressions
++        run: |
++          bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64.sh
++          python3 hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-pool.py
++
+       - name: Run isolated kernel firewall test
+         shell: bash
+         run: |
+@@ -85,3 +95,31 @@ jobs:
+ 
+       - name: Verify released s6 shutdown behavior
+         run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-s6.sh
++
++      - name: Verify released s6 NAT64 startup and restart behavior
++        run: bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-s6.sh
++
++  nat64-packets:
++    runs-on: ubuntu-latest
++    timeout-minutes: 10
++    steps:
++      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
++        with:
++          persist-credentials: false
++      - name: Verify scoped IPv4 packets in isolated namespaces
++        shell: bash
++        run: |
++          set -euo pipefail
++          addon=hassio-ihost-silabs-multiprotocol
++          shellcheck -x -P SCRIPTDIR "$addon/tests/test-otbr-nat64-kernel.sh"
++          docker build -f "$addon/tests/nat64-kernel/Dockerfile" \
++            -t local/otbr-nat64-kernel "$addon"
++          docker run --rm --network none --read-only \
++            --cap-drop ALL --cap-add NET_ADMIN --cap-add NET_RAW --cap-add SYS_ADMIN \
++            --security-opt no-new-privileges --pids-limit 128 \
++            --sysctl net.ipv4.ip_forward=1 \
++            --sysctl net.ipv4.conf.all.rp_filter=0 \
++            --sysctl net.ipv4.conf.default.rp_filter=0 \
++            --tmpfs /run:rw,nosuid,nodev,noexec,size=1m \
++            --tmpfs /tmp:rw,nosuid,nodev,noexec,size=16m \
++            local/otbr-nat64-kernel
+diff --git a/hassio-ihost-silabs-multiprotocol/DOCS.md b/hassio-ihost-silabs-multiprotocol/DOCS.md
+index 3af77aea294f7cfef1874d64bf34ace78a26355d..b8067522e9373cf9a446e7aea8249b0cf974f5fe 100644
+--- a/hassio-ihost-silabs-multiprotocol/DOCS.md
++++ b/hassio-ihost-silabs-multiprotocol/DOCS.md
+@@ -86,6 +86,41 @@ Only one OTBR implementation may manage `wpan0` and the globally named OTBR
+ chains and ipsets at a time. Stop another OTBR before starting or disabling
+ this app so its guarded cleanup can safely reconcile its own state.
+ 
++#### Optional NAT64 and upstream DNS
++
++`otbr_nat64` is disabled by default. Enabling it permits Thread clients to
++initiate connections to IPv4 services and enables upstream DNS forwarding.
++It is independent of `otbr_firewall`; disabling ingress filtering does not
++implicitly enable NAT64. It is not required for ordinary local Matter traffic.
++
++This option reserves **192.168.255.0/24 exclusively for OTBR** while enabled.
++Startup refuses overlapping IPv4 interface networks or nondefault routes in
++any routing table, including narrower and covering routes. Default routes are
++allowed. The app does not remove conflicts. Keep this pool unused by other
++services throughout operation; the startup check cannot detect conflicts added
++later. Restart the app after changing this option. Configuration is reapplied
++when the agent process restarts. After an in-process Thread factory reset (for
++example REST `DELETE /node`), restart the app to reapply this option.
++
++IPv4 forwarding matches the Thread interface, backbone interface and reserved
++pool; return traffic must be established or related. Masquerading is scoped to
++the pool and backbone. No packet marks, global policies, unrelated rules or
++conntrack tables are changed. The named OTBR chains are reserved for this single
++OTBR instance and are reconciled on restart even if the option or backbone changes.
++
++Upstream DNS follows the host routing table to reach configured DNS servers,
++including servers reached over an interface other than the Thread backbone.
++This uses a narrow configuration adaptation of the host-resolver behavior accepted
++in [OpenThread PR 13545](https://github.com/openthread/openthread/pull/13545).
++The pinned resolver has no RDNSS server path; this change does not add one.
++DNS forwarding is distinct from DNS64 synthesis: compatible Thread clients must
++synthesize addresses using the advertised NAT64 prefix for IPv4-only services.
++This option does not add a general DNS64 server.
++
++The scoped optional feature follows the NAT64/upstream-DNS subset proposed by
++Arno500 in [PR 78](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/pull/78).
++TREL and unrelated build changes from that proposal are not included here.
++
+ ### Web interface (advanced)
+ 
+ There is also a web interface provided by the OTBR. However, the web
+@@ -111,6 +146,7 @@ Add-on configuration:
+ | otbr_enable        | Enable OpenThread BorderRouter                         |
+ | otbr_log_level     | Set the log level of the OpenThread BorderRouter Agent     |
+ | otbr_firewall      | Enable OpenThread Border Router firewall to block unnecessary traffic |
++| otbr_nat64         | Optional IPv4 access and upstream DNS; reserves 192.168.255.0/24 |
+ 
+ ## Architecture
+ 
+diff --git a/hassio-ihost-silabs-multiprotocol/Dockerfile b/hassio-ihost-silabs-multiprotocol/Dockerfile
+index 916802342b5e9df5c97f1530be39f91c248c26af..8b3c50baeb16c0adc7f59a6af39173b0a0e0c829 100644
+--- a/hassio-ihost-silabs-multiprotocol/Dockerfile
++++ b/hassio-ihost-silabs-multiprotocol/Dockerfile
+@@ -116,6 +116,7 @@ RUN \
+ COPY --from=cpcd-builder /usr/local/ /usr/${DEBIAN_CROSS_PREFIX}/
+ COPY otbr-patches/0001-Avoid-writing-to-system-console.patch /usr/src
+ COPY otbr-patches/0001-rest-support-deleting-the-dataset.patch /usr/src
++COPY otbr-patches/0001-Route-host-upstream-DNS-through-host-routing.patch /usr/src
+ COPY zigbeed-patches/zigbeed_amd64.patch /usr/src/gecko_sdk/zigbeed_amd64.patch
+ 
+ RUN \
+@@ -123,6 +124,7 @@ RUN \
+     && cd gecko_sdk \
+     && patch -p1 < /usr/src/0001-Avoid-writing-to-system-console.patch \
+     && patch -p1 < /usr/src/0001-rest-support-deleting-the-dataset.patch \
++    && patch -p1 < /usr/src/0001-Route-host-upstream-DNS-through-host-routing.patch \
+     && if [ "${DEBIAN_ARCH}" = "amd64" ]; then \
+         patch -p1 < zigbeed_amd64.patch; \
+         fi \
+@@ -218,6 +220,9 @@ RUN \
+         -DBUILD_TESTING=OFF \
+         -DCMAKE_INSTALL_PREFIX=/usr \
+         -DOTBR_FEATURE_FLAGS=ON \
++        -DOTBR_NAT64=ON \
++        -DOTBR_DNS_UPSTREAM_QUERY=ON \
++        -DOT_POSIX_NAT64_CIDR="192.168.255.0/24" \
+         -DOTBR_DNSSD_DISCOVERY_PROXY=ON \
+         -DOTBR_SRP_ADVERTISING_PROXY=ON \
+         -DOTBR_INFRA_IF_NAME=eth0 \
+diff --git a/hassio-ihost-silabs-multiprotocol/config.yaml b/hassio-ihost-silabs-multiprotocol/config.yaml
+index b2b4bf8d0e938913b852b3ba7d2400fadc1208a6..34d307f95cfc24a4e415c6b1d66799cf5e16062f 100644
+--- a/hassio-ihost-silabs-multiprotocol/config.yaml
++++ b/hassio-ihost-silabs-multiprotocol/config.yaml
+@@ -31,6 +31,7 @@ options:
+   otbr_enable: true
+   otbr_log_level: notice
+   otbr_firewall: true
++  otbr_nat64: false
+ ports:
+   9999/tcp: null
+   8080/tcp: null
+@@ -48,5 +49,6 @@ schema:
+   otbr_enable: bool
+   otbr_log_level: list(debug|info|notice|warning|error|critical|alert|emergency)
+   otbr_firewall: bool
++  otbr_nat64: bool
+ stage: stable
+ startup: services
+diff --git a/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-Route-host-upstream-DNS-through-host-routing.patch b/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-Route-host-upstream-DNS-through-host-routing.patch
+new file mode 100644
+index 0000000000000000000000000000000000000000..008b50d63a5c61dc750366207380b1434d7eedef
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/otbr-patches/0001-Route-host-upstream-DNS-through-host-routing.patch
+@@ -0,0 +1,26 @@
++From: iHost add-on contributors
++Subject: [PATCH] Route pinned host-configured upstream DNS through host routing
++
++Use the existing OTBR POSIX configuration header; preserve compiler flags.
++Adapt the host-scoped resolver policy accepted in OpenThread PR #13545
++(commit 82eb4863ade08819cf35c28ff3c8bb9f93a06213), without importing its
++newer IPv6/RDNSS resolver machinery into the pinned Silicon Labs SDK.
++
++--- a/util/third_party/ot-br-posix/src/agent/openthread-otbr-posix-config.h.in
+++++ b/util/third_party/ot-br-posix/src/agent/openthread-otbr-posix-config.h.in
++@@ -51,4 +51,15 @@
++     "@PROJECT_SOURCE_DIR@/third_party/openthread/repo/src/posix/platform/openthread.conf.example"
++ #endif
++ 
+++/*
+++ * Host-configured DNS servers must follow the host routing table. In particular,
+++ * Supervisor DNS can be reached through a bridge rather than the Thread backbone.
+++ * This pinned resolver has no RDNSS server path. OpenThread PR #13545 separately
+++ * preserves infra binding for RDNSS in newer versions; revisit on SDK upgrades.
+++ * https://github.com/openthread/openthread/pull/13545
+++ */
+++#ifndef OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF
+++#define OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF 0
+++#endif
+++
++ #endif // OPENTHREAD_OTBR_POSIX_CONFIG_H_
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check
+index 662155dbcd461846eabd303cb6411ae2771e4c27..a0cdd72d46025e644961fcd7d4e98add6c786440 100755
+--- a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check
+@@ -1,6 +1,30 @@
+-#!/bin/bash
++#!/usr/bin/with-contenv bashio
++# shellcheck shell=bash
++# Private startup readiness hook: s6-notifyoncheck stops invoking it after success
++# and starts a fresh checker for each supervised otbr-agent incarnation.
++if bashio::config.false 'otbr_enable'; then exit 1; fi
++# While a failed daemon is stopping, do not retry its configuration.
++if [[ -f /run/otbr-agent-config-failed ]]; then exit 1; fi
+ 
+-# Check if openthread socket exists
+-mapfile -t < /tmp/otbr-agent-rest-api
+-test -S /run/openthread-wpan0.sock && nc -z "${MAPFILE[@]}"
+-exit
++# Preserve the socket and REST prerequisites before changing runtime features.
++if ! mapfile -t < /tmp/otbr-agent-rest-api; then exit 1; fi
++if ! [[ -S /run/openthread-wpan0.sock ]] || ! nc -z -w 1 "${MAPFILE[@]}"; then
++    exit 1
++fi
++
++# shellcheck source=../../../scripts/otbr-agent-common
++# shellcheck disable=SC1091
++. /etc/s6-overlay/scripts/otbr-agent-common
++nat64_enabled=false
++if bashio::config.true 'otbr_nat64'; then nat64_enabled=true; fi
++if ! otbr_nat64_configure "$nat64_enabled"; then
++    bashio::log.error "Could not configure NAT64/upstream DNS; stopping the app."
++    # Abort the container rather than declare a partial configuration ready.
++    echo 1 > /run/otbr-agent-config-failed
++    echo 1 > /run/s6-linux-init-container-results/exitcode
++    /run/s6/basedir/bin/halt
++    # halt waits for the pending startup transaction. Stop this service directly;
++    # finish reports permanent failure, releasing that transaction without ready.
++    s6-svc -d /run/service/otbr-agent
++    exit 1
++fi
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
+index 4cbb34793a732312b7dfd00c0753977bb8541d7c..5e2297679b0e346c9b1aff1af10d9924d7936d91 100755
+--- a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish
+@@ -10,6 +10,14 @@ else
+     e="$1"
+ fi
+ 
++# A graceful daemon exit still represents failure if startup configuration failed.
++# finish's permanent-failure result releases an outstanding s6 readiness wait.
++if [[ -f /run/otbr-agent-config-failed ]]; then
++    rm -f /run/otbr-agent-config-failed
++    e=1
++    bashio::log.error "OTBR startup configuration failed."
++fi
++
+ fatal_exit=false
+ if test "$e" -ne 0; then
+     # Persist the service result and initiate container shutdown before
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+index 5c498a3bd490b2d509914144fc4808ce6a134c1e..1d46d60e4de24c3ccf36238130d83243ccd8be4e 100755
+--- a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+@@ -91,6 +91,12 @@ fi
+ if ! otbr_firewall_setup "${firewall_enabled}"; then
+     bashio::exit.nok "Could not set up OTBR firewall state."
+ fi
++if bashio::config.true 'otbr_nat64'; then
++    if ! otbr_nat64_setup "${backbone_if}"; then
++        bashio::exit.nok "Could not reserve the NAT64 pool or set up scoped IPv4 forwarding."
++    fi
++fi
++
+ otbr_rest_listen="::"
+ otbr_rest_listen_port="$(bashio::addon.port 8081)"
+ 
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-kill b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-kill
+new file mode 100644
+index 0000000000000000000000000000000000000000..13de30f45d1a183bfc67d7f3c660dfce3dfee9e4
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-kill
+@@ -0,0 +1 @@
++3000
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+index 40cb5ad81ed538fed03559c8bbb0c127f770b544..593dcaa9a0d74ffebcfe32963e5b77429b9f5feb 100644
+--- a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-agent-common
+@@ -501,6 +501,10 @@ otbr_firewall_cleanup()
+     fi
+     deadline_milliseconds=$((REPLY + otbr_cleanup_budget_milliseconds))
+ 
++    if ! _otbr_nat64_cleanup "${deadline_milliseconds}"; then
++        failed=1
++    fi
++
+     if ! _otbr_remove_forward_jumps "${deadline_milliseconds}" \
+         -o "${otbr_forward_ingress_chain}"; then
+         failed=1
+@@ -538,3 +542,127 @@ otbr_firewall_cleanup()
+ 
+     return "${failed}"
+ }
++
++# This IPv4 pool and these chains are reserved for this OTBR while NAT64 is on.
++otbr_nat64_pool="192.168.255.0/24"
++otbr_nat64_forward_chain="OTBR_FORWARD_NAT64"
++otbr_nat64_masquerade_chain="OTBR_NAT64_MASQUERADE"
++
++_otbr_cleanup_iptables()
++{
++    local deadline_milliseconds="$1"
++    shift
++    _otbr_cleanup_run "${deadline_milliseconds}" \
++        iptables -w "${otbr_cleanup_iptables_wait_seconds}" "$@"
++}
++
++_otbr_nat64_cleanup_chain()
++{
++    local deadline_milliseconds="$1" table="$2" parent="$3" chain="$4"
++    local status removed=0
++    if _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -L "$chain" -n >/dev/null 2>&1; then
++        :
++    else
++        status=$?
++        [[ "$status" == 1 ]] && return 0
++        return 1
++    fi
++    while (( removed < otbr_cleanup_max_rule_deletes )); do
++        if _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -C "$parent" -j "$chain" 2>/dev/null; then
++            _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -D "$parent" -j "$chain" || return 1
++            removed=$((removed + 1))
++        else
++            status=$?
++            [[ "$status" == 1 ]] || return 1
++            break
++        fi
++    done
++    if (( removed == otbr_cleanup_max_rule_deletes )); then
++        if _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -C "$parent" -j "$chain" 2>/dev/null; then
++            return 1
++        else
++            status=$?
++            [[ "$status" == 1 ]] || return 1
++        fi
++    fi
++    _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -F "$chain" || return 1
++    _otbr_cleanup_iptables "${deadline_milliseconds}" -t "$table" -X "$chain"
++}
++
++_otbr_nat64_cleanup()
++{
++    local deadline_milliseconds="$1" failed=0
++    _otbr_nat64_cleanup_chain "$deadline_milliseconds" filter FORWARD "$otbr_nat64_forward_chain" || failed=1
++    _otbr_nat64_cleanup_chain "$deadline_milliseconds" nat POSTROUTING "$otbr_nat64_masquerade_chain" || failed=1
++    return "$failed"
++}
++
++otbr_nat64_setup()
++{
++    local backbone="$1"
++    # The fixed pool must not shadow another address or any nondefault route.
++    if ! timeout --kill-after=0.5s 3s python3 /etc/s6-overlay/scripts/otbr-nat64-pool-check; then
++        _otbr_firewall_rollback
++        return 1
++    fi
++    if ! iptables -w "$otbr_iptables_wait_seconds" -t filter -N "$otbr_nat64_forward_chain" \
++        || ! iptables -w "$otbr_iptables_wait_seconds" -t nat -N "$otbr_nat64_masquerade_chain" \
++        || ! iptables -w "$otbr_iptables_wait_seconds" -t filter -A "$otbr_nat64_forward_chain" \
++            -i "$thread_if" -o "$backbone" -s "$otbr_nat64_pool" -j ACCEPT \
++        || ! iptables -w "$otbr_iptables_wait_seconds" -t filter -A "$otbr_nat64_forward_chain" \
++            -i "$backbone" -o "$thread_if" -d "$otbr_nat64_pool" \
++            -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT \
++        || ! iptables -w "$otbr_iptables_wait_seconds" -t nat -A "$otbr_nat64_masquerade_chain" \
++            -s "$otbr_nat64_pool" -o "$backbone" -j MASQUERADE \
++        || ! iptables -w "$otbr_iptables_wait_seconds" -t filter -I FORWARD 1 -j "$otbr_nat64_forward_chain" \
++        || ! iptables -w "$otbr_iptables_wait_seconds" -t nat -I POSTROUTING 1 -j "$otbr_nat64_masquerade_chain"; then
++        _otbr_firewall_rollback
++        return 1
++    fi
++}
++
++_otbr_cli_done()
++{
++    local deadline_milliseconds="$1" output line status done=false
++    shift
++    if output="$(_otbr_cleanup_run "$deadline_milliseconds" ot-ctl "$@" 2>&1)"; then
++        :
++    else
++        status=$?
++        bashio::log.error "NAT64 configuration: ot-ctl $* failed (status ${status}): ${output:0:500}"
++        return 1
++    fi
++    # Pinned ot-ctl exits zero for both Done and Error responses.
++    while IFS= read -r line; do
++        line="${line%$'\r'}"
++        if [[ "$line" == Error\ * ]]; then
++            bashio::log.error "NAT64 configuration: ot-ctl $*: ${line:0:500}"
++            return 1
++        fi
++        if [[ "$line" == Done ]]; then done=true; fi
++    done <<< "$output"
++    if [[ "$done" != true ]]; then
++        bashio::log.error "NAT64 configuration: ot-ctl $* returned no Done response: ${output:0:500}"
++        return 1
++    fi
++}
++
++otbr_nat64_configure()
++{
++    local enabled="$1" deadline_milliseconds failed=0
++    [[ "$enabled" == true || "$enabled" == false ]] || return 2
++    _otbr_clock_milliseconds || return 1
++    deadline_milliseconds=$((REPLY + 8000))
++    # Explicitly restore off state even when previously enabled in this volume.
++    _otbr_cli_done "$deadline_milliseconds" dns server upstream disable || failed=1
++    _otbr_cli_done "$deadline_milliseconds" nat64 disable || failed=1
++    (( failed == 0 )) || return 1
++    if [[ "$enabled" == true ]]; then
++        if ! _otbr_cli_done "$deadline_milliseconds" nat64 enable \
++            || ! _otbr_cli_done "$deadline_milliseconds" dns server upstream enable; then
++            _otbr_cli_done "$deadline_milliseconds" dns server upstream disable || true
++            _otbr_cli_done "$deadline_milliseconds" nat64 disable || true
++            return 1
++        fi
++    fi
++}
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-nat64-pool-check b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-nat64-pool-check
+new file mode 100755
+index 0000000000000000000000000000000000000000..0c626e5626fbb1693a1b8994891a378ff6bd5a11
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/scripts/otbr-nat64-pool-check
+@@ -0,0 +1,50 @@
++#!/usr/bin/env python3
++"""Refuse to reserve OTBR's fixed NAT64 pool over existing IPv4 state."""
++import ipaddress
++import json
++import subprocess
++import sys
++
++POOL = ipaddress.ip_network("192.168.255.0/24")
++
++
++def inspect(arguments):
++    result = subprocess.run(["ip", "-j", "-4", *arguments], check=True,
++                            capture_output=True, text=True, timeout=1)
++    rows = json.loads(result.stdout)
++    if not isinstance(rows, list):
++        raise ValueError("network inspection did not return a list")
++    return rows
++
++
++def check(addresses, routes):
++    for interface in addresses:
++        for address in interface["addr_info"]:
++            if address["family"] != "inet":
++                raise ValueError("unexpected address family")
++            network = ipaddress.ip_network(
++                f'{address["local"]}/{address["prefixlen"]}', strict=False)
++            if network.overlaps(POOL):
++                raise ValueError(f"NAT64 pool conflicts with interface network {network}")
++    for route in routes:
++        destination = route["dst"]
++        if destination == "default":
++            continue
++        network = ipaddress.ip_network(destination, strict=False)
++        if network.version != 4:
++            raise ValueError("unexpected route family")
++        if network.prefixlen != 0 and network.overlaps(POOL):
++            raise ValueError(f"NAT64 pool conflicts with route {network}")
++
++
++def main():
++    try:
++        check(inspect(["address", "show"]), inspect(["route", "show", "table", "all"]))
++    except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError) as error:
++        print(f"Cannot reserve NAT64 pool: {error}", file=sys.stderr)
++        return 1
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/NAT64-VALIDATION.md b/hassio-ihost-silabs-multiprotocol/tests/NAT64-VALIDATION.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..04c31ee5d3a248ef781bc553ad415809eeb4d7f0
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/NAT64-VALIDATION.md
+@@ -0,0 +1,76 @@
++# Optional NAT64 validation
++
++The contribution is default-off and has not been deployed to a physical radio.
++The following complementary tests establish different parts of its behavior;
++none alone proves a complete production-image or shared-radio deployment.
++
++## Runtime and firewall evidence
++
++[CI 34702234512](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34702234512)
++passed at 971e780, including the DNS header change.
++
++- Mock regressions cover all-table pool conflicts, failed inspection, default-route
++  allowance, partial rollback, duplicate reconciliation, changed backbone,
++  preservation of foreign rules/marks, and the shared IPv4/IPv6 cleanup deadline.
++- Isolated kernel tests send actual IPv4 UDP/ICMP packets through the scoped rules
++  under FORWARD DROP. They verify masquerading and replies, wrong-source/interface/
++  direction rejection, unrelated traffic preservation, overlap refusal and cleanup.
++  These are synthetic IPv4 peers, not the OpenThread translator.
++- The released AMD64 s6 fixture executes the actual readiness hook and finish path.
++  Option on/off and daemon restart apply the expected commands once per incarnation.
++  CLI Error text despite exit zero, missing Done and timeouts are separately checked.
++  Fatal startup configuration exits the container nonzero without readiness or
++  restart, including a daemon ignoring SIGTERM. The fixture stubs radio and CLI
++  behavior; it does not prove physical configuration acceptance.
++
++The private otbr-agent/data/check retains socket and REST prerequisites and applies
++configuration within eight seconds before readiness. On failure it records the
++failure and stops the supervised agent; finish reports permanent failure to release
++pending startup before bounded cleanup and shutdown. A three-second kill timeout
++bounds ignored SIGTERM. The shared cleanup budget is four seconds. Forced finish
++expiry during initial readiness is not covered. No recurring monitor is introduced.
++
++## Compiled translator and DNS evidence
++
++[Pinned vendor probe 34702234482](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34702234482)
++passed at 971e780 with the host-DNS header patch. It checks production CMake options with
++one intentional installed-CPC path adaptation, effective feature/pool macros,
++compile/link and released-runtime loading, native NAT64 tests, and unchanged
++CPC/Zigbee hashes. It also proves effective DNS binding zero comes from the header without a
++compiler-flag override.
++
++[Virtual-radio baseline 34699696491](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34699696491)
++passed the pinned, unmodified upstream DNS and NAT64 tests, including the NAT64
++protocol observation waits. These use virtual HDLC radios, not the CPC shared-radio
++transport. DNS verifies native AAAA forwarding, not DNS64 synthesis.
++
++The independent interface comparison requires working identical unbound DNS probes
++and failed infrastructure-bound probes before comparing actual Thread queries.
++Acceptance requires the default binding to reproduce cross-interface failure, the
++new binding to resolve it, and both variants to retain same-interface DNS success.
++[Comparison 34702011312](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34702011312)
++passed all four DNS cells and the unchanged NAT64 baseline. The copied fixture is
++reproducible with the manual Pinned OpenThread NAT64 and DNS comparison workflow.
++The comparison varies the effective macro through a test-only compiler flag; the
++separate vendor probe verifies the production header produces the same setting.
++
++The header policy follows the host-resolver rationale in
++[OpenThread PR 13545](https://github.com/openthread/openthread/pull/13545).
++The pinned resolver supports IPv4 nameservers, has no RDNSS path, and still requires
++an infrastructure interface to exist. This adaptation adds neither IPv6 nameserver
++support nor the newer resolver's no-infrastructure-interface behavior.
++
++## Reset and remaining deployment limits
++
++[s6-notifyoncheck](https://skarnet.org/software/s6/s6-notifyoncheck.html) stops checking
++after readiness and starts anew for each daemon incarnation. The pinned vendor's
++[REST resource](https://github.com/SiliconLabs/simplicity_sdk/blob/da661283f301b53eec04d1016009e60bc7e34a1f/util/third_party/ot-br-posix/src/rest/resource.cpp)
++uses an in-process reset for DELETE /node. That does not launch another checker.
++After an intentional Thread factory reset, restart the app to reapply its saved
++NAT64/DNS option. No reset monitor is added.
++
++A full app image build, ARM compatibility, physical shared-radio NAT64 traffic
++and host-reboot ordering remain unverified. Existing successful Matter commissioning
++and OTA do not establish this new IPv4 capability. Production acceptance must preserve
++current radio state and use a suitable IPv4-only consumer; it is a separate gate
++from the isolated evidence above.
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/nat64-functional/README.md b/hassio-ihost-silabs-multiprotocol/tests/nat64-functional/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..7276c351c0cc2f6f179ba42a785c088fe5e2ba01
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/nat64-functional/README.md
+@@ -0,0 +1,61 @@
++# Pinned DNS/NAT64 functional baseline
++
++This fixture reuses the SDK's existing Dockerfile, simulation build runner and
++unmodified test_upstream_dns.py/test_single_border_router.py at commit
++ da661283f301b53eec04d1016009e60bc7e34a1f. It requires an ephemeral GitHub-hosted
++runner; run.sh refuses a normal workstation. Launch the manual Pinned OpenThread NAT64 and DNS comparison workflow. No production settings or binaries are changed.
++
++The existing upstream BASE_IMAGE argument selects Ubuntu 22.04 for simulation,
++replacing the obsolete Bionic default only in this disposable fixture. Source
++semantics and observation waits are retained. Web/REST interfaces are unnecessary
++for these CLI tests and are disabled; feature flags, NAT64 and upstream DNS are
++explicitly compiled on. The tests explicitly enable their runtime features.
++Build caches are checked, and each test must report exactly one passing test
++without skips. Tool/package availability and actual execution remain CI gates.
++
++The runner creates privileged containers, synthetic serial PTYs and disposable
++Docker bridges. It never receives a physical radio, production data or host
++credentials. Builds download public source/packages. Tests use only their
++synthetic DNS/IPv4 hosts; the upstream Docker networks are not network-none.
++The workflow sends no coverage, artifacts or images elsewhere. Source test
++hashes and assertions remain visible in the job log. The ephemeral runner owns
++all resulting files and networking state.
++
++These tests prove pinned-source virtual-radio behavior, not CPC transport,
++released-image ABI, iHost firewall lifecycle, ARM or physical Zigbee coexistence.
++The separate exact-vendor build probe covers CPC compile/link compatibility.
++PACKET_VERIFICATION=0 disables decoded packet assertions; existing CLI/socket
++assertions still run, and system Wireshark tools provide the runner's mandatory
++traffic capture. Protocol waits are unchanged (including NAT64's 330-second wait).
++Allow up to 60 minutes for cold builds plus real-time tests.
++
++The original DNS test requests a native AAAA record: it proves DNS forwarding,
++not DNS64 synthesis. The separate NAT64 baseline exercises translated traffic
++and counters. A generated sibling DNS test adds a second backbone network and
++connects the BR to it. Before querying from Thread, it proves the ordinary route
++uses that added interface and a direct DNS query returns the expected answer.
++It then requires an identical raw UDP DNS query to succeed unbound but fail with
++SO_BINDTODEVICE on the infrastructure interface. A route lookup alone is not a
++reachability test. No routes or firewall rules are changed to manufacture failure.
++
++The comparison builds the pinned resolver twice, with default infrastructure
++binding and with OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF=0.
++It replays resolver.cpp's actual compiler command in preprocessing mode to prove
++the effective setting. Both builds must pass the original infrastructure-DNS
++case. The separate-interface case must report precisely the CLI DNS
++ResponseTimeout with default binding and the expected answer when binding is
++disabled. Other exceptions, setup failures and skipped tests fail the job.
++The source hash and exact anchors guard fixture generation; original tests are
++never edited. Independent cases continue after failure, but any failed case
++keeps the overall job failing. This is a controlled topology comparison, not
++proof of full Home Assistant Supervisor integration or a production change.
++
++The disposable checkout normalizes one pinned node.py argument: three sysctls
++were passed as a single value to Popen. It now passes each through its own
++--sysctl option. Intended settings and test assertions remain unchanged; an exact
++source-match assertion prevents silently applying this adaptation elsewhere.
++
++Fixture compatibility: capture uses a traversable `/tmp` checkout and first
++verifies dumpcap access on an isolated dummy interface. Ubuntu 22.04 provides the
++BIND SysV service as `named`; a test-image-only `bind9` alias preserves the pinned
++DNS test's service commands without changing its assertions or protocol waits.
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/nat64-functional/prepare-cross-interface.py b/hassio-ihost-silabs-multiprotocol/tests/nat64-functional/prepare-cross-interface.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..c6b46c64bc43ba3a31833dc8184c39040c80a61e
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/nat64-functional/prepare-cross-interface.py
+@@ -0,0 +1,121 @@
++#!/usr/bin/env python3
++"""Derive a separate DNS-interface test from the exact pinned SDK baseline.
++
++Usage: prepare-cross-interface.py PATH/TO/test_upstream_dns.py
++The original is never written. Run the generated sibling with
++OTBR_DNS_EXPECT_FAILURE=1 (default binding) or 0 (binding disabled).
++"""
++import argparse
++import ast
++import hashlib
++from pathlib import Path
++
++PINNED_SHA256 = "f8b46902df66433850e364ec46964151914ce493248d973f4e216235cf5973ac"
++
++
++def prepare(source):
++    data = source.read_bytes()
++    if hashlib.sha256(data).hexdigest() != PINNED_SHA256:
++        raise ValueError("Source is not the exact da661283f301b53eec04d1016009e60bc7e34a1f DNS test")
++    text = data.decode("utf-8")
++
++    def replace_once(old, new):
++        nonlocal text
++        if text.count(old) != 1:
++            raise ValueError(f"Expected one pinned source anchor: {old!r}")
++        text = text.replace(old, new, 1)
++
++    replace_once("import unittest\n", "import unittest\nimport json\nimport os\nimport subprocess\n")
++    replace_once("class UpstreamDns(thread_cert.TestCase):", "class UpstreamDnsCrossInterface(thread_cert.TestCase):")
++    replace_once("            'name': 'BR',", "            'name': 'BR',\n            'backbone_network_id': 0,")
++    replace_once("            'name': 'DNS Server',", "            'name': 'DNS Server',\n            'backbone_network_id': 1,")
++    replace_once("    def test(self):\n", '''    def test(self):
++        # Require an explicit comparison-cell expectation, never infer success.
++        expected_failure = os.environ.get('OTBR_DNS_EXPECT_FAILURE')
++        self.assertIn(expected_failure, ('0', '1'))
++        self.expect_dns_failure = expected_failure == '1'
++''')
++    replace_once("        self._start_dns_server(dns_server)\n", '''        # Existing harness owns both bridges and destroys containers before them.
++        # BR keeps eth0 as infrastructure; DNS is reached on its added interface.
++        subprocess.check_call([
++            'docker', 'network', 'connect',
++            dns_server.backbone_network, br._docker_name,
++        ])
++        self._start_dns_server(dns_server)
++''')
++    replace_once("        # Disable the bind9 service on the BR otherwise bind9 may respond to Thread devices' DNS queries\n", '''        # Confirm the ordinary route uses the added DNS-side interface.
++        route = json.loads(''.join(br.bash(f'ip -j -4 route get {dns_server_addr}')))
++        self.assertEqual(len(route), 1)
++        self.assertNotIn(route[0]['dev'], (config.BACKBONE_IFNAME, 'lo'))
++
++        answers = br.bash(f'dig +time=2 +tries=1 +short @{dns_server_addr} {TEST_DOMAIN} AAAA')
++        self.assertEqual({line.strip() for line in answers}, TEST_DOMAIN_IP6_ADDRESSES)
++        # A forced-oif route lookup can succeed without a reachable DNS server.
++        # Use a real IPv4 UDP DNS exchange, with the resolver's socket binding.
++        bound_probe = """
++import errno
++import socket
++import struct
++import sys
++server, interface, name = sys.argv[1:]
++question = b''.join(bytes([len(label)]) + label.encode('ascii') for label in name.split('.'))
++query = struct.pack('!6H', 0x5144, 0x0100, 1, 0, 0, 0) + question + bytes([0]) + struct.pack('!HH', 28, 1)
++# First require the identical raw query to work unbound; malformed requests or
++# broken probe transport cannot be mistaken for an interface-binding failure.
++with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
++    sock.settimeout(2)
++    sock.sendto(query, (server, 53))
++    response, peer = sock.recvfrom(4096)
++    header = struct.unpack('!6H', response[:12])
++    assert peer == (server, 53), peer
++    assert header[0] == 0x5144 and header[1] & 0x8000 and header[1] & 15 == 0 and header[3] > 0, header
++with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
++    # Keep setup outside the expected reachability-failure handler.
++    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, interface.encode('ascii'))
++    sock.settimeout(2)
++    try:
++        sock.sendto(query, (server, 53))
++        sock.recvfrom(4096)
++    except socket.timeout:
++        print('PASS: infra-bound DNS socket timed out; identical unbound query succeeded')
++    except OSError as error:
++        if error.errno not in (errno.ENETUNREACH, errno.EHOSTUNREACH):
++            raise
++        print('PASS: infra-bound DNS socket unreachable, errno=' + str(error.errno))
++    else:
++        raise AssertionError('Infra-bound DNS socket unexpectedly received a response')
++"""
++        br.bash(shlex.join(['timeout', '6s', 'python3', '-c', bound_probe,
++                            dns_server_addr, config.BACKBONE_IFNAME, TEST_DOMAIN]))
++
++        # Disable the bind9 service on the BR otherwise bind9 may respond to Thread devices' DNS queries
++''')
++    replace_once("        resolved_names = ed.dns_resolve(TEST_DOMAIN)\n", '''        if self.expect_dns_failure:
++            # Pinned node.py raises Exception(line) for CLI Error lines. Error 28
++            # is the DNS client's ResponseTimeout, not a Python/pexpect timeout.
++            with self.assertRaisesRegex(Exception, r'\\AError 28: ResponseTimeout\\Z'):
++                ed.dns_resolve(TEST_DOMAIN)
++            self.assertEqual('leader', br.get_state())
++            self.assertEqual('router', ed.get_state())
++            return
++
++        resolved_names = ed.dns_resolve(TEST_DOMAIN)
++''')
++    ast.parse(text)
++    return text
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("source", type=Path)
++    args = parser.parse_args()
++    output = args.source.with_name("test_upstream_dns_cross_interface.py")
++    generated = prepare(args.source)
++    # Refuse to overwrite an earlier generated or hand-edited case.
++    with output.open("x", encoding="utf-8", newline="\n") as target:
++        target.write(generated)
++    print(output)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/nat64-functional/run.sh b/hassio-ihost-silabs-multiprotocol/tests/nat64-functional/run.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..1c5368d0d447b957281b65bd4a9653d1f47c5ff1
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/nat64-functional/run.sh
+@@ -0,0 +1,182 @@
++#!/usr/bin/env bash
++# Only for a disposable GitHub-hosted runner: upstream uses privileged virtual radios.
++set -euo pipefail
++if [[ ${GITHUB_ACTIONS:-} != true || ${RUNNER_ENVIRONMENT:-} != github-hosted ]]; then
++    echo 'Run this fixture only on its disposable GitHub-hosted CI job.' >&2
++    exit 1
++fi
++fixture_scripts="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++sdk_revision=da661283f301b53eec04d1016009e60bc7e34a1f
++# dumpcap drops DAC-override capabilities. Use a traversable scratch hierarchy,
++# without changing permissions on GitHub's runner-owned home/work directories.
++fixture_dir="$(mktemp -d /tmp/otbr-functional.XXXXXX)"
++chmod 755 "$fixture_dir"
++sdk="$fixture_dir/sdk"
++venv="$fixture_dir/venv"
++
++sudo apt-get update
++sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
++    build-essential cmake ninja-build git socat python3-dev python3-venv \
++    python3-pip python3-setuptools python3-wheel tshark
++python3 -m venv "$venv"
++export PATH="$venv/bin:$PATH"
++
++git clone --depth 1 --branch v2024.12.1-0 --filter=blob:none --no-checkout \
++    https://github.com/SiliconLabs/simplicity_sdk.git "$sdk"
++git -C "$sdk" sparse-checkout init --cone
++git -C "$sdk" sparse-checkout set util/third_party/ot-br-posix util/third_party/openthread protocol/openthread
++git -C "$sdk" checkout --detach "$sdk_revision"
++test "$(git -C "$sdk" rev-parse HEAD)" = "$sdk_revision"
++ot="$sdk/util/third_party/openthread"
++python3 -m pip install -r "$ot/tests/scripts/thread-cert/requirements.txt"
++python3 "$fixture_scripts/prepare-cross-interface.py" \
++    "$ot/tests/scripts/thread-cert/border_router/internet/test_upstream_dns.py"
++
++# Pinned node.py passes a list directly to Popen, but packs three sysctls into
++# one value. Fix only that argv construction in the disposable test checkout.
++python3 - "$ot/tests/scripts/thread-cert/node.py" <<'PATCH_NODE'
++from pathlib import Path
++import sys
++p = Path(sys.argv[1])
++s = p.read_text()
++old = "'net.ipv6.conf.all.disable_ipv6=0 net.ipv4.conf.all.forwarding=1 net.ipv6.conf.all.forwarding=1'"
++new = "'net.ipv6.conf.all.disable_ipv6=0', '--sysctl', 'net.ipv4.conf.all.forwarding=1', '--sysctl', 'net.ipv6.conf.all.forwarding=1'"
++assert s.count(old) == 1, 'Pinned runner sysctl argv changed; review adaptation'
++p.write_text(s.replace(old, new))
++PATCH_NODE
++
++# Packet decoding assertions are disabled for these functional cases, but the
++# runner still captures traffic using a fixed directory. Reuse installed tools.
++sudo mkdir -p /tmp/thread-wireshark
++for tool in dumpcap tshark mergecap; do
++    sudo ln -s "$(command -v "$tool")" "/tmp/thread-wireshark/$tool"
++done
++
++# Fail cheaply before compilation if the exact capture working directory is not
++# usable. Capture only an isolated dummy interface, never runner/Internet traffic.
++namei -l "$ot"
++sudo chown root "$ot"
++sudo ip link add otbr-preflight type dummy
++trap 'sudo ip link delete otbr-preflight 2>/dev/null || true' EXIT
++sudo ip link set otbr-preflight up
++sudo timeout 10 dumpcap -i otbr-preflight -a duration:1 -w "$ot/preflight.pcap"
++sudo test -s "$ot/preflight.pcap"
++sudo rm "$ot/preflight.pcap"
++sudo ip link delete otbr-preflight
++trap - EXIT
++sudo chown "$(id -u):$(id -g)" "$ot"
++printf 'PASS: capture access in exact functional-test directory before build\n'
++
++export THREAD_VERSION=1.4 VIRTUAL_TIME=0 PACKET_VERIFICATION=0
++export REFERENCE_DEVICE=1 BORDER_ROUTING=1 NAT64=1
++export MAX_JOBS=2 CI_ENV='' COVERAGE=0 OTBR_COVERAGE=0
++export PORT_OFFSET=47 OTBR_DOCKER_IMAGE=otbr-nat64-functional
++
++build_otbr_simulation() {
++    local binding="$1"
++    local options='-DOTBR_FEATURE_FLAGS=ON -DOTBR_NAT64=ON -DOTBR_DNS_UPSTREAM_QUERY=ON -DOTBR_TREL=OFF'
++    if [[ "$binding" == 0 ]]; then
++        options+=' -DCMAKE_CXX_FLAGS=-DOPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF=0'
++    fi
++    export OTBR_DOCKER_IMAGE="otbr-nat64-functional-dns-$binding"
++# BASE_IMAGE is an existing upstream argument. Jammy is a simulation-only base;
++# this does not upgrade the iHost image or alter the pinned OTBR/OpenThread source.
++# SDK root is required by Silicon Labs' modified COPY paths.
++docker build --progress=plain -t "${OTBR_DOCKER_IMAGE}-compiled" \
++    -f "$sdk/util/third_party/ot-br-posix/etc/docker/Dockerfile" \
++    --build-arg BASE_IMAGE=ubuntu:22.04 \
++    --build-arg INFRA_IF_NAME=eth0 --build-arg BORDER_ROUTING=1 \
++    --build-arg BACKBONE_ROUTER=1 --build-arg OT_BACKBONE_CI=1 \
++    --build-arg REFERENCE_DEVICE=1 --build-arg NAT64=1 \
++    --build-arg NAT64_SERVICE=openthread --build-arg DNS64=1 \
++    --build-arg MDNS=mDNSResponder --build-arg WEB_GUI=0 --build-arg REST_API=0 \
++    --build-arg "OTBR_OPTIONS=$options" \
++    "$sdk"
++
++# Jammy packages the SysV service as named; pinned tests still call bind9.
++# Supply only a test-image alias so the upstream test source stays unchanged.
++docker build --progress=plain -t "$OTBR_DOCKER_IMAGE" - <<DOCKERFILE
++FROM ${OTBR_DOCKER_IMAGE}-compiled
++RUN test -x /etc/init.d/named && test ! -e /etc/init.d/bind9 && ln -s named /etc/init.d/bind9
++DOCKERFILE
++
++docker run --rm --network none --entrypoint bash "$OTBR_DOCKER_IMAGE" -ec '
++    for option in OTBR_FEATURE_FLAGS OTBR_NAT64 OTBR_DNS_UPSTREAM_QUERY; do
++        grep -E "^${option}:(BOOL|STRING)=ON$" /app/build/otbr/CMakeCache.txt
++    done
++'
++# Inspect the effective resolver macro using its real compiler command. A cache
++# variable with a similar name would not prove that the compiler consumed it.
++docker run --rm -i --network none --entrypoint python3 "$OTBR_DOCKER_IMAGE" - "$binding" <<'CHECK_MACRO'
++import json, shlex, subprocess, sys
++from pathlib import Path
++entries = json.loads(Path('/app/build/otbr/compile_commands.json').read_text())
++entries = [e for e in entries if e['file'].endswith('/posix/platform/resolver.cpp')]
++assert len(entries) == 1, 'Expected one upstream resolver compilation'
++e = entries[0]
++args = shlex.split(e['command'])
++filtered = []
++skip = False
++for arg in args:
++    if skip:
++        skip = False
++    elif arg == '-o':
++        skip = True
++    elif arg != '-c':
++        filtered.append(arg)
++output = subprocess.check_output(filtered + ['-E', '-dM'], cwd=e['directory'], text=True)
++expected = '#define OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF ' + sys.argv[1]
++assert expected in output.splitlines(), 'Effective DNS binding macro mismatch'
++print('PASS: resolver compiler confirms ' + expected)
++CHECK_MACRO
++}
++build_otbr_simulation 1
++cd "$ot"
++./script/test build
++
++# dumpcap drops DAC-override privileges, so root-run capture needs a root-owned
++# writable working directory. Keep the runner-owned log directory for tee.
++mkdir "$fixture_dir/logs"
++chmod 755 "$fixture_dir"
++sudo chown root "$ot"
++
++# Keep the upstream tests and their protocol observation waits unchanged.
++# FEATURE_FLAGS defaults are handled by their explicit NAT64/DNS activation.
++failed_cases=0
++run_case() {
++    local case_name="$1" expected_failure="$2" case_failed test_path log
++
++    test_path="tests/scripts/thread-cert/border_router/internet/$case_name.py"
++    log="$fixture_dir/logs/$OTBR_DOCKER_IMAGE-$case_name.log"
++    sha256sum "$test_path"
++    case_failed=false
++    if ! sudo env PATH="$PATH" \
++        THREAD_VERSION="$THREAD_VERSION" VIRTUAL_TIME="$VIRTUAL_TIME" \
++        PACKET_VERIFICATION="$PACKET_VERIFICATION" REFERENCE_DEVICE=1 \
++        BORDER_ROUTING=1 NAT64=1 MAX_JOBS=2 PORT_OFFSET="$PORT_OFFSET" \
++        CI_ENV='' COVERAGE=0 OTBR_COVERAGE=0 \
++        OTBR_DOCKER_IMAGE="$OTBR_DOCKER_IMAGE" OTBR_DNS_EXPECT_FAILURE="$expected_failure" \
++        ./script/test cert python3 -u "$test_path" -v 2>&1 | tee "$log"; then
++        case_failed=true
++    fi
++    # A skipped or undiscovered test must not be counted as functional evidence.
++    if ! grep -Eq '^Ran 1 test in ' "$log" || ! grep -qx 'OK' "$log" \
++        || grep -Eiq '(^|[[:space:]])skipped([[:space:]]|=)' "$log"; then
++        case_failed=true
++    fi
++    if [[ "$case_failed" == true ]]; then
++        failed_cases=$((failed_cases + 1))
++        printf 'FAIL: %s; continuing independent case\n' "$case_name"
++    else
++        printf 'PASS: executed %s\n' "$case_name"
++    fi
++}
++run_case test_upstream_dns 0
++run_case test_upstream_dns_cross_interface 1
++run_case test_single_border_router 0
++# Docker reuses unchanged layers; only the resolver binding build flag changes.
++build_otbr_simulation 0
++run_case test_upstream_dns 0
++run_case test_upstream_dns_cross_interface 0
++(( failed_cases == 0 )) || exit 1
++printf 'PASS: NAT64 baseline and all four DNS interface comparison cells\n'
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/nat64-kernel/Dockerfile b/hassio-ihost-silabs-multiprotocol/tests/nat64-kernel/Dockerfile
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c2b3c314f936cac61d49060b7909755294c43fe
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/nat64-kernel/Dockerfile
+@@ -0,0 +1,11 @@
++FROM debian:bookworm-slim@sha256:7b140f374b289a7c2befc338f42ebe6441b7ea838a042bbd5acbfca6ec875818
++RUN printf '%s\n' 'Acquire::Retries "3";' 'Acquire::http::Timeout "30";' 'Acquire::https::Timeout "30";' > /etc/apt/apt.conf.d/80-network-bounds \
++    && apt-get update \
++    && apt-get install -y --no-install-recommends bash coreutils iproute2 iputils-ping iptables ipset python3 util-linux \
++    && rm -rf /var/lib/apt/lists/*
++WORKDIR /addon
++COPY rootfs/etc/s6-overlay/scripts/otbr-agent-common rootfs/etc/s6-overlay/scripts/otbr-agent-common
++COPY rootfs/etc/s6-overlay/scripts/otbr-nat64-pool-check /etc/s6-overlay/scripts/otbr-nat64-pool-check
++COPY tests/nat64-kernel/udp.py tests/nat64-kernel/udp.py
++COPY tests/test-otbr-nat64-kernel.sh tests/test-otbr-nat64-kernel.sh
++ENTRYPOINT ["timeout", "--kill-after=3s", "90s", "bash", "/addon/tests/test-otbr-nat64-kernel.sh"]
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/nat64-kernel/udp.py b/hassio-ihost-silabs-multiprotocol/tests/nat64-kernel/udp.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..63067d640afb2cfd43f00eb8f84722fb6a6514b6
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/nat64-kernel/udp.py
+@@ -0,0 +1,30 @@
++#!/usr/bin/env python3
++"""Synthetic IPv4 UDP request/response with observed source-address evidence."""
++import socket
++import sys
++from pathlib import Path
++
++mode = sys.argv[1]
++with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
++    sock.settimeout(3)
++    if mode == "server":
++        sock.bind(("198.18.0.6", 9000))
++        Path("/tmp/nat64-udp-ready").touch()
++        while True:
++            try:
++                payload, peer = sock.recvfrom(1024)
++            except socket.timeout:
++                continue
++            sock.sendto(peer[0].encode() + b"|" + payload, peer)
++    elif mode == "client":
++        source, port, expected_source = sys.argv[2:]
++        sock.bind((source, int(port)))
++        # Unique source ports avoid reuse of old conntrack mappings after cleanup.
++        payload = ("nat64-fixture-" + port).encode()
++        sock.sendto(payload, ("198.18.0.6", 9000))
++        response, peer = sock.recvfrom(1024)
++        assert peer == ("198.18.0.6", 9000), peer
++        assert response == expected_source.encode() + b"|" + payload, response
++        print(f"PASS: UDP source {source} observed as {expected_source}; reply returned")
++    else:
++        raise ValueError(mode)
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/Dockerfile b/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/Dockerfile
+new file mode 100644
+index 0000000000000000000000000000000000000000..e16c92a56475745a2e51409b1db014a48b3131e8
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/Dockerfile
+@@ -0,0 +1,33 @@
++FROM ghcr.io/ihost-open-source-project/hassio-ihost-silabs-multiprotocol-amd64@sha256:f69bd95b16c23c018351b55659e3767f6573edf8f87061c58d1e610a2ce8ccef AS build
++ENV DOCKER=1
++# Retry transient snapshot gateway failures within the existing bounded CI job.
++RUN printf 'Acquire::Retries "3";\n' > /etc/apt/apt.conf.d/80-probe-retries
++# Freeze the build-only Bullseye package inputs at the final LTS day. The live
++# mirrors no longer serve some indexed security packages. Keep signature/hash
++# checks; only snapshot metadata expiry is disabled for these immutable URLs.
++# The release has no CA bundle. Signed APT metadata authenticates this initial
++# HTTP bootstrap; ca-certificates is installed before later HTTPS source access.
++RUN rm -f /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources \
++    && printf '%s\n' \
++      'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/20260831T235959Z/ bullseye main' \
++      'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20260831T235959Z/ bullseye-security main' \
++      > /etc/apt/sources.list
++RUN apt-get update -o APT::Update::Error-Mode=any && apt-get install -y --no-install-recommends \
++    git patch build-essential ninja-build cmake pkg-config ca-certificates \
++    libreadline-dev libncurses-dev libcpputest-dev libdbus-1-dev libavahi-common-dev \
++    libavahi-client-dev libboost-dev libboost-filesystem-dev libboost-system-dev \
++    libnetfilter-queue-dev nodejs npm python3 python3-dev python3-pip \
++    python3-aiohttp python3-cryptography python3-yarl lsb-release netcat sudo
++COPY otbr-patches/ /probe-patches/
++COPY Dockerfile /probe-production-Dockerfile
++COPY tests/nat64-probe/verify.py /probe-verify.py
++COPY tests/nat64-probe/build.sh /probe-build.sh
++RUN bash /probe-build.sh
++
++# Test the rebuilt binaries against the unchanged released runtime libraries.
++# No application service is started and no replacement is installed in /usr.
++FROM ghcr.io/ihost-open-source-project/hassio-ihost-silabs-multiprotocol-amd64@sha256:f69bd95b16c23c018351b55659e3767f6573edf8f87061c58d1e610a2ce8ccef
++COPY --from=build /probe /probe
++COPY tests/nat64-probe/check.sh /probe/check.sh
++HEALTHCHECK NONE
++ENTRYPOINT ["/bin/bash", "/probe/check.sh"]
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/README.md b/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..172d28b368007b0effb9352a87b81253eaef4d18
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/README.md
+@@ -0,0 +1,48 @@
++# Pinned vendor NAT64 build probe
++
++This isolated AMD64 build gate recompiles OTBR from Silicon Labs SDK
++`da661283f301b53eec04d1016009e60bc7e34a1f` against the unchanged installed CPC
++headers/library of the digest-pinned 1.0.2 release. It does not build the complete
++production image, Zigbee, CPC daemon, SLC outputs or firmware.
++
++The probe compares every explicit production Dockerfile CMake flag with its
++cache, including the fixed `OT_POSIX_NAT64_CIDR=192.168.255.0/24`. The intentional
++exception is an empty `CPCD_SOURCE_DIR`, selecting the installed released CPC
++through the vendor's supported Findcpc path. Additional build-only differences
++are compile-command export, a probe output directory, building only otbr-agent
++and ot-ctl, and a separate pinned simulation unit target. Production WEB/REST,
++MultiPAN, vendor transport/CLI, Thread 1.4, FEATURE_FLAGS, NAT64 and upstream-DNS
++settings remain aligned. Production SDK patches, including the host-DNS routing
++configuration patch, are applied.
++
++Actual resolver/RCP compiler commands are replayed as preprocessors to verify
++the fixed pool, enabled feature flags/capabilities and DNS interface binding `0`.
++The verifier rejects this macro in raw compiler arguments or C/CXX cache flags;
++it must come from the existing generated POSIX configuration header. Compiler
++flags are reported without being overwritten or reconstructed. Pinned constructors start the translator/prefix manager/upstream query
++disabled, and FEATURE_FLAGS excludes the automatic enable block. Those recorded
++source facts do not prove runtime startup or behavior with persisted state.
++
++```sh
++docker build --progress=plain \
++  -f hassio-ihost-silabs-multiprotocol/tests/nat64-probe/Dockerfile \
++  -t otbr-nat64-probe hassio-ihost-silabs-multiprotocol
++docker run --rm --network none --cap-drop ALL otbr-nat64-probe
++```
++
++The native `ot-test-nat64` target runs during the build. The final stage uses the
++original released runtime libraries: CPC/Zigbee hashes must match, rebuilt
++binaries must resolve their loader dependencies, and otbr-agent must print its
++version. No init, radio, discovery or network service is started. No devices,
++host mounts or production data are supplied; no image/artifact is uploaded.
++
++Build-only APT inputs use the official 2026-08-31 signed Debian snapshot because
++live Bullseye security package URLs returned 404. Package signatures/hashes stay
++verified; metadata expiry is disabled only on the fixed snapshot URLs. This is
++not a runtime OS upgrade. The final image remains the exact released digest.
++
++Passing establishes vendor compile/link feasibility, native translator unit
++coverage and loader compatibility on AMD64. IPv4 firewall packets, actual
++translator connectivity, DNS reachability/synthesis, runtime startup, ARM and
++shared-radio behavior require their separate gates. The separate pinned virtual-radio comparison covers same-interface and
++cross-interface host DNS with both binding settings; see ../NAT64-VALIDATION.md.
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/build.sh b/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/build.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..b5176d2bf3f6ce2ed11ab5411fae627350b7473c
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/build.sh
+@@ -0,0 +1,79 @@
++#!/usr/bin/env bash
++set -euo pipefail
++sdk_revision=da661283f301b53eec04d1016009e60bc7e34a1f
++mkdir -p /probe
++# The released image copied the complete CPC installation, including headers.
++# Do not silently substitute a different CPC library or rebuild Zigbee.
++test -n "$(find /usr/local -name sl_cpc.h -print -quit)"
++test -n "$(find /usr/local -name 'libcpc.so*' -print -quit)"
++command -v cpcd
++command -v zigbeed
++find /usr/local -type f \( -name cpcd -o -name zigbeed -o -name 'libcpc.so*' -o -name sl_cpc.h \) \
++    -exec sha256sum {} + > /probe/released-cpc-zigbee.sha256
++
++# Sparse checkout avoids SLC, firmware payloads and Zigbee generation entirely.
++git clone --depth 1 --branch v2024.12.1-0 --filter=blob:none --no-checkout https://github.com/SiliconLabs/simplicity_sdk.git /usr/src/sdk
++cd /usr/src/sdk
++git sparse-checkout init --cone
++git sparse-checkout set util/third_party/ot-br-posix util/third_party/openthread protocol/openthread
++git checkout --detach "$sdk_revision"
++test "$(git rev-parse HEAD)" = "$sdk_revision"
++patch -p1 < /probe-patches/0001-Avoid-writing-to-system-console.patch
++patch -p1 < /probe-patches/0001-rest-support-deleting-the-dataset.patch
++patch -p1 < /probe-patches/0001-Route-host-upstream-DNS-through-host-routing.patch
++cp -a util/third_party/ot-br-posix /usr/src/ot-br-posix
++cp -a util/third_party/openthread /usr/src/openthread
++mkdir -p /usr/src/protocol
++cp -a protocol/openthread /usr/src/protocol/openthread
++cp protocol/openthread/platform-abstraction/posix/openthread-core-silabs-posix-config.h \
++    /usr/src/openthread/src/posix/platform/
++cd /usr/src/ot-br-posix
++ln -s ../../../openthread third_party/openthread/repo
++# Reuse pinned source bootstrap for its exact dependency selection.
++RELEASE=1 REFERENCE_DEVICE=1 BACKBONE_ROUTER=1 NAT64=1 DNS64=1 ./script/bootstrap
++
++# Match the draft production feature/vendor configuration and fixed pool.
++# Empty CPCD_SOURCE_DIR selects the unchanged installed released libcpc.
++cmake -S . -B build/probe -GNinja \
++    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
++    -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=/usr \
++    -DOTBR_FEATURE_FLAGS=ON \
++    -DOTBR_DNSSD_DISCOVERY_PROXY=ON -DOTBR_SRP_ADVERTISING_PROXY=ON \
++    -DOTBR_INFRA_IF_NAME=eth0 -DOTBR_MDNS=mDNSResponder \
++    -DOTBR_VERSION= -DOT_PACKAGE_VERSION= -DOTBR_DBUS=OFF \
++    -DOT_THREAD_VERSION=1.4 -DOT_MULTIPAN_RCP=ON -DCPCD_SOURCE_DIR= \
++    -DOT_POSIX_RCP_VENDOR_BUS=ON \
++    -DOT_POSIX_CONFIG_RCP_VENDOR_DEPS_PACKAGE=/usr/src/protocol/openthread/platform-abstraction/posix/posix_vendor_rcp.cmake \
++    -DOT_POSIX_CONFIG_RCP_VENDOR_INTERFACE=/usr/src/protocol/openthread/platform-abstraction/posix/cpc_interface.cpp \
++    -DOT_CLI_VENDOR_EXTENSION=/usr/src/protocol/openthread/platform-abstraction/posix/posix_vendor_cli.cmake \
++    -DOT_PLATFORM_CONFIG=openthread-core-silabs-posix-config.h \
++    -DOT_LINK_RAW=1 -DOTBR_VENDOR_NAME=OpenThread \
++    '-DOTBR_PRODUCT_NAME=Silicon Labs Multiprotocol' \
++    -DOTBR_WEB=ON -DOTBR_BORDER_ROUTING=ON -DOTBR_REST=ON \
++    -DOTBR_BACKBONE_ROUTER=ON -DOTBR_DUA_ROUTING=ON \
++    -DOTBR_NAT64=ON -DOTBR_DNS_UPSTREAM_QUERY=ON \
++    -DOT_POSIX_NAT64_CIDR=192.168.255.0/24
++cmake --build build/probe --target otbr-agent ot-ctl --parallel 2
++cp build/probe/CMakeCache.txt build/probe/compile_commands.json /probe/
++for binary in otbr-agent ot-ctl; do
++    mapfile -t paths < <(find build/probe -type f -name "$binary")
++    test "${#paths[@]}" -eq 1
++    cp "${paths[0]}" "/probe/$binary"
++done
++grep -E '^Cpc_(LIBRARY|INCLUDE_DIR):' /probe/CMakeCache.txt
++grep -q 'OTBR_ENABLE_NAT64=1' /probe/compile_commands.json
++grep -q 'OTBR_ENABLE_DNS_UPSTREAM_QUERY=1' /probe/compile_commands.json
++python3 /probe-verify.py | tee /probe/build-evidence.txt
++nm -C /probe/otbr-agent > /probe/symbols.txt
++grep 'otNat64SetEnabled' /probe/symbols.txt
++grep 'otDnssdUpstreamQuerySetEnabled' /probe/symbols.txt
++sha256sum -c /probe/released-cpc-zigbee.sha256
++
++# Reuse the pinned native unit target, without a new network simulation harness.
++cmake -S /usr/src/openthread -B /usr/src/unit-build -GNinja \
++    -DOT_PLATFORM=simulation -DBUILD_TESTING=ON -DOT_THREAD_VERSION=1.4 \
++    -DOT_BORDER_ROUTER=ON -DOT_BORDER_ROUTING=ON -DOT_NAT64_TRANSLATOR=ON -DOT_NAT64_BORDER_ROUTING=ON
++cmake --build /usr/src/unit-build --target ot-test-nat64 --parallel 2
++(cd /usr/src/unit-build && ctest --no-tests=error --output-on-failure -R '^ot-test-nat64$' --verbose) | tee /probe/nat64-unit.log
++grep -Fq 'All tests passed' /probe/nat64-unit.log
++printf 'Compiled exact vendor OTBR with NAT64/upstream DNS; native NAT64 unit test passed.\n' > /probe/result.txt
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/check.sh b/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/check.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..580e98e5d38513a99ecbbc6e4daad0093271e02a
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/check.sh
+@@ -0,0 +1,11 @@
++#!/usr/bin/env bash
++set -euo pipefail
++sha256sum -c /probe/released-cpc-zigbee.sha256
++for binary in /probe/otbr-agent /probe/ot-ctl; do
++    dependencies="$(ldd "$binary")"
++    printf '%s\n' "$dependencies"
++    if grep -q 'not found' <<< "$dependencies"; then exit 1; fi
++done
++/probe/otbr-agent --version
++cat /probe/build-evidence.txt /probe/result.txt
++printf 'Released-runtime loader check passed; no radio or network service was started.\n'
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/verify.py b/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/verify.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..5b881a4752e90270bac9b413e1381ebf1dabe5d9
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/nat64-probe/verify.py
+@@ -0,0 +1,85 @@
++#!/usr/bin/env python3
++"""Build-only source/flag evidence; does not initialize OTBR or a radio."""
++import json
++import re
++import shlex
++import subprocess
++from pathlib import Path
++
++cache = {}
++for line in Path("/probe/CMakeCache.txt").read_text().splitlines():
++    match = re.match(r"([^:#/][^:]*):[^=]+=(.*)$", line)
++    if match:
++        cache[match[1]] = match[2]
++
++# Compare every explicit production CMake flag. The sole intentional input
++# difference is installed CPC versus the production source-directory parameter.
++production = Path("/probe-production-Dockerfile").read_text()
++command = production.split("./script/cmake-build", 1)[1].split("&& cd build/otbr/", 1)[0]
++flags = [arg[2:].split("=", 1) for arg in shlex.split(command.replace("\\\n", " ")) if arg.startswith("-D")]
++assert len(flags) >= 20, "Production compiler invocation was not parsed"
++for name, value in flags:
++    if name == "CPCD_SOURCE_DIR":
++        assert cache[name] == "", "Probe must use released installed CPC"
++        print(f"INTENTIONAL DIFFERENCE: {name}={value} in production; empty installed-CPC selection in probe")
++        continue
++    assert cache.get(name) == value, (name, value, cache.get(name))
++    print(f"ALIGNED: {name}={value}")
++
++entries = json.loads(Path("/probe/compile_commands.json").read_text())
++
++# The DNS override belongs to the existing POSIX header, never raw compiler flags.
++# Keep the exact compile commands for preprocessing; do not reconstruct CXXFLAGS.
++dns_macro = "OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF"
++for name, value in cache.items():
++    if name.startswith(("CMAKE_C_FLAGS", "CMAKE_CXX_FLAGS")):
++        assert dns_macro not in value, (name, value)
++        print(f"COMPILER FLAGS (no DNS override): {name}={value}")
++for entry in entries:
++    assert dns_macro not in entry["command"], entry["file"]
++
++def effective_macros(suffix):
++    matches = [entry for entry in entries if entry["file"].endswith(suffix)]
++    assert len(matches) == 1, (suffix, len(matches))
++    entry = matches[0]
++    original = shlex.split(entry["command"])
++    args = []
++    skip = False
++    for arg in original:
++        if skip:
++            skip = False
++        elif arg == "-o":
++            skip = True
++        elif arg != "-c":
++            args.append(arg)
++    text = subprocess.check_output(args + ["-E", "-dM"], cwd=entry["directory"], text=True)
++    return dict(re.findall(r"^#define ([A-Z0-9_]+) (.*)$", text, re.MULTILINE))
++
++posix = effective_macros("/posix/platform/resolver.cpp")
++assert posix["OPENTHREAD_POSIX_CONFIG_NAT64_CIDR"] == '"192.168.255.0/24"'
++assert posix["OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF"] == "0"
++print("COMPILED: fixed NAT64 pool 192.168.255.0/24; host-configured upstream DNS follows host routing (binding=0)")
++rcp = effective_macros("/ncp/rcp_host.cpp")
++for macro in ("OTBR_ENABLE_FEATURE_FLAGS", "OTBR_ENABLE_NAT64", "OTBR_ENABLE_DNS_UPSTREAM_QUERY"):
++    assert rcp[macro] == "1", (macro, rcp.get(macro))
++    print(f"COMPILED: {macro}=1")
++
++# These are pinned source-default facts, not a startup or persisted-state test.
++root = Path("/usr/src/openthread/src/core")
++def source_evidence(path, fragment):
++    text = path.read_text()
++    assert fragment in text, (str(path), fragment)
++    line = text[:text.index(fragment)].count("\n") + 1
++    print(f"SOURCE DEFAULT: {path}:{line}: {fragment}")
++source_evidence(root / "net/nat64_translator.cpp", ", mState(State::kStateDisabled)")
++source_evidence(root / "border_router/routing_manager.cpp", "RoutingManager::Nat64PrefixManager::Nat64PrefixManager")
++routing = (root / "border_router/routing_manager.cpp").read_text().split("RoutingManager::Nat64PrefixManager::Nat64PrefixManager", 1)[1].split("{", 1)[0]
++assert ", mEnabled(false)" in routing
++print("SOURCE DEFAULT: Nat64PrefixManager initializer has mEnabled(false)")
++source_evidence(root / "net/dnssd_server.cpp", ", mEnableUpstreamQuery(false)")
++rcp_source = Path("/usr/src/ot-br-posix/src/ncp/rcp_host.cpp").read_text()
++auto_enable = rcp_source.split("#if !OTBR_ENABLE_FEATURE_FLAGS", 1)[1].split("#endif // OTBR_ENABLE_FEATURE_FLAGS", 1)[0]
++assert "otNat64SetEnabled(mInstance, /* aEnabled */ true);" in auto_enable
++assert "otDnssdUpstreamQuerySetEnabled(mInstance, /* aEnabled */ true);" in auto_enable
++print("SOURCE DEFAULT: automatic NAT64/DNS enabling is excluded by compiled FEATURE_FLAGS=1")
++print("LIMIT: constructor/initialization-source evidence only; no runtime startup or persisted-state proof")
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/Dockerfile b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/Dockerfile
+new file mode 100644
+index 0000000000000000000000000000000000000000..b80f390f04747201c637e5a16d18cd20b9c40c8f
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/Dockerfile
+@@ -0,0 +1,24 @@
++FROM ghcr.io/ihost-open-source-project/hassio-ihost-silabs-multiprotocol-amd64@sha256:f69bd95b16c23c018351b55659e3767f6573edf8f87061c58d1e610a2ce8ccef
++# Same released-init isolation as tests/s6, with the normal shutdown grace.
++ENV S6_STAGE2_HOOK=""
++HEALTHCHECK NONE
++RUN rm -rf /etc/s6-overlay/s6-rc.d /etc/cont-init.d /etc/cont-finish.d /etc/services.d \
++    && mkdir -p /etc/s6-overlay/s6-rc.d/user/contents.d \
++        /etc/s6-overlay/s6-rc.d/user2/contents.d \
++        /etc/s6-overlay/s6-rc.d/otbr-agent/data /fixture/bin /data \
++    && printf 'bundle\n' > /etc/s6-overlay/s6-rc.d/user/type \
++    && printf 'bundle\n' > /etc/s6-overlay/s6-rc.d/user2/type \
++    && touch /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent \
++    && printf 'longrun\n' > /etc/s6-overlay/s6-rc.d/otbr-agent/type
++COPY rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/notification-fd rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-kill /etc/s6-overlay/s6-rc.d/otbr-agent/
++COPY --chmod=0755 rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish /etc/s6-overlay/s6-rc.d/otbr-agent/finish
++COPY --chmod=0755 rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check /etc/s6-overlay/s6-rc.d/otbr-agent/data/check
++COPY rootfs/etc/s6-overlay/scripts/otbr-agent-common /etc/s6-overlay/scripts/otbr-agent-common
++COPY --chmod=0755 tests/s6-nat64/run /etc/s6-overlay/s6-rc.d/otbr-agent/run
++COPY --chmod=0755 tests/s6-nat64/ot-ctl /fixture/bin/ot-ctl
++COPY tests/s6-nat64/daemon.py tests/s6-nat64/assert.py /fixture/
++RUN s6-rc-compile /tmp/fixture-s6-db \
++        /package/admin/s6-overlay-3.1.6.2/etc/s6-rc/sources /etc/s6-overlay/s6-rc.d \
++    && rm -rf /tmp/fixture-s6-db
++ENV PATH="/fixture/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
++ENTRYPOINT ["/init"]
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/README.md b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..3b3e50ffffd2924ec077bd5ddd463156d75ec4d5
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/README.md
+@@ -0,0 +1,64 @@
++# Released-init NAT64 readiness fixture
++
++Run from the repository root on an ephemeral Linux Docker runner:
++
++```sh
++bash hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-s6.sh
++```
++
++This reuses the pinned released-image isolation pattern from `tests/s6`. It copies
++unaltered runtime `data/check`, `otbr-agent-common`, `finish`, notification metadata
++and finish timeout. Only the daemon and CLI are synthetic. The run wrapper uses
++the production s6-notifyoncheck arguments; application hooks and unrelated services
++are removed. The released global shutdown grace is preserved.
++
++For false and true options, the controller delays the Unix socket and then the
++loopback REST listener, asserting no CLI configuration or readiness during either
++delay. Every CLI call independently asserts s6 is not ready. After readiness,
++exact disable/enable sequences are checked and the checker must stop calling the
++CLI. A clean daemon restart through s6 repeats these assertions for generation 2,
++including the real finish script (no firewall ownership claim exists).
++
++Two failure containers return CLI Error text with exit zero. The test requires each
++container to stop with status 1 and emit the configuration-failure diagnostic and
++CLI Error text. One daemon exits cleanly on SIGTERM; the other deliberately ignores
++SIGTERM and requires the copied production 3000-ms timeout-kill. Finish must report
++status 1 in both cases, with signal 0 and signal 9 respectively. The stalled case
++must take at least two seconds, while the existing 20-second shutdown bound stays
++unchanged and no global grace override is added.
++
++After shutdown the runner reads container-local command/generation files through
++Docker's tar stream, requiring exactly the two disable attempts and no daemon
++restart. It also rejects s6-rc's successful-start notification for the agent.
++This checks the permanent-failure path that releases s6-rc's pending startup lock;
++merely requesting halt cannot satisfy these assertions if startup remains pending.
++This covers a responsive finish after clean exit or daemon kill. Forced finish
++expiry before initial readiness is not demonstrated by these scenarios.
++
++Containers have no external networking, host mounts, hardware or network-management
++capabilities. All options, sockets and state are synthetic and container-local.
++The test leaves no artifacts or uploads; Docker build cache remains on its runner.
++Build is bounded to 5 minutes, each controller to 60 seconds, and failure shutdown
++to 20 seconds. Expected warm-image runtime is under one minute.
++
++ShellCheck and Python syntax can be checked locally. Execution requires Docker and
++has not been run on the development workstation. This tests s6/checker integration,
++not real OTBR CLI semantics, IPv4 forwarding, DNS resolution or hardware behavior.
++The stub response semantics are based on the pinned CLI source; packet and exact
++feature-image acceptance remain separate gates.
++
++## Synthetic Bashio configuration
++
++The pinned image's build history records `BASHIO_VERSION=0.17.0`.
++That version's [config function](https://github.com/hassio-addons/bashio/blob/v0.17.0/lib/config.sh)
++reads `bashio::addon.config`, whose [implementation](https://github.com/hassio-addons/bashio/blob/v0.17.0/lib/addons.sh)
++first reads cache key `addons.self.options.config`; on a miss it requests
++`/addons/self/options/config` from Supervisor. Writing `/data/options.json`
++does not populate this source. Run 34700442152 consequently used missing options:
++the off case happened to pass, but the on case failed its command sequence.
++
++The fixture now uses the released `bashio::cache.set` to seed that key with the
++synthetic JSON options object and asserts both values through real
++`bashio::config` before starting notifyoncheck. No cache path or configuration
++function is replaced, and no Supervisor server, token or networking is needed.
++The runner also rejects the observed Supervisor lookup error diagnostics.
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/assert.py b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/assert.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..8c6072dda2699ace41b0b71d9334f4bc69d06f5d
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/assert.py
+@@ -0,0 +1,51 @@
++"""Bounded assertions run inside the isolated container, using released s6."""
++from pathlib import Path
++import subprocess
++import sys
++import time
++
++service = '/run/service/otbr-agent'
++scenario = sys.argv[1]
++commands = Path('/tmp/commands')
++expected = ['dns server upstream disable', 'nat64 disable']
++if scenario == 'on':
++    expected += ['nat64 enable', 'dns server upstream enable']
++
++def wait_for(predicate):
++    deadline = time.monotonic() + 15
++    while not predicate():
++        if time.monotonic() >= deadline:
++            raise AssertionError('Timed out waiting for fixture stage')
++        time.sleep(0.05)
++
++def read_commands():
++    return commands.read_text().splitlines() if commands.exists() else []
++
++for generation in range(1, 3 if not scenario.startswith('error') else 2):
++    wait_for(lambda: Path('/tmp/generation').exists()
++             and Path('/tmp/generation').read_text() == str(generation))
++    prior = read_commands()
++    # Give the real checker several attempts with each prerequisite absent.
++    for stage in ('allow-socket', 'allow-rest'):
++        time.sleep(1)
++        assert read_commands() == prior, 'CLI ran before socket/REST prerequisites'
++        ready = subprocess.check_output(['s6-svstat', '-o', 'ready', service], text=True).strip()
++        assert ready == 'false', f'Premature readiness: {ready}'
++        Path(f'/tmp/{stage}-{generation}').touch()
++        if stage == 'allow-socket':
++            wait_for(lambda: Path(f'/tmp/socket-{generation}').exists())
++    if scenario.startswith('error'):
++        print('NAT64_FIXTURE_ERROR_ARMED', flush=True)
++        break
++    subprocess.run(['s6-svwait', '-U', '-t', '15000', service], check=True, timeout=17)
++    wanted = prior + [f'{generation} {command}' for command in expected]
++    actual = read_commands()
++    assert actual == wanted, f'CLI sequence generation={generation}: actual={actual!r}; expected={wanted!r}'
++    time.sleep(1)
++    actual = read_commands()
++    assert actual == wanted, f'CLI after readiness: actual={actual!r}; expected={wanted!r}'
++    print(f'NAT64_FIXTURE_READY={generation}', flush=True)
++    if generation == 1:
++        # The synthetic daemon exits cleanly, exercising the real finish and restart.
++        subprocess.run(['s6-svc', '-r', service], check=True, timeout=3)
++print(f'PASS: released s6 NAT64 readiness ({scenario})', flush=True)
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/daemon.py b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/daemon.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..20dbe1aeb46479280bd32fc798042eba44e440b6
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/daemon.py
+@@ -0,0 +1,42 @@
++"""Only synthetic Unix/TCP listeners; no Thread stack or radio access."""
++import os
++from pathlib import Path
++import signal
++import socket
++import time
++
++def terminate(*_):
++    if os.environ['NAT64_CASE'] == 'error-stall':
++        print('NAT64_FIXTURE_SIGTERM_IGNORED', flush=True)
++        return
++    print('NAT64_FIXTURE_SIGTERM_CLEAN_EXIT', flush=True)
++    raise SystemExit(0)
++
++signal.signal(signal.SIGTERM, terminate)
++generation_path = Path('/tmp/generation')
++generation = int(generation_path.read_text()) + 1 if generation_path.exists() else 1
++unix_path = Path('/run/openthread-wpan0.sock')
++unix_path.unlink(missing_ok=True)
++generation_path.write_text(str(generation))
++print(f'NAT64_FIXTURE_DAEMON={generation}', flush=True)
++
++def gate(name):
++    deadline = time.monotonic() + 20
++    while not Path(f'/tmp/{name}-{generation}').exists():
++        if time.monotonic() >= deadline:
++            raise TimeoutError(name)
++        time.sleep(0.05)
++
++gate('allow-socket')
++with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as unix:
++    unix.bind(str(unix_path))
++    unix.listen()
++    Path(f'/tmp/socket-{generation}').touch()
++    gate('allow-rest')
++    with socket.socket() as rest:
++        rest.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
++        rest.bind(('127.0.0.1', 18081))
++        rest.listen()
++        while True:
++            connection, _ = rest.accept()
++            connection.close()
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/ot-ctl b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/ot-ctl
+new file mode 100755
+index 0000000000000000000000000000000000000000..f28e4d290791a4d45fd1a81e91d232aee5485aab
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/ot-ctl
+@@ -0,0 +1,16 @@
++#!/bin/bash
++set -eu
++# This must still be startup configuration, before notification, on every call.
++ready="$(s6-svstat -o ready /run/service/otbr-agent)"
++if [[ "$ready" != false ]]; then
++    echo "NAT64_FIXTURE_PREMATURE_READY=$ready" >&2
++    exit 9
++fi
++generation="$(cat /tmp/generation)"
++printf '%s %s\n' "$generation" "$*" >> /tmp/commands
++if [[ "${NAT64_CASE}" == error* ]]; then
++    echo 'NAT64_FIXTURE_CLI_ERROR_EXIT_ZERO' >&2
++    printf 'Error 7: InvalidState\r\n'
++    exit 0
++fi
++printf 'Done\r\n'
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/run b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/run
+new file mode 100755
+index 0000000000000000000000000000000000000000..2c56af5f072f4f7f523647756c8b3e07b995a914
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6-nat64/run
+@@ -0,0 +1,18 @@
++#!/usr/bin/with-contenv bashio
++# shellcheck shell=bash
++set -eu
++case "${NAT64_CASE}" in
++    off) enabled=false ;;
++    on|error|error-stall) enabled=true ;;
++    *) exit 2 ;;
++esac
++# Released Bashio 0.17.0 reads addon.config from this cache before Supervisor.
++# Seed through its own API so the fixture does not assume a cache directory.
++printf -v options '{"otbr_enable":true,"otbr_nat64":%s}' "$enabled"
++bashio::cache.set 'addons.self.options.config' "$options"
++[[ "$(bashio::config otbr_enable)" == true ]]
++[[ "$(bashio::config otbr_nat64)" == "$enabled" ]]
++printf 'NAT64_FIXTURE_OPTIONS=%s\n' "$enabled"
++printf '127.0.0.1\n18081\n' > /tmp/otbr-agent-rest-api
++# Exact production notifyoncheck arguments, replacing only the radio daemon.
++exec s6-notifyoncheck -d -s 300 -w 300 -n 0 python3 -u /fixture/daemon.py
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6/Dockerfile b/hassio-ihost-silabs-multiprotocol/tests/s6/Dockerfile
+index 636993f520d6499eb37678ec7e9b3cd11b65049e..cbef95b94703864ef0cc552edf47530862eb67e3 100644
+--- a/hassio-ihost-silabs-multiprotocol/tests/s6/Dockerfile
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6/Dockerfile
+@@ -28,7 +28,7 @@ COPY --chmod=0755 rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish /etc/s6-overla
+ COPY rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish /etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
+ COPY --chmod=0755 rootfs/etc/s6-overlay/scripts/otbr-agent-common /etc/s6-overlay/scripts/otbr-agent-common
+ COPY --chmod=0755 tests/s6/run /etc/s6-overlay/s6-rc.d/otbr-agent/run
+-COPY --chmod=0755 tests/s6/ip6tables tests/s6/ipset tests/s6/timeout /fixture/bin/
++COPY --chmod=0755 tests/s6/ip6tables tests/s6/iptables tests/s6/ipset tests/s6/timeout /fixture/bin/
+ # The released built-in top bundle requires both user and user2. Compile the
+ # complete graph now; only user contains our fixture, and user2 remains empty.
+ RUN s6-rc-compile /tmp/fixture-s6-db \
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/s6/iptables b/hassio-ihost-silabs-multiprotocol/tests/s6/iptables
+new file mode 100755
+index 0000000000000000000000000000000000000000..76adaa16f136db79dcda050f183a24bf7d187093
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/s6/iptables
+@@ -0,0 +1,3 @@
++#!/bin/sh
++# This lifecycle fixture has no IPv4 NAT64 chains.
++exit 1
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+index 8539f3ed20c9b7567dc8c3b59543a7efe5f7e8d6..aa18e02a10a7c1c07f916cc4f601caacdadcb29c 100644
+--- a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
++++ b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+@@ -17,6 +17,9 @@ readonly ENABLE_CHECK_SCRIPT="${ADDON_DIR}/rootfs/etc/s6-overlay/scripts/otbr-en
+ # shellcheck disable=SC1090
+ source "${COMMON_SCRIPT}"
+ 
++# IPv4 lifecycle has its own stateful suite; this suite starts with no IPv4 chains.
++iptables() { return 1; }
++
+ declare -A mock_chains
+ declare -A mock_jump_counts
+ declare -A mock_sets
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-kernel.sh b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-kernel.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..fc188ca91f5aba11a431f4488d0f7f4c4ca30792
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-kernel.sh
+@@ -0,0 +1,153 @@
++#!/bin/bash
++# Synthetic IPv4 packets only: this does not run the OpenThread translator.
++# Run solely in the disposable --network none container documented below.
++set -euo pipefail
++TEST_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++# shellcheck source=../rootfs/etc/s6-overlay/scripts/otbr-agent-common
++source "${TEST_DIR}/../rootfs/etc/s6-overlay/scripts/otbr-agent-common"
++fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
++pids=()
++cleanup() {
++    local pid
++    for pid in "${pids[@]}"; do kill "$pid" 2>/dev/null || true; done
++    for pid in "${pids[@]}"; do wait "$pid" 2>/dev/null || true; done
++}
++trap cleanup EXIT
++# A network-none container starts with lo only. This is additional protection,
++# not a substitute for the Docker namespace/capability boundary.
++[[ "$(ip -o link show | wc -l)" == 1 ]] || fail 'expected only loopback'
++[[ "$(iptables --version)" == *nf_tables* ]] || fail 'requires iptables-nft'
++ip link set lo up
++# Docker supplies these namespaced sysctls; /proc/sys stays read-only.
++[[ "$(cat /proc/sys/net/ipv4/ip_forward)" == 1 ]] || fail 'IPv4 forwarding is disabled'
++[[ "$(cat /proc/sys/net/ipv4/conf/all/rp_filter)" == 0 ]] || fail 'all.rp_filter must be zero'
++[[ "$(cat /proc/sys/net/ipv4/conf/default/rp_filter)" == 0 ]] || fail 'default.rp_filter must be zero'
++
++new_peer() {
++    local root_if="$1" root_addr="$2" peer_addr="$3" attempt
++    unshare --net sleep 120 &
++    REPLY=$!
++    pids+=("$REPLY")
++    for ((attempt=0; attempt<100; attempt++)); do
++        [[ "$(readlink "/proc/${REPLY}/ns/net")" != "$(readlink /proc/self/ns/net)" ]] && break
++        sleep 0.01
++    done
++    [[ -e "/proc/${REPLY}/ns/net" ]] || fail 'peer namespace process exited'
++    [[ "$(readlink "/proc/${REPLY}/ns/net")" != "$(readlink /proc/self/ns/net)" ]] || fail 'network unshare failed'
++    ip link add "$root_if" type veth peer name peer0
++    ip link set peer0 netns "$REPLY"
++    ip addr add "$root_addr/30" dev "$root_if"
++    ip link set "$root_if" up
++    nsenter -t "$REPLY" -n ip link set lo up
++    nsenter -t "$REPLY" -n ip addr add "$peer_addr/30" dev peer0
++    nsenter -t "$REPLY" -n ip link set peer0 up
++    nsenter -t "$REPLY" -n ip route add default via "$root_addr"
++}
++new_peer wpan0 198.18.0.1 198.18.0.2; thread_pid=$REPLY
++new_peer infra0 198.18.0.5 198.18.0.6; infra_pid=$REPLY
++new_peer other0 198.18.0.9 198.18.0.10; other_pid=$REPLY
++nsenter -t "$thread_pid" -n ip addr add 192.168.255.2/32 dev lo
++nsenter -t "$other_pid" -n ip addr add 192.168.255.3/32 dev lo
++
++# Retain a preexisting mark-based forwarding policy for unrelated traffic.
++iptables -P FORWARD DROP
++iptables -t mangle -N TEST_MARK_SENTINEL
++iptables -t mangle -A TEST_MARK_SENTINEL -j MARK --set-mark 0x400
++iptables -t mangle -A PREROUTING -i other0 -s 198.18.0.10 -j TEST_MARK_SENTINEL
++iptables -A FORWARD -i other0 -o infra0 -s 198.18.0.10 -d 198.18.0.6 -m mark --mark 0x400 -j ACCEPT
++iptables -A FORWARD -i infra0 -o other0 -s 198.18.0.6 -d 198.18.0.10 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
++# Initialize and retain unrelated NAT state before taking the baseline.
++iptables -t nat -N TEST_NAT_SENTINEL
++iptables -t nat -A TEST_NAT_SENTINEL -s 198.18.0.10 -j RETURN
++iptables -t nat -A POSTROUTING -j TEST_NAT_SENTINEL
++snapshot() {
++    iptables-save | sed -E '/^#/d; s/\[[0-9]+:[0-9]+\]/[0:0]/g'
++}
++foreign_snapshot="$(snapshot)"
++assert_foreign() {
++    local current
++    current="$(snapshot | grep -v -E 'OTBR_FORWARD_NAT64|OTBR_NAT64_MASQUERADE')"
++    [[ "$current" == "$foreign_snapshot" ]] || fail 'unrelated rules, marks or policies changed'
++}
++assert_clean() {
++    local current
++    current="$(snapshot)"
++    [[ "$current" == "$foreign_snapshot" ]] || fail 'cleanup left owned state or modified foreign state'
++}
++dropped() {
++    iptables-save -c -t filter | awk '$1 == ":FORWARD" {gsub(/\[|\]/,"",$3); split($3,a,":"); print a[1]}'
++}
++assert_blocked_ping() {
++    local pid="$1" source="$2" destination="$3" before status=0 after
++    before="$(dropped)"
++    timeout 3s nsenter -t "$pid" -n ping -n -c 1 -W 1 -I "$source" "$destination" >/dev/null 2>&1 || status=$?
++    [[ "$status" == 1 ]] || fail "expected unreachable ping, got status ${status}"
++    after="$(dropped)"
++    (( after > before )) || fail 'negative packet did not reach the FORWARD DROP policy'
++}
++port=40000
++udp_exchange() {
++    local pid="$1" source="$2" observed="$3"
++    port=$((port + 1))
++    timeout 5s nsenter -t "$pid" -n python3 "$TEST_DIR/nat64-kernel/udp.py" client "$source" "$port" "$observed"
++}
++nsenter -t "$infra_pid" -n python3 "$TEST_DIR/nat64-kernel/udp.py" server &
++pids+=("$!")
++for ((attempt=0; attempt<100; attempt++)); do
++    [[ -e /tmp/nat64-udp-ready ]] && break
++    sleep 0.01
++done
++[[ -e /tmp/nat64-udp-ready ]] || fail 'UDP responder did not bind'
++udp_exchange "$other_pid" 198.18.0.10 198.18.0.10
++
++# Exact checker must refuse overlapping addresses and routes in non-main tables.
++# Do not install the translator pool route until setup has reserved the pool.
++ip addr add 192.168.255.100/32 dev lo
++if otbr_nat64_setup infra0; then fail 'accepted conflicting interface address'; fi
++assert_clean
++ip addr del 192.168.255.100/32 dev lo
++ip route add table 100 192.168.0.0/16 dev other0
++if otbr_nat64_setup infra0; then fail 'accepted overlapping non-main-table route'; fi
++assert_clean
++ip route del table 100 192.168.0.0/16 dev other0
++printf 'PASS: address and all-table route conflicts refused before setup\n'
++
++otbr_nat64_setup infra0
++# Simulate the route installed by the translator after the startup reservation.
++ip route add 192.168.255.0/24 via 198.18.0.2 dev wpan0
++assert_foreign
++udp_exchange "$thread_pid" 192.168.255.2 198.18.0.5
++return_packets="$(iptables -nvxL "$otbr_nat64_forward_chain" --line-numbers | awk '$1 == 2 {print $2}')"
++(( return_packets > 0 )) || fail 'no packet traversed the established-return rule'
++nsenter -t "$thread_pid" -n ping -n -c 1 -W 1 -I 192.168.255.2 198.18.0.6
++# Negative cases require an observed policy drop, not merely a failed client.
++assert_blocked_ping "$thread_pid" 198.18.0.2 198.18.0.6
++assert_blocked_ping "$other_pid" 192.168.255.3 198.18.0.6
++assert_blocked_ping "$thread_pid" 192.168.255.2 198.18.0.10
++assert_blocked_ping "$infra_pid" 198.18.0.6 192.168.255.2
++udp_exchange "$other_pid" 198.18.0.10 198.18.0.10
++assert_foreign
++printf 'PASS: scoped NAT/return traffic, wrong source/interface rejection and unchanged mark-dependent traffic\n'
++
++# Duplicate jumps are historical stale state; cleanup must remove every copy.
++iptables -I FORWARD 1 -j "$otbr_nat64_forward_chain"
++iptables -t nat -I POSTROUTING 1 -j "$otbr_nat64_masquerade_chain"
++otbr_firewall_cleanup
++assert_clean
++# A new ICMP identifier avoids reusing an established flow from the enabled phase.
++assert_blocked_ping "$thread_pid" 192.168.255.2 198.18.0.6
++ip route del 192.168.255.0/24 via 198.18.0.2 dev wpan0
++# Restart reconciliation precedes re-creating the synthetic translator route.
++otbr_firewall_cleanup
++otbr_nat64_setup infra0
++ip route add 192.168.255.0/24 via 198.18.0.2 dev wpan0
++udp_exchange "$thread_pid" 192.168.255.2 198.18.0.5
++assert_foreign
++# Disabled mode installs no NAT64 rules; full cleanup is the shared stop path.
++otbr_firewall_cleanup
++assert_clean
++assert_blocked_ping "$thread_pid" 192.168.255.2 198.18.0.6
++ip route del 192.168.255.0/24 via 198.18.0.2 dev wpan0
++udp_exchange "$other_pid" 198.18.0.10 198.18.0.10
++assert_clean
++printf 'PASS: duplicate cleanup, restart and disabled firewall state; no global conntrack flush\n'
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-pool.py b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-pool.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..28553245b0e0e2451c6921ccc1d506d86d019b55
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-pool.py
+@@ -0,0 +1,43 @@
++#!/usr/bin/env python3
++import pathlib
++import runpy
++import subprocess
++import unittest
++from unittest.mock import patch
++
++SOURCE = pathlib.Path(__file__).resolve().parents[1] / "rootfs/etc/s6-overlay/scripts/otbr-nat64-pool-check"
++MODULE = runpy.run_path(str(SOURCE))
++CHECK = MODULE["check"]
++
++
++class PoolTests(unittest.TestCase):
++    def test_defaults_and_unrelated_routes(self):
++        CHECK([], [{"dst": "default"}, {"dst": "0.0.0.0/0", "table": 200},
++                   {"dst": "10.0.0.0/8"}])
++
++    def test_all_overlapping_route_shapes(self):
++        for destination in ["192.168.255.0/24", "192.168.255.42/32", "192.168.0.0/16"]:
++            with self.subTest(destination=destination), self.assertRaises(ValueError):
++                CHECK([], [{"dst": destination, "table": 200}])
++
++    def test_interface_overlap(self):
++        with self.assertRaises(ValueError):
++            CHECK([{"addr_info": [{"family": "inet", "local": "192.168.255.1", "prefixlen": 24}]}], [])
++
++    def test_malformed_inspection(self):
++        for rows in [[{}], [{"dst": "nonsense"}], [{"dst": "::/0"}]]:
++            with self.subTest(rows=rows), self.assertRaises((ValueError, KeyError)):
++                CHECK([], rows)
++
++    def test_inspection_command_and_failure(self):
++        with patch.object(subprocess, "run", return_value=subprocess.CompletedProcess([], 0, "[]")) as run:
++            MODULE["inspect"](["route", "show", "table", "all"])
++            self.assertEqual(run.call_args.args[0], ["ip", "-j", "-4", "route", "show", "table", "all"])
++        with patch.object(subprocess, "run", side_effect=subprocess.TimeoutExpired("ip", 1)):
++            self.assertEqual(MODULE["main"](), 1)
++        with patch.object(subprocess, "run", return_value=subprocess.CompletedProcess([], 0, "{}")):
++            self.assertEqual(MODULE["main"](), 1)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-s6.sh b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-s6.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..91730a8dd778b38dac40a07964b4ad6afa849778
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64-s6.sh
+@@ -0,0 +1,67 @@
++#!/bin/bash
++# Released /init + notifyoncheck. No devices, host networking, volumes or credentials.
++set -euo pipefail
++TEST_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++ADDON_DIR="$(cd -- "${TEST_DIR}/.." && pwd)"
++IMAGE="local/otbr-nat64-s6-test:$$"
++container=""
++cleanup()
++{
++    if [[ -n "$container" ]]; then
++        timeout 15s docker logs "$container" 2>&1 || true
++        timeout 15s docker rm --force "$container" >/dev/null 2>&1 || true
++    fi
++}
++trap cleanup EXIT
++timeout 300s docker build --file "$TEST_DIR/s6-nat64/Dockerfile" --tag "$IMAGE" "$ADDON_DIR"
++for scenario in off on error error-stall; do
++    container="otbr-nat64-s6-$$-$scenario"
++    timeout 30s docker run --detach --name "$container" \
++        --network none --cap-drop ALL \
++        --cap-add CHOWN --cap-add DAC_OVERRIDE --cap-add FOWNER \
++        --cap-add SETGID --cap-add SETUID --cap-add KILL \
++        --security-opt no-new-privileges --pids-limit 128 \
++        --env "NAT64_CASE=$scenario" "$IMAGE" >/dev/null
++    # The controller itself waits for s6 service startup and bounds every stage.
++    timeout 60s docker exec "$container" python3 -u /fixture/assert.py "$scenario"
++    if [[ "$scenario" == error* ]]; then
++        shutdown_started=$SECONDS
++        result="$(timeout 20s docker wait "$container")"
++        shutdown_elapsed=$((SECONDS - shutdown_started))
++        [[ "$result" == 1 ]] || { echo "Expected configuration failure exit 1, got $result" >&2; exit 1; }
++        log="$(timeout 10s docker logs "$container" 2>&1)"
++        printf '%s\n' "$log"
++        [[ "$log" == *"Could not configure NAT64/upstream DNS; stopping the app."* ]]
++        [[ "$log" == *"Error 7: InvalidState"* ]]
++        [[ "$log" != *NAT64_FIXTURE_PREMATURE_READY* ]]
++        [[ "$log" != *"service otbr-agent successfully started"* ]]
++        # Read final container-local state after shutdown, including any late retries.
++        actual="$(timeout 10s docker cp "$container:/tmp/commands" - | tar -xOf -)"
++        expected=$'1 dns server upstream disable\n1 nat64 disable'
++        [[ "$actual" == "$expected" ]] || {
++            printf 'CLI after failure: actual=%s; expected=%s\n' "$actual" "$expected" >&2
++            exit 1
++        }
++        generation="$(timeout 10s docker cp "$container:/tmp/generation" - | tar -xOf -)"
++        [[ "$generation" == 1 ]] || { echo "Unexpected restart generation=$generation" >&2; exit 1; }
++        if [[ "$scenario" == error-stall ]]; then
++            (( shutdown_elapsed >= 2 ))
++            [[ "$log" == *NAT64_FIXTURE_SIGTERM_IGNORED* ]]
++            [[ "$log" == *"otbr-agent exited with code 1 (by signal 9)."* ]]
++        else
++            [[ "$log" == *NAT64_FIXTURE_SIGTERM_CLEAN_EXIT* ]]
++            [[ "$log" == *"otbr-agent exited with code 1 (by signal 0)."* ]]
++        fi
++    else
++        timeout 20s docker stop --time 10 "$container" >/dev/null
++        result="$(timeout 10s docker inspect --format '{{.State.ExitCode}}' "$container")"
++        [[ "$result" == 0 ]] || { echo "Expected clean shutdown, got $result" >&2; exit 1; }
++        timeout 10s docker logs "$container"
++    fi
++    log="$(timeout 10s docker logs "$container" 2>&1)"
++    [[ "$log" != *"Something went wrong contacting the API"* ]]
++    [[ "$log" != *"Could not resolve host: supervisor"* ]]
++    timeout 15s docker rm "$container" >/dev/null
++    container=""
++    printf 'PASS: released init NAT64 scenario=%s\n' "$scenario"
++done
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64.sh b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64.sh
+new file mode 100644
+index 0000000000000000000000000000000000000000..ad4d6caec8bc48e3522b35878bb3b0abd081af96
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-nat64.sh
+@@ -0,0 +1,153 @@
++#!/bin/bash
++# shellcheck disable=SC2317 # Mocks are invoked by sourced/evaluated runtime code.
++set -euo pipefail
++root="$(cd "$(dirname "$0")/.." && pwd)"
++# shellcheck disable=SC1091
++source "$root/rootfs/etc/s6-overlay/scripts/otbr-agent-common"
++work="$(mktemp -d)"
++trap 'rm -rf "$work"' EXIT
++fail() { echo "FAIL: $*" >&2; exit 1; }
++bashio::log.error() { printf '%s\n' "$*" >> "$work/errors"; }
++declare -A chains rules jumps
++clock=0 cost=0 calls=0 fail_at=0 pool_status=0
++_otbr_clock_milliseconds() { REPLY=$clock; }
++timeout() {
++    [[ ${timeout_status:-0} == 0 ]] || return "$timeout_status"
++    while [[ "$1" == -* ]]; do shift; done
++    shift
++    "$@"
++}
++python3() { return "$pool_status"; }
++ip6_deadline=''
++_otbr_remove_forward_jumps() { ip6_deadline="$1"; return 0; }
++_otbr_delete_chain_if_exist() { return 0; }
++_otbr_list_all_ipsets() { REPLY=''; }
++
++iptables() {
++    [[ "$1" == -w ]] || fail 'missing xtables wait'
++    shift 2
++    [[ "$1" == -t ]] || fail 'missing explicit table'
++    local table="$2" operation="$3" chain="$4" key parent target
++    shift 4
++    key="$table/$chain"
++    calls=$((calls + 1)); clock=$((clock + cost))
++    if (( fail_at > 0 && calls == fail_at )); then return 4; fi
++    case "$operation" in
++        -N) [[ ! -v "chains[$key]" ]] || return 1; chains[$key]=1; rules[$key]='';;
++        -L) [[ -v "chains[$key]" ]];;
++        -A) [[ -v "chains[$key]" ]] || return 1; rules[$key]+="$*"$'\n';;
++        -I) shift; [[ "$1" == -j ]] || fail 'unexpected jump'; target="$2"; jumps[$table/$chain/$target]=$(( ${jumps[$table/$chain/$target]:-0}+1 ));;
++        -C) target="$2"; (( ${jumps[$table/$chain/$target]:-0} > 0 ));;
++        -D) target="$2"; parent="$table/$chain/$target"; (( ${jumps[$parent]:-0} > 0 )) || return 1; jumps[$parent]=$((jumps[$parent]-1));;
++        -F) rules[$key]='';;
++        -X) unset 'chains[$key]' 'rules[$key]';;
++        *) fail "unexpected iptables operation $operation";;
++    esac
++}
++reset() {
++    chains=([filter/FOREIGN]=1); rules=([filter/FOREIGN]='foreign rule --mark 0x1001'); jumps=([filter/FORWARD/FOREIGN]=1)
++    calls=0 fail_at=0 clock=0 cost=0 pool_status=0
++}
++clean() { otbr_firewall_cleanup || fail 'cleanup failed'; }
++assert_clean() {
++    [[ ${#chains[@]} == 1 && ${chains[filter/FOREIGN]} == 1 ]] || fail 'owned chain remained'
++    [[ ${rules[filter/FOREIGN]} == 'foreign rule --mark 0x1001' ]] || fail 'foreign rule changed'
++    [[ ${jumps[filter/FORWARD/FOREIGN]} == 1 ]] || fail 'foreign jump changed'
++}
++reset
++otbr_nat64_setup eth0 || fail setup
++[[ ${rules[filter/OTBR_FORWARD_NAT64]} == *'-i wpan0 -o eth0 -s 192.168.255.0/24 -j ACCEPT'* ]] || fail outbound
++[[ ${rules[filter/OTBR_FORWARD_NAT64]} == *'-i eth0 -o wpan0 -d 192.168.255.0/24 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT'* ]] || fail return
++[[ ${rules[nat/OTBR_NAT64_MASQUERADE]} == '-s 192.168.255.0/24 -o eth0 -j MASQUERADE'$'\n' ]] || fail masquerade
++jumps[filter/FORWARD/OTBR_FORWARD_NAT64]=3
++jumps[nat/POSTROUTING/OTBR_NAT64_MASQUERADE]=2
++clean; assert_clean
++# Current option/backbone are not inputs to cleanup; stale state is reconciled.
++otbr_nat64_setup eth1 || fail changed_backbone
++[[ ${rules[filter/OTBR_FORWARD_NAT64]} != *eth0* ]] || fail stale_backbone
++clean; assert_clean
++for failure in {1..7}; do
++    reset; fail_at=$failure
++    if otbr_nat64_setup eth0; then fail "setup failure $failure accepted"; fi
++    assert_clean
++done
++reset; pool_status=1
++if otbr_nat64_setup eth0; then fail 'pool inspection failure accepted'; fi
++assert_clean
++reset; otbr_nat64_setup eth0
++fail_at=$((calls + 2))
++if otbr_firewall_cleanup; then fail 'failed rule inspection accepted'; fi
++[[ ${rules[filter/FOREIGN]} == 'foreign rule --mark 0x1001' ]] || fail 'foreign rule changed on failure'
++fail_at=0; clean; assert_clean
++reset; otbr_nat64_setup eth0
++jumps[filter/FORWARD/OTBR_FORWARD_NAT64]=65
++if otbr_firewall_cleanup; then fail 'excess duplicates accepted'; fi
++[[ ${jumps[filter/FORWARD/OTBR_FORWARD_NAT64]} == 1 ]] || fail 'deletion cap not enforced'
++clean; assert_clean
++reset; otbr_nat64_setup eth0
++cost=1100
++if otbr_firewall_cleanup; then fail 'expired shared cleanup budget accepted'; fi
++[[ $ip6_deadline == 4000 ]] || fail 'IPv4 and IPv6 did not share deadline'
++[[ $clock -le 4400 ]] || fail 'cleanup continued executing after budget'
++
++# ot-ctl reports CLI errors with exit code zero, so inspect protocol completion.
++# shellcheck disable=SC2317 # Invoked indirectly through the timeout mock.
++ot-ctl() {
++    printf '%s\n' "$*" >> "$work/cli"
++    if [[ "$*" == "${cli_error:-}" ]]; then printf 'Error 7: InvalidArgs\n'; else printf 'Done\r\n'; fi
++}
++clock=0 cost=0 cli_error=''
++otbr_nat64_configure false || fail disabled_configuration
++[[ $(cat "$work/cli") == $'dns server upstream disable\nnat64 disable' ]] || fail disable_order
++: > "$work/cli"
++otbr_nat64_configure true || fail enabled_configuration
++[[ $(tail -n 2 "$work/cli") == $'nat64 enable\ndns server upstream enable' ]] || fail enable_order
++cli_error='dns server upstream enable'
++if otbr_nat64_configure true; then fail 'CLI error text accepted'; fi
++grep -Fq 'ot-ctl dns server upstream enable: Error 7: InvalidArgs' "$work/errors" || fail 'CLI error diagnostic missing'
++[[ $(tail -n 2 "$work/cli") == $'dns server upstream disable\nnat64 disable' ]] || fail failed_config_rollback
++ot-ctl() { printf 'partial response\n'; }
++if otbr_nat64_configure false; then fail 'missing Done accepted'; fi
++grep -Fq 'returned no Done response: partial response' "$work/errors" || fail 'incomplete response diagnostic missing'
++timeout_status=124
++if otbr_nat64_configure false; then fail 'stalled CLI accepted'; fi
++grep -Fq 'failed (status 124)' "$work/errors" || fail 'timeout diagnostic missing'
++# Run the actual startup check with only filesystem/socket prerequisites and
++# shutdown effects redirected. Configuration remains behind those prerequisites.
++# shellcheck disable=SC2016 # Expand paths when the rewritten check is evaluated.
++check_script="$(sed \
++    -e '\@^\. /etc/s6-overlay/scripts/otbr-agent-common$@d' \
++    -e 's@mapfile -t < /tmp/otbr-agent-rest-api@true@' \
++    -e 's@\[\[ -S /run/openthread-wpan0.sock \]\]@socket_ready@' \
++    -e 's@\[\[ -f /run/otbr-agent-config-failed \]\]@[[ -f "$work/config-failed" ]]@' \
++    -e 's@echo 1 > /run/otbr-agent-config-failed@echo 1 > "$work/config-failed"@' \
++    -e 's@s6-svc -d /run/service/otbr-agent@touch "$work/service-down"@' \
++    -e 's@echo 1 > /run/s6-linux-init-container-results/exitcode@echo 1 > "$work/exitcode"@' \
++    -e 's@/run/s6/basedir/bin/halt@touch "$work/halt"@' \
++    "$root/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/data/check")"
++run_check() (
++    local enabled="$1" socket_status="$2" rest_status="$3" configure_status="$4"
++    MAPFILE=(::1 8081)
++    bashio::config.false() { [[ "$1" == otbr_enable && "$enabled" == false ]]; }
++    bashio::config.true() { [[ "$1" == otbr_nat64 ]]; }
++    socket_ready() { return "$socket_status"; }
++    nc() { return "$rest_status"; }
++    otbr_nat64_configure() { echo "$1" >> "$work/configurations"; return "$configure_status"; }
++    eval "$check_script"
++)
++# Disabled OTBR and missing prerequisites make no CLI changes and do not halt.
++for state in 'false 0 0 0' 'true 1 0 0' 'true 0 1 0'; do
++    read -r -a parameters <<< "$state"
++    if run_check "${parameters[@]}"; then fail 'unready service reported ready'; fi
++done
++[[ ! -e "$work/configurations" && ! -e "$work/halt" ]] || fail 'unready/disabled service configured'
++# Each daemon's first successful check configures before signalling readiness.
++run_check true 0 0 0 || fail 'first incarnation failed'
++run_check true 0 0 0 || fail 'next incarnation failed'
++[[ $(wc -l < "$work/configurations") == 2 ]] || fail 'configuration not repeated for next checker'
++if run_check true 0 0 1; then fail 'failed configuration reported ready'; fi
++[[ $(cat "$work/exitcode") == 1 && -f "$work/halt" && -f "$work/config-failed" && -f "$work/service-down" ]] || fail 'configuration failure did not halt'
++if run_check true 0 0 0; then fail 'failed service became ready while stopping'; fi
++[[ $(wc -l < "$work/configurations") == 3 ]] || fail 'failed configuration retried while stopping'
++grep -Fq 'Could not configure NAT64/upstream DNS; stopping the app.' "$work/errors" || fail 'shutdown diagnostic missing'
++printf 'PASS: scoped NAT64 lifecycle, bounded CLI configuration and per-start readiness\n'
+diff --git a/hassio-ihost-silabs-multiprotocol/translations/en.yaml b/hassio-ihost-silabs-multiprotocol/translations/en.yaml
+index 97c2fbc8266bc71a6b45349dd5ee8d24af293373..6a3c669429ae1cb909b28ace1fd96a1bf082a1e3 100644
+--- a/hassio-ihost-silabs-multiprotocol/translations/en.yaml
++++ b/hassio-ihost-silabs-multiprotocol/translations/en.yaml
+@@ -34,6 +34,11 @@ configuration:
+     name: OTBR firewall
+     description: >-
+       Use OpenThread Border Router firewall to block unnecessary traffic.
++  otbr_nat64:
++    name: OTBR NAT64
++    description: >-
++      Allow Thread clients to reach IPv4 services and resolve upstream DNS.
++      Reserves 192.168.255.0/24 exclusively; disabled by default.
+ network:
+   9999/tcp: EmberZNet EZSP/ASH port
+   8080/tcp: OpenThread Web port

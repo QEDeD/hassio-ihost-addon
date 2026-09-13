@@ -1,0 +1,218 @@
+diff --git a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+index 5c498a3bd490b2d509914144fc4808ce6a134c1e..128e1acb299ba77b8b96c18de2a2bef783874951 100755
+--- a/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
++++ b/hassio-ihost-silabs-multiprotocol/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run
+@@ -27,6 +27,7 @@ if ! otbr_firewall_cleanup; then
+ fi
+ 
+ declare backbone_if
++declare network_info
+ # shellcheck disable=SC2034
+ declare device
+ # shellcheck disable=SC2034
+@@ -38,7 +39,24 @@ declare otbr_log_level_int
+ declare otbr_rest_listen
+ declare otbr_rest_listen_port
+ 
+-backbone_if="$(bashio::api.supervisor 'GET' '/network/info' '' 'first(.interfaces[] | select (.primary == true)) .interface')"
++# Fetch raw JSON: Bashio's filtered API helper can return success after jq fails.
++if ! network_info="$(bashio::api.supervisor 'GET' '/network/info' true)"; then
++    bashio::exit.nok "Could not retrieve Supervisor network information."
++fi
++if ! backbone_if="$(jq --slurp --exit-status --raw-output '
++    if length != 1 then error("Expected one network response") else .[0] end
++    | if .result != "ok" or (.data.interfaces | type) != "array" then
++        error("Invalid network response")
++      else .data.interfaces end
++    | if all(.[]; type == "object"
++        and (.primary | type) == "boolean"
++        and (.interface | type) == "string"
++        and (.interface | length) > 0) then
++        (first(.[] | select(.primary == true)) | .interface) // ""
++      else error("Invalid network interface") end
++' <<< "${network_info}")"; then
++    bashio::exit.nok "Invalid Supervisor network information."
++fi
+ 
+ otbr_log_level=$(bashio::string.lower "$(bashio::config otbr_log_level)")
+ case "${otbr_log_level}" in
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/README.md b/hassio-ihost-silabs-multiprotocol/tests/README.md
+index 877f89ef860706f0f1ed0e3eddbd1442060a4535..44f0334e0e2d69896383280c753f0ce0e58b2d82 100644
+--- a/hassio-ihost-silabs-multiprotocol/tests/README.md
++++ b/hassio-ihost-silabs-multiprotocol/tests/README.md
+@@ -47,3 +47,25 @@ mounts. Logs and container inspection remain in a temporary directory; set
+ The forced-expiry case enlarges global shutdown grace to isolate the service
+ finish timeout. It does not establish shutdown timing under the default global
+ grace period.
++
++## Supervisor network response
++
++Run the focused consumer regression in an add-on image containing Python 3,
++Bashio, curl and jq. Set `image` to the release or candidate image being checked:
++
++```sh
++addon=hassio-ihost-silabs-multiprotocol
++image=ghcr.io/ihost-open-source-project/hassio-ihost-silabs-multiprotocol-amd64:1.0.2
++docker run --rm --network none --read-only --cap-drop ALL \
++  --security-opt no-new-privileges --pids-limit 128 --tmpfs /tmp \
++  --mount "type=bind,source=$(pwd)/${addon},target=/addon,readonly" \
++  --entrypoint python3 "${image}" /addon/tests/test-otbr-network.py
++```
++
++This executes the production network consumer through its eth0 fallback with
++installed Bashio/curl/jq against a synthetic loopback Supervisor. It checks first
++primary selection, valid no-primary/empty-list fallback, malformed JSON and
++structure, invalid interface fields, API error responses, HTTP failures and
++connection refusal. API failures must exit before fallback; log output must not
++be accepted as an interface. This is a consumer test, not complete service,
++firewall, radio or live Supervisor acceptance.
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+index 8539f3ed20c9b7567dc8c3b59543a7efe5f7e8d6..75c73613cbccc928105327f14b81fd9cc3f15b0c 100644
+--- a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
++++ b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-firewall.sh
+@@ -102,7 +102,10 @@ run_start_script_fixture()
+     (
+         function bashio::api.supervisor() {
+             (( supervisor_status == 0 )) || return "${supervisor_status}"
+-            printf '%s' "${supervisor_backbone}"
++            jq -n --arg interface "${supervisor_backbone}" \
++                '{result: "ok", data: {interfaces:
++                    (if $interface == "" then [] else
++                        [{interface: $interface, primary: true}] end)}}'
+         }
+         function bashio::addon.ip_address() { printf '::1'; }
+         function bashio::addon.port() { :; }
+diff --git a/hassio-ihost-silabs-multiprotocol/tests/test-otbr-network.py b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-network.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..b94c9dc61c2ab82c8c3a12ae1d7dfaa34ba4573c
+--- /dev/null
++++ b/hassio-ihost-silabs-multiprotocol/tests/test-otbr-network.py
+@@ -0,0 +1,128 @@
++#!/usr/bin/env python3
++"""Exercise the network consumer with installed Bashio/curl/jq and loopback HTTP.
++
++Run in an add-on image containing Python, mounting the add-on read-only at /addon:
++  python3 /addon/tests/test-otbr-network.py
++An optional run-script path supports reproducing the pre-fix failure.
++No radio, Supervisor, service startup, or firewall operations are involved.
++"""
++import json
++import os
++from pathlib import Path
++import socket
++import subprocess
++import sys
++import tempfile
++import threading
++from http.server import BaseHTTPRequestHandler, HTTPServer
++
++source = Path(sys.argv[1] if len(sys.argv) > 1 else
++              '/addon/rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/run').read_text()
++# Execute the production declarations, API call, log-level selection and fallback
++# verbatim. Stop before filesystem/firewall setup; do not emulate Bashio.
++consumer = source[source.index('declare backbone_if'):source.index('mkdir -p /data/thread')]
++consumer += '\nprintf "NETWORK_INTERFACE=%s\\n" "$backbone_if"\n'
++response = b''
++status = 200
++requests = []
++
++
++class Supervisor(BaseHTTPRequestHandler):
++    def log_message(self, *args):
++        pass
++
++    def do_GET(self):
++        requests.append(self.path)
++        assert self.headers.get('Authorization') == 'Bearer synthetic-test-token'
++        self.rfile.read(int(self.headers.get('Content-Length', '0')))
++        code, body = status, response
++        if self.path == '/addons/self/options/config':
++            code, body = 200, json.dumps({'result': 'ok', 'data': {
++                'otbr_log_level': 'info'}}).encode()
++        elif self.path != '/network/info':
++            code, body = 404, b'{}'
++        self.send_response(code)
++        self.send_header('Content-Length', str(len(body)))
++        self.end_headers()
++        self.wfile.write(body)
++
++
++server = HTTPServer(('127.0.0.1', 0), Supervisor)
++thread = threading.Thread(target=server.serve_forever, daemon=True)
++thread.start()
++endpoint = f'http://127.0.0.1:{server.server_port}'
++
++
++def run(endpoint_override=None):
++    with tempfile.TemporaryDirectory(prefix='otbr-network-') as cache:
++        env = {'PATH': os.environ['PATH'], 'HOME': cache, 'CACHE_DIR': cache,
++               'SUPERVISOR_API': endpoint_override or endpoint,
++               'SUPERVISOR_TOKEN': 'synthetic-test-token',
++               'NO_PROXY': '*', 'no_proxy': '*', 'LOG_LEVEL': '3'}
++        script = Path(cache) / 'consumer.sh'
++        script.write_text(consumer)
++        return subprocess.run(['/usr/bin/bashio', str(script)], env=env,
++                              capture_output=True, text=True, timeout=8)
++
++
++def envelope(interfaces):
++    return {'result': 'ok', 'data': {'interfaces': interfaces}}
++
++
++valid = envelope([{'interface': 'eth0', 'primary': False},
++                  {'interface': 'wlan0', 'primary': True},
++                  {'interface': 'eth1', 'primary': True}])
++cases = [
++    ('first_primary', valid, 200, 'wlan0'),
++    ('no_primary', envelope([{'interface': 'wlan0', 'primary': False}]), 200, 'eth0'),
++    ('empty_interfaces', envelope([]), 200, 'eth0'),
++    ('malformed_json', b'{invalid JSON', 200, None),
++    ('empty_body', b'', 200, None),
++    ('multiple_documents', b'{}\n{}', 200, None),
++    ('missing_result', {'data': valid['data']}, 200, None),
++    ('missing_data', {'result': 'ok'}, 200, None),
++    ('missing_interfaces', {'result': 'ok', 'data': {}}, 200, None),
++    ('null_interfaces', envelope(None), 200, None),
++    ('object_interfaces', envelope({}), 200, None),
++    ('invalid_entry', envelope([None]), 200, None),
++    ('missing_primary', envelope([{'interface': 'wlan0'}]), 200, None),
++    ('invalid_primary', envelope([{'interface': 'wlan0', 'primary': 'true'}]), 200, None),
++    ('missing_interface', envelope([{'primary': True}]), 200, None),
++    ('empty_interface', envelope([{'primary': True, 'interface': ''}]), 200, None),
++    ('numeric_interface', envelope([{'primary': True, 'interface': 3}]), 200, None),
++    ('api_error', {'result': 'error', 'message': 'synthetic failure'}, 200, None),
++    ('unauthorized', valid, 401, None),
++    ('forbidden', valid, 403, None),
++    ('not_found', valid, 404, None),
++    ('server_error', valid, 503, None),
++]
++try:
++    for name, body, status, expected in cases:
++        response = body if isinstance(body, bytes) else json.dumps(body).encode()
++        before = len(requests)
++        result = run()
++        output = result.stdout + result.stderr
++        assert requests[before:].count('/network/info') == 1, (name, requests[before:])
++        if expected is None:
++            assert result.returncode != 0, (name, result)
++            assert 'NETWORK_INTERFACE=' not in output, (name, result)
++            assert 'Using static eth0' not in output, (name, result)
++            assert 'Supervisor network information.' in output, (name, result)
++        else:
++            assert result.returncode == 0, (name, result)
++            assert f'NETWORK_INTERFACE={expected}\n' in result.stdout, (name, result)
++            assert ('Using static eth0' in output) == (name != 'first_primary'), (name, result)
++        print(f'PASS {name}: exit={result.returncode} interface={expected!r}', flush=True)
++finally:
++    server.shutdown()
++    server.server_close()
++    thread.join(timeout=2)
++
++# Keep a port bound but not listening, avoiding reuse by an unrelated service.
++with socket.socket() as refused:
++    refused.bind(('127.0.0.1', 0))
++    result = run(f'http://127.0.0.1:{refused.getsockname()[1]}')
++output = result.stdout + result.stderr
++assert result.returncode != 0 and 'NETWORK_INTERFACE=' not in output, result
++assert 'Could not retrieve Supervisor network information.' in output, result
++print('PASS connection_refused', flush=True)
