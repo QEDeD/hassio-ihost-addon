@@ -112,3 +112,43 @@ separately checks OTBR-off recovery plus refusal with OTBR enabled. Parent revie
 the diff. Syntax/argument and mocked-transport checks passed; exact-image container
 execution remains pending. Stub-init continuity cannot prove radio counter or
 serialized-state compatibility. No production rollback guarantee is claimed.
+## Proposed production acceptance (not deployment authorization)
+
+Before approval, identify the deliverable image and its verified delivery route,
+confirm the currently installed app/options and establish a fresh stopped-state
+backup. Preserve the same local repository app and its evolving data; do not
+uninstall, re-pair, flash firmware or restore an older network state.
+
+The proposed baseline trial keeps NAT64 disabled. Capture representative fresh
+Zigbee and ALPSTUGA Matter reports before the change, stop the dependent Zigbee
+client and app, perform the distinct-version update, and restart them in the
+established order. Confirm image/version, service readiness, OTBR attachment and
+fresh end-to-end reports rather than relying on process status alone. Exercise a
+safe representative read/control where a suitable device is available.
+
+Proposed observation: at least 30 minutes of normal operation, extended if this
+fails to include fresh reports from the selected devices. If separately included
+in cutover approval, perform one controlled app/client restart and observe fresh
+reports for another 10 minutes. These windows test ordinary startup and operation;
+they do not establish absence of the previously observed intermittent radio hang.
+A passing candidate should remain running only if that is included in approval.
+
+If acceptance fails, stop the trial, retain current data and logs, and use the
+baseline wrapper with that same evolved data. Synthetic continuity and fixed
+SDK/CPC versions do not prove real radio-state downgrade compatibility. Establish
+that recovery limitation explicitly before approval. The OTBR-off recovery image
+is only a limited Zigbee fallback, not full Zigbee/Thread recovery.
+
+NAT64 requires a separate enabled/disabled comparison with a Thread consumer that
+actually initiates traffic to a controlled IPv4 endpoint. ALPSTUGA sensor reports
+alone cannot demonstrate translation. Consumer availability and the specific
+permitted traffic remain to be established; do not waive this requirement by
+substituting synthetic packet tests for production acceptance.
+Delivery review: the installed `local_codex_ihost_otbr_focused` identifier is the
+expected local-repository prefix of config slug `codex_ihost_otbr_focused`.
+Existing staging uses `/addons/codex_ihost_otbr_focused`, store reload and the
+prefixed installed identifier for update. This preserves the same app; no slug
+change is needed. The remaining delivery constraint is the integrated base image:
+HA cannot resolve a tag held only in WSL Docker. Use a pullable immutable image
+(subject to publication permission), or build the combined source on HA. Do not
+assume copying a Docker save archive into the build context imports its layers.
