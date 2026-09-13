@@ -191,7 +191,9 @@ Browser checks on extracted candidate assets passed four viewport/payload cases,
 two encoder failures and hostile-input handling with zero external requests.
 The original baseline/recovery images remain the intended fallback artifacts;
 newly generated local fallback wrappers are not replacements for published tags.
-This candidate has not been published or installed. Production acceptance and
+This candidate is now published; it has not been installed. Production acceptance and
 separate NAT64 consumer testing remain incomplete. The previous ARM acceptance
 covers the same compiled software; the added graph edge is tested here on AMD64.
-NAT64 head 4ff1642 incorporates firewall 60d3334. The documentation-only merge conflict retained NAT64 guidance; OTBR lifecycle files and s6 fixtures match integration aca557b. PR draft heads and ARM status are reconciled. Replacement-image publication approval remains pending.
+NAT64 head 4ff1642 incorporates firewall 60d3334. The documentation-only merge conflict retained NAT64 guidance; OTBR lifecycle files and s6 fixtures match integration aca557b. PR draft heads and ARM status are reconciled. The operator clarified that test-image publication is included in the two-week authorization through September 27, 2026.
+
+Published 0.2.3-ordered with index digest sha256:0224cb183592e0e83aac35ce9ed6f350654537b73b73c03b0ebb74a1f972b107 and AMD64 manifest sha256:3214cb9e1e42f8da631134f4177779ea9acd366273c00c901affab65efb9a4df. Anonymous manifest/config hashes, HA labels and access to all 41 distinct layers across the new and three existing images verified. Existing published tags are unchanged. Production trial remains unperformed.
