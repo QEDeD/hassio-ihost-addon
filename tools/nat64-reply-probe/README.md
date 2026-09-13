@@ -1,8 +1,8 @@
 # NAT64 reply probe: test preparation
 
 Status: ordinary IPv6 control passed against the authorized Thread plug. NAT64
-was not enabled. The Windows Python collector is blocked by existing inbound
-firewall rules; the translated test is not yet ready to execute.
+was not enabled. The actual Windows Python collector subsequently passed the
+HA UDP round-trip check; candidate/NAT64 activation still requires approval.
 Keep these tools on the integration branch; they are not app functionality.
 
 ## Purpose
@@ -110,9 +110,8 @@ Local checks on 2026-09-13:
 container with external networking disabled. Do not commit generated packets,
 raw production captures, inventories or credentials.
 
-Still required before the NAT64 trial: resolve the collector's explicit Windows
-firewall block with operator involvement, finalize narrow mapping/capture
-evidence, and obtain concrete approval for candidate/NAT64 activation.
+Still required before the NAT64 trial: finalize narrow mapping/capture evidence
+and obtain concrete approval for candidate/NAT64 activation.
 ## Ordinary IPv6 control result, 2026-09-13
 
 A single Sigma1 sent from the HA access app to the authorized GRILLPLATS plug
@@ -149,3 +148,10 @@ python collector.py --bind COLLECTOR_IPV4 --port 55439 --expected-source HA_IPV4
 
 Do not launch this collector as part of the ordinary IPv6 control: its second
 request is specifically intended for the approved NAT64 translation test.
+
+Collector path retry, 2026-09-13: read-only inspection found the two previously
+blocking Python rules now enabled with Action=Allow. Without modifying either
+rule, the actual Python collector received the exact UDP nonce from HA on port
+55439 and HA received its echo. The collector then exited and released the port.
+No temporary firewall changes were made by this task, so none required restoration.
+This resolves collector reachability, not NAT64 translation validation.
