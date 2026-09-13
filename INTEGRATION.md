@@ -48,7 +48,7 @@ Build records capture source revision, dirty/untracked state, copied-context has
 and Docker image identity. Helper `391bb7c56e01ef34ae5ae0b8cd259f31fdb7d6d0`
 built the three retained wrappers:
 
-| Image | Docker configuration identity (not a registry digest) |
+| Image | Docker-reported ID / published wrapper OCI index digest |
 | --- | --- |
 | Combined base | sha256:8a6bf28c97231f7c596f84a8dd8c78a43ff697f6e74705455f5f86b3f8c1619a |
 | Candidate | sha256:7a5746b91c872b4b8a9b5a9becd7697f1161e15dbe4d20d26190d9fc1b06a2c1 |
@@ -96,9 +96,8 @@ from store metadata containing `image`, preserving the local app identifier/data
 Tags match versions: `0.2.0-integrated`, `0.2.1-baseline`, `0.2.2-recovery`.
 Prepared local metadata is under `/tmp/otbr-local-build.NDQvDP/delivery-configs`.
 All three differ only by `image`; independently checked. Actual wrapper labels
-match their versions, type=app and arch=amd64. Publication is not yet approved.
-After publication, record registry manifest digests, verify each resolves to the
-corresponding tested wrapper, and do not retag. Supervisor's config uses version
+match their versions, type=app and arch=amd64. Publication was approved and all three wrapper tags were uploaded; GitHub currently marks the package private, so anonymous HA pulling remains blocked until visibility changes.
+Registry inspection verified each published OCI index digest equals the corresponding tested local image ID and contains exactly one Linux AMD64 platform manifest. These Docker IDs represent OCI indexes in this store, not image-configuration blobs. Do not retag. Supervisor's config uses version
 tags rather than accepting a digest in the image field. No build on HA is needed.
 Prove the actual candidate and recovery images are available before cutover.
 
@@ -129,7 +128,7 @@ unresolved; synthetic packet tests do not replace this production requirement.
 
 After trial findings are resolved, ensure individual branches match the tested
 product changes, complete independent final review, and present the PR bundle for
-approval. No upstream submission, release publication or merge has occurred.
+approval. No upstream submission, upstream release or merge has occurred. The explicitly approved test images have been published to GHCR; production is unchanged.
 
 Clean Trixie contribution `7c3e6076e5f84995ac8b881aea4b4f12855a1e10` contains only
 Dockerfile, build.yaml and the attributed mbedTLS patch. Parent verified all three
@@ -142,3 +141,12 @@ QR generation, Trixie patch boundaries and relevant test assertions. No addition
 code change was requested. This was a read-only source review, not an independent
 rerun of image tests. Full corrected ARM and production acceptance remain gates;
 firewall ownership assumes the documented single-OTBR deployment.
+Publication evidence is retained in `publication-evidence-20260913.json` in the
+local OTBR workspace. Candidate platform manifest:
+`sha256:a49d54cf60650821fbb8e53abd311184b833c54bdee7ea27a51bdb1892225ace`;
+baseline: `sha256:621c209d7226ed8f3b093b82a1440e63b9f241d384ba8710ec46b5c46d55a891`;
+recovery: `sha256:a8d614a4260b0b9c660a0e91422ed8054f153db69f4c3251eef247c4b1985fd9`.
+The version tags' OCI index digests are the wrapper identities in the table above.
+Public visibility and anonymous pull verification are still pending. Browser
+control failed locally, so the package settings visibility step needs the operator.
+Production cutover remains separately reserved for approval.
