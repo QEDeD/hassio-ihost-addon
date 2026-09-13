@@ -115,13 +115,13 @@ unavailable around minute 15 and minute 7 respectively. Three group commands in
 the final window failed with BUSY. Power/mesh conditions and candidate causality
 remain unresolved. A fresh backup preserved evolved state before switching to
 the published baseline; no previous volume, snapshot, reset or firmware change
-was used. The initial baseline direct state read succeeded. All 16 samples over 15 minutes retained the initial 109 unavailable entities; the affected light stayed available and Matter CO2 report age remained below 24 seconds. The last unsolicited light report was near the end of the window. A final GET was accepted, but no newer response was captured: final active-read verification is inconclusive. No BUSY appeared in the captured baseline log, but equivalent group-command traffic was not established. A subsequent baseline log captured two failed pings and the same light going offline at 13:51:47 CEST. Core then confirmed the same four-entity availability loss (113 unavailable total), with all apps started and continuing Matter reports. The earlier healthy interval does not establish sustained recovery. This shared symptom does not demonstrate a candidate-specific regression, although differing rates or causes remain possible. Keep the baseline running pending clarification of physical power and the remaining group-command evidence.
+was used. The initial baseline direct state read succeeded. All 16 samples over 15 minutes retained the initial 109 unavailable entities; the affected light stayed available and Matter CO2 report age remained below 24 seconds. The last unsolicited light report was near the end of the window. A final GET was accepted, but no newer response was captured: final active-read verification is inconclusive. No BUSY appeared in the captured baseline log, but equivalent group-command traffic was not established. A subsequent baseline log captured two failed pings and the same light going offline at 13:51:47 CEST. Core then confirmed the same four-entity availability loss (113 unavailable total), with all apps started and continuing Matter reports. The earlier healthy interval does not establish sustained recovery. This shared symptom does not demonstrate a candidate-specific regression, although differing rates or causes remain possible. Keep the baseline running with continuous mains power now confirmed and the remaining group-command evidence unresolved.
 Raw logs, backups and identifying device details are retained privately outside
 Git/CI under `/tmp/otbr-ordered-trial-20260913`.
 
 ## Remaining acceptance and review
 
-1. Confirm physical power for the light that fails on both images. Keep this
+1. Continuous physical power is confirmed for the light that fails on both images. Keep this
    shared device issue distinct from candidate acceptance; do not start a broad
    mesh investigation as an implicit prerequisite. Three candidate group-command
    BUSY failures remain unexplained by comparable baseline traffic. A further
@@ -150,3 +150,22 @@ cause of radio BUSY. No change to this separate dependency is proposed. The
 retained pre-candidate and baseline Zigbee log captures did not contain BUSY;
 unequal traffic and rolling capture prevent treating absence as a controlled
 comparison. HTTP acceptance of an MQTT publish is not proof of a Zigbee response.
+
+## Additional physical Thread control — 2026-09-13
+
+A user-authorized IKEA GRILLPLATS 1.4.6 plug was identified from recent physical
+button transitions and matched to its live entity/device/Matter endpoint.
+Thread diagnostics confirmed transport. On baseline 0.2.1, fresh HA transitions
+and server-backed Matter OnOff values confirmed on then off; the initial off
+state was restored. Other plugs were unchanged and ALPSTUGA reports continued.
+This establishes a usable ordinary Thread/Matter control target, not candidate
+acceptance or NAT64. No supported command for initiating traffic to a selected
+IPv4 service was established for this plug.
+
+Two preliminary assertions against per-device diagnostic snapshots were invalid:
+the installed Matter client retained stale raw node attributes while updating live
+endpoint values. Server-backed diagnostics resolved the mismatch. These are test
+method failures, not demonstrated plug failures. No new product patch is proposed
+from this observation. The known Hue failure predates the candidate trial, as
+confirmed by the separate incident investigation; powered recurrence on both
+images does not prove intrinsic bulb fault or exclude all candidate effects.
