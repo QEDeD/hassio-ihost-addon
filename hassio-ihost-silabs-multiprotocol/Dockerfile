@@ -121,6 +121,7 @@ COPY otbr-patches/0001-Route-host-upstream-DNS-through-host-routing.patch /usr/s
 COPY otbr-patches/0001-web-generate-commissioning-qr-locally.patch /usr/src
 COPY otbr-patches/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch /usr/src
 COPY otbr-patches/0001-verify-mdns-source-download.patch /usr/src
+COPY otbr-patches/0002-web-lock-frontend-dependencies.patch /usr/src
 COPY zigbeed-patches/zigbeed_amd64.patch /usr/src/gecko_sdk/zigbeed_amd64.patch
 
 RUN \
@@ -132,6 +133,7 @@ RUN \
     && patch -p1 < /usr/src/0001-web-generate-commissioning-qr-locally.patch \
     && patch -p1 < /usr/src/0001-mbedtls-avoid-gcc-xor-array-bounds-warning.patch \
     && patch -p1 < /usr/src/0001-verify-mdns-source-download.patch \
+    && patch -p1 < /usr/src/0002-web-lock-frontend-dependencies.patch \
     && if [ "${DEBIAN_ARCH}" = "amd64" ]; then \
         patch -p1 < zigbeed_amd64.patch; \
         fi \

@@ -28,6 +28,8 @@ jobs:
           persist-credentials: false
       - name: Build and install pinned frontend; check controller
         run: python3 tests/qr/prepare.py "$RUNNER_TEMP/qr-frontend"
+      - name: Check lock rebuilds and invalid inputs
+        run: python3 tests/qr/check-lock.py "$RUNNER_TEMP/qr-frontend"
       - name: Install browser test tools
         run: npm --prefix "$RUNNER_TEMP/qr-tools" install --ignore-scripts --no-audit --no-fund @playwright/cli@0.1.19 jsqr@1.4.0
       - name: Check rendered QR dialogs with synthetic data

@@ -8,9 +8,12 @@ from urllib.request import urlopen
 
 REF = "da661283f301b53eec04d1016009e60bc7e34a1f"
 FRONTEND = "util/third_party/ot-br-posix/src/web/web-service/frontend"
-FILES = ("CMakeLists.txt", "index.html", "package.json", "res/js/app.js", "join.dialog.html")
+FILES = ("CMakeLists.txt", "index.html", "package.json", "package-lock.json", "res/js/app.js", "join.dialog.html")
 REPO = Path(__file__).resolve().parents[2]
-PATCH = REPO / "hassio-ihost-silabs-multiprotocol/otbr-patches/0001-web-generate-commissioning-qr-locally.patch"
+PATCHES = [REPO / "hassio-ihost-silabs-multiprotocol/otbr-patches" / name for name in (
+    "0001-web-generate-commissioning-qr-locally.patch",
+    "0002-web-lock-frontend-dependencies.patch",
+)]
 
 
 def run(*args, **kwargs):
@@ -38,9 +41,10 @@ def main():
         url = f"https://raw.githubusercontent.com/SiliconLabs/simplicity_sdk/{REF}/{FRONTEND}/{name}"
         with urlopen(url, timeout=60) as response:
             target.write_bytes(response.read())
-    for flags in (("--dry-run",), ()):
-        with PATCH.open("rb") as patch:
-            run("patch", *flags, "-p1", cwd=sdk, stdin=patch)
+    for path in PATCHES:
+        for flags in (("--dry-run",), ()):
+            with path.open("rb") as patch:
+                run("patch", *flags, "-p1", cwd=sdk, stdin=patch)
     (sdk / "CMakeLists.txt").write_text(
         "cmake_minimum_required(VERSION 3.10)\n"
         "project(qr_frontend_check NONE)\n"

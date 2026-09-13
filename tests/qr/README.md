@@ -13,7 +13,8 @@ The existing CMake npm asset list installs `dist/qrcode.js`; `index.html` loads
 it before `app.js`. The encoder's notice remains in the unminified script and
 its full MIT license is installed through `res/js/qrcode.LICENSE.txt`.
 The license text comes from the encoder project's LICENSE and matches its MIT
-package metadata. No package lock or unrelated dependency versions are changed.
+package metadata. The follow-up dependency-lock patch preserves the validated frontend assets
+and records the complete npm selection in the SDK package lock.
 
 Encoding uses automatic QR version selection, Byte mode, L error correction,
 six pixels per module and a four-module white quiet zone. The dialog uses
@@ -83,8 +84,8 @@ npm --prefix /tmp/qr-test-tools install --ignore-scripts --no-audit --no-fund @p
 node tests/qr/serve.cjs /tmp/qr-frontend-check/install/share/otbr-web/frontend /tmp/qr-test-tools/node_modules/jsqr/dist/jsQR.js
 ```
 
-The preparation directory must be new or empty. The script downloads only five
-pinned SDK files, dry-runs and applies the patch, builds and installs through the
+The preparation directory must be new or empty. The script downloads only six
+pinned SDK files, dry-runs and applies both patches, builds and installs through the
 actual frontend CMake target, and runs the controller checks on installed assets.
 The server listens only on `127.0.0.1:18764`. Its fixture uses the actual installed
 Angular/app/QR assets and join dialog, plus a test-only jsQR decoder. The backend
@@ -101,3 +102,25 @@ With Chrome already installed, use another terminal:
 Stop the loopback server when finished. The workflow `local-commissioning-qr.yml`
 runs these checks with a 15-minute limit and automatic server/browser cleanup.
 It does not build the native app, deploy it, or upload screenshots/artifacts.
+
+## Locked dependency builds
+
+`0002-web-lock-frontend-dependencies.patch` follows the QR patch. It records
+Angular, animate, aria and messages 1.8.3; Angular Material 1.2.5; D3 3.5.17;
+Material Design Lite 1.3.0; and qrcode-generator 2.0.4. The lock uses format 2
+for npm 7 compatibility. CMake copies both package inputs, runs
+`npm ci --ignore-scripts`, and rebuilds when either input changes. These packages
+supply prebuilt assets; dependency lifecycle scripts are unnecessary.
+
+After `prepare.py`, run `python3 tests/qr/check-lock.py SCRATCH`. This checks
+that installation preserves the inputs, a lock-only edit triggers a rebuild,
+and mismatched, corrupt or missing lock inputs fail even with existing assets.
+It restores the valid inputs, rebuilds, and checks the dependency asset hashes.
+The existing CI runs these checks before the browser fixture.
+
+For an intentional dependency update, edit the manifest and regenerate its lock
+with the supported npm version in a scratch SDK tree, review all resolved
+versions/integrities, and update the patch against the same pinned SDK plus QR
+patch. Run the CMake/controller/lock/browser checks and review asset differences.
+Do not copy the SDK's original stale lock: it selects older Angular assets.
+A lockfile reproduces dependencies; it does not remediate AngularJS advisories.
