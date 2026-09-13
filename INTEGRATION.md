@@ -2,23 +2,21 @@
 
 ## Outcome and current gate
 
-Prepare six focused contributions and one combined candidate that preserves
-reliable Zigbee and Thread/Matter operation. Isolated AMD64 acceptance and ARM
-build/runtime checks passed. Production acceptance remains unresolved.
+Six separate contributions and the combined candidate are prepared. The approved
+physical NAT64 UDP test passed on the unchanged 0.2.3-ordered candidate, including
+a reverse exchange and same-candidate disabled comparison. The candidate remains
+running with NAT64 off; Zigbee and Thread/Matter operation passed the final
+21-sample, 629-second observation and closing checks.
 
-Candidate `0.2.3-ordered` completed the approved 30-minute observation and one
-controlled restart followed by 10 minutes. Fresh Zigbee reads and Matter reports
-continued, and the restart shut down cleanly. One light became unavailable in
-both candidate windows; three real Zigbee group commands also returned BUSY.
-These observations do not establish candidate causality. The approved fallback
-installed `0.2.1-baseline` into the same app with current evolved data and complete
-options. Zigbee and Matter resumed. The baseline retained light availability during the 15-minute comparison, then the same light failed two pings and went offline. Its final requested read had no captured response. The dropout therefore occurs on both images; candidate-specific causality is unproven.
-NAT64 remains disabled. An existing authorized Thread plug now provides a verified UDP rejection response for the separately approved translation test.
+Isolated AMD64 checks and ARM build/runtime checks passed as detailed below.
+Full bundle closeout still requires resolution or an explicit disposition of the
+earlier three Zigbee group-command BUSY failures and final reconciliation of PR
+evidence. The known light dropout occurred on both candidate and baseline; its
+cause is not established. Neither finding is explained away by the NAT64 result.
 
 No upstream PR has been submitted, released or merged. Git pushes and test-image
 publication to the approved QEDeD destinations are authorized through September
-27, 2026. This document does not itself authorize production changes.
-
+27, 2026. Further production changes remain subject to their applicable authority.
 ## Contributions and merge order
 
 Upstream master reviewed on 2026-09-13:
@@ -115,7 +113,7 @@ unavailable around minute 15 and minute 7 respectively. Three group commands in
 the final window failed with BUSY. Power/mesh conditions and candidate causality
 remain unresolved. A fresh backup preserved evolved state before switching to
 the published baseline; no previous volume, snapshot, reset or firmware change
-was used. The initial baseline direct state read succeeded. All 16 samples over 15 minutes retained the initial 109 unavailable entities; the affected light stayed available and Matter CO2 report age remained below 24 seconds. The last unsolicited light report was near the end of the window. A final GET was accepted, but no newer response was captured: final active-read verification is inconclusive. No BUSY appeared in the captured baseline log, but equivalent group-command traffic was not established. A subsequent baseline log captured two failed pings and the same light going offline at 13:51:47 CEST. Core then confirmed the same four-entity availability loss (113 unavailable total), with all apps started and continuing Matter reports. The earlier healthy interval does not establish sustained recovery. This shared symptom does not demonstrate a candidate-specific regression, although differing rates or causes remain possible. Keep the baseline running with continuous mains power now confirmed and the remaining group-command evidence unresolved.
+was used. The initial baseline direct state read succeeded. All 16 samples over 15 minutes retained the initial 109 unavailable entities; the affected light stayed available and Matter CO2 report age remained below 24 seconds. The last unsolicited light report was near the end of the window. A final GET was accepted, but no newer response was captured: final active-read verification is inconclusive. No BUSY appeared in the captured baseline log, but equivalent group-command traffic was not established. A subsequent baseline log captured two failed pings and the same light going offline at 13:51:47 CEST. Core then confirmed the same four-entity availability loss (113 unavailable total), with all apps started and continuing Matter reports. The earlier healthy interval does not establish sustained recovery. This shared symptom does not demonstrate a candidate-specific regression, although differing rates or causes remain possible. That earlier comparison ended on baseline; the later approved NAT64 trial described below leaves the candidate running with NAT64 off. Group-command evidence remains unresolved.
 Raw logs, backups and identifying device details are retained privately outside
 Git/CI under `/tmp/otbr-ordered-trial-20260913`.
 
@@ -126,12 +124,7 @@ Git/CI under `/tmp/otbr-ordered-trial-20260913`.
    mesh investigation as an implicit prerequisite. Three candidate group-command
    BUSY failures remain unexplained by comparable baseline traffic. A further
    live comparison needs a deliberate window and confirmed response capture.
-2. Test NAT64 separately using the existing authorized plug's verified CASE
-   rejection response, including an enabled/disabled comparison on the same
-   candidate. A reply can supply the outgoing Thread IPv6 packet; initiating
-   an application conversation is not required. The ordinary IPv6 control and
-   actual Windows Python collector path passed. Translation remains untested.
-   See tools/nat64-reply-probe/README.md for the bounded procedure and evidence limits.
+2. The physical NAT64 UDP enabled/disabled test is complete, including reverse delivery and the final health window. Preserve its limited coverage and the separate isolated DNS evidence in the PR description.
 3. Reconcile final PR evidence with the resulting tested source and obtain user
    approval before upstream submission.
 
@@ -182,7 +175,7 @@ UDP nonce with HA. Existing Windows rules had changed to Allow; this task did
 not modify them. Collector and control implementations are integration tooling,
 not changes to the published candidate or the six product contribution heads.
 
-Proposed next trial, requiring explicit approval:
+The following trial procedure was subsequently explicitly approved and executed:
 
 1. Verify current health, exact image digest and current authoritative data;
    take a fresh stopped-state backup and preserve complete options. Reuse the
@@ -223,4 +216,55 @@ independent read-only review of the probe code and this approval procedure found
 no material issues in correlation, bounded traffic, same-socket reverse delivery,
 negative-control interpretation or current-data recovery. The reviewer did not
 rerun tests; this is design/source review, not NAT64 production acceptance.
-Cutover approval remains pending; no deployment followed this review.
+That review preceded the explicitly approved deployment and results below.
+
+## Completed NAT64 trial — 2026-09-13
+
+The published 0.2.3-ordered image was installed in the same app, retaining current
+radio data and complete options. Both candidate and fallback registry digests
+were rechecked before installation. Only otbr_nat64 was enabled for the test.
+The existing physical GRILLPLATS plug returned its correlated CASE rejection to
+the IPv4 collector; a fresh Sigma1 sent through that collector's same socket
+obtained another correlated rejection. Independent byte-level review confirmed
+both exchanges, request counters, destination identities and exact status bodies.
+Six enabled network-data observations advertised the NAT64 /96 route.
+
+The same candidate then restarted with otbr_nat64=false. An ordinary IPv6 probe
+still obtained the expected rejection. A fresh translated-source probe produced
+no IPv4 response within the collector's 30-second limit; seven network-data
+observations showed no advertised NAT64 route. This is the limited UDP behavioral
+comparison described above, not TCP, DNS64, per-rule coverage or general Internet
+acceptance. No device load switch, commissioning or firmware change was performed.
+
+After disablement, all three apps stayed started across 21 samples over 629
+seconds. The Zigbee bridge remained connected, and CO2 readings included 14
+distinct values. A closing Zigbee GET received a new device state publication;
+all four Matter nodes remained available and the tested plug remained off.
+The candidate's controlled shutdown recorded OTBR exit 0 and CPC exit 0.
+The candidate remains running with NAT64 off. Temporary probe executables and
+collector sockets were removed/closed.
+
+The baseline stop again exhibited the already-recorded OTBR exit 141 followed by
+complete s6 shutdown. An initial strict stop assertion restored the baseline;
+Zigbee2MQTT required starting after radio readiness. Subsequent Supervisor update
+and start responses were ambiguous despite eventual successful state readback.
+These management-harness observations are not evidence of a new candidate radio
+regression, nor justification to accept unknown shutdown failures.
+
+Recovery record correction: fresh stopped partial backup 524be610 verified both
+nonempty authoritative radio state files. Zigbee2MQTT stores its database under
+/config/zigbee2mqtt, outside its partial app archive. That external data remained
+in place throughout. A supplemental live file copy of its database, coordinator
+backup and configuration was retained only on HA under
+/backup/codex-zigbee-live-copy-20260913-nat64.tar. It is not a stopped-state snapshot.
+Future stopped-state backup procedures must include this external directory.
+Fallback must continue using evolved data; neither archive authorizes restoring
+obsolete network state. No secrets or raw private packet/log evidence enter Git.
+
+Private evidence is retained under /tmp/otbr-nat64-approved-20260913 and the local
+nat64-live-enabled-traxbxt8 / nat64-live-disabled-yvd3is2c evidence directories.
+Only integration documentation and test tooling changed after product commit
+aca557b6eb851af109a2708f55b5b2668314818f; the six contribution heads are unchanged.
+Independent closing-evidence review verified all 21 health samples, the final
+Zigbee request/response timestamps and availability of all four Matter nodes.
+It supports this trial closeout, not resolution of the earlier group BUSY issue.

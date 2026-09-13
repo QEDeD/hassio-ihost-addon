@@ -1,8 +1,8 @@
 # NAT64 reply probe: test preparation
 
-Status: ordinary IPv6 control passed against the authorized Thread plug. NAT64
-was not enabled. The actual Windows Python collector subsequently passed the
-HA UDP round-trip check; candidate/NAT64 activation still requires approval.
+Status: the explicitly approved NAT64 enabled/disabled trial passed, including
+the reverse UDP exchange and final health observation. The candidate remains
+running with NAT64 off. See ../../INTEGRATION.md for results and limitations.
 Keep these tools on the integration branch; they are not app functionality.
 
 ## Purpose
@@ -110,9 +110,8 @@ Local checks on 2026-09-13:
 container with external networking disabled. Do not commit generated packets,
 raw production captures, inventories or credentials.
 
-Still required before the NAT64 trial: concrete approval for candidate/NAT64
-activation under the procedure in ../../INTEGRATION.md. Save exact collector
-responses and use the enabled/disabled behavioral comparison described there.
+The approved trial is complete. Any repeat production trial requires applicable
+authority; these utilities are not a standing authorization to send traffic.
 ## Ordinary IPv6 control result, 2026-09-13
 
 A single Sigma1 sent from the HA access app to the authorized GRILLPLATS plug
