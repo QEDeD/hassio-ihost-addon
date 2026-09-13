@@ -88,3 +88,28 @@ state-preserving recovery actions, normal-operation acceptance, controlled resta
 if included, and whether a passing candidate remains running. NAT64 enablement
 is a separate test; production deployment and firmware/reset actions are not
 implied by this preparation record.
+## Combined AMD64 acceptance — completed
+
+Run [34747387036](https://github.com/QEDeD/hassio-ihost-addon/actions/runs/34747387036)
+at0999946 passed the complete AMD64 build and all isolated checks. Captured local
+image ID: sha256:30343d24dfd79334fb3aa326d425b7cea31061af1b23395156727f73c5d285be.
+This is the Docker image configuration identity, not a published registry digest.
+The runner did not export or publish the image; deployable artifact packaging and
+retention remain required. The audit image also retains one test-only config.py.
+Do not claim an untested rebuild/wrapper is the identical tested artifact.
+
+The log confirms FIXTURE_SOURCE=current at the exact source head. Tests passed
+for merged firewall/NAT64 source behavior, isolated kernel rules and IPv4 packet
+forwarding, s6 lifecycle/readiness, socket ownership, actual Bashio and native web.
+Controller and browser tests used frontend extracted from the built image: four
+viewport/credential-length combinations decoded correctly, hostile text stayed
+data, two encoder-failure paths were checked and seven synthetic QR requests made
+zero external request attempts. No real radio or production operation was tested.
+
+Local-service fixture preparation d5c156e now requires explicit immutable local
+candidate/baseline/recovery image IDs, checks candidate -> baseline -> candidate
+with evolved synthetic state and OTBR enabled after first guarded handoff, and
+separately checks OTBR-off recovery plus refusal with OTBR enabled. Parent reviewed
+the diff. Syntax/argument and mocked-transport checks passed; exact-image container
+execution remains pending. Stub-init continuity cannot prove radio counter or
+serialized-state compatibility. No production rollback guarantee is claimed.
