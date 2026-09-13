@@ -1,6 +1,9 @@
 #!/usr/bin/with-contenv bash
 set -eu
 printf 'S6_TEST_DAEMON_START\n'
+if [[ "${OTBR_S6_CASE}" == shutdown-order ]]; then
+    exec python3 /fixture/shutdown-order.py client
+fi
 : > /run/otbr-agent-firewall-owned
 # Allow s6 initialization to complete before the deliberately abnormal exit.
 sleep 1

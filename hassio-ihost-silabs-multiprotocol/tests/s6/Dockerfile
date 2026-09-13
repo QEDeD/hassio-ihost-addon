@@ -15,6 +15,15 @@ RUN rm -rf /etc/s6-overlay/s6-rc.d /etc/cont-init.d /etc/cont-finish.d /etc/serv
     && touch /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent \
     && printf 'longrun\n' > /etc/s6-overlay/s6-rc.d/otbr-agent/type
 
+# Use the production edge with a synthetic Unix-socket mDNS service.
+COPY rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/mdns /etc/s6-overlay/s6-rc.d/otbr-agent/dependencies.d/mdns
+COPY tests/s6/shutdown-order.py /fixture/shutdown-order.py
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/mdns \
+    && printf 'longrun\n' > /etc/s6-overlay/s6-rc.d/mdns/type \
+    && printf '#!/bin/sh\nexec python3 /fixture/shutdown-order.py server\n' > /etc/s6-overlay/s6-rc.d/mdns/run \
+    && chmod 0755 /etc/s6-overlay/s6-rc.d/mdns/run \
+    && touch /etc/s6-overlay/s6-rc.d/user/contents.d/mdns
+
 COPY --chmod=0755 rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/finish /etc/s6-overlay/s6-rc.d/otbr-agent/finish
 COPY rootfs/etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish /etc/s6-overlay/s6-rc.d/otbr-agent/timeout-finish
 COPY --chmod=0755 rootfs/etc/s6-overlay/scripts/otbr-agent-common /etc/s6-overlay/scripts/otbr-agent-common
