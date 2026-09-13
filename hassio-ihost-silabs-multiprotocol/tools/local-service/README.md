@@ -181,3 +181,79 @@ access prerequisite now passes and installed SSH manager role is verified.
 The installed Bashio helper is unsuitable for credential-safe writes; existing
 admin UI control is preferred. No integration or app-options write was tested. No production
 installation, restart, radio test or network modification was performed.
+
+## Integrated trial packaging (preparation only)
+
+`make_trial_contexts.py` reuses the unchanged historical generator to produce
+three contexts under a new absolute destination. It never invokes Docker,
+installs an app, imports live state or starts radio services. The original
+`make_context.py` interface and five-file source-hash safeguards are unchanged.
+
+The caller first retains `docker image inspect local/otbr-integrated:ci-tag`
+output from its already-built combined Linux AMD64 image. Supply that JSON array,
+the same local tag and its independently recorded immutable image ID:
+
+```sh
+python3 tools/local-service/make_trial_contexts.py /tmp/otbr-trial-new \
+  --combined-image local/otbr-integrated:ci-tag \
+  --expected-image-id sha256:<64-lowercase-hex-digits> \
+  --image-inspect /tmp/combined-image-inspect.json
+```
+
+The example runs from the add-on directory. Replace the ID placeholder; it is
+not executable evidence. The helper checks the inspection's exact tag/ID and
+Linux/AMD64 identity. It records that identity in the candidate manifest and
+writes a tagged `FROM`, because a raw local image ID is not a portable BuildKit
+base reference. Inspection JSON is caller-supplied evidence, not authenticated
+by the helper. The caller must recheck the tag resolves to the expected ID
+immediately before and after building, use the same Docker daemon/local image
+store, prevent concurrent retagging and retain build provenance. If the builder
+cannot resolve that local image, stop; do not silently substitute a registry
+image. No combined-image availability or build is established by generation.
+
+Generated contexts share slug `codex_ihost_otbr_focused`:
+
+- `candidate` defaults to version `0.2.0-integrated`. Its base is the inspected
+  combined image. Only local guard/observer scaffolding is copied; none of the
+  five historical runtime files overlays the integrated runtime.
+- `baseline` defaults to `0.2.1-baseline`, using the pinned released base and
+  exact historical five-file focused overlay. OTBR can run against current state.
+- `recovery` defaults to `0.2.2-recovery`, using the pinned release without that
+  overlay and enforcing OTBR off on every guarded start.
+
+Optional `--candidate-version`, `--baseline-version` and `--recovery-version`
+flags select three distinct safe package versions. They must also differ from
+the original local/recovery versions. Before any approved update, verify each
+selected version differs from the actually installed version; the helper has no
+live installation knowledge. All three retain the complete local configuration
+and add `otbr_nat64: false` plus its boolean schema, allowing full options to
+survive code switches. Defaults remain prepare/manual/OTBR off. Existing live
+options must be retained explicitly at deployment; template defaults are not a
+replacement for those options. All three retain the state guard, observer and
+automatic discovery suppression. No firmware or import migration is introduced.
+
+After building the three contexts in the caller's approved isolated environment,
+run the existing fixture with their resulting local image IDs (not the combined
+base ID):
+
+```sh
+python3 tools/local-service/check_image_switch.py \
+  --candidate sha256:<candidate-image-id> \
+  --baseline sha256:<baseline-image-id> \
+  --recovery sha256:<recovery-image-id>
+```
+
+This exercises an initial guarded OTBR-off start, candidate/baseline/candidate
+switches with OTBR enabled, and a separate OTBR-off recovery/refusal check. It
+uses one evolving synthetic data volume, complete synthetic options including
+NAT64 off and a sentinel, stub `/init`, no network and no capabilities. It never
+validates radio counters, persisted radio format compatibility, physical devices
+or real Thread/Matter recovery. Passing the fixture is required packaging evidence,
+not production authority. Exact-image execution remains unverified until run.
+
+The 29 local unit tests pass, including five trial-packaging tests for guarded
+entrypoints, historical-overlay exclusion, full options/schema preservation,
+manifest hashes, distinct versions, invalid inputs and unchanged source-hash
+refusal. No Docker build or real image-switch run was performed for this helper.
+Production trial and same-volume recovery still require the concrete approval
+and verification described in ACTIVATION.md; never restore stale radio state.
