@@ -1,19 +1,19 @@
-# Home Assistant Add-on: Matter Server
+# Home Assistant App: Matter Server
 
 ## Installation
 
-Use the following steps to install this add-on.
+Use the following steps to install this app.
 
-1. Click the Home Assistant My button below to open the add-on page on your
+1. Click the Home Assistant My button below to open the app page on your
    Home Assistant instance.
 
-   [![Open this add-on in your Home Assistant instance.][addon-badge]][addon]
+   [![Open this app in your Home Assistant instance.][addon-badge]][addon]
 
-1. Click the "Install" button to install the add-on.
+1. Click the "Install" button to install the app.
 
 ## How to use
 
-Start the Matter Server add-on to make the WebSocket available to Home
+Start the Matter Server app to make the WebSocket available to Home
 Assistant Core. Install the [Matter integration][matter_integration]
 in Home Assistant Core.
 
@@ -26,7 +26,7 @@ Matter Server WebSocket server port field.
 
 ## Configuration
 
-Add-on configuration:
+App configuration:
 
 | Configuration       | Description                                                 |
 |---------------------|-------------------------------------------------------------|

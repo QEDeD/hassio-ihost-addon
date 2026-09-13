@@ -1,5 +1,5 @@
 name: "✨ Feature Request"
-description: "Suggest a new feature or improvement for an iHost add-on."
+description: "Suggest a new feature or improvement for an iHost app."
 title: "[Feature]: "
 labels:
   - enhancement
@@ -8,10 +8,10 @@ body:
   - type: dropdown
     id: addon_name
     attributes:
-      label: "Add-on Name"
-      description: "Which add-on is affected?"
+      label: "App Name"
+      description: "Which app is affected?"
       options:
-        - "-- Please select an add-on --"
+        - "-- Please select an app --"
         - "eWeLink Smart Home"
         - "eWeLink-Remote Gateway"
         - "SONOFF Dongle Flasher"

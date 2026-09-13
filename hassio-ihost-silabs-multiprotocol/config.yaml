@@ -2,7 +2,7 @@
 version: 1.0.2
 slug: hassio_ihost_silabs_multiprotocol
 name: Silicon Labs Multiprotocol
-description: Zigbee and OpenThread multiprotocol add-on
+description: Zigbee and OpenThread multiprotocol app
 url: >
   https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/tree/master/hassio-ihost-silabs-multiprotocol
 arch:
@@ -14,7 +14,7 @@ gpio: true
 hassio_api: true
 discovery:
   - otbr
-# IPC is only used within the Add-on
+# IPC is only used within the App
 host_ipc: false
 host_network: true
 host_uts: true

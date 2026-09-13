@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Zigbee2MQTT
+# Home Assistant App: Zigbee2MQTT
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/zigbee2mqtt/zigbee2mqtt-amd64.svg?style=flat-square&logo=docker)](https://cloud.docker.com/u/dwelch2101/repository/docker/zigbee2mqtt/zigbee2mqtt-amd64)
 
@@ -9,7 +9,7 @@ It bridges events and allows you to control your Zigbee devices via MQTT. In thi
 See Documentation tab for more details.
 
 ## Installation
-1. Go to the Add-on Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**
+1. Go to the App Store → Click the **More** button (⋮) in the upper-right corner → Select **Repositories**
 2. Paste the following URL:  
    [https://github.com/iHost-Open-Source-Project/hassio-ihost-addon](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)
 3. Or, simply click the button below to add it automatically:
