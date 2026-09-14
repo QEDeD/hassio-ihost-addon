@@ -1,0 +1,96 @@
+2026-09-14 11:51:25.128 core-ssh universal_silabs_flasher.flasher INFO Triggering rts_dtr bootloader
+2026-09-14 11:51:25.128 core-ssh zigpy.serial DEBUG Opening a serial connection to '/dev/serial/by-id/ZBDongle-E-serial-redacted' (baudrate=115200, xonxoff=False, rtscts=False)
+2026-09-14 11:51:25.142 core-ssh serialx.platforms.serial_posix DEBUG Locking serial port '/dev/serial/by-id/ZBDongle-E-serial-redacted'
+2026-09-14 11:51:25.152 core-ssh serialx.platforms.serial_posix DEBUG Configuring serial port '/dev/serial/by-id/ZBDongle-E-serial-redacted'
+2026-09-14 11:51:25.153 core-ssh serialx.platforms.serial_posix DEBUG Configuring serial port: TcsetattrFlags(iflag=0, oflag=0, cflag=3248, lflag=0, ispeed=4098, ospeed=4098, cc_vmin=0, cc_vtime=0) + cc=[b'\x03', b'\x1c', b'\x7f', b'\x15', b'\x04', 0, 0, b'\x00', b'\x11', b'\x13', b'\x1a', b'\x00', b'\x12', b'\x0f', b'\x17', b'\x16', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00']
+2026-09-14 11:51:25.154 core-ssh serialx.platforms.serial_linux DEBUG Setting low latency mode: True
+2026-09-14 11:51:25.154 core-ssh serialx.platforms.serial_posix DEBUG Setting modem pins: ModemPins[dtr rts]
+2026-09-14 11:51:25.154 core-ssh serialx.platforms.serial_posix DEBUG Setting TIOCMBIS: 0x00000006
+2026-09-14 11:51:25.155 core-ssh zigpy.serial DEBUG Connection made: <serialx.platforms.serial_linux.LinuxSerialTransport object at 0x7f84ea4b8440>
+2026-09-14 11:51:25.155 core-ssh serialx.platforms.serial_posix DEBUG Setting modem pins: ModemPins[!dtr rts]
+2026-09-14 11:51:25.155 core-ssh serialx.platforms.serial_posix DEBUG Setting TIOCMBIS: 0x00000004
+2026-09-14 11:51:25.156 core-ssh serialx.platforms.serial_posix DEBUG TIOCMBIC: 0x00000002
+2026-09-14 11:51:25.256 core-ssh serialx.platforms.serial_posix DEBUG Setting modem pins: ModemPins[dtr !rts]
+2026-09-14 11:51:25.257 core-ssh serialx.platforms.serial_posix DEBUG Setting TIOCMBIS: 0x00000002
+2026-09-14 11:51:25.257 core-ssh serialx.platforms.serial_posix DEBUG TIOCMBIC: 0x00000004
+2026-09-14 11:51:25.286 core-ssh serialx.descriptor_transport DEBUG Event loop woke up reader
+2026-09-14 11:51:25.286 core-ssh serialx.descriptor_transport DEBUG Received b'\r\nSonoff v1.0.1\r\n\x00\r\nGecko Bootloader v1.12.00\r\n1. upload gbl\r\n2.'
+2026-09-14 11:51:25.290 core-ssh serialx.descriptor_transport DEBUG Event loop woke up reader
+2026-09-14 11:51:25.290 core-ssh serialx.descriptor_transport DEBUG Received b' run\r\n3. ebl info\r\nBL > \x00'
+2026-09-14 11:51:25.759 core-ssh serialx.platforms.serial_posix DEBUG Setting modem pins: ModemPins[!dtr !rts]
+2026-09-14 11:51:25.759 core-ssh serialx.platforms.serial_posix DEBUG TIOCMBIC: 0x00000006
+2026-09-14 11:51:25.760 core-ssh serialx.descriptor_transport DEBUG Closing at the request of the application
+2026-09-14 11:51:25.760 core-ssh serialx.descriptor_transport DEBUG Backgrounding a close request: None
+2026-09-14 11:51:25.760 core-ssh zigpy.serial DEBUG Waiting for serial port to close
+2026-09-14 11:51:25.760 core-ssh serialx.descriptor_transport DEBUG Closing connection: None
+2026-09-14 11:51:25.760 core-ssh serialx.descriptor_transport DEBUG Closing file descriptor 6
+2026-09-14 11:51:25.765 core-ssh zigpy.serial DEBUG Connection lost: None
+2026-09-14 11:51:28.769 core-ssh zigpy.serial DEBUG Opening a serial connection to '/dev/serial/by-id/ZBDongle-E-serial-redacted' (baudrate=115200, xonxoff=False, rtscts=False)
+2026-09-14 11:51:28.782 core-ssh serialx.platforms.serial_posix DEBUG Locking serial port '/dev/serial/by-id/ZBDongle-E-serial-redacted'
+2026-09-14 11:51:28.793 core-ssh serialx.platforms.serial_posix DEBUG Configuring serial port '/dev/serial/by-id/ZBDongle-E-serial-redacted'
+2026-09-14 11:51:28.793 core-ssh serialx.platforms.serial_posix DEBUG Configuring serial port: TcsetattrFlags(iflag=0, oflag=0, cflag=3248, lflag=0, ispeed=4098, ospeed=4098, cc_vmin=0, cc_vtime=0) + cc=[b'\x03', b'\x1c', b'\x7f', b'\x15', b'\x04', 0, 0, b'\x00', b'\x11', b'\x13', b'\x1a', b'\x00', b'\x12', b'\x0f', b'\x17', b'\x16', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00']
+2026-09-14 11:51:28.794 core-ssh serialx.platforms.serial_linux DEBUG Setting low latency mode: True
+2026-09-14 11:51:28.794 core-ssh serialx.platforms.serial_posix DEBUG Setting modem pins: ModemPins[dtr rts]
+2026-09-14 11:51:28.794 core-ssh serialx.platforms.serial_posix DEBUG Setting TIOCMBIS: 0x00000006
+2026-09-14 11:51:28.795 core-ssh zigpy.serial DEBUG Connection made: <serialx.platforms.serial_linux.LinuxSerialTransport object at 0x7f84ea7dbcb0>
+2026-09-14 11:51:28.795 core-ssh universal_silabs_flasher.gecko_bootloader DEBUG Sending data b'\n'
+2026-09-14 11:51:28.795 core-ssh serialx.descriptor_transport DEBUG Immediately writing b'\n'
+2026-09-14 11:51:28.795 core-ssh serialx.descriptor_transport DEBUG Sent 1 of 1 bytes
+2026-09-14 11:51:28.795 core-ssh universal_silabs_flasher.gecko_bootloader DEBUG Sending data GeckoBootloaderOption.EBL_INFO
+2026-09-14 11:51:28.796 core-ssh serialx.descriptor_transport DEBUG Immediately writing <GeckoBootloaderOption.EBL_INFO: b'3'>
+2026-09-14 11:51:28.796 core-ssh serialx.descriptor_transport DEBUG Sent 1 of 1 bytes
+2026-09-14 11:51:28.802 core-ssh serialx.descriptor_transport DEBUG Event loop woke up reader
+2026-09-14 11:51:28.802 core-ssh serialx.descriptor_transport DEBUG Received b'\r\nGecko Bootloader v1.12.00\r\n1. upload gbl\r\n2. run\r\n3. ebl info\r'
+2026-09-14 11:51:28.802 core-ssh universal_silabs_flasher.gecko_bootloader DEBUG Parsing waiting_for_menu: bytearray(b'\r\nGecko Bootloader v1.12.00\r\n1. upload gbl\r\n2. run\r\n3. ebl info\r')
+2026-09-14 11:51:28.807 core-ssh serialx.descriptor_transport DEBUG Event loop woke up reader
+2026-09-14 11:51:28.807 core-ssh serialx.descriptor_transport DEBUG Received b'\nBL > \x00\r\nGecko Bootloader v1.12.00\r\n1. upload gbl\r\n2. run\r\n3. eb'
+2026-09-14 11:51:28.807 core-ssh universal_silabs_flasher.gecko_bootloader DEBUG Parsing waiting_for_menu: bytearray(b'\r\nGecko Bootloader v1.12.00\r\n1. upload gbl\r\n2. run\r\n3. ebl info\r\nBL > \x00\r\nGecko Bootloader v1.12.00\r\n1. upload gbl\r\n2. run\r\n3. eb')
+2026-09-14 11:51:28.808 core-ssh universal_silabs_flasher.gecko_bootloader DEBUG Detected version string '1.12.00'
+2026-09-14 11:51:28.808 core-ssh universal_silabs_flasher.gecko_bootloader DEBUG Sending data GeckoBootloaderOption.RUN_FIRMWARE
+2026-09-14 11:51:28.808 core-ssh serialx.descriptor_transport DEBUG Immediately writing <GeckoBootloaderOption.RUN_FIRMWARE: b'2'>
+2026-09-14 11:51:28.808 core-ssh serialx.descriptor_transport DEBUG Sent 1 of 1 bytes
+2026-09-14 11:51:28.810 core-ssh serialx.descriptor_transport DEBUG Event loop woke up reader
+2026-09-14 11:51:28.810 core-ssh serialx.descriptor_transport DEBUG Received b'l info\r\nBL > \x00'
+2026-09-14 11:51:28.811 core-ssh universal_silabs_flasher.gecko_bootloader DEBUG Parsing waiting_for_menu: bytearray(b'l info\r\nBL > \x00')
+2026-09-14 11:51:29.427 core-ssh serialx.descriptor_transport DEBUG Event loop woke up reader
+2026-09-14 11:51:29.427 core-ssh serialx.descriptor_transport DEBUG Received b'\x14\x00\x0e\x00\xc0\x11O\x06\x00\x08\x00\x00\x00\x00\x00x\x00\x00\x00\xc3\x86'
+2026-09-14 11:51:29.427 core-ssh universal_silabs_flasher.gecko_bootloader DEBUG Parsing waiting_for_menu: bytearray(b'l info\r\nBL > \x00\x14\x00\x0e\x00\xc0\x11O\x06\x00\x08\x00\x00\x00\x00\x00x\x00\x00\x00\xc3\x86')
+2026-09-14 11:51:30.810 core-ssh universal_silabs_flasher.flasher INFO Launched application from bootloader
+2026-09-14 11:51:30.810 core-ssh serialx.descriptor_transport DEBUG Closing at the request of the application
+2026-09-14 11:51:30.811 core-ssh serialx.descriptor_transport DEBUG Backgrounding a close request: None
+2026-09-14 11:51:30.811 core-ssh zigpy.serial DEBUG Waiting for serial port to close
+2026-09-14 11:51:30.811 core-ssh serialx.descriptor_transport DEBUG Closing connection: None
+2026-09-14 11:51:30.811 core-ssh serialx.descriptor_transport DEBUG Closing file descriptor 6
+2026-09-14 11:51:30.815 core-ssh zigpy.serial DEBUG Connection lost: None
+2026-09-14 11:51:30.815 core-ssh universal_silabs_flasher.flasher DEBUG Not probing bootloader twice
+2026-09-14 11:51:30.815 core-ssh universal_silabs_flasher.flasher INFO Probing ApplicationType.CPC at 115200 baud
+2026-09-14 11:51:30.815 core-ssh zigpy.serial DEBUG Opening a serial connection to '/dev/serial/by-id/ZBDongle-E-serial-redacted' (baudrate=115200, xonxoff=False, rtscts=False)
+2026-09-14 11:51:30.829 core-ssh serialx.platforms.serial_posix DEBUG Locking serial port '/dev/serial/by-id/ZBDongle-E-serial-redacted'
+2026-09-14 11:51:30.839 core-ssh serialx.platforms.serial_posix DEBUG Configuring serial port '/dev/serial/by-id/ZBDongle-E-serial-redacted'
+2026-09-14 11:51:30.839 core-ssh serialx.platforms.serial_posix DEBUG Configuring serial port: TcsetattrFlags(iflag=0, oflag=0, cflag=3248, lflag=0, ispeed=4098, ospeed=4098, cc_vmin=0, cc_vtime=0) + cc=[b'\x03', b'\x1c', b'\x7f', b'\x15', b'\x04', 0, 0, b'\x00', b'\x11', b'\x13', b'\x1a', b'\x00', b'\x12', b'\x0f', b'\x17', b'\x16', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00']
+2026-09-14 11:51:30.840 core-ssh serialx.platforms.serial_linux DEBUG Setting low latency mode: True
+2026-09-14 11:51:30.840 core-ssh serialx.platforms.serial_posix DEBUG Setting modem pins: ModemPins[dtr rts]
+2026-09-14 11:51:30.841 core-ssh serialx.platforms.serial_posix DEBUG Setting TIOCMBIS: 0x00000006
+2026-09-14 11:51:30.841 core-ssh zigpy.serial DEBUG Connection made: <serialx.platforms.serial_linux.LinuxSerialTransport object at 0x7f84ea4b02d0>
+2026-09-14 11:51:30.841 core-ssh universal_silabs_flasher.cpc DEBUG Sending frame CPCTransportFrame(endpoint=<EndpointId.SYSTEM: 0>, control=196, payload=UnnumberedFrame(command_id=<UnnumberedFrameCommandId.PROP_VALUE_GET: 2>, command_seq=0, payload=PropertyCommand(property_id=<PropertyId.SECONDARY_CPC_VERSION: 3>, value=b'')))
+2026-09-14 11:51:30.842 core-ssh universal_silabs_flasher.cpc DEBUG Sending data b'\x14\x00\n\x00\xc4U\xd3\x02\x00\x04\x00\x03\x00\x00\x00\xdb\x12'
+2026-09-14 11:51:30.842 core-ssh serialx.descriptor_transport DEBUG Immediately writing b'\x14\x00\n\x00\xc4U\xd3\x02\x00\x04\x00\x03\x00\x00\x00\xdb\x12'
+2026-09-14 11:51:30.842 core-ssh serialx.descriptor_transport DEBUG Sent 17 of 17 bytes
+2026-09-14 11:51:30.849 core-ssh serialx.descriptor_transport DEBUG Event loop woke up reader
+2026-09-14 11:51:30.849 core-ssh serialx.descriptor_transport DEBUG Received b'\x14\x00\x16\x00\xc4W\xe5\x06\x00\x10\x00\x03\x00\x00\x00\x04\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00\x07*'
+2026-09-14 11:51:30.850 core-ssh universal_silabs_flasher.cpc DEBUG Parsed frame UnnumberedFrameType.POLL_FINAL CPCTransportFrame(endpoint=<EndpointId.SYSTEM: 0>, control=196, payload=UnnumberedFrame(command_id=<UnnumberedFrameCommandId.PROP_VALUE_IS: 6>, command_seq=0, payload=PropertyCommand(property_id=<PropertyId.SECONDARY_CPC_VERSION: 3>, value=bytearray(b'\x04\x00\x00\x00\x06\x00\x00\x00\x00\x00\x00\x00'))))
+2026-09-14 11:51:30.850 core-ssh universal_silabs_flasher.cpc DEBUG Sending frame CPCTransportFrame(endpoint=<EndpointId.SYSTEM: 0>, control=196, payload=UnnumberedFrame(command_id=<UnnumberedFrameCommandId.PROP_VALUE_GET: 2>, command_seq=1, payload=PropertyCommand(property_id=<PropertyId.SECONDARY_APP_VERSION: 4>, value=b'')))
+2026-09-14 11:51:30.851 core-ssh universal_silabs_flasher.cpc DEBUG Sending data b'\x14\x00\n\x00\xc4U\xd3\x02\x01\x04\x00\x04\x00\x00\x00\x97\xfb'
+2026-09-14 11:51:30.851 core-ssh serialx.descriptor_transport DEBUG Immediately writing b'\x14\x00\n\x00\xc4U\xd3\x02\x01\x04\x00\x04\x00\x00\x00\x97\xfb'
+2026-09-14 11:51:30.851 core-ssh serialx.descriptor_transport DEBUG Sent 17 of 17 bytes
+2026-09-14 11:51:30.858 core-ssh serialx.descriptor_transport DEBUG Event loop woke up reader
+2026-09-14 11:51:30.858 core-ssh serialx.descriptor_transport DEBUG Received b'\x14\x00\x14\x00\xc47\x8b\x06\x01\x0e\x00\x04\x00\x00\x00UNDEFINED\x00O\xcc'
+2026-09-14 11:51:30.859 core-ssh universal_silabs_flasher.cpc DEBUG Parsed frame UnnumberedFrameType.POLL_FINAL CPCTransportFrame(endpoint=<EndpointId.SYSTEM: 0>, control=196, payload=UnnumberedFrame(command_id=<UnnumberedFrameCommandId.PROP_VALUE_IS: 6>, command_seq=1, payload=PropertyCommand(property_id=<PropertyId.SECONDARY_APP_VERSION: 4>, value=bytearray(b'UNDEFINED\x00'))))
+2026-09-14 11:51:30.859 core-ssh serialx.descriptor_transport DEBUG Closing at the request of the application
+2026-09-14 11:51:30.859 core-ssh serialx.descriptor_transport DEBUG Backgrounding a close request: None
+2026-09-14 11:51:30.859 core-ssh zigpy.serial DEBUG Waiting for serial port to close
+2026-09-14 11:51:30.859 core-ssh serialx.descriptor_transport DEBUG Closing connection: None
+2026-09-14 11:51:30.859 core-ssh serialx.descriptor_transport DEBUG Closing file descriptor 6
+2026-09-14 11:51:30.864 core-ssh zigpy.serial DEBUG Connection lost: None
+2026-09-14 11:51:30.864 core-ssh universal_silabs_flasher.flasher DEBUG Probe result: ProbeResult(version='4.6.0', continue_probing=False, baudrate=115200)
+2026-09-14 11:51:30.865 core-ssh universal_silabs_flasher.flasher INFO Detected ApplicationType.CPC, version '4.6.0' at 115200 baudrate (bootloader baudrate 115200)

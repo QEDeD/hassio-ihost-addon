@@ -39,3 +39,6 @@ The Zigbee2MQTT app reports serial.port=tcp://local-codex-ihost-otbr-focused:999
 
 ## Exact next operator input
 Confirm the model/revision printed on the connected dongle without unplugging it; a readable label photo is sufficient. Existing software metadata is generic and has not established that it is the provisional ZBDongle-E target. This is identification only, not approval to flash. Then match the vendor update/bootloader/storage procedure to that actual model. Any probe that must stop the app, reset the radio or enter the bootloader needs a separately specified maintenance approval; it is not included in read-only inventory.
+
+## Hardware identification update
+Operator confirmed ZBDongle-E. Authorized coordinated probe identified Sonoff v1.0.1 / Gecko Bootloader1.12.00 and returned to existing CPC4.6.0; both apps restored and fresh Thread/Matter reports verified. See bootloader-probe/README.md and probe.log. This supersedes the earlier request for a label/bootloader probe; no further photo is needed. Exact rollback firmware and SDK storage/GBL compatibility remain to be established before any flashing approval.

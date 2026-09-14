@@ -46,3 +46,6 @@ docker run --rm --network none --entrypoint /bin/bash IMAGE_ID -c $check
 ```
 
 Use the immutable image ID above. Passing the script via -c avoids PowerShell adding a trailing CRLF to stdin. Lifecycle tests retain stopped synthetic containers for inspection. No attached radio or host networking is used.
+
+## Hardware identification update
+Operator confirmed ZBDongle-E. Authorized coordinated probe identified Sonoff v1.0.1 / Gecko Bootloader1.12.00 and returned to existing CPC4.6.0; both apps restored and fresh Thread/Matter reports verified. See bootloader-probe/README.md and probe.log. This supersedes the earlier request for a label/bootloader probe; no further photo is needed. Exact rollback firmware and SDK storage/GBL compatibility remain to be established before any flashing approval.
