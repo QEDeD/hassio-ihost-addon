@@ -1,0 +1,1 @@
+CLI tool archive and downloaded ZIP are intentionally excluded via package/.gitignore. Validated packaging replay from build-package.sh completed with the same GBL SHA-256. No hardware acceptance is implied.

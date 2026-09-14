@@ -1,0 +1,36 @@
+
+Usage: /offline-package/commander-cli/commander-cli gbl3 parse <filename> [options]
+
+Parse a GBL3 file.
+
+Options:
+  -v, --version                    Displays version information.
+  -h, --help                       Displays help on commandline options.
+  --help-all                       Displays help including Qt specific options.
+  --device, -d <device>            The device, device family or platform to
+                                   target. Examples of strings that are
+                                   understood: "EFR32MG1P233F256GM48",
+                                   "EFR32MG", "EFR32", "EFR32F256". Required for
+                                   some operations.
+  --force                          Force operation. This will convert non-fatal
+                                   errors to warnings, allowing the process to
+                                   continue.
+  --timestamp                      Add timestamp to Commander output.
+  --json                           Show output in JSON format.
+  --app <app image>                File to write the application image to.
+  --bootloader <bootloader image>  File to write the bootloader image to.
+  --seupgrade <SE upgrade image>   File to write the Secure Engine upgrade
+                                   image to.
+  --metadata <metadata bin file>   File to write the metadata binary image to.
+  --verify <public key file>       Verify the signature of a signed GBL3
+                                   against the supplied ECC-P256 PEM public key
+                                   file.
+  --decrypt <AES key file>         Decrypt the GBL3 input.
+
+Arguments:
+  gbl3                             Create, parse and other handling for GBL3
+                                   files
+  parse                            Parse a GBL3 file.
+  filename                         Input GBL3 file.
+
+DONE
