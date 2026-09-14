@@ -1,0 +1,30 @@
+[
+  {
+    "case": "missing",
+    "image": "sha256:367c32916fe8c8d27c48709e81340974d41b9f511716611a49beff226a8f874b",
+    "fixture_finish_override": true,
+    "pass": false,
+    "running_after_8_seconds": true,
+    "exit_code": 0,
+    "preflight_refusal_count": 9,
+    "synthetic_key_logged": false,
+    "cpcd_start_logged": false,
+    "key_unchanged": true,
+    "key_sha256": null,
+    "container": "sdk2026-lifecycle-missing-111125"
+  },
+  {
+    "case": "malformed",
+    "image": "sha256:367c32916fe8c8d27c48709e81340974d41b9f511716611a49beff226a8f874b",
+    "fixture_finish_override": true,
+    "pass": false,
+    "running_after_8_seconds": true,
+    "exit_code": 0,
+    "preflight_refusal_count": 9,
+    "synthetic_key_logged": false,
+    "cpcd_start_logged": false,
+    "key_unchanged": true,
+    "key_sha256": "fc1872f4cd8f1cca4f5e91d4f6afd58deeb20a4c12c416b5af4b6e1d4e641ad4",
+    "container": "sdk2026-lifecycle-malformed-111138"
+  }
+]

@@ -1,0 +1,213 @@
+[NOTE]-AGENT---: Running 0.3.0
+[NOTE]-AGENT---: Thread version: 1.4.0
+[NOTE]-AGENT---: Thread interface: wpan0
+[NOTE]-AGENT---: Radio URL: spinel+hdlc+forkpty:///sdk2026-api-tests/ot-rcp?forkpty-arg=1
+[NOTE]-ILS-----: Infra link selected: lo
+[INFO]-RCP_HOS-: OpenThread log level changed to 4
+[INFO]-HELPER--: Set state callback: OK
+[WARN]-UTILS---: /sdk2026-native/ot-br-posix/src/rest/network_diag_handler.cpp:1300 lacking some attributes for deviceId 7e2de62deaccaa7c
+[WARN]-UTILS---: /sdk2026-native/ot-br-posix/src/rest/network_diag_handler.cpp:1244 cannot get LeaderData while detached
+[WARN]-UTILS---: /sdk2026-native/ot-br-posix/src/rest/rest_devices_coll.cpp:232 - AddItem - 7e2de62deaccaa7c
+[INFO]-APP-----: Radio Co-processor version: OPENTHREAD/; SIMULATION; Sep 14 2026 08:53:04
+[INFO]-REST----: RestWebServer listening on 127.0.0.1:8081
+sh: 1: ipset: not found
+[INFO]-RCP_HOS-: OpenThread log level changed to 4
+[INFO]-HELPER--: Set state callback: OK
+sh: 1: ipset: not found
+00:00:00.005 [I] TrelInterface-: User disabled interface
+00:00:00.005 [I] TrelInterface-: Disabled interface
+00:00:00.005 [I] BbrLocal------: Add Domain Prefix: ::/0, NotFound
+00:00:00.005 [I] BbrLocal------: Add BBR Service: seqno (89), delay (5s), timeout (3600s), InvalidState
+00:00:00.008 [I] Settings------: Saved BorderAgentId {id:a456c5524043d4b23323f32f7e015531}
+00:00:00.008 [I] Notifier------: StateChanged (0x42038210) [MLAddr NetData PanId NetName ExtPanId BbrState Nat64]
+00:00:00.008 [I] BbrLeader-----: PBBR state: None
+00:00:00.008 [I] Bbr-----------: Start listening on port 61631
+00:00:00.008 [I] Bbr-----------: Backbone TMF subscribes ff32:40:fdde:ad00:beef:0:0:3: OK
+00:00:00.008 [I] BbrManager----: Start Backbone TMF agent: OK
+00:00:00.009 [I] Platform------: Execute command `ipset flush otbr-ingress-allow-dst-swap` = 32512
+00:00:00.009 [I] Platform------: Got an error when executing command `ipset flush otbr-ingress-allow-dst-swap`: `Function not implemented`
+00:00:00.009 [W] Platform------: Firewall - failed to update ipsets: Failed
+00:00:00.009 [I] P-Netif-------: NAT64 CIDR updated to 192.168.255.0/24.
+00:00:00.009 [I] P-Netif-------: Sent request#2 to delete route 192.168.255.0/24
+00:00:00.009 [I] P-Netif-------: Deleting route for NAT64
+00:00:00.009 [I] P-McastRtMgr--: Disable: OK
+00:00:00.009 [I] RouterTable---: Route table
+00:00:00.009 [I] P-Netif-------: Host netif is down
+00:00:00.009 [I] P-Netif-------: Succeeded to process request#1
+00:00:00.009 [W] P-Netif-------: Failed to process request#2: No such process
+00:00:00.180 [I] Settings------: Wiped all info
+00:00:00.180 [I] BorderRouting-: Disabling
+00:00:00.205 [I] P-SpinelDrive-: co-processor reset: RESET_POWER_ON
+00:00:00.205 [I] P-SpinelDrive-: Software reset co-processor successfully
+00:00:00.211 [I] P-Netif-------: Sent request#3 to set addr_gen_mode to 1
+00:00:00.211 [I] P-Resolver----: Got nameserver #0: 192.168.65.7
+00:00:00.001 [I] CslTxScheduler: Set frame request ahead: 18000 usec
+00:00:00.001 [I] ChildSupervsn-: Timeout: 0 -> 190
+00:00:00.004 [I] TrelInterface-: User disabled interface
+00:00:00.004 [I] TrelInterface-: Disabled interface
+00:00:00.004 [I] Notifier------: StateChanged (0x40038210) [MLAddr NetData PanId NetName ExtPanId Nat64]
+00:00:00.004 [I] BbrLeader-----: PBBR state: None
+00:00:00.005 [I] Platform------: Execute command `ipset flush otbr-ingress-allow-dst-swap` = 32512
+00:00:00.005 [I] Platform------: Got an error when executing command `ipset flush otbr-ingress-allow-dst-swap`: `Function not implemented`
+00:00:00.005 [W] Platform------: Firewall - failed to update ipsets: Failed
+00:00:00.005 [I] P-Netif-------: Sent request#4 to delete route 192.168.255.0/24
+00:00:00.005 [I] P-Netif-------: Deleting route for NAT64
+00:00:00.005 [I] RouterTable---: Route table
+00:00:00.005 [I] P-Netif-------: Host netif is down
+00:00:00.007 [I] Settings------: Saved BorderAgentId {id:85e07b3027435c40e04af77743073373}
+00:00:00.007 [I] P-Netif-------: Succeeded to process request#3
+00:00:00.007 [W] P-Netif-------: Failed to process request#4: No such process
+00:00:00.055 [I] Settings------: Saved ActiveDataset
+00:00:00.055 [I] DatasetManager: Active dataset set
+00:00:00.056 [I] Notifier------: StateChanged (0x101fc110) [MLAddr KeySeqCntr Channel PanId NetName ExtPanId NetworkKey PSKc SecPolicy ...
+00:00:00.056 [I] Notifier------: StateChanged (0x101fc110) ... ActDset]
+00:00:00.056 [I] AnnounceSender: ChannelMask:{ 11-26 }, period:21500
+00:00:00.056 [I] AnnounceSender: StartingChannel:15
+00:00:00.056 [I] AnnounceSender: StartingChannel:15
+00:00:00.056 [N] BorderRouting-: Local on-link prefix: fd22:76a8:419e:bd13::/64
+00:00:00.104 [I] P-Netif-------: Added multicast address ff02::1
+00:00:00.104 [I] P-Netif-------: Added multicast address ff03::1
+00:00:00.104 [I] P-Netif-------: Added multicast address ff03::fc
+00:00:00.104 [I] P-Netif-------: Sent request#5 to add fe80::acd9:6623:4eec:8ab3/64
+00:00:00.104 [I] Mle-----------: PeriodicParentSearch: (Re)starting timer for check interval
+00:00:00.104 [I] DnssdServer---: Started
+00:00:00.104 [N] Mle-----------: Role disabled -> detached
+00:00:00.104 [I] P-Netif-------: Sent request#6 to add fd09:3158:36dd:87a6:9db6:aed7:e0c:e530/64
+00:00:00.104 [I] P-Netif-------: Added multicast address ff32:40:fd09:3158:36dd:87a6:0:1
+00:00:00.104 [I] P-Netif-------: Added multicast address ff33:40:fd09:3158:36dd:87a6:0:1
+00:00:00.104 [I] Mle-----------: AttachState Idle -> Start
+00:00:00.104 [I] Notifier------: StateChanged (0x1100100d) [Ip6+ Role LLAddr Ip6Mult+ NetifState ActDset]
+00:00:00.104 [I] BbrLeader-----: PBBR state: None
+00:00:00.104 [I] AnnounceSender: Stopped
+00:00:00.104 [N] P-Netif-------: Changing interface state to up.
+00:00:00.104 [I] P-Netif-------: Sent request#7 to delete route 192.168.255.0/24
+00:00:00.104 [I] P-Netif-------: Deleting route for NAT64
+00:00:00.104 [I] P-Netif-------: Succeeded to process request#5
+00:00:00.104 [I] P-Netif-------: ADD [U] fe80::acd9:6623:4eec:8ab3
+00:00:00.104 [I] P-Netif-------: Succeeded to process request#6
+00:00:00.104 [I] P-Netif-------: ADD [U] fd09:3158:36dd:87a6:9db6:aed7:e0c:e530
+00:00:00.104 [I] P-Netif-------: Host netif is up
+00:00:00.104 [W] P-Netif-------: Failed to process request#7: No such process
+00:00:00.115 [I] P-Netif-------: Message dropped by Thread
+00:00:00.115 [I] P-Netif-------: ADD [M] ff33:40:fd09:3158:36dd:87a6:0:1 (already subscribed, ignored)
+00:00:00.115 [I] P-Netif-------: ADD [M] ff32:40:fd09:3158:36dd:87a6:0:1 (already subscribed, ignored)
+00:00:00.115 [I] P-Netif-------: ADD [M] ff03::fc (already subscribed, ignored)
+00:00:00.115 [I] P-Netif-------: ADD [M] ff03::1 (already subscribed, ignored)
+00:00:00.115 [I] P-Netif-------: ADD [M] ff02::16
+00:00:00.115 [I] Notifier------: StateChanged (0x00001000) [Ip6Mult+]
+00:00:00.115 [I] P-Netif-------: ADD [M] ff33:40:fd09:3158:36dd:87a6:0:1 (already subscribed, ignored)
+00:00:00.115 [I] P-Netif-------: ADD [M] ff32:40:fd09:3158:36dd:87a6:0:1 (already subscribed, ignored)
+00:00:00.115 [I] P-Netif-------: ADD [M] ff03::fc (already subscribed, ignored)
+00:00:00.115 [I] P-Netif-------: ADD [M] ff03::1 (already subscribed, ignored)
+00:00:00.115 [I] P-Netif-------: ADD [M] ff02::16 (already subscribed, ignored)
+00:00:00.147 [I] Mle-----------: AttachState Start -> Idle
+00:00:00.147 [I] P-Netif-------: Removed multicast address ff33:40:fd09:3158:36dd:87a6:0:1
+00:00:00.147 [I] P-Netif-------: Removed multicast address ff32:40:fd09:3158:36dd:87a6:0:1
+00:00:00.147 [I] P-Netif-------: Sent request#8 to remove fd09:3158:36dd:87a6:9db6:aed7:e0c:e530/64
+00:00:00.147 [N] Mle-----------: Role detached -> disabled
+00:00:00.147 [I] DnssdServer---: Stopped
+00:00:00.147 [I] P-Netif-------: Sent request#9 to remove fe80::acd9:6623:4eec:8ab3/64
+00:00:00.147 [I] P-Netif-------: Removed multicast address ff02::1
+00:00:00.147 [I] P-Netif-------: Removed multicast address ff03::1
+00:00:00.147 [I] P-Netif-------: Removed multicast address ff03::fc
+00:00:00.147 [I] Notifier------: StateChanged (0x11002006) [Ip6- Role Ip6Mult- NetifState ActDset]
+00:00:00.147 [I] BbrLeader-----: PBBR state: None
+00:00:00.147 [I] AnnounceSender: Stopped
+00:00:00.147 [N] P-Netif-------: Changing interface state to down.
+00:00:00.148 [I] P-Netif-------: Sent request#10 to delete route 192.168.255.0/24
+00:00:00.148 [I] P-Netif-------: Deleting route for NAT64
+00:00:00.148 [I] P-Netif-------: DEL [U] fd09:3158:36dd:87a6:9db6:aed7:e0c:e530 (not found, ignored)
+00:00:00.148 [I] P-Netif-------: Succeeded to process request#8
+00:00:00.148 [I] P-Netif-------: DEL [U] fe80::acd9:6623:4eec:8ab3 (not found, ignored)
+00:00:00.148 [I] P-Netif-------: Succeeded to process request#9
+00:00:00.148 [I] P-Netif-------: Host netif is down
+00:00:00.148 [W] P-Netif-------: Failed to process request#10: No such process
+00:00:00.151 [I] Settings------: Saved ActiveDataset
+00:00:00.151 [I] DatasetManager: Active dataset set
+00:00:00.151 [I] Notifier------: StateChanged (0x10000000) [ActDset]
+00:00:00.195 [I] P-Netif-------: Added multicast address ff02::1
+00:00:00.195 [I] P-Netif-------: Added multicast address ff03::1
+00:00:00.195 [I] P-Netif-------: Added multicast address ff03::fc
+00:00:00.195 [I] P-Netif-------: Sent request#11 to add fe80::acd9:6623:4eec:8ab3/64
+00:00:00.195 [I] DnssdServer---: Started
+00:00:00.195 [N] Mle-----------: Role disabled -> detached
+00:00:00.195 [I] P-Netif-------: Sent request#12 to add fd09:3158:36dd:87a6:9db6:aed7:e0c:e530/64
+00:00:00.195 [I] P-Netif-------: Added multicast address ff32:40:fd09:3158:36dd:87a6:0:1
+00:00:00.195 [I] P-Netif-------: Added multicast address ff33:40:fd09:3158:36dd:87a6:0:1
+00:00:00.195 [I] Mle-----------: AttachState Idle -> Start
+00:00:00.195 [I] Notifier------: StateChanged (0x1100100d) [Ip6+ Role LLAddr Ip6Mult+ NetifState ActDset]
+00:00:00.195 [I] BbrLeader-----: PBBR state: None
+00:00:00.195 [I] AnnounceSender: Stopped
+00:00:00.195 [N] P-Netif-------: Changing interface state to up.
+00:00:00.195 [I] P-Netif-------: Sent request#13 to delete route 192.168.255.0/24
+00:00:00.195 [I] P-Netif-------: Deleting route for NAT64
+00:00:00.195 [I] P-Netif-------: Succeeded to process request#11
+00:00:00.195 [I] P-Netif-------: ADD [U] fe80::acd9:6623:4eec:8ab3
+00:00:00.195 [I] P-Netif-------: Succeeded to process request#12
+00:00:00.195 [I] P-Netif-------: ADD [U] fd09:3158:36dd:87a6:9db6:aed7:e0c:e530
+00:00:00.195 [I] P-Netif-------: Host netif is up
+00:00:00.195 [W] P-Netif-------: Failed to process request#13: No such process
+00:00:00.199 [I] Settings------: Saved PendingDataset
+00:00:00.199 [I] DatasetManager: Pending dataset set
+00:00:00.199 [I] DatasetManager: delay timer started 600000
+00:00:00.199 [I] Notifier------: StateChanged (0x20000000) [PndDset]
+00:00:00.206 [I] P-Netif-------: Message dropped by Thread
+00:00:00.206 [I] P-Netif-------: ADD [M] ff33:40:fd09:3158:36dd:87a6:0:1 (already subscribed, ignored)
+00:00:00.206 [I] P-Netif-------: ADD [M] ff32:40:fd09:3158:36dd:87a6:0:1 (already subscribed, ignored)
+00:00:00.206 [I] P-Netif-------: ADD [M] ff03::fc (already subscribed, ignored)
+00:00:00.206 [I] P-Netif-------: ADD [M] ff03::1 (already subscribed, ignored)
+00:00:00.206 [I] P-Netif-------: ADD [M] ff02::16
+00:00:00.206 [I] Notifier------: StateChanged (0x00001000) [Ip6Mult+]
+00:00:00.206 [I] P-Netif-------: ADD [M] ff33:40:fd09:3158:36dd:87a6:0:1 (already subscribed, ignored)
+00:00:00.206 [I] P-Netif-------: ADD [M] ff32:40:fd09:3158:36dd:87a6:0:1 (already subscribed, ignored)
+00:00:00.206 [I] P-Netif-------: ADD [M] ff03::fc (already subscribed, ignored)
+00:00:00.206 [I] P-Netif-------: ADD [M] ff03::1 (already subscribed, ignored)
+00:00:00.206 [I] P-Netif-------: ADD [M] ff02::16 (already subscribed, ignored)
+00:00:00.243 [I] Mle-----------: AttachState Start -> Idle
+00:00:00.243 [I] P-Netif-------: Removed multicast address ff33:40:fd09:3158:36dd:87a6:0:1
+00:00:00.243 [I] P-Netif-------: Removed multicast address ff32:40:fd09:3158:36dd:87a6:0:1
+00:00:00.243 [I] P-Netif-------: Sent request#14 to remove fd09:3158:36dd:87a6:9db6:aed7:e0c:e530/64
+00:00:00.243 [N] Mle-----------: Role detached -> disabled
+00:00:00.243 [I] DnssdServer---: Stopped
+00:00:00.243 [I] P-Netif-------: Sent request#15 to remove fe80::acd9:6623:4eec:8ab3/64
+00:00:00.243 [I] P-Netif-------: Removed multicast address ff02::1
+00:00:00.243 [I] P-Netif-------: Removed multicast address ff03::1
+00:00:00.243 [I] P-Netif-------: Removed multicast address ff03::fc
+00:00:00.243 [I] Notifier------: StateChanged (0x31002006) [Ip6- Role Ip6Mult- NetifState ActDset PndDset]
+00:00:00.243 [I] BbrLeader-----: PBBR state: None
+00:00:00.243 [I] AnnounceSender: Stopped
+00:00:00.243 [N] P-Netif-------: Changing interface state to down.
+00:00:00.243 [I] P-Netif-------: Sent request#16 to delete route 192.168.255.0/24
+00:00:00.243 [I] P-Netif-------: Deleting route for NAT64
+00:00:00.243 [I] P-Netif-------: DEL [U] fd09:3158:36dd:87a6:9db6:aed7:e0c:e530 (not found, ignored)
+00:00:00.243 [I] P-Netif-------: Succeeded to process request#14
+00:00:00.243 [I] P-Netif-------: DEL [U] fe80::acd9:6623:4eec:8ab3 (not found, ignored)
+00:00:00.243 [I] P-Netif-------: Succeeded to process request#15
+00:00:00.243 [I] P-Netif-------: Host netif is down
+00:00:00.243 [[INFO]-RCP_HOS-: OpenThread log level changed to 4
+[INFO]-HELPER--: Set state callback: OK
+sh: 1: ipset: not found
+W] P-Netif-------: Failed to process request#16: No such process
+00:00:00.243 [I] Settings------: Wiped all info
+00:00:00.243 [I] BorderRouting-: Disabling
+00:00:00.276 [I] P-SpinelDrive-: co-processor reset: RESET_POWER_ON
+00:00:00.276 [I] P-SpinelDrive-: Software reset co-processor successfully
+00:00:00.277 [I] P-Netif-------: Sent request#17 to set addr_gen_mode to 1
+00:00:00.277 [I] P-Resolver----: Got nameserver #0: 192.168.65.7
+00:00:00.001 [I] CslTxScheduler: Set frame request ahead: 18000 usec
+00:00:00.001 [I] ChildSupervsn-: Timeout: 0 -> 190
+00:00:00.004 [I] TrelInterface-: User disabled interface
+00:00:00.004 [I] TrelInterface-: Disabled interface
+00:00:00.004 [I] Notifier------: StateChanged (0x40038210) [MLAddr NetData PanId NetName ExtPanId Nat64]
+00:00:00.004 [I] BbrLeader-----: PBBR state: None
+00:00:00.005 [I] Platform------: Execute command `ipset flush otbr-ingress-allow-dst-swap` = 32512
+00:00:00.005 [I] Platform------: Got an error when executing command `ipset flush otbr-ingress-allow-dst-swap`: `Function not implemented`
+00:00:00.005 [W] Platform------: Firewall - failed to update ipsets: Failed
+00:00:00.005 [I] P-Netif-------: Sent request#18 to delete route 192.168.255.0/24
+00:00:00.005 [I] P-Netif-------: Deleting route for NAT64
+00:00:00.005 [I] RouterTable---: Route table
+00:00:00.005 [I] P-Netif-------: Host netif is down
+00:00:00.007 [I] Settings------: Saved BorderAgentId {id:1c17cc20cbafda5a6f333f7cffe23858}
+00:00:00.007 [I] P-Netif-------: Succeeded to process request#17
+00:00:00.007 [W] P-Netif-------: Failed to process request#18: No such process
+00:00:00.049 [I] BorderRouting-: Disabling

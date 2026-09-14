@@ -1,0 +1,25 @@
+{
+  "Status": "running",
+  "Running": true,
+  "Paused": false,
+  "Restarting": false,
+  "OOMKilled": false,
+  "Dead": false,
+  "Pid": 57871,
+  "ExitCode": 0,
+  "Error": "",
+  "StartedAt": "2026-09-14T09:09:50.202987967Z",
+  "FinishedAt": "0001-01-01T00:00:00Z",
+  "Health": {
+    "Status": "starting",
+    "FailingStreak": 0,
+    "Log": [
+      {
+        "Start": "2026-09-14T09:09:55.282738269Z",
+        "End": "2026-09-14T09:09:55.310267553Z",
+        "ExitCode": 1,
+        "Output": ""
+      }
+    ]
+  }
+}

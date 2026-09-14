@@ -1,0 +1,1 @@
+ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d ["CAP_NET_ADMIN"] [{"PathOnHost":"/dev/net/tun","PathInContainer":"/dev/net/tun","CgroupPermissions":"rwm"}] none

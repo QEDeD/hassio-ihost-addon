@@ -1,0 +1,186 @@
+[09:06:42] INFO: [32mGenerating cpcd configuration.[0m
+[09:06:42] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:06:43] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:06:44] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:06:45] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+/package/admin/s6-overlay/libexec/preinit: info: container permissions: uid=0 (root), euid=0, gid=0 (root), egid=0
+[09:06:46] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:06:47] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+/package/admin/s6-overlay/libexec/preinit: info: /run permissions: uid=0 (root), gid=0 (root), perms=oxorgxgruxuwur
+/run/s6/basedir/scripts/rc.init: info: hook /etc/s6-overlay/scripts/enable-check.sh exited 0
+s6-rc: info: service s6rc-oneshot-runner: starting
+s6-rc: info: service s6rc-oneshot-runner successfully started
+s6-rc: info: service fix-attrs: starting
+s6-rc: info: service cpcd-config: starting
+s6-rc: info: service fix-attrs successfully started
+s6-rc: info: service legacy-cont-init: starting
+cont-init: info: running /etc/cont-init.d/check-cpcd-shm.sh
+cont-init: info: /etc/cont-init.d/check-cpcd-shm.sh exited 0
+s6-rc: info: service legacy-cont-init successfully started
+s6-rc: info: service cpcd-config successfully started
+s6-rc: info: service cpcd: starting
+[09:06:48] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+[09:06:49] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:06:50] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+[09:06:51] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:06:52] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:06:53] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+[09:06:54] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:06:55] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:06:56] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:06:57] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:06:58] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:06:59] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+[09:07:00] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+[09:07:01] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:03] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:04] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:05] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:06] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+[09:07:07] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:08] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:09] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:10] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:11] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:12] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:13] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:14] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+[09:07:15] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:16] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:17] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:18] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:19] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:20] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:21] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:22] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:23] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+[09:07:24] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:25] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:26] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:27] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:28] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:29] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:31] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:32] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+[09:07:33] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:34] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:35] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:36] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:37] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+[09:07:38] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+[09:07:39] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+[09:07:40] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory
+CPC binding key is absent or inaccessible; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+rm: cannot remove '/dev/shm/cpcd': No such file or directory

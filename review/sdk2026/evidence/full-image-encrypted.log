@@ -1,0 +1,1841 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.sdk2026
+#1 transferring dockerfile: 2.55kB done
+#1 WARN: FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 4)
+#1 WARN: FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 19)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+#2 DONE 0.0s
+
+#3 [internal] load metadata for ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf
+#3 ...
+
+#4 [auth] home-assistant/amd64-base-debian:pull token for ghcr.io
+#4 DONE 0.0s
+
+#3 [internal] load metadata for ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf
+#3 DONE 0.8s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [stage-1 1/8] FROM ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf
+#6 resolve ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf 0.0s done
+#6 CACHED
+
+#7 [sdk2026-builder 1/5] FROM ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+#7 resolve ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d 0.0s done
+#7 DONE 0.0s
+
+#8 [internal] load build context
+#8 transferring context: 68.19kB 0.0s done
+#8 DONE 0.0s
+
+#9 [sdk2026-builder 2/5] RUN apt-get update && apt-get install -y --no-install-recommends     build-essential cmake ninja-build git patch pkg-config     libmbedtls-dev libreadline-dev libncurses-dev libboost-dev     libboost-filesystem-dev libboost-system-dev libjsoncpp-dev     libdbus-1-dev libnetfilter-queue-dev libsystemd-dev libprotobuf-dev protobuf-compiler nodejs npm     && rm -rf /var/lib/apt/lists/*
+#9 CACHED
+
+#10 [sdk2026-builder 3/5] COPY hassio-ihost-silabs-multiprotocol/otbr-patches/ /recipe/patches/
+#10 CACHED
+
+#11 [sdk2026-builder 4/5] COPY review/sdk2026/recipe/ /recipe/
+#11 DONE 0.0s
+
+#12 [stage-1 2/8] RUN apt-get update && apt-get install -y --no-install-recommends     libmbedtls21 libreadline8t64 libboost-filesystem1.83.0 libboost-system1.83.0     libjsoncpp26 libnetfilter-queue1 libsystemd0 libprotobuf-lite32t64 socat iproute2 iptables ipset netcat-openbsd iputils-ping     python3 python3-aiohttp python3-cryptography python3-yarl     && rm -rf /var/lib/apt/lists/*
+#12 0.266 Get:1 http://deb.debian.org/debian trixie InRelease [140 kB]
+#12 0.301 Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+#12 0.314 Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+#12 0.325 Get:4 http://deb.debian.org/debian trixie/main amd64 Packages [9678 kB]
+#12 1.504 Get:5 http://deb.debian.org/debian trixie-updates/main amd64 Packages [4412 B]
+#12 1.512 Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [261 kB]
+#12 1.967 Fetched 10.2 MB in 2s (5853 kB/s)
+#12 1.967 Reading package lists...
+#12 2.414 Reading package lists...
+#12 2.803 Building dependency tree...
+#12 2.869 Reading state information...
+#12 2.961 libsystemd0 is already the newest version (257.13-1~deb13u1).
+#12 2.961 libsystemd0 set to manually installed.
+#12 2.961 The following additional packages will be installed:
+#12 2.961   libbpf1 libcap2 libcap2-bin libelf1t64 libexpat1 libip4tc2 libip6tc2
+#12 2.961   libipset13t64 libmbedcrypto16 libmbedx509-7 libmnl0 libncursesw6
+#12 2.961   libnetfilter-conntrack3 libnfnetlink0 libnftnl11 libpython3-stdlib
+#12 2.961   libpython3.13-minimal libpython3.13-stdlib libtirpc-common libtirpc3t64
+#12 2.961   libwrap0 libxtables12 media-types netbase python3-aiohappyeyeballs
+#12 2.961   python3-aiosignal python3-async-timeout python3-attr python3-bcrypt
+#12 2.962   python3-cffi-backend python3-frozenlist python3-idna python3-minimal
+#12 2.962   python3-multidict python3-propcache python3.13 python3.13-minimal
+#12 2.962   readline-common
+#12 2.962 Suggested packages:
+#12 2.962   firewalld kmod python3-doc python3-tk python3-venv python-attr-doc
+#12 2.962   python-cryptography-doc python3-cryptography-vectors python3.13-venv
+#12 2.962   python3.13-doc binutils binfmt-support readline-doc
+#12 2.962 Recommended packages:
+#12 2.962   nftables linux-sysctl-defaults libpam-cap libgpm2 libjs-jquery
+#12 2.962   python3-aiodns
+#12 3.162 The following NEW packages will be installed:
+#12 3.162   iproute2 ipset iptables iputils-ping libboost-filesystem1.83.0
+#12 3.162   libboost-system1.83.0 libbpf1 libcap2-bin libelf1t64 libexpat1 libip4tc2
+#12 3.162   libip6tc2 libipset13t64 libjsoncpp26 libmbedcrypto16 libmbedtls21
+#12 3.162   libmbedx509-7 libmnl0 libncursesw6 libnetfilter-conntrack3
+#12 3.162   libnetfilter-queue1 libnfnetlink0 libnftnl11 libprotobuf-lite32t64
+#12 3.162   libpython3-stdlib libpython3.13-minimal libpython3.13-stdlib libreadline8t64
+#12 3.162   libtirpc-common libtirpc3t64 libwrap0 libxtables12 media-types netbase
+#12 3.162   netcat-openbsd python3 python3-aiohappyeyeballs python3-aiohttp
+#12 3.162   python3-aiosignal python3-async-timeout python3-attr python3-bcrypt
+#12 3.162   python3-cffi-backend python3-cryptography python3-frozenlist python3-idna
+#12 3.162   python3-minimal python3-multidict python3-propcache python3-yarl python3.13
+#12 3.163   python3.13-minimal readline-common socat
+#12 3.163 The following packages will be upgraded:
+#12 3.164   libcap2
+#12 3.214 1 upgraded, 54 newly installed, 0 to remove and 27 not upgraded.
+#12 3.214 Need to get 13.0 MB of archives.
+#12 3.214 After this operation, 52.2 MB of additional disk space will be used.
+#12 3.214 Get:1 http://deb.debian.org/debian trixie/main amd64 libexpat1 amd64 2.8.3-1~deb13u1 [123 kB]
+#12 3.298 Get:2 http://deb.debian.org/debian trixie/main amd64 libpython3.13-minimal amd64 3.13.5-2+deb13u5 [863 kB]
+#12 3.940 Get:3 http://deb.debian.org/debian trixie/main amd64 python3.13-minimal amd64 3.13.5-2+deb13u5 [2225 kB]
+#12 4.213 Get:4 http://deb.debian.org/debian trixie/main amd64 python3-minimal amd64 3.13.5-1 [27.2 kB]
+#12 4.214 Get:5 http://deb.debian.org/debian trixie/main amd64 media-types all 13.0.0 [29.3 kB]
+#12 4.217 Get:6 http://deb.debian.org/debian trixie/main amd64 netbase all 6.5 [12.4 kB]
+#12 4.218 Get:7 http://deb.debian.org/debian trixie/main amd64 libncursesw6 amd64 6.5+20250216-2 [135 kB]
+#12 4.232 Get:8 http://deb.debian.org/debian trixie/main amd64 readline-common all 8.2-6 [69.4 kB]
+#12 4.246 Get:9 http://deb.debian.org/debian trixie/main amd64 libreadline8t64 amd64 8.2-6 [169 kB]
+#12 4.271 Get:10 http://deb.debian.org/debian trixie/main amd64 libpython3.13-stdlib amd64 3.13.5-2+deb13u5 [1959 kB]
+#12 5.345 Get:11 http://deb.debian.org/debian trixie/main amd64 python3.13 amd64 3.13.5-2+deb13u5 [757 kB]
+#12 5.428 Get:12 http://deb.debian.org/debian trixie/main amd64 libpython3-stdlib amd64 3.13.5-1 [10.2 kB]
+#12 5.429 Get:13 http://deb.debian.org/debian trixie/main amd64 python3 amd64 3.13.5-1 [28.2 kB]
+#12 5.432 Get:14 http://deb.debian.org/debian trixie/main amd64 libcap2 amd64 1:2.75-10+deb13u1+b3 [29.0 kB]
+#12 5.457 Get:15 http://deb.debian.org/debian trixie/main amd64 libelf1t64 amd64 0.192-4 [189 kB]
+#12 5.619 Get:16 http://deb.debian.org/debian trixie/main amd64 libbpf1 amd64 1:1.5.0-3 [169 kB]
+#12 5.625 Get:17 http://deb.debian.org/debian trixie/main amd64 libmnl0 amd64 1.0.5-3 [11.9 kB]
+#12 5.625 Get:18 http://deb.debian.org/debian trixie/main amd64 libtirpc-common all 1.3.6+ds-1 [11.0 kB]
+#12 5.626 Get:19 http://deb.debian.org/debian trixie/main amd64 libtirpc3t64 amd64 1.3.6+ds-1 [83.3 kB]
+#12 5.628 Get:20 http://deb.debian.org/debian trixie/main amd64 libxtables12 amd64 1.8.11-2 [31.9 kB]
+#12 5.628 Get:21 http://deb.debian.org/debian trixie/main amd64 libcap2-bin amd64 1:2.75-10+deb13u1+b3 [36.5 kB]
+#12 5.630 Get:22 http://deb.debian.org/debian trixie/main amd64 iproute2 amd64 6.15.0-1 [1089 kB]
+#12 5.843 Get:23 http://deb.debian.org/debian trixie/main amd64 iputils-ping amd64 3:20240905-3 [51.2 kB]
+#12 5.848 Get:24 http://deb.debian.org/debian trixie/main amd64 libipset13t64 amd64 7.22-1+b1 [69.7 kB]
+#12 5.857 Get:25 http://deb.debian.org/debian trixie/main amd64 ipset amd64 7.22-1+b1 [46.6 kB]
+#12 5.874 Get:26 http://deb.debian.org/debian trixie/main amd64 libip4tc2 amd64 1.8.11-2 [20.0 kB]
+#12 5.876 Get:27 http://deb.debian.org/debian trixie/main amd64 libip6tc2 amd64 1.8.11-2 [20.3 kB]
+#12 5.885 Get:28 http://deb.debian.org/debian trixie/main amd64 libnfnetlink0 amd64 1.0.2-3 [14.4 kB]
+#12 5.885 Get:29 http://deb.debian.org/debian trixie/main amd64 libnetfilter-conntrack3 amd64 1.1.0-1 [42.1 kB]
+#12 5.892 Get:30 http://deb.debian.org/debian trixie/main amd64 libnftnl11 amd64 1.2.9-1 [65.0 kB]
+#12 5.917 Get:31 http://deb.debian.org/debian trixie/main amd64 iptables amd64 1.8.11-2 [361 kB]
+#12 6.386 Get:32 http://deb.debian.org/debian trixie/main amd64 libboost-filesystem1.83.0 amd64 1.83.0-4.2 [282 kB]
+#12 6.618 Get:33 http://deb.debian.org/debian trixie/main amd64 libboost-system1.83.0 amd64 1.83.0-4.2 [231 kB]
+#12 6.800 Get:34 http://deb.debian.org/debian trixie/main amd64 libjsoncpp26 amd64 1.9.6-3 [81.7 kB]
+#12 6.803 Get:35 http://deb.debian.org/debian trixie/main amd64 libmbedcrypto16 amd64 3.6.6-0.1~deb13u1 [365 kB]
+#12 6.847 Get:36 http://deb.debian.org/debian trixie/main amd64 libmbedx509-7 amd64 3.6.6-0.1~deb13u1 [155 kB]
+#12 6.960 Get:37 http://deb.debian.org/debian trixie/main amd64 libmbedtls21 amd64 3.6.6-0.1~deb13u1 [246 kB]
+#12 7.100 Get:38 http://deb.debian.org/debian trixie/main amd64 libnetfilter-queue1 amd64 1.0.5-4+b1 [14.7 kB]
+#12 7.100 Get:39 http://deb.debian.org/debian trixie/main amd64 libprotobuf-lite32t64 amd64 3.21.12-11+deb13u1 [275 kB]
+#12 7.140 Get:40 http://deb.debian.org/debian trixie/main amd64 libwrap0 amd64 7.6.q-36 [55.3 kB]
+#12 7.167 Get:41 http://deb.debian.org/debian trixie/main amd64 netcat-openbsd amd64 1.229-1 [42.5 kB]
+#12 7.179 Get:42 http://deb.debian.org/debian trixie/main amd64 python3-aiohappyeyeballs all 2.6.1-1 [14.4 kB]
+#12 7.185 Get:43 http://deb.debian.org/debian trixie/main amd64 python3-idna all 3.10-1+deb13u1 [43.0 kB]
+#12 7.203 Get:44 http://deb.debian.org/debian trixie/main amd64 python3-multidict amd64 6.4.3-1 [52.8 kB]
+#12 7.224 Get:45 http://deb.debian.org/debian trixie/main amd64 python3-propcache amd64 0.3.1-1 [40.5 kB]
+#12 7.236 Get:46 http://deb.debian.org/debian trixie/main amd64 python3-yarl amd64 1.19.0-1 [96.5 kB]
+#12 7.270 Get:47 http://deb.debian.org/debian trixie/main amd64 python3-async-timeout all 5.0.1-1 [8324 B]
+#12 7.270 Get:48 http://deb.debian.org/debian trixie/main amd64 python3-frozenlist amd64 1.6.0-1 [99.7 kB]
+#12 7.299 Get:49 http://deb.debian.org/debian trixie/main amd64 python3-aiosignal all 1.3.2-1 [6100 B]
+#12 7.301 Get:50 http://deb.debian.org/debian trixie/main amd64 python3-attr all 25.3.0-1 [69.5 kB]
+#12 7.341 Get:51 http://deb.debian.org/debian trixie/main amd64 python3-aiohttp amd64 3.11.16-1+deb13u1 [406 kB]
+#12 7.347 Get:52 http://deb.debian.org/debian trixie/main amd64 python3-bcrypt amd64 4.2.0-2.1+b1 [211 kB]
+#12 7.403 Get:53 http://deb.debian.org/debian trixie/main amd64 python3-cffi-backend amd64 1.17.1-3 [93.4 kB]
+#12 7.419 Get:54 http://deb.debian.org/debian trixie/main amd64 python3-cryptography amd64 43.0.0-3+deb13u1 [942 kB]
+#12 7.648 Get:55 http://deb.debian.org/debian trixie/main amd64 socat amd64 1.8.0.3-1+deb13u1 [424 kB]
+#12 9.346 Preconfiguring packages ...
+#12 ...
+
+#13 [sdk2026-builder 5/5] RUN bash /recipe/build-in-container.sh
+#13 0.174 Cloning into 'cpc-daemon'...
+#13 1.052 Note: switching to '87f6dbda4eef05e4538589c195099c3daf8f6f6b'.
+#13 1.052 
+#13 1.052 You are in 'detached HEAD' state. You can look around, make experimental
+#13 1.052 changes and commit them, and you can discard any commits you make in this
+#13 1.052 state without impacting any branches by switching back to a branch.
+#13 1.052 
+#13 1.052 If you want to create a new branch to retain commits you create, you may
+#13 1.052 do so (now or later) by using -c with the switch command. Example:
+#13 1.052 
+#13 1.052   git switch -c <new-branch-name>
+#13 1.052 
+#13 1.052 Or undo this operation with:
+#13 1.052 
+#13 1.052   git switch -
+#13 1.052 
+#13 1.052 Turn off this advice by setting config variable advice.detachedHead to false
+#13 1.052 
+#13 1.126 -- The C compiler identification is GNU 14.2.0
+#13 1.132 -- Detecting C compiler ABI info
+#13 1.174 -- Detecting C compiler ABI info - done
+#13 1.184 -- Check for working C compiler: /usr/bin/cc - skipped
+#13 1.184 -- Detecting C compile features
+#13 1.184 -- Detecting C compile features - done
+#13 1.195 -- Performing Test _Wall
+#13 1.238 -- Performing Test _Wall - Success
+#13 1.239 -- Performing Test _Wextra
+#13 1.280 -- Performing Test _Wextra - Success
+#13 1.280 -- Performing Test _Wconversion
+#13 1.321 -- Performing Test _Wconversion - Success
+#13 1.322 -- Performing Test _Wformat_2
+#13 1.363 -- Performing Test _Wformat_2 - Success
+#13 1.364 -- Performing Test _Wlogical_op
+#13 1.405 -- Performing Test _Wlogical_op - Success
+#13 1.405 -- Performing Test _Wmissing_declarations
+#13 1.447 -- Performing Test _Wmissing_declarations - Success
+#13 1.447 -- Performing Test _Wpointer_arith
+#13 1.491 -- Performing Test _Wpointer_arith - Success
+#13 1.492 -- Performing Test _Wsign_conversion
+#13 1.533 -- Performing Test _Wsign_conversion - Success
+#13 1.533 -- Performing Test _Wswitch_default
+#13 1.575 -- Performing Test _Wswitch_default - Success
+#13 1.576 -- Looking for backtrace
+#13 1.619 -- Looking for backtrace - found
+#13 1.619 -- backtrace facility detected in default set of libraries
+#13 1.620 -- Found Backtrace: /usr/include
+#13 1.623 -- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1")
+#13 1.623 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+#13 1.671 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+#13 1.671 -- Found Threads: TRUE
+#13 1.671 -- Checking for one of the modules 'mbedcrypto>=2.7'
+#13 1.704 -- Configuring done (0.6s)
+#13 1.715 -- Generating done (0.0s)
+#13 1.715 -- Build files have been written to: /sdk2026-host/cpc-build
+#13 1.747 [1/44] Building C object CMakeFiles/cpc.dir/misc/sleep.c.o
+#13 1.751 [2/44] Building C object CMakeFiles/cpc.dir/misc/sl_slist.c.o
+#13 1.774 [3/44] Building C object CMakeFiles/cpcd.dir/driver/driver_kill.c.o
+#13 1.790 [4/44] Building C object CMakeFiles/cpcd.dir/main.c.o
+#13 1.851 [5/44] Building C object CMakeFiles/cpcd.dir/driver/driver_sdio.c.o
+#13 1.859 [6/44] Building C object CMakeFiles/cpcd.dir/driver/driver_spi.c.o
+#13 1.879 [7/44] Building C object CMakeFiles/cpcd.dir/driver/driver_ezsp.c.o
+#13 1.925 [8/44] Building C object CMakeFiles/cpcd.dir/driver/netlink/nl_sdio_interface.c.o
+#13 1.934 [9/44] Building C object CMakeFiles/cpcd.dir/driver/driver_xmodem.c.o
+#13 1.970 [10/44] Building C object CMakeFiles/cpcd.dir/misc/board_controller.c.o
+#13 1.972 [11/44] Building C object CMakeFiles/cpcd.dir/driver/driver_uart.c.o
+#13 1.990 [12/44] Building C object CMakeFiles/cpcd.dir/driver/netlink/nl_socket.c.o
+#13 1.998 [13/44] Building C object CMakeFiles/cpcd.dir/misc/sl_slist.c.o
+#13 2.013 [14/44] Building C object CMakeFiles/cpcd.dir/misc/sleep.c.o
+#13 2.043 [15/44] Building C object CMakeFiles/cpcd.dir/misc/utils.c.o
+#13 2.072 [16/44] Building C object CMakeFiles/cpcd.dir/modes/normal.c.o
+#13 2.078 [17/44] Building C object CMakeFiles/cpcd.dir/modes/firmware_update.c.o
+#13 2.098 [18/44] Building C object CMakeFiles/cpcd.dir/misc/logging.c.o
+#13 2.122 [19/44] Building C object CMakeFiles/cpcd.dir/server_core/core/buffer.c.o
+#13 2.140 [20/44] Building C object CMakeFiles/cpcd.dir/server_core/core/crc.c.o
+#13 2.160 [21/44] Building C object CMakeFiles/cpcd.dir/modes/uart_validation.c.o
+#13 2.161 [22/44] Building C object CMakeFiles/cpcd.dir/server_core/core/hdlc.c.o
+#13 2.188 [23/44] Building C object CMakeFiles/cpcd.dir/server_core/core/protocol.c.o
+#13 2.225 [24/44] Building C object CMakeFiles/cpcd.dir/server_core/core/protocol_v4.c.o
+#13 2.268 [25/44] Building C object CMakeFiles/cpcd.dir/server_core/epoll/epoll.c.o
+#13 2.276 [26/44] Building C object CMakeFiles/cpcd.dir/server_core/core/protocol_v5.c.o
+#13 2.303 [27/44] Building C object CMakeFiles/cpcd.dir/server_core/server/server_ready_sync.c.o
+#13 2.394 [28/44] Building C object CMakeFiles/cpc.dir/lib/sl_cpc.c.o
+#13 2.412 [29/44] Linking C shared library libcpc.so.4.9.1
+#13 2.423 [30/44] Creating library symlink libcpc.so.3 libcpc.so
+#13 2.453 [31/44] Building C object CMakeFiles/cpcd.dir/server_core/core/core.c.o
+#13 2.490 [32/44] Building C object CMakeFiles/cpcd.dir/server_core/server_core.c.o
+#13 2.506 [33/44] Building C object CMakeFiles/cpcd.dir/misc/gpio.c.o
+#13 2.529 [34/44] Building C object CMakeFiles/cpcd.dir/modes/binding.c.o
+#13 2.548 [35/44] Building C object CMakeFiles/cpcd.dir/server_core/server/server.c.o
+#13 2.578 [36/44] Building C object CMakeFiles/cpcd.dir/security/private/thread/command_synchronizer.c.o
+#13 2.582 [37/44] Building C object CMakeFiles/cpcd.dir/server_core/system_endpoint/system.c.o
+#13 2.600 [38/44] Building C object CMakeFiles/cpcd.dir/security/private/protocol/protocol.c.o
+#13 2.616 [39/44] Building C object CMakeFiles/cpcd.dir/security/security.c.o
+#13 2.622 [40/44] Building C object CMakeFiles/cpcd.dir/security/private/thread/security_thread.c.o
+#13 2.652 [41/44] Building C object CMakeFiles/cpcd.dir/security/private/keys/keys.c.o
+#13 2.667 [42/44] Building C object CMakeFiles/cpcd.dir/misc/exit.c.o
+#13 2.838 [43/44] Building C object CMakeFiles/cpcd.dir/misc/config.c.o
+#13 2.862 [44/44] Linking C executable cpcd
+#13 2.871 -- Install configuration: "Release"
+#13 2.871 -- Installing: /usr/local/lib/libcpc.so.4.9.1
+#13 2.873 -- Installing: /usr/local/lib/libcpc.so.3
+#13 2.873 -- Installing: /usr/local/lib/libcpc.so
+#13 2.873 -- Installing: /usr/local/include/sl_cpc.h
+#13 2.874 -- Installing: /usr/local/lib/pkgconfig/libcpc.pc
+#13 2.874 -- Installing: /usr/local/bin/cpcd
+#13 2.875 -- Set non-toolchain portion of runtime path of "/usr/local/bin/cpcd" to ""
+#13 2.875 -- Installing: /usr/local/etc/cpcd.conf
+#13 2.884 -- Install configuration: "Release"
+#13 2.886 -- Installing: /sdk2026-upstream-install/cpc/usr/local/lib/libcpc.so.4.9.1
+#13 2.886 -- Installing: /sdk2026-upstream-install/cpc/usr/local/lib/libcpc.so.3
+#13 2.886 -- Installing: /sdk2026-upstream-install/cpc/usr/local/lib/libcpc.so
+#13 2.887 -- Installing: /sdk2026-upstream-install/cpc/usr/local/include/sl_cpc.h
+#13 2.887 -- Installing: /sdk2026-upstream-install/cpc/usr/local/lib/pkgconfig/libcpc.pc
+#13 2.888 -- Installing: /sdk2026-upstream-install/cpc/usr/local/bin/cpcd
+#13 2.888 -- Set non-toolchain portion of runtime path of "/sdk2026-upstream-install/cpc/usr/local/bin/cpcd" to ""
+#13 2.889 -- Installing: /sdk2026-upstream-install/cpc/usr/local/etc/cpcd.conf
+#13 4.931 The sdk /opt/silabs/sdks/simplicity_sdk_2026.6.1/ ( com.silabs.sdk.stack.simplicity_sdk:2026.6.1._1763566131 )  is now trusted. 
+#13 ...
+
+#12 [stage-1 2/8] RUN apt-get update && apt-get install -y --no-install-recommends     libmbedtls21 libreadline8t64 libboost-filesystem1.83.0 libboost-system1.83.0     libjsoncpp26 libnetfilter-queue1 libsystemd0 libprotobuf-lite32t64 socat iproute2 iptables ipset netcat-openbsd iputils-ping     python3 python3-aiohttp python3-cryptography python3-yarl     && rm -rf /var/lib/apt/lists/*
+#12 9.406 Fetched 13.0 MB in 5s (2803 kB/s)
+#12 9.433 Selecting previously unselected package libexpat1:amd64.
+#12 9.433 (Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 5879 files and directories currently installed.)
+#12 9.465 Preparing to unpack .../libexpat1_2.8.3-1~deb13u1_amd64.deb ...
+#12 9.475 Unpacking libexpat1:amd64 (2.8.3-1~deb13u1) ...
+#12 9.514 Selecting previously unselected package libpython3.13-minimal:amd64.
+#12 9.515 Preparing to unpack .../libpython3.13-minimal_3.13.5-2+deb13u5_amd64.deb ...
+#12 9.518 Unpacking libpython3.13-minimal:amd64 (3.13.5-2+deb13u5) ...
+#12 9.614 Selecting previously unselected package python3.13-minimal.
+#12 9.615 Preparing to unpack .../python3.13-minimal_3.13.5-2+deb13u5_amd64.deb ...
+#12 9.621 Unpacking python3.13-minimal (3.13.5-2+deb13u5) ...
+#12 9.725 Setting up libpython3.13-minimal:amd64 (3.13.5-2+deb13u5) ...
+#12 9.736 Setting up libexpat1:amd64 (2.8.3-1~deb13u1) ...
+#12 9.742 Setting up python3.13-minimal (3.13.5-2+deb13u5) ...
+#12 10.28 Selecting previously unselected package python3-minimal.
+#12 10.28 (Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6213 files and directories currently installed.)
+#12 10.29 Preparing to unpack .../0-python3-minimal_3.13.5-1_amd64.deb ...
+#12 10.29 Unpacking python3-minimal (3.13.5-1) ...
+#12 10.32 Selecting previously unselected package media-types.
+#12 10.32 Preparing to unpack .../1-media-types_13.0.0_all.deb ...
+#12 10.32 Unpacking media-types (13.0.0) ...
+#12 10.35 Selecting previously unselected package netbase.
+#12 10.35 Preparing to unpack .../2-netbase_6.5_all.deb ...
+#12 10.35 Unpacking netbase (6.5) ...
+#12 10.38 Selecting previously unselected package libncursesw6:amd64.
+#12 10.38 Preparing to unpack .../3-libncursesw6_6.5+20250216-2_amd64.deb ...
+#12 10.39 Unpacking libncursesw6:amd64 (6.5+20250216-2) ...
+#12 10.41 Selecting previously unselected package readline-common.
+#12 10.42 Preparing to unpack .../4-readline-common_8.2-6_all.deb ...
+#12 10.42 Unpacking readline-common (8.2-6) ...
+#12 10.45 Selecting previously unselected package libreadline8t64:amd64.
+#12 10.45 Preparing to unpack .../5-libreadline8t64_8.2-6_amd64.deb ...
+#12 10.46 Adding 'diversion of /lib/x86_64-linux-gnu/libhistory.so.8 to /lib/x86_64-linux-gnu/libhistory.so.8.usr-is-merged by libreadline8t64'
+#12 10.46 Adding 'diversion of /lib/x86_64-linux-gnu/libhistory.so.8.2 to /lib/x86_64-linux-gnu/libhistory.so.8.2.usr-is-merged by libreadline8t64'
+#12 10.47 Adding 'diversion of /lib/x86_64-linux-gnu/libreadline.so.8 to /lib/x86_64-linux-gnu/libreadline.so.8.usr-is-merged by libreadline8t64'
+#12 10.47 Adding 'diversion of /lib/x86_64-linux-gnu/libreadline.so.8.2 to /lib/x86_64-linux-gnu/libreadline.so.8.2.usr-is-merged by libreadline8t64'
+#12 10.48 Unpacking libreadline8t64:amd64 (8.2-6) ...
+#12 10.50 Selecting previously unselected package libpython3.13-stdlib:amd64.
+#12 10.50 Preparing to unpack .../6-libpython3.13-stdlib_3.13.5-2+deb13u5_amd64.deb ...
+#12 10.51 Unpacking libpython3.13-stdlib:amd64 (3.13.5-2+deb13u5) ...
+#12 10.62 Selecting previously unselected package python3.13.
+#12 10.63 Preparing to unpack .../7-python3.13_3.13.5-2+deb13u5_amd64.deb ...
+#12 10.63 Unpacking python3.13 (3.13.5-2+deb13u5) ...
+#12 10.66 Selecting previously unselected package libpython3-stdlib:amd64.
+#12 10.66 Preparing to unpack .../8-libpython3-stdlib_3.13.5-1_amd64.deb ...
+#12 10.66 Unpacking libpython3-stdlib:amd64 (3.13.5-1) ...
+#12 10.69 Setting up python3-minimal (3.13.5-1) ...
+#12 10.83 Selecting previously unselected package python3.
+#12 10.83 (Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6716 files and directories currently installed.)
+#12 10.84 Preparing to unpack .../python3_3.13.5-1_amd64.deb ...
+#12 10.85 Unpacking python3 (3.13.5-1) ...
+#12 10.88 Preparing to unpack .../libcap2_1%3a2.75-10+deb13u1+b3_amd64.deb ...
+#12 10.89 Unpacking libcap2:amd64 (1:2.75-10+deb13u1+b3) over (1:2.75-10+deb13u1+b1) ...
+#12 10.93 Setting up libcap2:amd64 (1:2.75-10+deb13u1+b3) ...
+#12 10.97 Selecting previously unselected package libelf1t64:amd64.
+#12 10.97 (Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 6737 files and directories currently installed.)
+#12 10.98 Preparing to unpack .../00-libelf1t64_0.192-4_amd64.deb ...
+#12 10.98 Unpacking libelf1t64:amd64 (0.192-4) ...
+#12 11.01 Selecting previously unselected package libbpf1:amd64.
+#12 11.02 Preparing to unpack .../01-libbpf1_1%3a1.5.0-3_amd64.deb ...
+#12 11.02 Unpacking libbpf1:amd64 (1:1.5.0-3) ...
+#12 11.05 Selecting previously unselected package libmnl0:amd64.
+#12 11.05 Preparing to unpack .../02-libmnl0_1.0.5-3_amd64.deb ...
+#12 11.06 Unpacking libmnl0:amd64 (1.0.5-3) ...
+#12 11.08 Selecting previously unselected package libtirpc-common.
+#12 11.08 Preparing to unpack .../03-libtirpc-common_1.3.6+ds-1_all.deb ...
+#12 11.09 Unpacking libtirpc-common (1.3.6+ds-1) ...
+#12 11.12 Selecting previously unselected package libtirpc3t64:amd64.
+#12 11.12 Preparing to unpack .../04-libtirpc3t64_1.3.6+ds-1_amd64.deb ...
+#12 11.14 Adding 'diversion of /lib/x86_64-linux-gnu/libtirpc.so.3 to /lib/x86_64-linux-gnu/libtirpc.so.3.usr-is-merged by libtirpc3t64'
+#12 11.15 Adding 'diversion of /lib/x86_64-linux-gnu/libtirpc.so.3.0.0 to /lib/x86_64-linux-gnu/libtirpc.so.3.0.0.usr-is-merged by libtirpc3t64'
+#12 11.15 Unpacking libtirpc3t64:amd64 (1.3.6+ds-1) ...
+#12 11.19 Selecting previously unselected package libxtables12:amd64.
+#12 11.19 Preparing to unpack .../05-libxtables12_1.8.11-2_amd64.deb ...
+#12 11.19 Unpacking libxtables12:amd64 (1.8.11-2) ...
+#12 11.22 Selecting previously unselected package libcap2-bin.
+#12 11.22 Preparing to unpack .../06-libcap2-bin_1%3a2.75-10+deb13u1+b3_amd64.deb ...
+#12 11.22 Unpacking libcap2-bin (1:2.75-10+deb13u1+b3) ...
+#12 11.25 Selecting previously unselected package iproute2.
+#12 11.25 Preparing to unpack .../07-iproute2_6.15.0-1_amd64.deb ...
+#12 11.30 Unpacking iproute2 (6.15.0-1) ...
+#12 11.35 Selecting previously unselected package iputils-ping.
+#12 11.35 Preparing to unpack .../08-iputils-ping_3%3a20240905-3_amd64.deb ...
+#12 11.36 Unpacking iputils-ping (3:20240905-3) ...
+#12 11.38 Selecting previously unselected package libipset13t64:amd64.
+#12 11.38 Preparing to unpack .../09-libipset13t64_7.22-1+b1_amd64.deb ...
+#12 11.39 Unpacking libipset13t64:amd64 (7.22-1+b1) ...
+#12 11.41 Selecting previously unselected package ipset.
+#12 11.41 Preparing to unpack .../10-ipset_7.22-1+b1_amd64.deb ...
+#12 11.41 Unpacking ipset (7.22-1+b1) ...
+#12 11.44 Selecting previously unselected package libip4tc2:amd64.
+#12 11.44 Preparing to unpack .../11-libip4tc2_1.8.11-2_amd64.deb ...
+#12 11.44 Unpacking libip4tc2:amd64 (1.8.11-2) ...
+#12 11.47 Selecting previously unselected package libip6tc2:amd64.
+#12 11.47 Preparing to unpack .../12-libip6tc2_1.8.11-2_amd64.deb ...
+#12 11.48 Unpacking libip6tc2:amd64 (1.8.11-2) ...
+#12 11.50 Selecting previously unselected package libnfnetlink0:amd64.
+#12 11.50 Preparing to unpack .../13-libnfnetlink0_1.0.2-3_amd64.deb ...
+#12 11.51 Unpacking libnfnetlink0:amd64 (1.0.2-3) ...
+#12 11.53 Selecting previously unselected package libnetfilter-conntrack3:amd64.
+#12 11.54 Preparing to unpack .../14-libnetfilter-conntrack3_1.1.0-1_amd64.deb ...
+#12 11.54 Unpacking libnetfilter-conntrack3:amd64 (1.1.0-1) ...
+#12 11.56 Selecting previously unselected package libnftnl11:amd64.
+#12 11.56 Preparing to unpack .../15-libnftnl11_1.2.9-1_amd64.deb ...
+#12 11.57 Unpacking libnftnl11:amd64 (1.2.9-1) ...
+#12 11.60 Selecting previously unselected package iptables.
+#12 11.60 Preparing to unpack .../16-iptables_1.8.11-2_amd64.deb ...
+#12 11.60 Unpacking iptables (1.8.11-2) ...
+#12 11.65 Selecting previously unselected package libboost-filesystem1.83.0:amd64.
+#12 11.65 Preparing to unpack .../17-libboost-filesystem1.83.0_1.83.0-4.2_amd64.deb ...
+#12 11.65 Unpacking libboost-filesystem1.83.0:amd64 (1.83.0-4.2) ...
+#12 11.68 Selecting previously unselected package libboost-system1.83.0:amd64.
+#12 11.69 Preparing to unpack .../18-libboost-system1.83.0_1.83.0-4.2_amd64.deb ...
+#12 11.69 Unpacking libboost-system1.83.0:amd64 (1.83.0-4.2) ...
+#12 11.72 Selecting previously unselected package libjsoncpp26:amd64.
+#12 11.72 Preparing to unpack .../19-libjsoncpp26_1.9.6-3_amd64.deb ...
+#12 11.72 Unpacking libjsoncpp26:amd64 (1.9.6-3) ...
+#12 11.75 Selecting previously unselected package libmbedcrypto16:amd64.
+#12 11.75 Preparing to unpack .../20-libmbedcrypto16_3.6.6-0.1~deb13u1_amd64.deb ...
+#12 11.75 Unpacking libmbedcrypto16:amd64 (3.6.6-0.1~deb13u1) ...
+#12 11.79 Selecting previously unselected package libmbedx509-7:amd64.
+#12 11.79 Preparing to unpack .../21-libmbedx509-7_3.6.6-0.1~deb13u1_amd64.deb ...
+#12 11.79 Unpacking libmbedx509-7:amd64 (3.6.6-0.1~deb13u1) ...
+#12 11.82 Selecting previously unselected package libmbedtls21:amd64.
+#12 11.82 Preparing to unpack .../22-libmbedtls21_3.6.6-0.1~deb13u1_amd64.deb ...
+#12 11.82 Unpacking libmbedtls21:amd64 (3.6.6-0.1~deb13u1) ...
+#12 11.85 Selecting previously unselected package libnetfilter-queue1:amd64.
+#12 11.85 Preparing to unpack .../23-libnetfilter-queue1_1.0.5-4+b1_amd64.deb ...
+#12 11.85 Unpacking libnetfilter-queue1:amd64 (1.0.5-4+b1) ...
+#12 11.87 Selecting previously unselected package libprotobuf-lite32t64:amd64.
+#12 11.87 Preparing to unpack .../24-libprotobuf-lite32t64_3.21.12-11+deb13u1_amd64.deb ...
+#12 11.88 Unpacking libprotobuf-lite32t64:amd64 (3.21.12-11+deb13u1) ...
+#12 11.91 Selecting previously unselected package libwrap0:amd64.
+#12 11.91 Preparing to unpack .../25-libwrap0_7.6.q-36_amd64.deb ...
+#12 11.91 Unpacking libwrap0:amd64 (7.6.q-36) ...
+#12 11.93 Selecting previously unselected package netcat-openbsd.
+#12 11.93 Preparing to unpack .../26-netcat-openbsd_1.229-1_amd64.deb ...
+#12 11.94 Unpacking netcat-openbsd (1.229-1) ...
+#12 11.96 Selecting previously unselected package python3-aiohappyeyeballs.
+#12 11.96 Preparing to unpack .../27-python3-aiohappyeyeballs_2.6.1-1_all.deb ...
+#12 11.97 Unpacking python3-aiohappyeyeballs (2.6.1-1) ...
+#12 11.99 Selecting previously unselected package python3-idna.
+#12 11.99 Preparing to unpack .../28-python3-idna_3.10-1+deb13u1_all.deb ...
+#12 12.00 Unpacking python3-idna (3.10-1+deb13u1) ...
+#12 12.02 Selecting previously unselected package python3-multidict.
+#12 12.02 Preparing to unpack .../29-python3-multidict_6.4.3-1_amd64.deb ...
+#12 12.03 Unpacking python3-multidict (6.4.3-1) ...
+#12 12.05 Selecting previously unselected package python3-propcache.
+#12 12.05 Preparing to unpack .../30-python3-propcache_0.3.1-1_amd64.deb ...
+#12 12.06 Unpacking python3-propcache (0.3.1-1) ...
+#12 12.08 Selecting previously unselected package python3-yarl.
+#12 12.08 Preparing to unpack .../31-python3-yarl_1.19.0-1_amd64.deb ...
+#12 12.09 Unpacking python3-yarl (1.19.0-1) ...
+#12 12.12 Selecting previously unselected package python3-async-timeout.
+#12 12.12 Preparing to unpack .../32-python3-async-timeout_5.0.1-1_all.deb ...
+#12 12.12 Unpacking python3-async-timeout (5.0.1-1) ...
+#12 12.15 Selecting previously unselected package python3-frozenlist.
+#12 12.15 Preparing to unpack .../33-python3-frozenlist_1.6.0-1_amd64.deb ...
+#12 12.15 Unpacking python3-frozenlist (1.6.0-1) ...
+#12 12.18 Selecting previously unselected package python3-aiosignal.
+#12 12.18 Preparing to unpack .../34-python3-aiosignal_1.3.2-1_all.deb ...
+#12 12.19 Unpacking python3-aiosignal (1.3.2-1) ...
+#12 12.21 Selecting previously unselected package python3-attr.
+#12 12.21 Preparing to unpack .../35-python3-attr_25.3.0-1_all.deb ...
+#12 12.22 Unpacking python3-attr (25.3.0-1) ...
+#12 12.25 Selecting previously unselected package python3-aiohttp.
+#12 12.25 Preparing to unpack .../36-python3-aiohttp_3.11.16-1+deb13u1_amd64.deb ...
+#12 12.25 Unpacking python3-aiohttp (3.11.16-1+deb13u1) ...
+#12 12.30 Selecting previously unselected package python3-bcrypt.
+#12 12.30 Preparing to unpack .../37-python3-bcrypt_4.2.0-2.1+b1_amd64.deb ...
+#12 12.30 Unpacking python3-bcrypt (4.2.0-2.1+b1) ...
+#12 12.33 Selecting previously unselected package python3-cffi-backend:amd64.
+#12 12.33 Preparing to unpack .../38-python3-cffi-backend_1.17.1-3_amd64.deb ...
+#12 12.34 Unpacking python3-cffi-backend:amd64 (1.17.1-3) ...
+#12 12.37 Selecting previously unselected package python3-cryptography.
+#12 12.37 Preparing to unpack .../39-python3-cryptography_43.0.0-3+deb13u1_amd64.deb ...
+#12 12.37 Unpacking python3-cryptography (43.0.0-3+deb13u1) ...
+#12 12.44 Selecting previously unselected package socat.
+#12 12.44 Preparing to unpack .../40-socat_1.8.0.3-1+deb13u1_amd64.deb ...
+#12 12.45 Unpacking socat (1.8.0.3-1+deb13u1) ...
+#12 12.49 Setting up libip4tc2:amd64 (1.8.11-2) ...
+#12 12.50 Setting up libprotobuf-lite32t64:amd64 (3.21.12-11+deb13u1) ...
+#12 12.51 Setting up media-types (13.0.0) ...
+#12 12.52 Setting up libip6tc2:amd64 (1.8.11-2) ...
+#12 12.53 Setting up libtirpc-common (1.3.6+ds-1) ...
+#12 12.54 Setting up libboost-system1.83.0:amd64 (1.83.0-4.2) ...
+#12 12.55 Setting up netcat-openbsd (1.229-1) ...
+#12 12.56 update-alternatives: using /bin/nc.openbsd to provide /bin/nc (nc) in auto mode
+#12 12.56 update-alternatives: warning: skip creation of /usr/share/man/man1/nc.1.gz because associated file /usr/share/man/man1/nc_openbsd.1.gz (of link group nc) doesn't exist
+#12 12.56 update-alternatives: warning: skip creation of /usr/share/man/man1/netcat.1.gz because associated file /usr/share/man/man1/nc_openbsd.1.gz (of link group nc) doesn't exist
+#12 12.57 Setting up libboost-filesystem1.83.0:amd64 (1.83.0-4.2) ...
+#12 12.58 Setting up libelf1t64:amd64 (0.192-4) ...
+#12 12.59 Setting up libcap2-bin (1:2.75-10+deb13u1+b3) ...
+#12 12.60 Setting up libwrap0:amd64 (7.6.q-36) ...
+#12 12.61 Setting up libjsoncpp26:amd64 (1.9.6-3) ...
+#12 12.62 Setting up socat (1.8.0.3-1+deb13u1) ...
+#12 12.63 Setting up libmnl0:amd64 (1.0.5-3) ...
+#12 12.63 Setting up libncursesw6:amd64 (6.5+20250216-2) ...
+#12 12.64 Setting up libxtables12:amd64 (1.8.11-2) ...
+#12 12.65 Setting up libnfnetlink0:amd64 (1.0.2-3) ...
+#12 12.66 Setting up netbase (6.5) ...
+#12 12.68 Setting up libmbedcrypto16:amd64 (3.6.6-0.1~deb13u1) ...
+#12 12.69 Setting up iputils-ping (3:20240905-3) ...
+#12 12.70 Setting up readline-common (8.2-6) ...
+#12 12.71 Setting up libbpf1:amd64 (1:1.5.0-3) ...
+#12 12.72 Setting up libtirpc3t64:amd64 (1.3.6+ds-1) ...
+#12 12.73 Setting up iproute2 (6.15.0-1) ...
+#12 12.82 Setting up libnftnl11:amd64 (1.2.9-1) ...
+#12 12.83 Setting up libmbedx509-7:amd64 (3.6.6-0.1~deb13u1) ...
+#12 12.84 Setting up libipset13t64:amd64 (7.22-1+b1) ...
+#12 12.85 Setting up libnetfilter-queue1:amd64 (1.0.5-4+b1) ...
+#12 12.86 Setting up libmbedtls21:amd64 (3.6.6-0.1~deb13u1) ...
+#12 12.87 Setting up libreadline8t64:amd64 (8.2-6) ...
+#12 12.88 Setting up libnetfilter-conntrack3:amd64 (1.1.0-1) ...
+#12 12.89 Setting up ipset (7.22-1+b1) ...
+#12 12.89 Setting up libpython3.13-stdlib:amd64 (3.13.5-2+deb13u5) ...
+#12 12.90 Setting up libpython3-stdlib:amd64 (3.13.5-1) ...
+#12 12.91 Setting up python3.13 (3.13.5-2+deb13u5) ...
+#12 13.39 Setting up iptables (1.8.11-2) ...
+#12 13.39 update-alternatives: using /usr/sbin/iptables-legacy to provide /usr/sbin/iptables (iptables) in auto mode
+#12 13.40 update-alternatives: using /usr/sbin/ip6tables-legacy to provide /usr/sbin/ip6tables (ip6tables) in auto mode
+#12 13.40 update-alternatives: using /usr/sbin/iptables-nft to provide /usr/sbin/iptables (iptables) in auto mode
+#12 13.40 update-alternatives: using /usr/sbin/ip6tables-nft to provide /usr/sbin/ip6tables (ip6tables) in auto mode
+#12 13.40 update-alternatives: using /usr/sbin/arptables-nft to provide /usr/sbin/arptables (arptables) in auto mode
+#12 13.41 update-alternatives: using /usr/sbin/ebtables-nft to provide /usr/sbin/ebtables (ebtables) in auto mode
+#12 13.41 Setting up python3 (3.13.5-1) ...
+#12 13.47 Setting up python3-multidict (6.4.3-1) ...
+#12 13.54 Setting up python3-frozenlist (1.6.0-1) ...
+#12 13.60 Setting up python3-aiosignal (1.3.2-1) ...
+#12 13.67 Setting up python3-async-timeout (5.0.1-1) ...
+#12 13.74 Setting up python3-idna (3.10-1+deb13u1) ...
+#12 13.87 Setting up python3-aiohappyeyeballs (2.6.1-1) ...
+#12 13.94 Setting up python3-propcache (0.3.1-1) ...
+#12 14.02 Setting up python3-yarl (1.19.0-1) ...
+#12 14.10 Setting up python3-cffi-backend:amd64 (1.17.1-3) ...
+#12 14.11 Setting up python3-attr (25.3.0-1) ...
+#12 14.20 Setting up python3-bcrypt (4.2.0-2.1+b1) ...
+#12 14.26 Setting up python3-aiohttp (3.11.16-1+deb13u1) ...
+#12 14.42 Setting up python3-cryptography (43.0.0-3+deb13u1) ...
+#12 14.55 Processing triggers for libc-bin (2.41-12+deb13u3) ...
+#12 DONE 14.7s
+
+#13 [sdk2026-builder 5/5] RUN bash /recipe/build-in-container.sh
+#13 10.65 Found valid project type for makefile
+#13 10.85 Generation location: /sdk2026-host/zigbeed
+#13 11.44 Generation: Starting AC generation for ucProject in project zigbeed: Mon Sep 14 08:42:25 UTC 2026
+#13 11.44 Generation: Starting AC generation for pintool in project zigbeed: Mon Sep 14 08:42:25 UTC 2026
+#13 11.44 Generation: AC content generated for pintool in project zigbeed. Elapsed time: 2ms
+#13 11.95 Generation: Starting AC generation for ProjectPostBuild in project zigbeed: Mon Sep 14 08:42:25 UTC 2026
+#13 11.96 Generation: AC content generated for ucProject in project zigbeed. Elapsed time: 523ms
+#13 11.97 Generation: AC content generated for ProjectPostBuild in project zigbeed. Elapsed time: 14ms
+#13 11.97 Generation: Starting project generation for zigbeed: Mon Sep 14 08:42:26 UTC 2026
+#13 12.69 Generation: Projects generated zigbeed.Makefile
+#13 12.69 Generation: Project generation completed for zigbeed: Elapsed time: 723ms
+#13 12.69 Total generation time: 1264 ms
+#13 12.69 
+#13 12.70 Generation for Zigbee - Host zigbeed to /sdk2026-host/zigbeed has completed.
+#13 12.70 Reference the following for more information: 
+#13 12.70   readme.md
+#13 13.50 make: Entering directory '/sdk2026-host/zigbeed'
+#13 13.52 # No pre-build defined
+#13 13.52 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/bignum.c
+#13 13.52 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/aes.c
+#13 13.52 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/bignum_core.c
+#13 13.52 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/bignum_mod.c
+#13 13.56 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/bignum_mod_raw.c
+#13 13.58 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/constant_time.c
+#13 13.59 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ctr_drbg.c
+#13 13.59 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ecdh.c
+#13 13.62 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ecp.c
+#13 13.62 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ecp_curves.c
+#13 13.63 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ecp_curves_new.c
+#13 13.64 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/entropy.c
+#13 13.66 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/entropy_poll.c
+#13 13.67 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/hmac_drbg.c
+#13 13.67 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/md.c
+#13 13.70 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/memory_buffer_alloc.c
+#13 13.71 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/platform.c
+#13 13.72 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/platform_util.c
+#13 13.72 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_client.c
+#13 13.72 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_util.c
+#13 13.74 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/sha256.c
+#13 13.76 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/sha3.c
+#13 13.76 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/threading.c
+#13 13.76 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/multiprotocol/mac/lower-mac-spinel-stubs.cpp
+#13 13.78 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/multiprotocol/ot-platform-abstraction/posix/cpc_interface.cpp
+#13 13.78 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/multiprotocol/ot-platform-abstraction/posix/posix_vendor_spinel_interface.cpp
+#13 13.81 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/multiprotocol/ot-platform-abstraction/posix/radio_extension.cpp
+#13 13.85 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/posix/cpc_transport.cpp
+#13 13.91 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/api/error_api.cpp
+#13 13.92 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/api/logging_api.cpp
+#13 13.95 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/error.cpp
+#13 13.95 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/frame_builder.cpp
+#13 14.01 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/heap.cpp
+#13 14.06 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/log.cpp
+#13 14.06 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/offset_range.cpp
+#13 14.15 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/random.cpp
+#13 14.16 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/string.cpp
+#13 14.21 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/timer.cpp
+#13 14.22 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/crypto/aes_ccm.cpp
+#13 14.24 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/crypto/aes_ecb.cpp
+#13 14.30 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/crypto/mbedtls.cpp
+#13 14.31 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/crypto/storage.cpp
+#13 14.32 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/mac/mac_frame.cpp
+#13 14.37 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/mac/mac_header_ie.cpp
+#13 14.39 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/mac/mac_types.cpp
+#13 14.43 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/platform/exit_code.c
+#13 14.46 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/logger.cpp
+#13 14.46 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/radio_spinel.cpp
+#13 14.46 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel.c
+#13 14.49 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_buffer.cpp
+#13 14.52 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_decoder.cpp
+#13 14.52 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_driver.cpp
+#13 14.55 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_encoder.cpp
+#13 14.59 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_helper.cpp
+#13 14.61 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_prop_codec.cpp
+#13 14.61 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/url/url.cpp
+#13 14.64 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/alarm.cpp
+#13 14.64 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/backtrace.cpp
+#13 14.66 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/ble.cpp
+#13 14.69 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/dhcp6_pd_socket.cpp
+#13 14.70 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/entropy.cpp
+#13 14.72 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/logging.cpp
+#13 14.73 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/mainloop.cpp
+#13 14.73 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/mdns_socket.cpp
+#13 14.76 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/memory.cpp
+#13 14.77 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/radio.cpp
+#13 14.77 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/radio_url.cpp
+#13 14.79 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/rcp_caps_diag.cpp
+#13 14.81 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/resolver.cpp
+#13 14.84 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/settings_file.cpp
+#13 14.91 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/spinel_manager.cpp
+#13 14.93 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/system.cpp
+#13 14.94 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/posix/platform/tmp_storage.cpp
+#13 14.99 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/common/src/sl_assert.c
+#13 15.01 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/common/src/sl_core_mock.c
+#13 15.01 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/common/src/sl_slist.c
+#13 15.01 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sl_main/src/sl_main_init.c
+#13 15.03 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sl_main/src/sl_main_init_memory.c
+#13 15.03 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sl_main/src/sl_main_process_action.c
+#13 15.03 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-binding-generated.c
+#13 15.04 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-configuration-generated.c
+#13 15.05 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-green-power-generated.c
+#13 15.12 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-messaging-generated.c
+#13 15.12 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-mfglib-generated.c
+#13 15.12 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-networking-generated.c
+#13 15.12 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-security-generated.c
+#13 15.17 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-token-interface-generated.c
+#13 15.18 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-token-interface.c
+#13 15.18 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-trust-center-generated.c
+#13 15.19 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/command-handlers-zll-generated.c
+#13 15.23 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/em260-common.c
+#13 15.25 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/ncp-stack-stub.c
+#13 15.25 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/em260/serial-interface-uart.c
+#13 15.26 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/framework/common/sl_zigbee_system_common.c
+#13 15.28 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/framework/common/zigbee_enhanced_routing.c
+#13 15.29 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/framework/common/zigbee_ncp_framework_cb.c
+#13 15.30 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/framework/common/zigbee_stack_sleep.c
+#13 15.30 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/test/sl_zigbee_r23_app_stubs.c
+#13 15.31 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/util/counters/counters.c
+#13 15.32 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/app/xncp/xncp_cb.c
+#13 15.32 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/platform/service/legacy_common_ash/src/ash-common.c
+#13 15.36 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/platform/service/legacy_hal/src/crc.c
+#13 15.36 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/platform/service/legacy_hal/src/random.c
+#13 15.37 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/platform/service/legacy_hal/src/rijndael-alg-fst.c
+#13 15.37 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/platform/service/legacy_hal/src/rijndael-api-fst.c
+#13 15.38 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/platform/service/legacy_hal/src/system-timer.c
+#13 15.39 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/platform/service/legacy_hal_wdog/src/sl_legacy_hal_wdog_stub.c
+#13 15.41 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/platform/service/legacy_ncp_ash/src/ash-ncp.c
+#13 15.41 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/config/sl_zigbee_callback_stubs.c
+#13 15.41 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/config/sl_zigbee_configuration.c
+#13 15.41 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/config/sl_zigbee_configuration_access.c
+#13 15.45 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/config/sl_zigbee_endpoint_stubs.c
+#13 15.46 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/core/multi-pan-common.c
+#13 15.47 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/core/multi-pan-stub.c
+#13 15.49 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/core/sl_zigbee_multi_network_stub.c
+#13 15.49 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/framework/aes-ecb.c
+#13 15.51 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/framework/debug-extended-stub.c
+#13 15.51 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/framework/debug-stub.c
+#13 15.53 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/framework/strong-random-api.c
+#13 15.54 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/framework/zigbee-event-logger-stub-gen.c
+#13 15.55 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/aes-mmo-baremetal-wrapper.c
+#13 15.55 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/binding-table-baremetal-callbacks.c
+#13 15.58 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/binding-table-baremetal-wrapper.c
+#13 15.58 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/bootload_baremetal_callbacks.c
+#13 15.58 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/bootload_baremetal_wrapper.c
+#13 15.59 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/child_baremetal_callbacks.c
+#13 15.61 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/child_baremetal_wrapper.c
+#13 15.61 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/gp-proxy-table-baremetal-wrapper.c
+#13 15.61 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/gp-sink-table-baremetal-wrapper.c
+#13 15.62 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/gp-types-baremetal-wrapper.c
+#13 15.64 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/library_baremetal_wrapper.c
+#13 15.64 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/mac-layer-baremetal-wrapper.c
+#13 15.64 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/message_baremetal_callbacks.c
+#13 15.65 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/message_baremetal_wrapper.c
+#13 15.67 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/mfglib_baremetal_wrapper.c
+#13 15.67 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/multi-phy-baremetal-wrapper.c
+#13 15.68 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/network-formation-baremetal-callbacks.c
+#13 15.68 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/network-formation-baremetal-wrapper.c
+#13 15.70 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/raw-message-baremetal-callbacks.c
+#13 15.70 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/raw-message-baremetal-wrapper.c
+#13 15.71 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/security_baremetal_callbacks.c
+#13 15.72 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/security_baremetal_wrapper.c
+#13 15.73 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_address_info_baremetal_wrapper.c
+#13 15.73 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_dlk_negotiation_baremetal_wrapper.c
+#13 15.74 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_duty_cycle_baremetal_callbacks.c
+#13 15.76 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_duty_cycle_baremetal_wrapper.c
+#13 15.76 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_dynamic_commissioning_baremetal_callbacks.c
+#13 15.77 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_dynamic_commissioning_baremetal_wrapper.c
+#13 15.77 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_memory_usage_baremetal_wrapper.c
+#13 15.79 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_random_api_baremetal_wrapper.c
+#13 15.79 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_security_manager_dlk_ecc_baremetal_wrapper.c
+#13 15.80 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_security_manager_dlk_ecc_test_vectors_baremetal_wrapper.c
+#13 15.80 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_stack_specific_tlv_baremetal_wrapper.c
+#13 15.82 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_token_baremetal_wrapper.c
+#13 15.83 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_zdo_configuration_baremetal_wrapper.c
+#13 15.83 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_zdo_dlk_negotiation_baremetal_wrapper.c
+#13 15.83 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_zdo_management_baremetal_callbacks.c
+#13 15.85 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_zdo_management_baremetal_wrapper.c
+#13 15.86 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_zdo_security_baremetal_callbacks.c
+#13 15.87 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/sl_zigbee_zdo_security_baremetal_wrapper.c
+#13 15.88 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/source-route-baremetal-wrapper.c
+#13 15.88 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/stack-info-baremetal-callbacks.c
+#13 15.89 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/stack-info-baremetal-wrapper.c
+#13 15.89 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/trust-center-baremetal-callbacks.c
+#13 15.91 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/trust-center-baremetal-wrapper.c
+#13 15.92 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/zigbee-device-stack-baremetal-wrapper.c
+#13 15.93 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/zigbee-security-manager-baremetal-wrapper.c
+#13 15.94 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/zll-api-baremetal-callbacks.c
+#13 15.95 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/baremetal/zll-api-baremetal-wrapper.c
+#13 15.95 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/stubs/sl_zigbee_dhc_internal_weak_stubs.c
+#13 15.97 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/stubs/sl_zigbee_memory_usage_internal_weak_stubs.c
+#13 15.97 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/stubs/sl_zigbee_token_internal_weak_stubs.c
+#13 15.99 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/internal/src/stubs/stack-info-internal-weak-stubs.c
+#13 15.99 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/platform/sl_zigbee_legacy_token_host.c
+#13 16.00 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/platform/sl_zigbee_token.c
+#13 16.00 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/platform/sl_zigbee_token_defines.c
+#13 16.03 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/platform/sl_zigbee_token_host.c
+#13 16.04 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/platform/zigbee_token_interface.c
+#13 16.04 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/cbke-crypto-engine-163k1-stub.c
+#13 16.05 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/cbke-crypto-engine-283k1-stub.c
+#13 16.07 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/cbke-crypto-engine-dsa-sign-stub.c
+#13 16.08 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/cbke-crypto-engine-dsa-verify-283k1-stub.c
+#13 16.10 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/cbke-crypto-engine-dsa-verify-stub.c
+#13 16.10 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/cbke-crypto-engine-stub.c
+#13 16.11 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/security-address-cache.c
+#13 16.11 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/sl_zigbee_security_manager_dlk_ecc.c
+#13 16.13 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/sl_zigbee_security_manager_dlk_ecc_test_vectors.c
+#13 16.15 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/zigbee-security-manager-no-vault.c
+#13 16.16 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/security/zigbee-security-manager.c
+#13 16.17 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/stubs/sl_zigbee_fragmentation_stubs.c
+#13 16.19 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/zigbee/aps-keys-full.c
+#13 16.20 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/zigbee/sli_zigbee_zdo_cluster_filter.c
+#13 16.22 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/util/plugin/byte_utilities/byte-utilities.c
+#13 16.23 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/zigbee_app/zigbeed/micro-stubs.c
+#13 16.23 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/zigbee_app/zigbeed/serial_adapter.c
+#13 16.25 Building /opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/zigbee_app/zigbeed/simulator_stubs.c
+#13 16.26 Building app.c
+#13 16.28 Building autogen/sl_event_handler.c
+#13 16.29 Building autogen/zigbee_common_callback_dispatcher.c
+#13 16.30 Building autogen/zigbee_ncp_callback_dispatcher.c
+#13 16.31 Building autogen/zigbee_stack_callback_dispatcher.c
+#13 16.33 Building main.c
+#13 16.33 Building zigbeed_custom_ezsp_commands.c
+#13 16.38 Linking build/release/zigbeed
+#13 16.51 Done.
+#13 16.51 # No post-build defined
+#13 16.51 make: Leaving directory '/sdk2026-host/zigbeed'
+#13 17.06 patching file src/agent/openthread-otbr-posix-config.h.in
+#13 17.07 patching file src/web/web-service/frontend/CMakeLists.txt
+#13 17.07 patching file src/web/web-service/frontend/index.html
+#13 17.07 Hunk #1 succeeded at 460 (offset 33 lines).
+#13 17.07 patching file src/web/web-service/frontend/package.json
+#13 17.07 patching file src/web/web-service/frontend/res/js/app.js
+#13 17.07 Hunk #1 succeeded at 226 (offset 6 lines).
+#13 17.07 Hunk #2 succeeded at 234 (offset 6 lines).
+#13 17.07 Hunk #3 succeeded at 286 (offset 6 lines).
+#13 17.07 patching file src/web/web-service/frontend/res/js/qrcode.LICENSE.txt
+#13 17.07 patching file src/web/web-service/frontend/CMakeLists.txt
+#13 17.07 patching file src/web/web-service/frontend/package-lock.json
+#13 17.07 patching file src/common/logging.cpp
+#13 17.12 -- The C compiler identification is GNU 14.2.0
+#13 17.16 -- The CXX compiler identification is GNU 14.2.0
+#13 17.16 -- Detecting C compiler ABI info
+#13 17.21 -- Detecting C compiler ABI info - done
+#13 17.22 -- Check for working C compiler: /usr/bin/cc - skipped
+#13 17.22 -- Detecting C compile features
+#13 17.22 -- Detecting C compile features - done
+#13 17.23 -- Detecting CXX compiler ABI info
+#13 17.28 -- Detecting CXX compiler ABI info - done
+#13 17.29 -- Check for working CXX compiler: /usr/bin/c++ - skipped
+#13 17.29 -- Detecting CXX compile features
+#13 17.29 -- Detecting CXX compile features - done
+#13 17.30 -- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1")
+#13 17.30 -- OTBR package name: OpenThread_Silicon Labs Multiprotocol
+#13 17.30 fatal: not a git repository (or any of the parent directories): .git
+#13 17.30 -- Version: 0.3.0
+#13 17.30 -- Checking for module 'systemd'
+#13 17.30 --   Package 'systemd', required by 'virtual:world', not found
+#13 17.31 -- OpenThread Source Directory: /sdk2026-host/ot-br-posix/third_party/openthread/repo
+#13 17.31 -- OT_APP_CLI=ON
+#13 17.31 -- OT_APP_NCP=ON
+#13 17.31 -- OT_APP_RCP=ON
+#13 17.31 -- OT_FTD=ON
+#13 17.31 -- OT_MTD=ON
+#13 17.31 -- OT_RCP=ON
+#13 17.31 -- - - - - - - - - - - - - - - - - 
+#13 17.31 -- OpenThread ON/OFF/Unspecified Configs
+#13 17.31 -- OT_15_4=ON --> OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE=1
+#13 17.31 -- OT_ANDROID_NDK=""
+#13 17.31 -- OT_ANYCAST_LOCATOR=ON --> OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_ENABLE=1
+#13 17.31 -- OT_ASSERT=""
+#13 17.31 -- OT_BACKBONE_ROUTER=ON --> OPENTHREAD_CONFIG_BACKBONE_ROUTER_ENABLE=1
+#13 17.31 -- OT_BACKBONE_ROUTER_DUA_NDPROXYING=ON --> OPENTHREAD_CONFIG_BACKBONE_ROUTER_DUA_NDPROXYING_ENABLE=1
+#13 17.31 -- OT_BACKBONE_ROUTER_MULTICAST_ROUTING=""
+#13 17.31 -- OT_BLE_TCAT=""
+#13 17.31 -- OT_BORDER_ADMITTER=""
+#13 17.31 -- OT_BORDER_AGENT=ON --> OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE=1
+#13 17.31 -- OT_BORDER_AGENT_EPSKC=ON --> OPENTHREAD_CONFIG_BORDER_AGENT_EPHEMERAL_KEY_ENABLE=1
+#13 17.31 -- OT_BORDER_AGENT_ID=ON --> OPENTHREAD_CONFIG_BORDER_AGENT_ID_ENABLE=1
+#13 17.31 -- OT_BORDER_AGENT_MESHCOP_SERVICE=ON --> OPENTHREAD_CONFIG_BORDER_AGENT_MESHCOP_SERVICE_ENABLE=1
+#13 17.31 -- OT_BORDER_AGENT_TRACKER=""
+#13 17.31 -- OT_BORDER_AGENT_TXT_DATA_PARSER=""
+#13 17.31 -- OT_BORDER_ROUTER=ON --> OPENTHREAD_CONFIG_BORDER_ROUTER_ENABLE=1
+#13 17.31 -- OT_BORDER_ROUTING=ON --> OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE=1
+#13 17.31 -- OT_BORDER_ROUTING_DHCP6_PD=OFF --> OPENTHREAD_CONFIG_BORDER_ROUTING_DHCP6_PD_ENABLE=0
+#13 17.31 -- OT_BORDER_ROUTING_DHCP6_PD_CLIENT=OFF --> OPENTHREAD_CONFIG_BORDER_ROUTING_DHCP6_PD_CLIENT_ENABLE=0
+#13 17.31 -- OT_BORDER_ROUTING_COUNTERS=ON --> OPENTHREAD_CONFIG_IP6_BR_COUNTERS_ENABLE=1
+#13 17.31 -- OT_BORDER_ROUTING_MULTI_AIL_DETECTION=ON --> OPENTHREAD_CONFIG_BORDER_ROUTING_MULTI_AIL_DETECTION_ENABLE=1
+#13 17.31 -- OT_CHANNEL_MANAGER=""
+#13 17.31 -- OT_CHANNEL_MANAGER_CSL=""
+#13 17.31 -- OT_CHANNEL_MONITOR=""
+#13 17.31 -- OT_CHANNEL_MONITOR_AUTO_START=""
+#13 17.31 -- OT_COAP=ON --> OPENTHREAD_CONFIG_COAP_API_ENABLE=1
+#13 17.31 -- OT_COAP_BLOCK=""
+#13 17.31 -- OT_COAP_OBSERVE=""
+#13 17.31 -- OT_COAPS=ON --> OPENTHREAD_CONFIG_COAP_SECURE_API_ENABLE=1
+#13 17.31 -- OT_COMMISSIONER=ON --> OPENTHREAD_CONFIG_COMMISSIONER_ENABLE=1
+#13 17.31 -- OT_CSL_AUTO_SYNC=""
+#13 17.31 -- OT_CSL_DEBUG=""
+#13 17.31 -- OT_CSL_RECEIVER=""
+#13 17.31 -- OT_CSL_RECEIVER_LOCAL_TIME_SYNC=""
+#13 17.31 -- OT_DATASET_UPDATER=ON --> OPENTHREAD_CONFIG_DATASET_UPDATER_ENABLE=1
+#13 17.31 -- OT_DEVICE_PROP_LEADER_WEIGHT=""
+#13 17.31 -- OT_DHCP6_CLIENT=""
+#13 17.31 -- OT_DHCP6_SERVER=""
+#13 17.31 -- OT_DIAGNOSTIC=""
+#13 17.31 -- OT_DNS_CLIENT=ON --> OPENTHREAD_CONFIG_DNS_CLIENT_ENABLE=1
+#13 17.31 -- OT_DNS_CLIENT_BIND_UDP_THREAD_NETIF=""
+#13 17.31 -- OT_DNS_CLIENT_OVER_TCP=OFF --> OPENTHREAD_CONFIG_DNS_CLIENT_OVER_TCP_ENABLE=0
+#13 17.31 -- OT_DNS_DSO=""
+#13 17.31 -- OT_DNS_UPSTREAM_QUERY=ON --> OPENTHREAD_CONFIG_DNS_UPSTREAM_QUERY_ENABLE=1
+#13 17.31 -- OT_DNSSD_DISCOVERY_PROXY=ON --> OPENTHREAD_CONFIG_DNSSD_DISCOVERY_PROXY_ENABLE=1
+#13 17.31 -- OT_DNSSD_SERVER=ON --> OPENTHREAD_CONFIG_DNSSD_SERVER_ENABLE=1
+#13 17.31 -- OT_DUA=""
+#13 17.31 -- OT_DYNAMIC_STORE_FRAME_AHEAD_COUNTER=""
+#13 17.31 -- OT_ECDSA=ON --> OPENTHREAD_CONFIG_ECDSA_ENABLE=1
+#13 17.31 -- OT_EXTERNAL_HEAP=ON --> OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE=1
+#13 17.31 -- OT_FIREWALL=ON --> OPENTHREAD_POSIX_CONFIG_FIREWALL_ENABLE=1
+#13 17.31 -- OT_HISTORY_TRACKER=ON --> OPENTHREAD_CONFIG_HISTORY_TRACKER_ENABLE=1
+#13 17.31 -- OT_IP6_FRAGM=""
+#13 17.31 -- OT_IP6_INIT_ADDR_POOL=""
+#13 17.31 -- OT_JAM_DETECTION=""
+#13 17.31 -- OT_JOINER=ON --> OPENTHREAD_CONFIG_JOINER_ENABLE=1
+#13 17.31 -- OT_LINK_METRICS_INITIATOR=OFF --> OPENTHREAD_CONFIG_MLE_LINK_METRICS_INITIATOR_ENABLE=0
+#13 17.31 -- OT_LINK_METRICS_MANAGER=OFF --> OPENTHREAD_CONFIG_LINK_METRICS_MANAGER_ENABLE=0
+#13 17.31 -- OT_LINK_METRICS_SUBJECT=ON --> OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE=1
+#13 17.31 -- OT_LINK_RAW=ON --> OPENTHREAD_CONFIG_LINK_RAW_ENABLE=1
+#13 17.31 -- OT_LOG_LEVEL_DYNAMIC=ON --> OPENTHREAD_CONFIG_LOG_LEVEL_DYNAMIC_ENABLE=1
+#13 17.31 -- OT_MAC_FILTER=ON --> OPENTHREAD_CONFIG_MAC_FILTER_ENABLE=1
+#13 17.31 -- OT_MDNS=ON --> OPENTHREAD_CONFIG_MULTICAST_DNS_ENABLE=1
+#13 17.31 -- OT_MDNS_VERBOSE=ON --> OPENTHREAD_CONFIG_MULTICAST_DNS_VERBOSE_LOGGING_ENABLE=1
+#13 17.31 -- OT_MDNS_VERBOSE_STATE=""
+#13 17.32 -- OT_MESH_DIAG=ON --> OPENTHREAD_CONFIG_MESH_DIAG_ENABLE=1
+#13 17.32 -- OT_MESSAGE_USE_HEAP=ON --> OPENTHREAD_CONFIG_MESSAGE_USE_HEAP_ENABLE=1
+#13 17.32 -- OT_MLE_LONG_ROUTES=""
+#13 17.32 -- OT_MLR=ON --> OPENTHREAD_CONFIG_MLR_ENABLE=1
+#13 17.32 -- OT_MULTIPAN_RCP=ON --> OPENTHREAD_CONFIG_MULTIPAN_RCP_ENABLE=1
+#13 17.32 -- OT_MULTIPLE_INSTANCE=""
+#13 17.32 -- OT_NAT64_BORDER_ROUTING=ON --> OPENTHREAD_CONFIG_NAT64_BORDER_ROUTING_ENABLE=1
+#13 17.32 -- OT_NAT64_FAVORED_PREFIX_NOTIFICATION=""
+#13 17.32 -- OT_NAT64_TRANSLATOR=ON --> OPENTHREAD_CONFIG_NAT64_TRANSLATOR_ENABLE=1
+#13 17.32 -- OT_NEIGHBOR_DISCOVERY_AGENT=""
+#13 17.32 -- OT_NETDATA_PUBLISHER=ON --> OPENTHREAD_CONFIG_NETDATA_PUBLISHER_ENABLE=1
+#13 17.32 -- OT_NETDIAG_CLIENT=ON --> OPENTHREAD_CONFIG_TMF_NETDIAG_CLIENT_ENABLE=1
+#13 17.32 -- OT_NETDIAG_VENDOR_INFO=""
+#13 17.32 -- OT_OPERATIONAL_DATASET_AUTO_INIT=""
+#13 17.32 -- OT_OTNS=""
+#13 17.32 -- OT_P2P=""
+#13 17.32 -- OT_PING_SENDER=ON --> OPENTHREAD_CONFIG_PING_SENDER_ENABLE=1
+#13 17.32 -- OT_PLATFORM_BOOTLOADER_MODE=""
+#13 17.32 -- OT_PLATFORM_DNSSD=""
+#13 17.32 -- OT_PLATFORM_KEY_REF=""
+#13 17.32 -- OT_PLATFORM_LOG_CRASH_DUMP=""
+#13 17.32 -- OT_PLATFORM_NETIF=ON --> OPENTHREAD_CONFIG_PLATFORM_NETIF_ENABLE=1
+#13 17.32 -- OT_PLATFORM_POWER_CALIBRATION=""
+#13 17.32 -- OT_PLATFORM_UDP=ON --> OPENTHREAD_CONFIG_PLATFORM_UDP_ENABLE=1
+#13 17.32 -- OT_REFERENCE_DEVICE=""
+#13 17.32 -- OT_SEEKER=""
+#13 17.32 -- OT_SERVICE=ON --> OPENTHREAD_CONFIG_TMF_NETDATA_SERVICE_ENABLE=1
+#13 17.32 -- OT_SETTINGS_RAM=""
+#13 17.32 -- OT_SLAAC=ON --> OPENTHREAD_CONFIG_IP6_SLAAC_ENABLE=1
+#13 17.32 -- OT_SNTP_CLIENT=""
+#13 17.32 -- OT_SRP_ADV_PROXY=ON --> OPENTHREAD_CONFIG_SRP_SERVER_ADVERTISING_PROXY_ENABLE=1
+#13 17.32 -- OT_SRP_CLIENT=ON --> OPENTHREAD_CONFIG_SRP_CLIENT_ENABLE=1
+#13 17.32 -- OT_SRP_SERVER=ON --> OPENTHREAD_CONFIG_SRP_SERVER_ENABLE=1
+#13 17.32 -- OT_SRP_SERVER_FAST_START_MODE=""
+#13 17.32 -- OT_STEERING_DATA=""
+#13 17.32 -- OT_TCP=OFF --> OPENTHREAD_CONFIG_TCP_ENABLE=0
+#13 17.32 -- OT_TIME_SYNC=""
+#13 17.32 -- OT_TREL=ON --> OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE=1
+#13 17.32 -- OT_TREL_MANAGE_DNSSD=ON --> OPENTHREAD_CONFIG_TREL_MANAGE_DNSSD_ENABLE=1
+#13 17.32 -- OT_TX_BEACON_PAYLOAD=""
+#13 17.32 -- OT_TX_QUEUE_STATS=""
+#13 17.32 -- OT_UDP_FORWARD=OFF --> OPENTHREAD_CONFIG_UDP_FORWARD_ENABLE=0
+#13 17.32 -- OT_UPTIME=ON --> OPENTHREAD_CONFIG_UPTIME_ENABLE=1
+#13 17.32 -- OT_VERHOEFF_CHECKSUM=""
+#13 17.32 -- OT_WAKEUP_COORDINATOR=""
+#13 17.32 -- OT_WAKEUP_END_DEVICE=""
+#13 17.32 -- OT_SPINEL_CP_RESET_FAIL_CALLBACK_ENABLE=""
+#13 17.32 -- - - - - - - - - - - - - - - - - 
+#13 17.32 -- OT_PLATFORM="posix"
+#13 17.32 -- OT_CRYPTO_LIB=""
+#13 17.32 -- OT_THREAD_VERSION="1.4" -> OPENTHREAD_CONFIG_THREAD_VERSION=OT_THREAD_VERSION_1_4
+#13 17.32 -- OT_LOG_LEVEL="INFO" --> OPENTHREAD_CONFIG_LOG_LEVEL=OT_LOG_LEVEL_INFO
+#13 17.32 -- OT_LOG_OUTPUT=""
+#13 17.32 -- OT_VENDOR_NAME="OpenThread" --> OPENTHREAD_CONFIG_NET_DIAG_VENDOR_NAME="OpenThread"
+#13 17.32 -- OT_VENDOR_MODEL="Silicon Labs Multiprotocol" --> OPENTHREAD_CONFIG_NET_DIAG_VENDOR_MODEL="Silicon Labs Multiprotocol"
+#13 17.32 -- OT_VENDOR_SW_VERSION=""
+#13 17.32 -- OT_BORDER_AGENT_SERVICE_NAME=""
+#13 17.32 -- OT_POWER_SUPPLY=""
+#13 17.32 -- OT_BORDER_ROUTING_DHCP6_PD_MIN_LIFETIME=""
+#13 17.32 -- OT_LOG_MAX_SIZE=""
+#13 17.32 -- OT_MAC_CSL_REQUEST_AHEAD_US=""
+#13 17.32 -- OT_MLE_MAX_CHILDREN=""
+#13 17.32 -- OT_RCP_RESTORATION_MAX_COUNT=""
+#13 17.32 -- OT_RCP_TIME_SYNC_INTERVAL=""
+#13 17.32 -- OT_RCP_TX_WAIT_TIME_SECS=""
+#13 17.32 -- OT_VENDOR_OUI=""
+#13 17.32 -- OpenThread CMake build type: Release
+#13 17.32 -- Package Name: OPENTHREAD
+#13 17.32 -- Setting default package version: 
+#13 17.32 -- Package Version: 
+#13 17.33 -- Performing Test _Wall
+#13 17.37 -- Performing Test _Wall - Success
+#13 17.37 -- Performing Test _Wextra
+#13 17.41 -- Performing Test _Wextra - Success
+#13 17.41 -- Performing Test _Wconversion
+#13 17.45 -- Performing Test _Wconversion - Success
+#13 17.45 -- Performing Test _Wformat_2
+#13 17.50 -- Performing Test _Wformat_2 - Success
+#13 17.50 -- Performing Test _Wlogical_op
+#13 17.54 -- Performing Test _Wlogical_op - Success
+#13 17.54 -- Performing Test _Wmissing_declarations
+#13 17.58 -- Performing Test _Wmissing_declarations - Success
+#13 17.58 -- Performing Test _Wpointer_arith
+#13 17.63 -- Performing Test _Wpointer_arith - Success
+#13 17.63 -- Performing Test _Wsign_conversion
+#13 17.67 -- Performing Test _Wsign_conversion - Success
+#13 17.67 -- Performing Test _Wswitch_default
+#13 17.71 -- Performing Test _Wswitch_default - Success
+#13 17.71 -- Looking for backtrace
+#13 17.75 -- Looking for backtrace - found
+#13 17.75 -- backtrace facility detected in default set of libraries
+#13 17.75 -- Found Backtrace: /usr/include
+#13 17.76 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+#13 17.80 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+#13 17.80 -- Found Threads: TRUE
+#13 17.80 -- Checking for one of the modules 'mbedcrypto>=2.7'
+#13 17.84 -- OT_PLATFORM_CONFIG="openthread-core-silabs-posix-config.h"
+#13 17.84 -- OT_PLATFORM_POSIX_CONFIG_FILE=""
+#13 17.84 -- Readline: readline
+#13 17.84 CMake Warning at /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/posix/posix_vendor_cli.cmake:70 (message):
+#13 17.84   SL_OT_MEMORY_CLI is ON but memory_usage_cli.c was not found at:
+#13 17.84 
+#13 17.84     /opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/posix/../../src/cli/memory_usage_cli.c
+#13 17.84     Set OT_INTERNAL_DIR to the openthread_internal tree (directory containing src/cli), or disable SL_OT_MEMORY_CLI.
+#13 17.84 Call Stack (most recent call first):
+#13 17.84   third_party/openthread/repo/src/cli/CMakeLists.txt:65 (include)
+#13 17.84 
+#13 17.84 
+#13 17.85 CMake Deprecation Warning at third_party/openthread/repo/third_party/mbedtls/repo/CMakeLists.txt:21 (cmake_minimum_required):
+#13 17.85   Compatibility with CMake < 3.10 will be removed from a future version of
+#13 17.85   CMake.
+#13 17.85 
+#13 17.85   Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+#13 17.85   to tell CMake that the project requires at least <min> but has been updated
+#13 17.85   to work with policies introduced by <max> or earlier.
+#13 17.85 
+#13 17.85 
+#13 17.93 -- Found Python3: /usr/bin/python3 (found version "3.13.5") found components: Interpreter
+#13 17.97 -- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS
+#13 18.01 -- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS - Success
+#13 18.01 -- USING O3
+#13 18.02 -- Checking for module 'libcjson'
+#13 18.02 --   Package 'libcjson', required by 'virtual:world', not found
+#13 18.03 CMake Deprecation Warning at third_party/cJSON/repo/CMakeLists.txt:2 (cmake_minimum_required):
+#13 18.03   Compatibility with CMake < 3.10 will be removed from a future version of
+#13 18.03   CMake.
+#13 18.03 
+#13 18.03   Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+#13 18.03   to tell CMake that the project requires at least <min> but has been updated
+#13 18.03   to work with policies introduced by <max> or earlier.
+#13 18.03 
+#13 18.03 
+#13 18.03 CMake Warning (dev) at third_party/cJSON/repo/CMakeLists.txt:4 (project):
+#13 18.03   Policy CMP0048 is not set: project() command manages VERSION variables.
+#13 18.03   Run "cmake --help-policy CMP0048" for policy details.  Use the cmake_policy
+#13 18.03   command to set the policy and suppress this warning.
+#13 18.03 
+#13 18.03   The following variable(s) would be set to empty:
+#13 18.03 
+#13 18.03     PROJECT_VERSION
+#13 18.03     PROJECT_VERSION_MAJOR
+#13 18.03     PROJECT_VERSION_MINOR
+#13 18.03     PROJECT_VERSION_PATCH
+#13 18.03 This warning is for project developers.  Use -Wno-dev to suppress it.
+#13 18.03 
+#13 18.03 -- Performing Test FLAG_SUPPORTED_fvisibilityhidden
+#13 18.07 -- Performing Test FLAG_SUPPORTED_fvisibilityhidden - Success
+#13 18.08 -- Checking for module 'libsystemd'
+#13 18.09 --   Found libsystemd, version 257
+#13 18.13 -- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so (found version "3.21.12")
+#13 18.14 -- Checking for module 'jsoncpp'
+#13 18.15 --   Found jsoncpp, version 1.9.6
+#13 18.19 -- Configuring done (1.1s)
+#13 18.35 -- Generating done (0.2s)
+#13 18.35 -- Build files have been written to: /sdk2026-host/otbr-build
+#13 18.41 [1/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/3rdparty/everest/CMakeFiles/everest.dir/library/x25519.c.o
+#13 18.41 [2/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/3rdparty/everest/CMakeFiles/everest.dir/library/Hacl_Curve25519_joined.c.o
+#13 18.41 [3/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/3rdparty/everest/CMakeFiles/everest.dir/library/everest.c.o
+#13 18.42 [4/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/3rdparty/p256-m/CMakeFiles/p256m.dir/p256-m_driver_entrypoints.c.o
+#13 18.42 [5/594] Linking C static library third_party/openthread/repo/third_party/mbedtls/repo/3rdparty/everest/libeverest.a
+#13 18.43 [6/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/3rdparty/p256-m/CMakeFiles/p256m.dir/p256-m/p256-m.c.o
+#13 18.43 [7/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/aesni.c.o
+#13 18.44 [8/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/aesce.c.o
+#13 18.45 [9/594] Linking C static library third_party/openthread/repo/third_party/mbedtls/repo/3rdparty/p256-m/libp256m.a
+#13 18.45 [10/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/aria.c.o
+#13 18.52 [11/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/base64.c.o
+#13 18.52 [12/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/aes.c.o
+#13 18.53 [13/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/asn1parse.c.o
+#13 18.54 [14/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/asn1write.c.o
+#13 18.55 [15/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/bignum_mod.c.o
+#13 18.55 [16/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/bignum_mod_raw.c.o
+#13 18.56 [17/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/block_cipher.c.o
+#13 18.57 [18/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/camellia.c.o
+#13 18.58 [19/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/chacha20.c.o
+#13 18.60 [20/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/chachapoly.c.o
+#13 18.66 [21/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ccm.c.o
+#13 18.66 [22/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/cipher.c.o
+#13 18.68 [23/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/cipher_wrap.c.o
+#13 18.69 [24/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/constant_time.c.o
+#13 18.72 [25/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/bignum_core.c.o
+#13 18.73 [26/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/des.c.o
+#13 18.74 [27/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/dhm.c.o
+#13 18.75 [28/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ctr_drbg.c.o
+#13 18.76 [29/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/cmac.c.o
+#13 18.80 [30/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecdh.c.o
+#13 18.81 [31/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecdsa.c.o
+#13 18.83 [32/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/bignum.c.o
+#13 18.84 [33/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecp_curves_new.c.o
+#13 18.86 [34/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecjpake.c.o
+#13 18.89 [35/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecp_curves.c.o
+#13 18.90 [36/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/entropy.c.o
+#13 18.90 [37/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/entropy_poll.c.o
+#13 18.91 [38/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/error.c.o
+#13 18.91 [39/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/gcm.c.o
+#13 18.92 [40/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/hkdf.c.o
+#13 18.93 [41/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/lmots.c.o
+#13 18.93 [42/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/lms.c.o
+#13 18.94 [43/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/md5.c.o
+#13 18.96 [44/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/memory_buffer_alloc.c.o
+#13 18.96 [45/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/hmac_drbg.c.o
+#13 18.97 [46/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/nist_kw.c.o
+#13 18.99 [47/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/padlock.c.o
+#13 19.00 [48/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/md.c.o
+#13 19.02 [49/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pem.c.o
+#13 19.05 [50/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/oid.c.o
+#13 19.05 [51/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pk_ecc.c.o
+#13 19.05 [52/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pk.c.o
+#13 19.06 [53/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecp.c.o
+#13 19.06 [54/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pkcs12.c.o
+#13 19.06 [55/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pkcs5.c.o
+#13 19.08 [56/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/platform.c.o
+#13 19.08 [57/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pk_wrap.c.o
+#13 19.10 [58/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/poly1305.c.o
+#13 19.10 [59/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/platform_util.c.o
+#13 19.11 [60/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto.c.o
+#13 19.11 [61/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pkwrite.c.o
+#13 19.12 [62/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_aead.c.o
+#13 19.12 [63/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pkparse.c.o
+#13 19.13 [64/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_cipher.c.o
+#13 19.14 [65/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_ecp.c.o
+#13 19.14 [66/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_client.c.o
+#13 19.14 [67/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_ffdh.c.o
+#13 19.14 [68/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_driver_wrappers_no_static.c.o
+#13 19.15 [69/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_mac.c.o
+#13 19.15 [70/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_hash.c.o
+#13 19.16 [71/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_pake.c.o
+#13 19.16 [72/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_rsa.c.o
+#13 19.16 [73/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_se.c.o
+#13 19.17 [74/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_slot_management.c.o
+#13 19.17 [75/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_storage.c.o
+#13 19.17 [76/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_its_file.c.o
+#13 19.18 [77/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ripemd160.c.o
+#13 19.19 [78/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_util.c.o
+#13 19.19 [79/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/rsa_alt_helpers.c.o
+#13 19.19 [80/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/rsa.c.o
+#13 19.20 [81/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/sha1.c.o
+#13 19.21 [82/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/sha3.c.o
+#13 19.21 [83/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/sha512.c.o
+#13 19.21 [84/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/threading.c.o
+#13 19.22 [85/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/version.c.o
+#13 19.23 [86/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/version_features.c.o
+#13 19.23 [87/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/pkcs7.c.o
+#13 19.24 [88/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/timing.c.o
+#13 19.25 [89/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/sha256.c.o
+#13 19.25 [90/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509_create.c.o
+#13 19.29 [91/594] Linking C static library third_party/openthread/repo/third_party/mbedtls/repo/library/libmbedcrypto.a
+#13 19.31 [92/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509_crl.c.o
+#13 19.33 [93/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509write.c.o
+#13 19.34 [94/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509write_crt.c.o
+#13 19.36 [95/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509write_csr.c.o
+#13 19.38 [96/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509_csr.c.o
+#13 19.39 [97/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/mps_reader.c.o
+#13 19.41 [98/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509.c.o
+#13 19.41 [99/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/mps_trace.c.o
+#13 19.42 [100/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_cache.c.o
+#13 19.43 [101/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/debug.c.o
+#13 19.47 [102/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_ciphersuites.c.o
+#13 19.48 [103/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509_crt.c.o
+#13 19.50 [104/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_client.c.o
+#13 19.50 [105/594] Linking C static library third_party/openthread/repo/third_party/mbedtls/repo/library/libmbedx509.a
+#13 19.50 [106/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/net_sockets.c.o
+#13 19.51 [107/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_cookie.c.o
+#13 19.52 [108/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_ticket.c.o
+#13 19.54 [109/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_debug_helpers_generated.c.o
+#13 19.68 [110/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls12_client.c.o
+#13 19.70 [111/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls13_keys.c.o
+#13 19.71 [112/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls13_server.c.o
+#13 19.73 [113/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls13_client.c.o
+#13 19.74 [114/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls13_generic.c.o
+#13 19.78 [115/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls12_server.c.o
+#13 19.80 [116/594] Building C object cpc-daemon/CMakeFiles/cpc.dir/misc/sl_slist.c.o
+#13 19.83 [117/594] Building C object cpc-daemon/CMakeFiles/cpc.dir/misc/sleep.c.o
+#13 19.84 [118/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_msg.c.o
+#13 19.85 [119/594] Building C object third_party/openthread/repo/src/lib/platform/CMakeFiles/openthread-platform.dir/exit_code.c.o
+#13 19.87 [120/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/cc/cc_newreno.c.o
+#13 19.87 [121/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_fastopen.c.o
+#13 19.90 [122/594] Building C object third_party/openthread/repo/third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls.c.o
+#13 19.92 [123/594] Linking C static library third_party/openthread/repo/third_party/mbedtls/repo/library/libmbedtls.a
+#13 19.95 [124/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_reass.c.o
+#13 20.04 [125/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_output.c.o
+#13 20.06 [126/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_sack.c.o
+#13 20.08 [127/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_subr.c.o
+#13 20.11 [128/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_timer.c.o
+#13 20.13 [129/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_input.c.o
+#13 20.13 [130/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_timewait.c.o
+#13 20.17 [131/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_usrreq.c.o
+#13 20.18 [132/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/lib/bitmap.c.o
+#13 20.19 [133/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/lib/cbuf.c.o
+#13 20.20 [134/594] Building C object third_party/openthread/repo/third_party/tcplp/CMakeFiles/tcplp-ftd.dir/lib/lbuf.c.o
+#13 20.31 [135/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/rcp-vendor-intf.dir/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/posix/cpc_transport.cpp.o
+#13 20.32 [136/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/rcp-vendor-intf.dir/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/posix/cpc_interface.cpp.o
+#13 20.35 [137/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/ble_secure_api.cpp.o
+#13 20.38 [138/594] Building C object cpc-daemon/CMakeFiles/cpc.dir/lib/sl_cpc.c.o
+#13 20.38 [139/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/border_agent_admitter_api.cpp.o
+#13 20.39 [140/594] Linking C static library cpc-daemon/libcpc.a
+#13 20.48 [141/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/backbone_router_api.cpp.o
+#13 20.50 [142/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/border_agent_tracker_api.cpp.o
+#13 20.53 [143/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/border_agent_txt_data_api.cpp.o
+#13 20.58 [144/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/backbone_router_ftd_api.cpp.o
+#13 20.65 [145/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/border_agent_api.cpp.o
+#13 20.67 [146/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/border_agent_ephemeral_key_api.cpp.o
+#13 20.68 [147/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/channel_manager_api.cpp.o
+#13 20.70 [148/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/channel_monitor_api.cpp.o
+#13 20.80 [149/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/border_router_api.cpp.o
+#13 20.89 [150/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/border_routing_api.cpp.o
+#13 20.95 [151/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/child_supervision_api.cpp.o
+#13 21.01 [152/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/coap_api.cpp.o
+#13 21.08 [153/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/coap_secure_api.cpp.o
+#13 21.17 [154/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/commissioner_api.cpp.o
+#13 21.21 [155/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/crypto_api.cpp.o
+#13 21.30 [156/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/dataset_api.cpp.o
+#13 21.36 [157/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/dataset_ftd_api.cpp.o
+#13 21.43 [158/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/dataset_updater_api.cpp.o
+#13 21.46 [159/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/error_api.cpp.o
+#13 21.48 [160/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/diags_api.cpp.o
+#13 21.49 [161/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/heap_api.cpp.o
+#13 21.59 [162/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/dns_api.cpp.o
+#13 21.63 [163/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/dns_server_api.cpp.o
+#13 21.75 [164/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/icmp6_api.cpp.o
+#13 21.78 [165/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/jam_detection_api.cpp.o
+#13 21.79 [166/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/history_tracker_api.cpp.o
+#13 21.88 [167/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/instance_api.cpp.o
+#13 21.91 [168/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/link_metrics_api.cpp.o
+#13 21.93 [169/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/ip6_api.cpp.o
+#13 22.06 [170/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/joiner_api.cpp.o
+#13 22.10 [171/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/link_api.cpp.o
+#13 22.25 [172/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/link_raw_api.cpp.o
+#13 22.26 [173/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/logging_api.cpp.o
+#13 22.36 [174/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/mdns_api.cpp.o
+#13 22.38 [175/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/mesh_diag_api.cpp.o
+#13 22.52 [176/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/multi_ail_detection_api.cpp.o
+#13 22.53 [177/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/message_api.cpp.o
+#13 22.63 [178/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/multi_radio_api.cpp.o
+#13 22.66 [179/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/nat64_api.cpp.o
+#13 22.69 [180/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/network_time_api.cpp.o
+#13 22.72 [181/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/p2p_api.cpp.o
+#13 22.81 [182/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/netdata_api.cpp.o
+#13 22.82 [183/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/netdata_publisher_api.cpp.o
+#13 22.85 [184/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/random_crypto_api.cpp.o
+#13 22.89 [185/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/random_noncrypto_api.cpp.o
+#13 22.93 [186/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/netdiag_api.cpp.o
+#13 22.98 [187/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/ping_sender_api.cpp.o
+#13 23.01 [188/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/sntp_api.cpp.o
+#13 23.10 [189/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/radio_stats_api.cpp.o
+#13 23.21 [190/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/seeker_api.cpp.o
+#13 23.23 [191/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/server_api.cpp.o
+#13 23.31 [192/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/srp_client_api.cpp.o
+#13 23.34 [193/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/steering_data_api.cpp.o
+#13 23.38 [194/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/srp_client_buffers_api.cpp.o
+#13 23.52 [195/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/srp_server_api.cpp.o
+#13 23.58 [196/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/tasklet_api.cpp.o
+#13 23.62 [197/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/tcp_api.cpp.o
+#13 23.67 [198/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/tcp_ext_api.cpp.o
+#13 23.84 [199/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/thread_api.cpp.o
+#13 23.87 [200/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/verhoeff_checksum_api.cpp.o
+#13 23.89 [201/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/trel_api.cpp.o
+#13 23.89 [202/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/thread_ftd_api.cpp.o
+#13 23.97 [203/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/api/udp_api.cpp.o
+#13 24.16 [204/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/backbone_router/backbone_tmf.cpp.o
+#13 24.19 [205/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/backbone_router/bbr_leader.cpp.o
+#13 24.24 [206/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/backbone_router/bbr_local.cpp.o
+#13 24.35 [207/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/backbone_router/bbr_manager.cpp.o
+#13 24.49 [208/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/backbone_router/multicast_listeners_table.cpp.o
+#13 24.51 [209/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/border_router/br_log.cpp.o
+#13 24.54 [210/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/backbone_router/ndproxy_table.cpp.o
+#13 24.55 [211/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/border_router/dhcp6_pd_client.cpp.o
+#13 24.67 [212/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/border_router/br_tracker.cpp.o
+#13 24.84 [213/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/border_router/br_types.cpp.o
+#13 24.85 [214/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/border_router/multi_ail_detector.cpp.o
+#13 24.89 [215/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/border_router/infra_if.cpp.o
+#13 25.35 [216/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/coap/coap_message.cpp.o
+#13 25.39 [217/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/coap/coap.cpp.o
+#13 25.46 [218/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/appender.cpp.o
+#13 25.49 [219/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/binary_search.cpp.o
+#13 25.53 [220/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/bit_utils.cpp.o
+#13 25.54 [221/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/border_router/routing_manager.cpp.o
+#13 25.57 [222/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/data.cpp.o
+#13 25.59 [223/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/border_router/rx_ra_tracker.cpp.o
+#13 25.61 [224/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/error.cpp.o
+#13 25.64 [225/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/crc.cpp.o
+#13 25.65 [226/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/frame_data.cpp.o
+#13 25.67 [227/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/frame_builder.cpp.o
+#13 25.68 [228/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/coap/coap_secure.cpp.o
+#13 25.71 [229/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/heap_string.cpp.o
+#13 25.73 [230/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/heap_data.cpp.o
+#13 25.97 [231/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/heap.cpp.o
+#13 26.02 [232/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/notifier.cpp.o
+#13 26.05 [233/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/offset_range.cpp.o
+#13 26.05 [234/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/log.cpp.o
+#13 26.06 [235/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/preference.cpp.o
+#13 26.10 [236/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/random.cpp.o
+#13 26.16 [237/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/string.cpp.o
+#13 26.27 [238/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/message.cpp.o
+#13 26.37 [239/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/tasklet.cpp.o
+#13 26.39 [240/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/settings.cpp.o
+#13 26.43 [241/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/time_ticker.cpp.o
+#13 26.46 [242/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/trickle_timer.cpp.o
+#13 26.53 [243/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/tlvs.cpp.o
+#13 26.57 [244/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/crypto/aes_ecb.cpp.o
+#13 26.58 [245/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/crypto/aes_ccm.cpp.o
+#13 26.60 [246/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/timer.cpp.o
+#13 26.66 [247/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/crypto/hkdf_sha256.cpp.o
+#13 26.74 [248/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/common/uptime.cpp.o
+#13 26.74 [249/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/crypto/hmac_sha256.cpp.o
+#13 26.80 [250/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/crypto/mbedtls.cpp.o
+#13 26.82 [251/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/crypto/sha256.cpp.o
+#13 26.84 [252/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/crypto/crypto_platform_psa.cpp.o
+#13 26.84 [253/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/crypto/storage.cpp.o
+#13 26.90 [254/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/crypto/crypto_platform_mbedtls.cpp.o
+#13 26.94 [255/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/channel_mask.cpp.o
+#13 27.20 [256/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/data_poll_handler.cpp.o
+#13 27.22 [257/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/diags/factory_diags.cpp.o
+#13 27.28 [258/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/instance/instance.cpp.o
+#13 27.31 [259/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/data_poll_sender.cpp.o
+#13 27.49 [260/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/link_raw.cpp.o
+#13 27.54 [261/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/mac_header_ie.cpp.o
+#13 27.58 [262/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/mac_filter.cpp.o
+#13 27.66 [263/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/mac_types.cpp.o
+#13 27.73 [264/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/scan_result.cpp.o
+#13 27.75 [265/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/mac.cpp.o
+#13 27.87 [266/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/mac_links.cpp.o
+#13 27.92 [267/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/sub_mac_csl_receiver.cpp.o
+#13 27.97 [268/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/sub_mac_wed.cpp.o
+#13 27.98 [269/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/mac_frame.cpp.o
+#13 28.00 [270/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/wakeup_tx_scheduler.cpp.o
+#13 28.03 [271/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/border_agent_admitter.cpp.o
+#13 28.03 [272/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/sub_mac_callbacks.cpp.o
+#13 28.06 [273/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/border_agent_tracker.cpp.o
+#13 28.13 [274/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/mac/sub_mac.cpp.o
+#13 28.37 [275/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/border_agent_txt_data.cpp.o
+#13 28.43 [276/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/border_agent_ephemeral_key.cpp.o
+#13 28.45 [277/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/border_agent.cpp.o
+#13 28.67 [278/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/commissioner.cpp.o
+#13 28.77 [279/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/dataset_manager_ftd.cpp.o
+#13 28.82 [280/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/extended_panid.cpp.o
+#13 28.83 [281/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/dataset.cpp.o
+#13 28.90 [282/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/dataset_manager.cpp.o
+#13 28.96 [283/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/dataset_updater.cpp.o
+#13 29.18 [284/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/joiner_router.cpp.o
+#13 29.19 [285/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/joiner.cpp.o
+#13 29.21 [286/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/meshcop.cpp.o
+#13 29.26 [287/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/meshcop_leader.cpp.o
+#13 29.26 [288/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/network_name.cpp.o
+#13 29.48 [289/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/network_identity.cpp.o
+#13 29.50 [290/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/meshcop_tlvs.cpp.o
+#13 29.52 [291/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/tcat_agent.cpp.o
+#13 29.58 [292/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/timestamp.cpp.o
+#13 29.61 [293/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/seeker.cpp.o
+#13 29.63 [294/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/steering_data.cpp.o
+#13 29.72 [295/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/meshcop/secure_transport.cpp.o
+#13 29.79 [296/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/checksum.cpp.o
+#13 29.83 [297/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/dhcp6_types.cpp.o
+#13 29.86 [298/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/dns_dso.cpp.o
+#13 29.95 [299/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/dhcp6_client.cpp.o
+#13 29.98 [300/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/dhcp6_server.cpp.o
+#13 30.17 [301/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/dns_platform.cpp.o
+#13 30.27 [302/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/dnssd.cpp.o
+#13 30.43 [303/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/dns_client.cpp.o
+#13 30.55 [304/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/ip4_types.cpp.o
+#13 30.56 [305/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/icmp6.cpp.o
+#13 30.57 [306/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/dns_types.cpp.o
+#13 30.85 [307/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/ip6_filter.cpp.o
+#13 30.94 [308/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/ip6_headers.cpp.o
+#13 30.94 [309/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/dnssd_server.cpp.o
+#13 30.97 [310/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/ip6_address.cpp.o
+#13 31.00 [311/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/ip6.cpp.o
+#13 31.28 [312/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/ip6_mpl.cpp.o
+#13 31.31 [313/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/nd_agent.cpp.o
+#13 31.36 [314/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/nd6.cpp.o
+#13 31.38 [315/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/nat64_translator.cpp.o
+#13 31.40 [316/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/sntp_client.cpp.o
+#13 31.45 [317/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/socket.cpp.o
+#13 31.69 [318/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/netif.cpp.o
+#13 31.70 [319/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/slaac_address.cpp.o
+#13 32.02 [320/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/srp_advertising_proxy.cpp.o
+#13 32.33 [321/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/srp_client.cpp.o
+#13 32.40 [322/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/srp_server.cpp.o
+#13 32.50 [323/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/tcp6.cpp.o
+#13 32.52 [324/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/radio/ble_secure.cpp.o
+#13 32.64 [325/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/tcp6_ext.cpp.o
+#13 32.76 [326/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/udp6.cpp.o
+#13 32.81 [327/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/radio/radio.cpp.o
+#13 32.95 [328/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/radio/radio_callbacks.cpp.o
+#13 33.07 [329/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/radio/radio_platform.cpp.o
+#13 33.18 [330/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/radio/trel_interface.cpp.o
+#13 33.33 [331/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/radio/trel_link.cpp.o
+#13 33.35 [332/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/net/mdns.cpp.o
+#13 33.39 [333/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/radio/trel_packet.cpp.o
+#13 33.57 [334/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/radio/trel_peer.cpp.o
+#13 33.73 [335/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/announce_begin_server.cpp.o
+#13 33.82 [336/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/radio/trel_peer_discoverer.cpp.o
+#13 33.90 [337/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/announce_sender.cpp.o
+#13 33.94 [338/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/address_resolver.cpp.o
+#13 34.02 [339/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/anycast_locator.cpp.o
+#13 34.18 [340/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/child.cpp.o
+#13 34.21 [341/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/child_supervision.cpp.o
+#13 34.33 [342/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/child_table.cpp.o
+#13 34.34 [343/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/csl_tx_scheduler.cpp.o
+#13 34.52 [344/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/discover_scanner.cpp.o
+#13 34.64 [345/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/dua_manager.cpp.o
+#13 34.67 [346/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/energy_scan_server.cpp.o
+#13 34.72 [347/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/indirect_sender.cpp.o
+#13 34.74 [348/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/link_metrics_types.cpp.o
+#13 34.86 [349/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/key_manager.cpp.o
+#13 34.97 [350/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/link_metrics.cpp.o
+#13 35.03 [351/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/link_quality.cpp.o
+#13 35.19 [352/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/lowpan.cpp.o
+#13 35.23 [353/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/mesh_forwarder_mtd.cpp.o
+#13 35.36 [354/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/mesh_forwarder.cpp.o
+#13 35.39 [355/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/mesh_forwarder_ftd.cpp.o
+#13 35.51 [356/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/message_framer.cpp.o
+#13 35.55 [357/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/mle_p2p.cpp.o
+#13 35.61 [358/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/mle_tlvs.cpp.o
+#13 35.66 [359/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/mle_types.cpp.o
+#13 35.96 [360/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/neighbor.cpp.o
+#13 36.02 [361/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/mlr_manager.cpp.o
+#13 36.17 [362/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/mle_ftd.cpp.o
+#13 36.30 [363/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/neighbor_table.cpp.o
+#13 36.48 [364/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_data.cpp.o
+#13 36.48 [365/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/mle.cpp.o
+#13 36.65 [366/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_leader.cpp.o
+#13 36.80 [367/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_notifier.cpp.o
+#13 36.81 [368/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_local.cpp.o
+#13 36.91 [369/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_leader_ftd.cpp.o
+#13 36.94 [370/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_tlvs.cpp.o
+#13 37.14 [371/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_service.cpp.o
+#13 37.15 [372/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_publisher.cpp.o
+#13 37.12 [373/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_types.cpp.o
+#13 37.21 [374/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_diagnostic_tlvs.cpp.o
+#13 37.24 [375/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/peer.cpp.o
+#13 37.28 [376/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/peer_table.cpp.o
+#13 37.31 [377/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_diagnostic.cpp.o
+#13 37.34 [378/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/network_diagnostic_types.cpp.o
+#13 37.42 [379/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/panid_query_server.cpp.o
+#13 37.60 [380/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/router.cpp.o
+#13 37.61 [381/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/radio_selector.cpp.o
+#13 37.65 [382/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/thread_link_info.cpp.o
+#13 37.68 [383/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/time_sync_service.cpp.o
+#13 37.72 [384/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/src_match_controller.cpp.o
+#13 37.90 [385/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/router_table.cpp.o
+#13 37.91 [386/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/thread_netif.cpp.o
+#13 37.94 [387/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/version.cpp.o
+#13 37.97 [388/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/channel_manager.cpp.o
+#13 38.00 [389/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/channel_monitor.cpp.o
+#13 38.00 [390/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/tmf.cpp.o
+#13 38.01 [391/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/uri_paths.cpp.o
+#13 38.02 [392/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/flash.cpp.o
+#13 38.03 [393/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/heap.cpp.o
+#13 38.24 [394/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/thread/vendor_info.cpp.o
+#13 38.33 [395/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/history_tracker_server.cpp.o
+#13 38.36 [396/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/jam_detector.cpp.o
+#13 38.38 [397/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/link_metrics_manager.cpp.o
+#13 38.40 [398/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/history_tracker_client.cpp.o
+#13 38.42 [399/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/otns.cpp.o
+#13 38.45 [400/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/history_tracker.cpp.o
+#13 38.45 [401/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/history_tracker_tlvs.cpp.o
+#13 38.48 [402/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/power_calibration.cpp.o
+#13 38.53 [403/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/parse_cmdline.cpp.o
+#13 38.59 [404/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/verhoeff_checksum.cpp.o
+#13 38.65 [405/594] Building CXX object third_party/openthread/repo/src/lib/hdlc/CMakeFiles/openthread-hdlc.dir/hdlc.cpp.o
+#13 38.66 [406/594] Linking C static library third_party/openthread/repo/src/lib/platform/libopenthread-platform.a
+#13 38.75 [407/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/mesh_diag.cpp.o
+#13 38.75 [408/594] Building CXX object third_party/openthread/repo/src/lib/spinel/CMakeFiles/openthread-radio-spinel.dir/logger.cpp.o
+#13 38.78 [409/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/srp_client_buffers.cpp.o
+#13 38.79 [410/594] Building CXX object third_party/openthread/repo/src/lib/spinel/CMakeFiles/openthread-radio-spinel.dir/spinel_helper.cpp.o
+#13 38.80 [411/594] Building CXX object third_party/openthread/repo/src/core/CMakeFiles/openthread-ftd.dir/utils/ping_sender.cpp.o
+#13 38.89 [412/594] Building CXX object third_party/openthread/repo/src/lib/spinel/CMakeFiles/openthread-radio-spinel.dir/spinel_driver.cpp.o
+#13 38.95 [413/594] Building C object third_party/openthread/repo/src/lib/spinel/CMakeFiles/openthread-spinel-rcp.dir/spinel.c.o
+#13 39.00 [414/594] Building CXX object third_party/openthread/repo/src/lib/spinel/CMakeFiles/openthread-spinel-rcp.dir/spinel_decoder.cpp.o
+#13 39.01 [415/594] Building CXX object third_party/openthread/repo/src/lib/spinel/CMakeFiles/openthread-spinel-rcp.dir/spinel_buffer.cpp.o
+#13 39.01 [416/594] Building CXX object third_party/openthread/repo/src/lib/spinel/CMakeFiles/openthread-spinel-rcp.dir/spinel_encoder.cpp.o
+#13 39.02 [417/594] Building CXX object third_party/openthread/repo/src/lib/spinel/CMakeFiles/openthread-spinel-rcp.dir/spinel_helper.cpp.o
+#13 39.03 [418/594] Linking CXX static library third_party/openthread/repo/third_party/tcplp/libtcplp-ftd.a
+#13 39.05 [419/594] Linking CXX static library third_party/openthread/repo/src/posix/platform/librcp-vendor-intf.a
+#13 39.07 [420/594] Building CXX object third_party/openthread/repo/src/lib/url/CMakeFiles/openthread-url.dir/url.cpp.o
+#13 39.12 [421/594] Building CXX object third_party/openthread/repo/src/lib/spinel/CMakeFiles/openthread-spinel-rcp.dir/spinel_prop_codec.cpp.o
+#13 39.21 [422/594] Building CXX object third_party/openthread/repo/src/lib/spinel/CMakeFiles/openthread-radio-spinel.dir/radio_spinel.cpp.o
+#13 39.37 [423/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_api.cpp.o
+#13 39.43 [424/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_ba.cpp.o
+#13 39.51 [425/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_bbr.cpp.o
+#13 39.74 [426/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_br.cpp.o
+#13 39.78 [427/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_coap.cpp.o
+#13 39.86 [428/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_coap_secure.cpp.o
+#13 39.87 [429/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli.cpp.o
+#13 40.09 [430/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_commissioner.cpp.o
+#13 40.18 [431/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_dataset.cpp.o
+#13 40.24 [432/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_dns.cpp.o
+#13 40.26 [433/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_logging.cpp.o
+#13 40.35 [434/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_history.cpp.o
+#13 40.38 [435/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_joiner.cpp.o
+#13 40.45 [436/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_link_metrics.cpp.o
+#13 40.57 [437/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_mac_filter.cpp.o
+#13 40.70 [438/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_mesh_diag.cpp.o
+#13 40.79 [439/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_mdns.cpp.o
+#13 40.81 [440/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_network_data.cpp.o
+#13 40.85 [441/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_tcat.cpp.o
+#13 40.92 [442/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_ping.cpp.o
+#13 41.07 [443/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_srp_client.cpp.o
+#13 41.14 [444/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_srp_server.cpp.o
+#13 41.25 [445/594] Linking CXX static library third_party/openthread/repo/src/core/libopenthread-ftd.a
+#13 41.26 [446/594] Linking CXX static library third_party/openthread/repo/src/lib/hdlc/libopenthread-hdlc.a
+#13 41.26 [447/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_udp.cpp.o
+#13 41.27 [448/594] Linking CXX static library third_party/openthread/repo/src/lib/spinel/libopenthread-radio-spinel.a
+#13 41.27 [449/594] Linking CXX static library third_party/openthread/repo/src/lib/spinel/libopenthread-spinel-rcp.a
+#13 41.28 [450/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_tcp.cpp.o
+#13 41.28 [451/594] Linking CXX static library third_party/openthread/repo/src/lib/url/libopenthread-url.a
+#13 41.37 [452/594] Building CXX object src/common/CMakeFiles/otbr-common.dir/api_strings.cpp.o
+#13 41.42 [453/594] Building CXX object src/common/CMakeFiles/otbr-common.dir/code_utils.cpp.o
+#13 41.46 [454/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/openthread-cli-ftd.dir/cli_utils.cpp.o
+#13 41.52 [455/594] Building CXX object src/common/CMakeFiles/otbr-common.dir/logging.cpp.o
+#13 41.54 [456/594] Building CXX object src/common/CMakeFiles/otbr-common.dir/mainloop.cpp.o
+#13 41.56 [457/594] Building C object third_party/openthread/repo/src/cli/CMakeFiles/ot-vendor-posix-cli.dir/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/src/cli/cli_utils.c.o
+#13 41.59 [458/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/ot-vendor-posix-cli.dir/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/posix/posix_cli_user_commands.cpp.o
+#13 41.62 [459/594] Building C object third_party/openthread/repo/src/cli/CMakeFiles/ot-vendor-posix-cli.dir/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/src/cli/antenna_diversity_cli.c.o
+#13 41.62 [460/594] Building CXX object src/common/CMakeFiles/otbr-common.dir/mainloop_manager.cpp.o
+#13 41.64 [461/594] Linking CXX static library third_party/openthread/repo/src/cli/libopenthread-cli-ftd.a
+#13 41.67 [462/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/crc16.cpp.o
+#13 41.67 [463/594] Building C object third_party/openthread/repo/src/cli/CMakeFiles/ot-vendor-posix-cli.dir/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/src/cli/coexistence_cli.c.o
+#13 41.76 [464/594] Building CXX object src/common/CMakeFiles/otbr-common.dir/types.cpp.o
+#13 41.83 [465/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/csprng.cpp.o
+#13 41.91 [466/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/hex.cpp.o
+#13 41.95 [467/594] Building CXX object src/common/CMakeFiles/otbr-common.dir/task_runner.cpp.o
+#13 41.97 [468/594] Linking CXX static library src/common/libotbr-common.a
+#13 41.98 [469/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/dns_utils.cpp.o
+#13 42.10 [470/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/pskc.cpp.o
+#13 42.13 [471/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/steering_data.cpp.o
+#13 42.14 [472/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/socket_utils.cpp.o
+#13 42.15 [473/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/sha256.cpp.o
+#13 42.27 [474/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/infra_link_selector.cpp.o
+#13 42.28 [475/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/system_utils.cpp.o
+#13 42.29 [476/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/ot-vendor-posix-api.dir/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/posix/posix_vendor_spinel_interface.cpp.o
+#13 42.30 [477/594] Linking CXX static library third_party/openthread/repo/src/cli/libot-vendor-posix-cli.a
+#13 42.30 [478/594] Running C++ protocol buffer compiler on /sdk2026-host/ot-br-posix/src/proto/capabilities.proto
+#13 42.30 [479/594] Running C++ protocol buffer compiler on /sdk2026-host/ot-br-posix/src/proto/feature_flag.proto
+#13 42.31 [480/594] Building CXX object src/utils/CMakeFiles/otbr-utils.dir/string_utils.cpp.o
+#13 42.32 [481/594] Building CXX object third_party/openthread/repo/src/cli/CMakeFiles/ot-vendor-posix-api.dir/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/posix/radio_extension.cpp.o
+#13 42.32 [482/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/dnssd.cpp.o
+#13 42.34 [483/594] Running C++ protocol buffer compiler on /sdk2026-host/ot-br-posix/src/proto/thread_telemetry.proto
+#13 42.49 [484/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/entropy.cpp.o
+#13 42.54 [485/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/nat64_tayga_host.cpp.o
+#13 42.57 [486/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/cli_daemon.cpp.o
+#13 42.65 [487/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/firewall_ingress.cpp.o
+#13 42.76 [488/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/infra_if.cpp.o
+#13 42.77 [489/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/netif_unix.cpp.o
+#13 42.85 [490/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/netif_linux.cpp.o
+#13 42.87 [491/594] Linking CXX static library src/utils/libotbr-utils.a
+#13 42.92 [492/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/netif.cpp.o
+#13 42.93 [493/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/multicast_routing_manager.cpp.o
+#13 42.93 [494/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/alarm.cpp.o
+#13 42.96 [495/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/ble.cpp.o
+#13 42.98 [496/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/backtrace.cpp.o
+#13 43.02 [497/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/configuration.cpp.o
+#13 43.03 [498/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/config_file.cpp.o
+#13 43.03 [499/594] Building CXX object src/host/posix/CMakeFiles/otbr-posix.dir/udp_proxy.cpp.o
+#13 43.05 [500/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/dhcp6_pd_socket.cpp.o
+#13 43.07 [501/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/daemon.cpp.o
+#13 43.07 [502/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/entropy.cpp.o
+#13 43.11 [503/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/logging.cpp.o
+#13 43.15 [504/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/mainloop.cpp.o
+#13 43.21 [505/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/hdlc_interface.cpp.o
+#13 43.22 [506/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/firewall.cpp.o
+#13 43.25 [507/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/memory.cpp.o
+#13 43.27 [508/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/misc.cpp.o
+#13 43.28 [509/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/infra_if.cpp.o
+#13 43.33 [510/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/mdns_socket.cpp.o
+#13 43.34 [511/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/power.cpp.o
+#13 43.38 [512/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/radio_url.cpp.o
+#13 43.40 [513/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/multicast_routing.cpp.o
+#13 43.53 [514/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/netif.cpp.o
+#13 43.55 [515/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/radio.cpp.o
+#13 43.57 [516/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/rcp_caps_diag.cpp.o
+#13 43.59 [517/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/settings.cpp.o
+#13 43.64 [518/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/spi_interface.cpp.o
+#13 43.64 [519/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/spinel_manager.cpp.o
+#13 43.65 [520/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/settings_file.cpp.o
+#13 43.71 [521/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/tmp_storage.cpp.o
+#13 43.72 [522/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/system.cpp.o
+#13 43.75 [523/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/trel.cpp.o
+#13 43.78 [524/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/utils.cpp.o
+#13 43.79 [525/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/virtual_time.cpp.o
+#13 43.80 [526/594] Linking CXX static library third_party/openthread/repo/src/cli/libot-vendor-posix-api.a
+#13 43.80 [527/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/resolver.cpp.o
+#13 43.85 [528/594] Building CXX object third_party/openthread/repo/src/posix/platform/CMakeFiles/openthread-posix.dir/udp.cpp.o
+#13 43.88 [529/594] Building CXX object third_party/openthread/repo/src/posix/CMakeFiles/ot-ctl.dir/client.cpp.o
+#13 44.22 [530/594] Building C object third_party/cJSON/repo/CMakeFiles/cjson.dir/cJSON.c.o
+#13 44.24 [531/594] Linking CXX static library src/host/posix/libotbr-posix.a
+#13 44.29 [532/594] Building CXX object src/proto/CMakeFiles/otbr-proto.dir/__/__/build/src/proto/capabilities.pb.cc.o
+#13 44.38 [533/594] Building CXX object src/proto/CMakeFiles/otbr-proto.dir/__/__/build/src/proto/feature_flag.pb.cc.o
+#13 44.47 [534/594] Building CXX object src/mdns/CMakeFiles/otbr-mdns.dir/mdns_openthread.cpp.o
+#13 44.59 [535/594] Building CXX object src/mdns/CMakeFiles/otbr-mdns.dir/mdns.cpp.o
+#13 44.82 [536/594] Building CXX object src/backbone_router/CMakeFiles/otbr-backbone-router.dir/backbone_agent.cpp.o
+#13 44.90 [537/594] Building CXX object src/backbone_router/CMakeFiles/otbr-backbone-router.dir/dua_routing_manager.cpp.o
+#13 44.92 [538/594] Linking CXX static library third_party/openthread/repo/src/posix/platform/libopenthread-posix.a
+#13 44.95 [539/594] Linking CXX executable third_party/openthread/repo/src/posix/ot-ctl
+#13 44.96 [540/594] Linking C static library third_party/cJSON/repo/libcjson.a
+#13 45.18 [541/594] Building CXX object src/backbone_router/CMakeFiles/otbr-backbone-router.dir/nd_proxy.cpp.o
+#13 45.39 [542/594] Building CXX object src/host/CMakeFiles/otbr-host.dir/async_task.cpp.o
+#13 45.39 [543/594] cd /sdk2026-host/otbr-build/third_party/openthread/repo && /usr/bin/cmake -DLIST="OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE=1;OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_ENABLE=1;OPENTHREAD_CONFIG_BACKBONE_ROUTER_ENABLE=1;OPENTHREAD_CONFIG_BACKBONE_ROUTER_DUA_NDPROXYING_ENABLE=1;OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE=1;OPENTHREAD_CONFIG_BORDER_AGENT_EPHEMERAL_KEY_ENABLE=1;OPENTHREAD_CONFIG_BORDER_AGENT_ID_ENABLE=1;OPENTHREAD_CONFIG_BORDER_AGENT_MESHCOP_SERVICE_ENABLE=1;OPENTHREAD_CONFIG_BORDER_ROUTER_ENABLE=1;OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE=1;OPENTHREAD_CONFIG_BORDER_ROUTING_DHCP6_PD_ENABLE=0;OPENTHREAD_CONFIG_BORDER_ROUTING_DHCP6_PD_CLIENT_ENABLE=0;OPENTHREAD_CONFIG_IP6_BR_COUNTERS_ENABLE=1;OPENTHREAD_CONFIG_BORDER_ROUTING_MULTI_AIL_DETECTION_ENABLE=1;OPENTHREAD_CONFIG_COAP_API_ENABLE=1;OPENTHREAD_CONFIG_COAP_SECURE_API_ENABLE=1;OPENTHREAD_CONFIG_COMMISSIONER_ENABLE=1;OPENTHREAD_CONFIG_DATASET_UPDATER_ENABLE=1;OPENTHREAD_CONFIG_DNS_CLIENT_ENABLE=1;OPENTHREAD_CONFIG_DNS_CLIENT_OVER_TCP_ENABLE=0;OPENTHREAD_CONFIG_DNS_UPSTREAM_QUERY_ENABLE=1;OPENTHREAD_CONFIG_DNSSD_DISCOVERY_PROXY_ENABLE=1;OPENTHREAD_CONFIG_DNSSD_SERVER_ENABLE=1;OPENTHREAD_CONFIG_ECDSA_ENABLE=1;OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE=1;OPENTHREAD_POSIX_CONFIG_FIREWALL_ENABLE=1;OPENTHREAD_CONFIG_HISTORY_TRACKER_ENABLE=1;OPENTHREAD_CONFIG_JOINER_ENABLE=1;OPENTHREAD_CONFIG_MLE_LINK_METRICS_INITIATOR_ENABLE=0;OPENTHREAD_CONFIG_LINK_METRICS_MANAGER_ENABLE=0;OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE=1;OPENTHREAD_CONFIG_LINK_RAW_ENABLE=1;OPENTHREAD_CONFIG_LOG_LEVEL_DYNAMIC_ENABLE=1;OPENTHREAD_CONFIG_MAC_FILTER_ENABLE=1;OPENTHREAD_CONFIG_MULTICAST_DNS_ENABLE=1;OPENTHREAD_CONFIG_MULTICAST_DNS_VERBOSE_LOGGING_ENABLE=1;OPENTHREAD_CONFIG_MESH_DIAG_ENABLE=1;OPENTHREAD_CONFIG_MESSAGE_USE_HEAP_ENABLE=1;OPENTHREAD_CONFIG_MLR_ENABLE=1;OPENTHREAD_CONFIG_MULTIPAN_RCP_ENABLE=1;OPENTHREAD_CONFIG_NAT64_BORDER_ROUTING_ENABLE=1;OPENTHREAD_CONFIG_NAT64_TRANSLATOR_ENABLE=1;OPENTHREAD_CONFIG_NETDATA_PUBLISHER_ENABLE=1;OPENTHREAD_CONFIG_TMF_NETDIAG_CLIENT_ENABLE=1;OPENTHREAD_CONFIG_PING_SENDER_ENABLE=1;OPENTHREAD_CONFIG_PLATFORM_NETIF_ENABLE=1;OPENTHREAD_CONFIG_PLATFORM_UDP_ENABLE=1;OPENTHREAD_CONFIG_TMF_NETDATA_SERVICE_ENABLE=1;OPENTHREAD_CONFIG_IP6_SLAAC_ENABLE=1;OPENTHREAD_CONFIG_SRP_SERVER_ADVERTISING_PROXY_ENABLE=1;OPENTHREAD_CONFIG_SRP_CLIENT_ENABLE=1;OPENTHREAD_CONFIG_SRP_SERVER_ENABLE=1;OPENTHREAD_CONFIG_TCP_ENABLE=0;OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE=1;OPENTHREAD_CONFIG_TREL_MANAGE_DNSSD_ENABLE=1;OPENTHREAD_CONFIG_UDP_FORWARD_ENABLE=0;OPENTHREAD_CONFIG_UPTIME_ENABLE=1;OPENTHREAD_CONFIG_THREAD_VERSION=OT_THREAD_VERSION_1_4;OPENTHREAD_CONFIG_LOG_LEVEL=OT_LOG_LEVEL_INFO;OPENTHREAD_CONFIG_NET_DIAG_VENDOR_NAME="OpenThread";OPENTHREAD_CONFIG_NET_DIAG_VENDOR_MODEL="Silicon\ Labs\ Multiprotocol";OPENTHREAD_CONFIG_ENABLE_BUILTIN_MBEDTLS=1;OPENTHREAD_CONFIG_ENABLE_BUILTIN_MBEDTLS_MANAGEMENT=0;OPENTHREAD_CONFIG_POSIX_SETTINGS_PATH="/var/lib/thread";PACKAGE_NAME="OPENTHREAD";OPENTHREAD_PLATFORM_POSIX=1;OPENTHREAD_PLATFORM_NEXUS=0;OPENTHREAD_PLATFORM_CORE_CONFIG_FILE="openthread-core-silabs-posix-config.h";OPENTHREAD_POSIX_CONFIG_DAEMON_ENABLE=1;SL_OPENTHREAD_ANT_DIV_CLI_ENABLE=1;SL_OPENTHREAD_COEX_CLI_ENABLE=1;OPENTHREAD_CONFIG_CLI_MAX_USER_CMD_ENTRIES=2;OPENTHREAD_CONFIG_CLI_VENDOR_COMMANDS_ENABLE=1;OPENTHREAD_CONFIG_NCP_INFRA_IF_ENABLE=0;OPENTHREAD_CONFIG_NCP_DNSSD_ENABLE=0;OPENTHREAD_CONFIG_NCP_CLI_STREAM_ENABLE=0;OPENTHREAD_CONFIG_NCP_HDLC_ENABLE=1;OPENTHREAD_CONFIG_LOG_CLI=1;OPENTHREAD_CONFIG_MAX_STATECHANGE_HANDLERS=3;OPENTHREAD_CONFIG_MLE_STEERING_DATA_SET_OOB_ENABLE=1;OPENTHREAD_POSIX_CONFIG_FILE="/sdk2026-host/otbr-build/src/agent/openthread-otbr-posix-config.h";OPENTHREAD_CONFIG_TMF_PROXY_DUA_ENABLE=1;OPENTHREAD_CONFIG_TMF_PROXY_MLR_ENABLE=1;OPENTHREAD_CONFIG_MULTICAST_DNS_PUBLIC_API_ENABLE=1" -P /sdk2026-host/ot-br-posix/third_party/openthread/repo/etc/cmake/print.cmake
+#13 45.39 OPENTHREAD_CONFIG_RADIO_LINK_IEEE_802_15_4_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_TMF_ANYCAST_LOCATOR_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_BACKBONE_ROUTER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_BACKBONE_ROUTER_DUA_NDPROXYING_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_BORDER_AGENT_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_BORDER_AGENT_EPHEMERAL_KEY_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_BORDER_AGENT_ID_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_BORDER_AGENT_MESHCOP_SERVICE_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_BORDER_ROUTER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_BORDER_ROUTING_DHCP6_PD_ENABLE=0
+#13 45.39 OPENTHREAD_CONFIG_BORDER_ROUTING_DHCP6_PD_CLIENT_ENABLE=0
+#13 45.39 OPENTHREAD_CONFIG_IP6_BR_COUNTERS_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_BORDER_ROUTING_MULTI_AIL_DETECTION_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_COAP_API_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_COAP_SECURE_API_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_COMMISSIONER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_DATASET_UPDATER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_DNS_CLIENT_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_DNS_CLIENT_OVER_TCP_ENABLE=0
+#13 45.39 OPENTHREAD_CONFIG_DNS_UPSTREAM_QUERY_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_DNSSD_DISCOVERY_PROXY_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_DNSSD_SERVER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_ECDSA_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_HEAP_EXTERNAL_ENABLE=1
+#13 45.39 OPENTHREAD_POSIX_CONFIG_FIREWALL_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_HISTORY_TRACKER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_JOINER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_MLE_LINK_METRICS_INITIATOR_ENABLE=0
+#13 45.39 OPENTHREAD_CONFIG_LINK_METRICS_MANAGER_ENABLE=0
+#13 45.39 OPENTHREAD_CONFIG_MLE_LINK_METRICS_SUBJECT_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_LINK_RAW_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_LOG_LEVEL_DYNAMIC_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_MAC_FILTER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_MULTICAST_DNS_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_MULTICAST_DNS_VERBOSE_LOGGING_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_MESH_DIAG_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_MESSAGE_USE_HEAP_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_MLR_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_MULTIPAN_RCP_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_NAT64_BORDER_ROUTING_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_NAT64_TRANSLATOR_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_NETDATA_PUBLISHER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_TMF_NETDIAG_CLIENT_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_PING_SENDER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_PLATFORM_NETIF_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_PLATFORM_UDP_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_TMF_NETDATA_SERVICE_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_IP6_SLAAC_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_SRP_SERVER_ADVERTISING_PROXY_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_SRP_CLIENT_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_SRP_SERVER_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_TCP_ENABLE=0
+#13 45.39 OPENTHREAD_CONFIG_RADIO_LINK_TREL_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_TREL_MANAGE_DNSSD_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_UDP_FORWARD_ENABLE=0
+#13 45.39 OPENTHREAD_CONFIG_UPTIME_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_THREAD_VERSION=OT_THREAD_VERSION_1_4
+#13 45.39 OPENTHREAD_CONFIG_LOG_LEVEL=OT_LOG_LEVEL_INFO
+#13 45.39 OPENTHREAD_CONFIG_NET_DIAG_VENDOR_NAME=OpenThread
+#13 45.39 OPENTHREAD_CONFIG_NET_DIAG_VENDOR_MODEL=Silicon Labs Multiprotocol
+#13 45.39 OPENTHREAD_CONFIG_ENABLE_BUILTIN_MBEDTLS=1
+#13 45.39 OPENTHREAD_CONFIG_ENABLE_BUILTIN_MBEDTLS_MANAGEMENT=0
+#13 45.39 OPENTHREAD_CONFIG_POSIX_SETTINGS_PATH=/var/lib/thread
+#13 45.39 PACKAGE_NAME=OPENTHREAD
+#13 45.39 OPENTHREAD_PLATFORM_POSIX=1
+#13 45.39 OPENTHREAD_PLATFORM_NEXUS=0
+#13 45.39 OPENTHREAD_PLATFORM_CORE_CONFIG_FILE=openthread-core-silabs-posix-config.h
+#13 45.39 OPENTHREAD_POSIX_CONFIG_DAEMON_ENABLE=1
+#13 45.39 SL_OPENTHREAD_ANT_DIV_CLI_ENABLE=1
+#13 45.39 SL_OPENTHREAD_COEX_CLI_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_CLI_MAX_USER_CMD_ENTRIES=2
+#13 45.39 OPENTHREAD_CONFIG_CLI_VENDOR_COMMANDS_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_NCP_INFRA_IF_ENABLE=0
+#13 45.39 OPENTHREAD_CONFIG_NCP_DNSSD_ENABLE=0
+#13 45.39 OPENTHREAD_CONFIG_NCP_CLI_STREAM_ENABLE=0
+#13 45.39 OPENTHREAD_CONFIG_NCP_HDLC_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_LOG_CLI=1
+#13 45.39 OPENTHREAD_CONFIG_MAX_STATECHANGE_HANDLERS=3
+#13 45.39 OPENTHREAD_CONFIG_MLE_STEERING_DATA_SET_OOB_ENABLE=1
+#13 45.39 OPENTHREAD_POSIX_CONFIG_FILE=/sdk2026-host/otbr-build/src/agent/openthread-otbr-posix-config.h
+#13 45.39 OPENTHREAD_CONFIG_TMF_PROXY_DUA_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_TMF_PROXY_MLR_ENABLE=1
+#13 45.39 OPENTHREAD_CONFIG_MULTICAST_DNS_PUBLIC_API_ENABLE=1
+#13 45.66 [544/594] Building CXX object src/border_agent/CMakeFiles/otbr-border-agent.dir/border_agent.cpp.o
+#13 46.03 [545/594] Building CXX object src/host/CMakeFiles/otbr-host.dir/ncp_upstream_dns_resolver.cpp.o
+#13 46.34 [546/594] Building CXX object src/host/CMakeFiles/otbr-host.dir/ncp_host.cpp.o
+#13 46.43 [547/594] Building CXX object src/host/CMakeFiles/otbr-host.dir/ncp_spinel.cpp.o
+#13 46.91 [548/594] Building CXX object src/host/CMakeFiles/otbr-host.dir/thread_host.cpp.o
+#13 46.92 [549/594] Linking CXX static library src/mdns/libotbr-mdns.a
+#13 47.05 [550/594] Building CXX object src/host/CMakeFiles/otbr-host.dir/thread_helper.cpp.o
+#13 47.35 [551/594] Building CXX object src/host/CMakeFiles/otbr-host.dir/rcp_host.cpp.o
+#13 48.32 [552/594] Building CXX object src/proto/CMakeFiles/otbr-proto.dir/__/__/build/src/proto/thread_telemetry.pb.cc.o
+#13 48.35 [553/594] Linking CXX static library src/proto/libotbr-proto.a
+#13 49.13 [554/594] Generating node_modules/angular-material/angular-material.min.css, node_modules/material-design-lite/material.min.css, node_modules/angular-animate/angular-animate.min.js, node_modules/angular-aria/angular-aria.min.js, node_modules/angular-material/angular-material.min.js, node_modules/angular-messages/angular-messages.min.js, node_modules/angular/angular.min.js, node_modules/d3/d3.min.js, node_modules/material-design-lite/material.min.js, node_modules/qrcode-generator/dist/qrcode.js
+#13 49.13 npm WARN deprecated angular-aria@1.8.3: For the actively supported Angular, see https://www.npmjs.com/package/@angular/core. AngularJS support has officially ended. For extended AngularJS support options, see https://goo.gle/angularjs-path-forward.
+#13 49.13 npm WARN deprecated angular-animate@1.8.3: For the actively supported Angular, see https://www.npmjs.com/package/@angular/core. AngularJS support has officially ended. For extended AngularJS support options, see https://goo.gle/angularjs-path-forward.
+#13 49.13 npm WARN deprecated angular@1.8.3: For the actively supported Angular, see https://www.npmjs.com/package/@angular/core. AngularJS support has officially ended. For extended AngularJS support options, see https://goo.gle/angularjs-path-forward.
+#13 49.13 npm WARN deprecated angular-material@1.2.5: For the actively supported Angular Material, see https://www.npmjs.com/package/@angular/material. AngularJS support has officially ended. For extended AngularJS support options, see https://goo.gle/angularjs-path-forward.
+#13 49.13 
+#13 49.13 added 8 packages, and audited 9 packages in 2s
+#13 49.13 
+#13 49.13 2 vulnerabilities (1 moderate, 1 high)
+#13 49.13 
+#13 49.13 To address all issues (including breaking changes), run:
+#13 49.13   npm audit fix --force
+#13 49.13 
+#13 49.13 Run `npm audit` for details.
+#13 53.16 [555/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/actions/action.cpp.o
+#13 53.51 [556/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/actions/handler.cpp.o
+#13 53.60 [557/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/actions/add_thread_device.cpp.o
+#13 54.29 [558/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/actions/discover_network.cpp.o
+#13 55.01 [559/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/actions/energy_scan.cpp.o
+#13 55.42 [560/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/commissioner_manager.cpp.o
+#13 55.74 [561/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/diagnostic_types.cpp.o
+#13 59.39 [562/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/actions/network_diagnostic.cpp.o
+#13 59.58 [563/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/actions/reset_diagnostic_counters.cpp.o
+#13 59.99 [564/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/actions_list.cpp.o
+#13 61.98 [565/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/json.cpp.o
+#13 64.97 [566/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/rest_devices_coll.cpp.o
+#13 65.26 [567/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/rest_server_common.cpp.o
+#13 65.52 [568/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/rest_diagnostics_coll.cpp.o
+#13 66.22 [569/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/network_diag_handler.cpp.o
+#13 66.34 [570/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/timestamp.cpp.o
+#13 66.63 [571/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/uuid.cpp.o
+#13 66.64 [572/594] Linking CXX static library src/backbone_router/libotbr-backbone-router.a
+#13 67.76 [573/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/rest_generic_collection.cpp.o
+#13 67.77 [574/594] Building CXX object src/agent/CMakeFiles/otbr-agent.dir/main.cpp.o
+#13 70.94 [575/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/services.cpp.o
+#13 70.95 [576/594] Linking CXX static library src/border_agent/libotbr-border-agent.a
+#13 70.97 [577/594] Linking CXX static library src/host/libotbr-host.a
+#13 70.98 [578/594] Building CXX object src/host/telemetry/CMakeFiles/otbr-telemetry.dir/telemetry.cpp.o
+#13 70.99 [579/594] Building CXX object src/host/telemetry/CMakeFiles/otbr-telemetry.dir/telemetry_retriever_border_agent.cpp.o
+#13 72.18 [580/594] Building CXX object src/agent/CMakeFiles/otbr-agent.dir/application.cpp.o
+#13 72.37 [581/594] Building CXX object src/web/CMakeFiles/otbr-web.dir/web-service/ot_client.cpp.o
+#13 72.70 [582/594] Building CXX object src/rest/CMakeFiles/otbr-rest.dir/rest_web_server.cpp.o
+#13 73.24 [583/594] Building CXX object src/web/CMakeFiles/otbr-web.dir/web-service/wpan_service.cpp.o
+#13 73.28 [584/594] Building CXX object src/agent/CMakeFiles/otbr-agent.dir/realmain.cpp.o
+#13 73.34 [585/594] Linking CXX static library src/rest/libotbr-rest.a
+#13 73.43 [586/594] Building CXX object tools/CMakeFiles/pskc.dir/pskc.cpp.o
+#13 73.51 [587/594] Building CXX object tools/CMakeFiles/steering-data.dir/steering_data.cpp.o
+#13 73.52 [588/594] Linking CXX static library src/host/telemetry/libotbr-telemetry.a
+#13 73.56 [589/594] Linking CXX executable tools/pskc
+#13 73.60 [590/594] Linking CXX executable tools/steering-data
+#13 73.67 [591/594] Linking CXX executable src/agent/otbr-agent
+#13 76.22 [592/594] Building CXX object src/web/CMakeFiles/otbr-web.dir/main.cpp.o
+#13 77.96 [593/594] Building CXX object src/web/CMakeFiles/otbr-web.dir/web-service/web_server.cpp.o
+#13 78.03 [594/594] Linking CXX executable src/web/otbr-web
+#13 78.04 -- Install configuration: "Release"
+#13 78.04 -- Installing: /sdk2026-upstream-install/otbr/usr/sbin/otbr-agent
+#13 78.04 -- Installing: /sdk2026-upstream-install/otbr/usr/sbin/ot-ctl
+#13 78.04 -- Installing: /sdk2026-upstream-install/otbr/etc/init.d/otbr-agent
+#13 78.04 -- Installing: /sdk2026-upstream-install/otbr/etc/default/otbr-agent
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/sbin/otbr-web
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/etc/init.d/otbr-web
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/index.html
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/join.dialog.html
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/css
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/css/styles.css
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/app.js.orig
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/app.js
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/qrcode.LICENSE.txt
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/img
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/img/openthread_logo.png
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/img/favicon.png
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/img/icon-info.png
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/img/borderrouter.png
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/img/ios-desktop.png
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/img/android-desktop.png
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/angular-animate.min.js
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/angular-aria.min.js
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/angular-material.min.js
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/angular-messages.min.js
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/angular.min.js
+#13 78.05 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/d3.min.js
+#13 78.06 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/material.min.js
+#13 78.06 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/js/qrcode.js
+#13 78.06 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/css/angular-material.min.css
+#13 78.06 -- Installing: /sdk2026-upstream-install/otbr/usr/share/otbr-web/frontend/res/css/material.min.css
+#13 DONE 78.3s
+
+#14 [stage-1 3/8] COPY --from=sdk2026-builder /sdk2026-install/ /
+#14 DONE 0.1s
+
+#15 [stage-1 4/8] COPY hassio-ihost-silabs-multiprotocol/rootfs/ /
+#15 DONE 0.0s
+
+#16 [stage-1 5/8] COPY review/sdk2026/runtime/ /sdk2026-runtime/
+#16 DONE 0.0s
+
+#17 [stage-1 6/8] RUN bash /sdk2026-runtime/install.sh
+#17 DONE 0.2s
+
+#18 [stage-1 7/8] RUN ldconfig &&     for binary in /usr/local/bin/cpcd /usr/local/bin/zigbeed /usr/sbin/otbr-agent /usr/sbin/otbr-web /usr/sbin/ot-ctl; do       test -x "$binary" && ldd "$binary" > /tmp/sdk2026-ldd.txt &&       ! grep -q 'not found' /tmp/sdk2026-ldd.txt || exit 1;     done && rm /tmp/sdk2026-ldd.txt && touch /accept_silabs_msla
+#18 DONE 0.3s
+
+#19 exporting to image
+#19 exporting layers
+#19 exporting layers 1.6s done
+#19 exporting manifest sha256:0b7f2b100d5bc732d5e177e1044f9e9318b802eab29e02846befc7b10d217d1c done
+#19 exporting config sha256:e9662124b64479d4e5c3e63928ce56fb8b87d4a1356f0535536a4e5adbf975ca done
+#19 exporting attestation manifest sha256:65347faad69ccc40837f903fcd9e81d7df670922f1dc8999ff313cf04ffb52a3 0.0s done
+#19 exporting manifest list sha256:074fd67d58a890895675180a7b7ce2f4b4f3dccaade7f0ba86fbac9744fe50a0 done
+#19 naming to docker.io/local/otbr-sdk2026:encrypted done
+#19 unpacking to docker.io/local/otbr-sdk2026:encrypted
+#19 unpacking to docker.io/local/otbr-sdk2026:encrypted 0.7s done
+#19 DONE 2.4s
+
+ 2 warnings found (use docker --debug to expand):
+ - FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 4)
+ - FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 19)

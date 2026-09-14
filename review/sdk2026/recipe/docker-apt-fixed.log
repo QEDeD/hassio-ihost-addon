@@ -1,0 +1,468 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.apt-check
+#1 transferring dockerfile: 503B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/3] FROM ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+#4 resolve ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d 0.0s done
+#4 CACHED
+
+#5 [internal] load build context
+#5 transferring context: 1.73kB done
+#5 DONE 0.0s
+
+#6 [2/3] COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+#6 DONE 0.0s
+
+#7 [3/3] RUN sh /pin-debian-snapshot.sh && apt-get update && ls -la /var/lib/apt/lists && cat /etc/apt/sources.list.d/debian.sources && apt-cache policy build-essential && apt-config dump && apt-get -s install build-essential
+#7 0.283 Get:1 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie InRelease [140 kB]
+#7 0.304 Get:2 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie-updates InRelease [47.3 kB]
+#7 0.310 Get:3 https://snapshot.debian.org/archive/debian-security/20260914T000000Z trixie-security InRelease [43.4 kB]
+#7 0.359 Get:4 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie/main amd64 Packages [9678 kB]
+#7 0.998 Get:5 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie-updates/main amd64 Packages [4412 B]
+#7 1.005 Get:6 https://snapshot.debian.org/archive/debian-security/20260914T000000Z trixie-security/main amd64 Packages [261 kB]
+#7 1.424 Fetched 10.2 MB in 1s (8323 kB/s)
+#7 1.424 Reading package lists...
+#7 1.810 total 21088
+#7 1.810 drwxr-xr-x 1 root root     4096 Sep 14 09:01 .
+#7 1.810 drwxr-xr-x 1 root root     4096 Aug  5 15:47 ..
+#7 1.810 drwxr-xr-x 2 _apt root     4096 Sep 14 09:01 auxfiles
+#7 1.810 -rw-r----- 1 root root        0 Sep 14 09:01 lock
+#7 1.810 drwx------ 2 _apt root     4096 Sep 14 09:01 partial
+#7 1.810 -rw-r--r-- 1 root root    43409 Sep 13 12:13 snapshot.debian.org_archive_debian-security_20260914T000000Z_dists_trixie-security_InRelease
+#7 1.810 -rw-r--r-- 1 root root   522673 Sep 12 11:36 snapshot.debian.org_archive_debian-security_20260914T000000Z_dists_trixie-security_main_binary-amd64_Packages.lz4
+#7 1.810 -rw-r--r-- 1 root root    47340 Sep 13 20:36 snapshot.debian.org_archive_debian_20260914T000000Z_dists_trixie-updates_InRelease
+#7 1.810 -rw-r--r-- 1 root root     7277 Jul 18 08:18 snapshot.debian.org_archive_debian_20260914T000000Z_dists_trixie-updates_main_binary-amd64_Packages.lz4
+#7 1.810 -rw-r--r-- 1 root root   140421 Sep 12 08:14 snapshot.debian.org_archive_debian_20260914T000000Z_dists_trixie_InRelease
+#7 1.810 -rw-r--r-- 1 root root 20802454 Sep 12 08:09 snapshot.debian.org_archive_debian_20260914T000000Z_dists_trixie_main_binary-amd64_Packages.lz4
+#7 1.811 Types: deb
+#7 1.811 URIs: https://snapshot.debian.org/archive/debian/20260914T000000Z/
+#7 1.811 Suites: trixie trixie-updates
+#7 1.811 Components: main
+#7 1.811 Signed-By: /usr/share/keyrings/debian-archive-keyring.pgp
+#7 1.811 Check-Valid-Until: no
+#7 1.811 
+#7 1.811 Types: deb
+#7 1.811 URIs: https://snapshot.debian.org/archive/debian-security/20260914T000000Z/
+#7 1.811 Suites: trixie-security
+#7 1.811 Components: main
+#7 1.811 Signed-By: /usr/share/keyrings/debian-archive-keyring.pgp
+#7 1.811 Check-Valid-Until: no
+#7 2.123 build-essential:
+#7 2.123   Installed: (none)
+#7 2.123   Candidate: 12.12
+#7 2.123   Version table:
+#7 2.123      12.12 500
+#7 2.126         500 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie/main amd64 Packages
+#7 2.133 APT "";
+#7 2.133 APT::Architecture "amd64";
+#7 2.133 APT::Build-Essential "";
+#7 2.133 APT::Build-Essential:: "build-essential";
+#7 2.133 APT::Install-Recommends "1";
+#7 2.133 APT::Install-Suggests "0";
+#7 2.133 APT::Key "";
+#7 2.133 APT::Key::Assert-Pubkey-Algo ">=rsa2048,ed25519,ed448,nistp256,nistp384,nistp512,brainpoolP256r1,brainpoolP320r1,brainpoolP384r1,brainpoolP512r1,secp256k1";
+#7 2.133 APT::Key::Assert-Pubkey-Algo::Next ">=rsa2048,ed25519,ed448,nistp256,nistp384,nistp512";
+#7 2.133 APT::Key::Assert-Pubkey-Algo::Future ">=rsa3072,ed25519,ed448";
+#7 2.133 APT::Sandbox "";
+#7 2.133 APT::Sandbox::User "_apt";
+#7 2.133 APT::NeverAutoRemove "";
+#7 2.133 APT::NeverAutoRemove:: "^firmware-linux.*";
+#7 2.133 APT::NeverAutoRemove:: "^linux-firmware$";
+#7 2.133 APT::NeverAutoRemove:: "^linux-image-[a-z0-9]*$";
+#7 2.133 APT::NeverAutoRemove:: "^linux-image-[a-z0-9]*-[a-z0-9]*$";
+#7 2.133 APT::VersionedKernelPackages "";
+#7 2.133 APT::VersionedKernelPackages:: "linux-.*";
+#7 2.133 APT::VersionedKernelPackages:: "kfreebsd-.*";
+#7 2.133 APT::VersionedKernelPackages:: "gnumach-.*";
+#7 2.133 APT::VersionedKernelPackages:: ".*-modules";
+#7 2.133 APT::VersionedKernelPackages:: ".*-kernel";
+#7 2.133 APT::Never-MarkAuto-Sections "";
+#7 2.133 APT::Never-MarkAuto-Sections:: "metapackages";
+#7 2.133 APT::Never-MarkAuto-Sections:: "tasks";
+#7 2.133 APT::Move-Autobit-Sections "";
+#7 2.133 APT::Move-Autobit-Sections:: "oldlibs";
+#7 2.133 APT::Snapshot "";
+#7 2.133 APT::Get "";
+#7 2.133 APT::Get::AllowUnauthenticated "false";
+#7 2.133 APT::Update "";
+#7 2.133 APT::Update::Error-Mode "any";
+#7 2.133 APT::Update::Post-Invoke "";
+#7 2.133 APT::Update::Post-Invoke:: "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true";
+#7 2.133 APT::AutoRemove "";
+#7 2.133 APT::AutoRemove::SuggestsImportant "false";
+#7 2.133 APT::Architectures "";
+#7 2.133 APT::Architectures:: "amd64";
+#7 2.133 APT::Compressor "";
+#7 2.133 APT::Compressor::. "";
+#7 2.133 APT::Compressor::.::Name ".";
+#7 2.133 APT::Compressor::.::Extension "";
+#7 2.133 APT::Compressor::.::Binary "";
+#7 2.133 APT::Compressor::.::Cost "0";
+#7 2.133 APT::Compressor::zstd "";
+#7 2.133 APT::Compressor::zstd::Name "zstd";
+#7 2.133 APT::Compressor::zstd::Extension ".zst";
+#7 2.133 APT::Compressor::zstd::Binary "false";
+#7 2.133 APT::Compressor::zstd::Cost "60";
+#7 2.133 APT::Compressor::lz4 "";
+#7 2.133 APT::Compressor::lz4::Name "lz4";
+#7 2.133 APT::Compressor::lz4::Extension ".lz4";
+#7 2.133 APT::Compressor::lz4::Binary "false";
+#7 2.133 APT::Compressor::lz4::Cost "50";
+#7 2.133 APT::Compressor::gzip "";
+#7 2.133 APT::Compressor::gzip::Name "gzip";
+#7 2.133 APT::Compressor::gzip::Extension ".gz";
+#7 2.133 APT::Compressor::gzip::Binary "gzip";
+#7 2.133 APT::Compressor::gzip::Cost "100";
+#7 2.133 APT::Compressor::gzip::CompressArg "";
+#7 2.133 APT::Compressor::gzip::CompressArg:: "-6n";
+#7 2.133 APT::Compressor::gzip::UncompressArg "";
+#7 2.133 APT::Compressor::gzip::UncompressArg:: "-d";
+#7 2.133 APT::Compressor::xz "";
+#7 2.133 APT::Compressor::xz::Name "xz";
+#7 2.133 APT::Compressor::xz::Extension ".xz";
+#7 2.133 APT::Compressor::xz::Binary "false";
+#7 2.133 APT::Compressor::xz::Cost "200";
+#7 2.133 APT::Compressor::bzip2 "";
+#7 2.133 APT::Compressor::bzip2::Name "bzip2";
+#7 2.133 APT::Compressor::bzip2::Extension ".bz2";
+#7 2.133 APT::Compressor::bzip2::Binary "false";
+#7 2.133 APT::Compressor::bzip2::Cost "300";
+#7 2.133 APT::Compressor::lzma "";
+#7 2.133 APT::Compressor::lzma::Name "lzma";
+#7 2.133 APT::Compressor::lzma::Extension ".lzma";
+#7 2.133 APT::Compressor::lzma::Binary "false";
+#7 2.133 APT::Compressor::lzma::Cost "400";
+#7 2.133 APT::Compressor::lzma::CompressArg "";
+#7 2.133 APT::Compressor::lzma::CompressArg:: "--suffix=";
+#7 2.133 APT::Compressor::lzma::CompressArg:: "-6";
+#7 2.133 APT::Compressor::lzma::UncompressArg "";
+#7 2.133 APT::Compressor::lzma::UncompressArg:: "--suffix=";
+#7 2.133 APT::Compressor::lzma::UncompressArg:: "-d";
+#7 2.133 Dir "/";
+#7 2.133 Dir::State "var/lib/apt";
+#7 2.133 Dir::State::lists "lists/";
+#7 2.133 Dir::State::cdroms "cdroms.list";
+#7 2.133 Dir::State::extended_states "extended_states";
+#7 2.133 Dir::State::status "/var/lib/dpkg/status";
+#7 2.133 Dir::Cache "var/cache/apt";
+#7 2.133 Dir::Cache::archives "archives/";
+#7 2.133 Dir::Cache::srcpkgcache "";
+#7 2.133 Dir::Cache::pkgcache "";
+#7 2.133 Dir::Etc "etc/apt";
+#7 2.133 Dir::Etc::sourcelist "sources.list";
+#7 2.133 Dir::Etc::sourceparts "sources.list.d";
+#7 2.133 Dir::Etc::main "apt.conf";
+#7 2.133 Dir::Etc::netrc "auth.conf";
+#7 2.133 Dir::Etc::netrcparts "auth.conf.d";
+#7 2.133 Dir::Etc::parts "apt.conf.d";
+#7 2.133 Dir::Etc::preferences "preferences";
+#7 2.133 Dir::Etc::preferencesparts "preferences.d";
+#7 2.133 Dir::Etc::trustedparts "trusted.gpg.d";
+#7 2.133 Dir::Boot "boot";
+#7 2.133 Dir::Usr "usr";
+#7 2.133 Dir::Bin "";
+#7 2.133 Dir::Bin::methods "/usr/lib/apt/methods";
+#7 2.133 Dir::Bin::solvers "";
+#7 2.133 Dir::Bin::solvers:: "/usr/lib/apt/solvers";
+#7 2.133 Dir::Bin::planners "";
+#7 2.133 Dir::Bin::planners:: "/usr/lib/apt/planners";
+#7 2.133 Dir::Bin::dpkg "/usr/bin/dpkg";
+#7 2.133 Dir::Bin::gzip "/bin/gzip";
+#7 2.133 Dir::Bin::bzip2 "/bin/bzip2";
+#7 2.133 Dir::Bin::xz "/usr/bin/xz";
+#7 2.133 Dir::Bin::lz4 "/usr/bin/lz4";
+#7 2.133 Dir::Bin::zstd "/usr/bin/zstd";
+#7 2.133 Dir::Bin::lzma "/usr/bin/lzma";
+#7 2.133 Dir::Media "";
+#7 2.133 Dir::Media::MountPath "/media/apt";
+#7 2.133 Dir::Log "var/log/apt";
+#7 2.133 Dir::Log::Terminal "term.log";
+#7 2.133 Dir::Log::History "history.log";
+#7 2.133 Dir::Log::Planner "eipp.log.xz";
+#7 2.133 Dir::Ignore-Files-Silently "";
+#7 2.133 Dir::Ignore-Files-Silently:: "~$";
+#7 2.133 Dir::Ignore-Files-Silently:: "\.disabled$";
+#7 2.133 Dir::Ignore-Files-Silently:: "\.bak$";
+#7 2.133 Dir::Ignore-Files-Silently:: "\.dpkg-[a-z]+$";
+#7 2.133 Dir::Ignore-Files-Silently:: "\.ucf-[a-z]+$";
+#7 2.133 Dir::Ignore-Files-Silently:: "\.save$";
+#7 2.133 Dir::Ignore-Files-Silently:: "\.orig$";
+#7 2.133 Dir::Ignore-Files-Silently:: "\.distUpgrade$";
+#7 2.133 Acquire "";
+#7 2.133 Acquire::AllowInsecureRepositories "false";
+#7 2.133 Acquire::AllowWeakRepositories "0";
+#7 2.133 Acquire::AllowDowngradeToInsecureRepositories "false";
+#7 2.133 Acquire::cdrom "";
+#7 2.133 Acquire::cdrom::mount "/media/cdrom/";
+#7 2.133 Acquire::IndexTargets "";
+#7 2.133 Acquire::IndexTargets::deb "";
+#7 2.133 Acquire::IndexTargets::deb::Packages "";
+#7 2.133 Acquire::IndexTargets::deb::Packages::MetaKey "$(COMPONENT)/binary-$(ARCHITECTURE)/Packages";
+#7 2.133 Acquire::IndexTargets::deb::Packages::flatMetaKey "Packages";
+#7 2.133 Acquire::IndexTargets::deb::Packages::ShortDescription "Packages";
+#7 2.133 Acquire::IndexTargets::deb::Packages::Description "$(RELEASE)/$(COMPONENT) $(ARCHITECTURE) Packages";
+#7 2.133 Acquire::IndexTargets::deb::Packages::flatDescription "$(RELEASE) Packages";
+#7 2.133 Acquire::IndexTargets::deb::Packages::Optional "0";
+#7 2.133 Acquire::IndexTargets::deb::Translations "";
+#7 2.133 Acquire::IndexTargets::deb::Translations::MetaKey "$(COMPONENT)/i18n/Translation-$(LANGUAGE)";
+#7 2.133 Acquire::IndexTargets::deb::Translations::flatMetaKey "$(LANGUAGE)";
+#7 2.133 Acquire::IndexTargets::deb::Translations::ShortDescription "Translation-$(LANGUAGE)";
+#7 2.133 Acquire::IndexTargets::deb::Translations::Description "$(RELEASE)/$(COMPONENT) Translation-$(LANGUAGE)";
+#7 2.133 Acquire::IndexTargets::deb::Translations::flatDescription "$(RELEASE) Translation-$(LANGUAGE)";
+#7 2.133 Acquire::IndexTargets::deb-src "";
+#7 2.133 Acquire::IndexTargets::deb-src::Sources "";
+#7 2.133 Acquire::IndexTargets::deb-src::Sources::MetaKey "$(COMPONENT)/source/Sources";
+#7 2.133 Acquire::IndexTargets::deb-src::Sources::flatMetaKey "Sources";
+#7 2.133 Acquire::IndexTargets::deb-src::Sources::ShortDescription "Sources";
+#7 2.133 Acquire::IndexTargets::deb-src::Sources::Description "$(RELEASE)/$(COMPONENT) Sources";
+#7 2.133 Acquire::IndexTargets::deb-src::Sources::flatDescription "$(RELEASE) Sources";
+#7 2.133 Acquire::IndexTargets::deb-src::Sources::Optional "0";
+#7 2.133 Acquire::Changelogs "";
+#7 2.133 Acquire::Changelogs::URI "";
+#7 2.133 Acquire::Changelogs::URI::Origin "";
+#7 2.133 Acquire::Changelogs::URI::Origin::Debian "https://metadata.ftp-master.debian.org/changelogs/@CHANGEPATH@_changelog";
+#7 2.133 Acquire::Changelogs::URI::Origin::Ubuntu "https://changelogs.ubuntu.com/changelogs/pool/@CHANGEPATH@/changelog";
+#7 2.133 Acquire::Changelogs::AlwaysOnline "";
+#7 2.133 Acquire::Changelogs::AlwaysOnline::Origin "";
+#7 2.133 Acquire::Changelogs::AlwaysOnline::Origin::Ubuntu "1";
+#7 2.133 Acquire::Snapshots "";
+#7 2.133 Acquire::Snapshots::URI "";
+#7 2.133 Acquire::Snapshots::URI::Origin "";
+#7 2.133 Acquire::Snapshots::URI::Origin::Debian "http://snapshot.debian.org/archive/debian/@SNAPSHOTID@/";
+#7 2.133 Acquire::Snapshots::URI::Origin::Ubuntu "https://snapshot.ubuntu.com/ubuntu/@SNAPSHOTID@/";
+#7 2.133 Acquire::Snapshots::URI::Override "";
+#7 2.133 Acquire::Snapshots::URI::Override::Label "";
+#7 2.133 Acquire::Snapshots::URI::Override::Label::Debian-Security "http://snapshot.debian.org/archive/debian-security/@SNAPSHOTID@/";
+#7 2.133 Acquire::Snapshots::URI::Host "";
+#7 2.133 Acquire::Snapshots::URI::Host::archive.ubuntu.com "https://snapshot.ubuntu.com/@PATH@/@SNAPSHOTID@/";
+#7 2.133 Acquire::Snapshots::URI::Host::deb.debian.org "http://snapshot.debian.org/archive/@PATH@/@SNAPSHOTID@/";
+#7 2.133 Acquire::Snapshots::URI::Host::.archive.ubuntu.com "https://snapshot.ubuntu.com/@PATH@/@SNAPSHOTID@/";
+#7 2.133 Acquire::Snapshots::URI::Host::security.ubuntu.com "https://snapshot.ubuntu.com/@PATH@/@SNAPSHOTID@/";
+#7 2.133 Acquire::Snapshots::URI::Host::ppa.launchpadcontent.net "https://snapshot.ppa.launchpadcontent.net/@PATH@/@SNAPSHOTID@/";
+#7 2.133 Acquire::Snapshots::URI::Host::ppa.launchpad.net "https://snapshot.ppa.launchpadcontent.net/@PATH@/@SNAPSHOTID@/";
+#7 2.133 Acquire::Check-Valid-Until "true";
+#7 2.133 Acquire::GzipIndexes "true";
+#7 2.133 Acquire::Languages "";
+#7 2.133 Acquire::Languages:: "none";
+#7 2.133 Acquire::CompressionTypes "";
+#7 2.133 Acquire::CompressionTypes::xz "xz";
+#7 2.133 Acquire::CompressionTypes::bz2 "bzip2";
+#7 2.133 Acquire::CompressionTypes::lzma "lzma";
+#7 2.133 Acquire::CompressionTypes::gz "gzip";
+#7 2.133 Acquire::CompressionTypes::lz4 "lz4";
+#7 2.133 Acquire::CompressionTypes::zst "zstd";
+#7 2.133 DPkg "";
+#7 2.133 DPkg::Path "/usr/sbin:/usr/bin:/sbin:/bin";
+#7 2.133 DPkg::Pre-Install-Pkgs "";
+#7 2.133 DPkg::Pre-Install-Pkgs:: "/usr/sbin/dpkg-preconfigure --apt || true";
+#7 2.133 DPkg::Post-Invoke "";
+#7 2.133 DPkg::Post-Invoke:: "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true";
+#7 2.133 Binary "apt-config";
+#7 2.133 Binary::apt-cdrom "";
+#7 2.133 Binary::apt-cdrom::APT "";
+#7 2.133 Binary::apt-cdrom::APT::Internal "";
+#7 2.133 Binary::apt-cdrom::APT::Internal::OpProgress "";
+#7 2.133 Binary::apt-cdrom::APT::Internal::OpProgress::EraseLines "0";
+#7 2.133 Binary::apt "";
+#7 2.133 Binary::apt::APT "";
+#7 2.133 Binary::apt::APT::Color "1";
+#7 2.133 Binary::apt::APT::Output-Version "30";
+#7 2.133 Binary::apt::APT::Cache "";
+#7 2.133 Binary::apt::APT::Cache::Show "";
+#7 2.133 Binary::apt::APT::Cache::Show::Version "2";
+#7 2.133 Binary::apt::APT::Cache::AllVersions "0";
+#7 2.133 Binary::apt::APT::Cache::ShowVirtuals "1";
+#7 2.133 Binary::apt::APT::Cache::Search "";
+#7 2.133 Binary::apt::APT::Cache::Search::Version "2";
+#7 2.133 Binary::apt::APT::Cache::ShowDependencyType "1";
+#7 2.133 Binary::apt::APT::Cache::ShowVersion "1";
+#7 2.133 Binary::apt::APT::Get "";
+#7 2.133 Binary::apt::APT::Get::Upgrade-Allow-New "1";
+#7 2.133 Binary::apt::APT::Get::Update "";
+#7 2.133 Binary::apt::APT::Get::Update::InteractiveReleaseInfoChanges "1";
+#7 2.133 Binary::apt::APT::Cmd "";
+#7 2.133 Binary::apt::APT::Cmd::Show-Update-Stats "1";
+#7 2.133 Binary::apt::APT::Cmd::Pattern-Only "1";
+#7 2.133 Binary::apt::APT::Keep-Downloaded-Packages "0";
+#7 2.133 Binary::apt::DPkg "";
+#7 2.133 Binary::apt::DPkg::Progress-Fancy "1";
+#7 2.133 Binary::apt::DPkg::Lock "";
+#7 2.133 Binary::apt::DPkg::Lock::Timeout "120";
+#7 2.133 Binary::apt::Pager "1";
+#7 2.133 CommandLine "";
+#7 2.133 CommandLine::AsString "apt-config dump";
+#7 2.138 Reading package lists...
+#7 2.458 Building dependency tree...
+#7 2.523 Reading state information...
+#7 2.616 The following additional packages will be installed:
+#7 2.616   binutils binutils-common binutils-x86-64-linux-gnu bzip2 cpp cpp-14
+#7 2.616   cpp-14-x86-64-linux-gnu cpp-x86-64-linux-gnu dpkg-dev fakeroot g++ g++-14
+#7 2.616   g++-14-x86-64-linux-gnu g++-x86-64-linux-gnu gcc gcc-14
+#7 2.616   gcc-14-x86-64-linux-gnu gcc-x86-64-linux-gnu libalgorithm-diff-perl
+#7 2.616   libalgorithm-diff-xs-perl libalgorithm-merge-perl libasan8 libbinutils
+#7 2.616   libc-bin libc-dev-bin libc6 libc6-dev libcc1-0 libcrypt-dev libctf-nobfd0
+#7 2.616   libctf0 libdpkg-perl libfakeroot libfile-fcntllock-perl libgcc-14-dev
+#7 2.616   libgomp1 libgprofng0 libhwasan0 libisl23 libitm1 libjansson4
+#7 2.616   liblocale-gettext-perl liblsan0 libmpc3 libmpfr6 libquadmath0 libsframe1
+#7 2.616   libstdc++-14-dev libtsan2 libubsan1 linux-libc-dev make manpages
+#7 2.617   manpages-dev patch rpcsvc-proto sq xz-utils
+#7 2.617 Suggested packages:
+#7 2.617   binutils-doc gprofng-gui binutils-gold bzip2-doc cpp-doc gcc-14-locales
+#7 2.617   cpp-14-doc debian-keyring debian-tag2upload-keyring g++-multilib
+#7 2.617   g++-14-multilib gcc-14-doc gcc-multilib autoconf automake libtool flex bison
+#7 2.617   gdb gcc-doc gcc-14-multilib gdb-x86-64-linux-gnu libc-devtools glibc-doc
+#7 2.617   sensible-utils bzr libstdc++-14-doc make-doc man-browser ed diffutils-doc
+#7 2.749 The following NEW packages will be installed:
+#7 2.749   binutils binutils-common binutils-x86-64-linux-gnu build-essential bzip2 cpp
+#7 2.749   cpp-14 cpp-14-x86-64-linux-gnu cpp-x86-64-linux-gnu dpkg-dev fakeroot g++
+#7 2.749   g++-14 g++-14-x86-64-linux-gnu g++-x86-64-linux-gnu gcc gcc-14
+#7 2.749   gcc-14-x86-64-linux-gnu gcc-x86-64-linux-gnu libalgorithm-diff-perl
+#7 2.749   libalgorithm-diff-xs-perl libalgorithm-merge-perl libasan8 libbinutils
+#7 2.749   libc-dev-bin libc6-dev libcc1-0 libcrypt-dev libctf-nobfd0 libctf0
+#7 2.749   libdpkg-perl libfakeroot libfile-fcntllock-perl libgcc-14-dev libgomp1
+#7 2.749   libgprofng0 libhwasan0 libisl23 libitm1 libjansson4 liblocale-gettext-perl
+#7 2.749   liblsan0 libmpc3 libmpfr6 libquadmath0 libsframe1 libstdc++-14-dev libtsan2
+#7 2.749   libubsan1 linux-libc-dev make manpages manpages-dev patch rpcsvc-proto sq
+#7 2.749   xz-utils
+#7 2.750 The following packages will be upgraded:
+#7 2.750   libc-bin libc6
+#7 2.949 2 upgraded, 57 newly installed, 0 to remove and 32 not upgraded.
+#7 2.949 Inst libc6 [2.41-12+deb13u3] (2.41-12+deb13u4 Debian:13.7/stable [amd64])
+#7 2.949 Conf libc6 (2.41-12+deb13u4 Debian:13.7/stable [amd64])
+#7 2.951 Inst libc-bin [2.41-12+deb13u3] (2.41-12+deb13u4 Debian:13.7/stable [amd64])
+#7 2.951 Conf libc-bin (2.41-12+deb13u4 Debian:13.7/stable [amd64])
+#7 2.953 Inst liblocale-gettext-perl (1.07-7+b1 Debian:13.7/stable [amd64])
+#7 2.956 Inst bzip2 (1.0.8-6 Debian:13.7/stable [amd64])
+#7 2.958 Inst manpages (6.9.1-1 Debian:13.7/stable [all])
+#7 2.960 Inst xz-utils (5.8.1-1+deb13u1 Debian:13.7/stable [amd64])
+#7 2.962 Inst libsframe1 (2.44-3 Debian:13.7/stable [amd64])
+#7 2.964 Inst binutils-common (2.44-3 Debian:13.7/stable [amd64])
+#7 2.966 Inst libbinutils (2.44-3 Debian:13.7/stable [amd64])
+#7 2.969 Inst libgprofng0 (2.44-3 Debian:13.7/stable [amd64])
+#7 2.971 Inst libctf-nobfd0 (2.44-3 Debian:13.7/stable [amd64])
+#7 2.973 Inst libctf0 (2.44-3 Debian:13.7/stable [amd64])
+#7 2.975 Inst libjansson4 (2.14-2+b3 Debian:13.7/stable [amd64])
+#7 2.977 Inst binutils-x86-64-linux-gnu (2.44-3 Debian:13.7/stable [amd64])
+#7 2.980 Inst binutils (2.44-3 Debian:13.7/stable [amd64])
+#7 2.982 Inst libc-dev-bin (2.41-12+deb13u4 Debian:13.7/stable [amd64])
+#7 2.984 Inst linux-libc-dev (6.12.107-1 Debian:13.7/stable, Debian-Security:13/stable-security [all])
+#7 2.986 Inst libcrypt-dev (1:4.4.38-1 Debian:13.7/stable [amd64])
+#7 2.988 Inst rpcsvc-proto (1.4.3-1 Debian:13.7/stable [amd64])
+#7 2.990 Inst libc6-dev (2.41-12+deb13u4 Debian:13.7/stable [amd64])
+#7 2.993 Inst libisl23 (0.27-1 Debian:13.7/stable [amd64])
+#7 2.995 Inst libmpfr6 (4.2.2-1 Debian:13.7/stable [amd64])
+#7 2.997 Inst libmpc3 (1.3.1-1+b3 Debian:13.7/stable [amd64])
+#7 2.999 Inst cpp-14-x86-64-linux-gnu (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.002 Inst cpp-14 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.004 Inst cpp-x86-64-linux-gnu (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.006 Inst cpp (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.008 Inst libcc1-0 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.011 Inst libgomp1 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.013 Inst libitm1 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.015 Inst libasan8 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.017 Inst liblsan0 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.019 Inst libtsan2 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.022 Inst libubsan1 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.024 Inst libhwasan0 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.026 Inst libquadmath0 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.028 Inst libgcc-14-dev (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.030 Inst gcc-14-x86-64-linux-gnu (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.032 Inst gcc-14 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.035 Inst gcc-x86-64-linux-gnu (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.037 Inst gcc (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.039 Inst libstdc++-14-dev (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.041 Inst g++-14-x86-64-linux-gnu (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.043 Inst g++-14 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.046 Inst g++-x86-64-linux-gnu (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.048 Inst g++ (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.050 Inst make (4.4.1-2 Debian:13.7/stable [amd64])
+#7 3.052 Inst libdpkg-perl (1.22.22 Debian:13.7/stable [all])
+#7 3.055 Inst patch (2.8-2 Debian:13.7/stable [amd64])
+#7 3.058 Inst dpkg-dev (1.22.22 Debian:13.7/stable [all])
+#7 3.060 Inst build-essential (12.12 Debian:13.7/stable [amd64])
+#7 3.062 Inst libfakeroot (1.37.1.1-1 Debian:13.7/stable [amd64])
+#7 3.064 Inst fakeroot (1.37.1.1-1 Debian:13.7/stable [amd64])
+#7 3.066 Inst libalgorithm-diff-perl (1.201-1 Debian:13.7/stable [all])
+#7 3.069 Inst libalgorithm-diff-xs-perl (0.04-9 Debian:13.7/stable [amd64])
+#7 3.071 Inst libalgorithm-merge-perl (0.08-5 Debian:13.7/stable [all])
+#7 3.073 Inst libfile-fcntllock-perl (0.22-4+b4 Debian:13.7/stable [amd64])
+#7 3.076 Inst manpages-dev (6.9.1-1 Debian:13.7/stable [all])
+#7 3.078 Inst sq (1.3.1-2+b2 Debian:13.7/stable [amd64])
+#7 3.078 Conf liblocale-gettext-perl (1.07-7+b1 Debian:13.7/stable [amd64])
+#7 3.078 Conf bzip2 (1.0.8-6 Debian:13.7/stable [amd64])
+#7 3.078 Conf manpages (6.9.1-1 Debian:13.7/stable [all])
+#7 3.078 Conf xz-utils (5.8.1-1+deb13u1 Debian:13.7/stable [amd64])
+#7 3.078 Conf libsframe1 (2.44-3 Debian:13.7/stable [amd64])
+#7 3.078 Conf binutils-common (2.44-3 Debian:13.7/stable [amd64])
+#7 3.078 Conf libbinutils (2.44-3 Debian:13.7/stable [amd64])
+#7 3.078 Conf libgprofng0 (2.44-3 Debian:13.7/stable [amd64])
+#7 3.078 Conf libctf-nobfd0 (2.44-3 Debian:13.7/stable [amd64])
+#7 3.078 Conf libctf0 (2.44-3 Debian:13.7/stable [amd64])
+#7 3.078 Conf libjansson4 (2.14-2+b3 Debian:13.7/stable [amd64])
+#7 3.078 Conf binutils-x86-64-linux-gnu (2.44-3 Debian:13.7/stable [amd64])
+#7 3.078 Conf binutils (2.44-3 Debian:13.7/stable [amd64])
+#7 3.078 Conf libc-dev-bin (2.41-12+deb13u4 Debian:13.7/stable [amd64])
+#7 3.078 Conf linux-libc-dev (6.12.107-1 Debian:13.7/stable, Debian-Security:13/stable-security [all])
+#7 3.078 Conf libcrypt-dev (1:4.4.38-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf rpcsvc-proto (1.4.3-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf libc6-dev (2.41-12+deb13u4 Debian:13.7/stable [amd64])
+#7 3.078 Conf libisl23 (0.27-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf libmpfr6 (4.2.2-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf libmpc3 (1.3.1-1+b3 Debian:13.7/stable [amd64])
+#7 3.078 Conf cpp-14-x86-64-linux-gnu (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf cpp-14 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf cpp-x86-64-linux-gnu (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf cpp (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf libcc1-0 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf libgomp1 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf libitm1 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf libasan8 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf liblsan0 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf libtsan2 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf libubsan1 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf libhwasan0 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf libquadmath0 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf libgcc-14-dev (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf gcc-14-x86-64-linux-gnu (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf gcc-14 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf gcc-x86-64-linux-gnu (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf gcc (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf libstdc++-14-dev (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf g++-14-x86-64-linux-gnu (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf g++-14 (14.2.0-19 Debian:13.7/stable [amd64])
+#7 3.078 Conf g++-x86-64-linux-gnu (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf g++ (4:14.2.0-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf make (4.4.1-2 Debian:13.7/stable [amd64])
+#7 3.078 Conf libdpkg-perl (1.22.22 Debian:13.7/stable [all])
+#7 3.078 Conf patch (2.8-2 Debian:13.7/stable [amd64])
+#7 3.078 Conf dpkg-dev (1.22.22 Debian:13.7/stable [all])
+#7 3.078 Conf build-essential (12.12 Debian:13.7/stable [amd64])
+#7 3.078 Conf libfakeroot (1.37.1.1-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf fakeroot (1.37.1.1-1 Debian:13.7/stable [amd64])
+#7 3.078 Conf libalgorithm-diff-perl (1.201-1 Debian:13.7/stable [all])
+#7 3.078 Conf libalgorithm-diff-xs-perl (0.04-9 Debian:13.7/stable [amd64])
+#7 3.078 Conf libalgorithm-merge-perl (0.08-5 Debian:13.7/stable [all])
+#7 3.078 Conf libfile-fcntllock-perl (0.22-4+b4 Debian:13.7/stable [amd64])
+#7 3.078 Conf manpages-dev (6.9.1-1 Debian:13.7/stable [all])
+#7 3.078 Conf sq (1.3.1-2+b2 Debian:13.7/stable [amd64])
+#7 DONE 3.1s
+
+#8 exporting to image
+#8 exporting layers
+#8 exporting layers 0.6s done
+#8 exporting manifest sha256:ec187a6ea608063d7150610c58dd0a15ba73e8872d80f55a89dd1cf3a17ea4cc 0.0s done
+#8 exporting config sha256:c17ef6c0f4c2775e742320a8dd55614eb83bde5bf018f86b276c50aa1e9d3ed1 done
+#8 exporting attestation manifest sha256:212f990f3e1a38b49d4de42d10120f206d10e6b1cf0d71972a172aabb1a81359 0.0s done
+#8 exporting manifest list sha256:a1ce41f9bc46a92397561bda47da22b207e45df0474b4cdc31579f4f638048ae 0.0s done
+#8 naming to docker.io/local/sdk2026-apt-check:diagnostic done
+#8 unpacking to docker.io/local/sdk2026-apt-check:diagnostic 0.1s done
+#8 DONE 0.8s

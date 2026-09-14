@@ -1,0 +1,2 @@
+# Preserve exact artifact/evidence hashes and LF shell scripts across Windows checkouts.
+** -text

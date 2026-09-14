@@ -1,0 +1,5 @@
+--- a/src/common/logging.cpp
++++ b/src/common/logging.cpp
+@@ -109,1 +109,1 @@
+-        openlog(ident, (LOG_CONS | LOG_PID) | (aPrintStderr ? LOG_PERROR : 0), OTBR_SYSLOG_FACILITY_ID);
++        openlog(ident, LOG_PID | (aPrintStderr ? LOG_PERROR : 0), OTBR_SYSLOG_FACILITY_ID);

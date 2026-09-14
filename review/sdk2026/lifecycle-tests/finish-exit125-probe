@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bashio
+bashio::log.info "CPC ended with exit code ${1} (signal ${2})..."
+if ! rm -rf -- /dev/shm/cpcd; then
+    bashio::log.warning "Unable to clean CPC shared-memory directory"
+fi
+if [ "${1}" -ne 0 ] && [ "${1}" -ne 256 ]; then
+    /run/s6/basedir/bin/halt
+    exit 125
+fi

@@ -1,0 +1,5 @@
+FROM ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+USER root
+ENV DEBIAN_FRONTEND=noninteractive
+COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+RUN sh /pin-debian-snapshot.sh && apt-get update && ls -la /var/lib/apt/lists && cat /etc/apt/sources.list.d/debian.sources && apt-cache policy build-essential && apt-config dump && apt-get -s install build-essential

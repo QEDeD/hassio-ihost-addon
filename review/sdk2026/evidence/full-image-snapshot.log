@@ -1,0 +1,117 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.sdk2026
+#1 transferring dockerfile: 2.76kB done
+#1 WARN: FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 4)
+#1 WARN: FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 20)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+#2 DONE 0.0s
+
+#3 [internal] load metadata for ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf
+#3 ...
+
+#4 [auth] home-assistant/amd64-base-debian:pull token for ghcr.io
+#4 DONE 0.0s
+
+#3 [internal] load metadata for ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf
+#3 DONE 0.7s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [stage-1 1/9] FROM ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf
+#6 resolve ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf 0.0s done
+#6 CACHED
+
+#7 [sdk2026-builder 1/6] FROM ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+#7 resolve ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d 0.0s done
+#7 CACHED
+
+#8 [internal] load build context
+#8 transferring context: 104.17kB 0.0s done
+#8 DONE 0.0s
+
+#9 [sdk2026-builder 2/6] COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+#9 DONE 0.0s
+
+#10 [stage-1 2/9] COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+#10 DONE 0.0s
+
+#11 [stage-1 3/9] RUN sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends     libmbedtls21 libreadline8t64 libboost-filesystem1.83.0 libboost-system1.83.0     libjsoncpp26 libnetfilter-queue1 libsystemd0 libprotobuf-lite32t64 socat iproute2 iptables ipset netcat-openbsd iputils-ping     python3 python3-aiohttp python3-cryptography python3-yarl     && rm -rf /var/lib/apt/lists/*
+#11 0.308 Get:1 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie InRelease [140 kB]
+#11 0.329 Get:2 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie-updates InRelease [47.3 kB]
+#11 0.340 Get:3 https://snapshot.debian.org/archive/debian-security/20260914T000000Z trixie-security InRelease [43.4 kB]
+#11 0.364 Get:4 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie/main amd64 Packages [9678 kB]
+#11 0.806 Get:5 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie-updates/main amd64 Packages [4412 B]
+#11 0.813 Get:6 https://snapshot.debian.org/archive/debian-security/20260914T000000Z trixie-security/main amd64 Packages [261 kB]
+#11 1.277 Fetched 10.2 MB in 1s (9684 kB/s)
+#11 1.277 Reading package lists...
+#11 1.639 Reading package lists...
+#11 CANCELED
+
+#12 [sdk2026-builder 3/6] RUN sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends     build-essential cmake ninja-build git patch pkg-config     libmbedtls-dev libreadline-dev libncurses-dev libboost-dev     libboost-filesystem-dev libboost-system-dev libjsoncpp-dev     libdbus-1-dev libnetfilter-queue-dev libsystemd-dev libprotobuf-dev protobuf-compiler nodejs npm     && rm -rf /var/lib/apt/lists/*
+#12 0.318 Get:1 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie InRelease [140 kB]
+#12 0.344 Get:2 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie-updates InRelease [47.3 kB]
+#12 0.357 Get:3 https://snapshot.debian.org/archive/debian-security/20260914T000000Z trixie-security InRelease [43.4 kB]
+#12 0.380 Get:4 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie/main amd64 Packages [9678 kB]
+#12 0.811 Get:5 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie-updates/main amd64 Packages [4412 B]
+#12 0.819 Get:6 https://snapshot.debian.org/archive/debian-security/20260914T000000Z trixie-security/main amd64 Packages [261 kB]
+#12 1.245 Fetched 10.2 MB in 1s (10.1 MB/s)
+#12 1.245 Reading package lists...
+#12 1.592 Reading package lists...
+#12 1.614 Building dependency tree...
+#12 1.615 Reading state information...
+#12 1.615 Package patch is not available, but is referred to by another package.
+#12 1.615 This may mean that the package is missing, has been obsoleted, or
+#12 1.615 is only available from another source
+#12 1.615 
+#12 1.616 E: Unable to locate package build-essential
+#12 1.616 E: Package 'patch' has no installation candidate
+#12 1.616 E: Unable to locate package pkg-config
+#12 1.616 E: Unable to locate package libmbedtls-dev
+#12 1.616 E: Unable to locate package libreadline-dev
+#12 1.616 E: Unable to locate package libncurses-dev
+#12 1.616 E: Unable to locate package libboost-dev
+#12 1.616 E: Unable to locate package libboost-filesystem-dev
+#12 1.616 E: Unable to locate package libboost-system-dev
+#12 1.616 E: Unable to locate package libjsoncpp-dev
+#12 1.616 E: Unable to locate package libdbus-1-dev
+#12 1.616 E: Unable to locate package libnetfilter-queue-dev
+#12 1.616 E: Unable to locate package libsystemd-dev
+#12 1.616 E: Unable to locate package libprotobuf-dev
+#12 1.616 E: Unable to locate package protobuf-compiler
+#12 1.616 E: Unable to locate package nodejs
+#12 1.616 E: Unable to locate package npm
+#12 ERROR: process "/bin/sh -c sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends     build-essential cmake ninja-build git patch pkg-config     libmbedtls-dev libreadline-dev libncurses-dev libboost-dev     libboost-filesystem-dev libboost-system-dev libjsoncpp-dev     libdbus-1-dev libnetfilter-queue-dev libsystemd-dev libprotobuf-dev protobuf-compiler nodejs npm     && rm -rf /var/lib/apt/lists/*" did not complete successfully: exit code: 100
+------
+ > [sdk2026-builder 3/6] RUN sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends     build-essential cmake ninja-build git patch pkg-config     libmbedtls-dev libreadline-dev libncurses-dev libboost-dev     libboost-filesystem-dev libboost-system-dev libjsoncpp-dev     libdbus-1-dev libnetfilter-queue-dev libsystemd-dev libprotobuf-dev protobuf-compiler nodejs npm     && rm -rf /var/lib/apt/lists/*:
+1.616 E: Unable to locate package libboost-filesystem-dev
+1.616 E: Unable to locate package libboost-system-dev
+1.616 E: Unable to locate package libjsoncpp-dev
+1.616 E: Unable to locate package libdbus-1-dev
+1.616 E: Unable to locate package libnetfilter-queue-dev
+1.616 E: Unable to locate package libsystemd-dev
+1.616 E: Unable to locate package libprotobuf-dev
+1.616 E: Unable to locate package protobuf-compiler
+1.616 E: Unable to locate package nodejs
+1.616 E: Unable to locate package npm
+------
+
+ 2 warnings found (use docker --debug to expand):
+ - FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 4)
+ - FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 20)
+Dockerfile.sdk2026:10
+--------------------
+   9 |     COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+  10 | >>> RUN sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends \
+  11 | >>>     build-essential cmake ninja-build git patch pkg-config \
+  12 | >>>     libmbedtls-dev libreadline-dev libncurses-dev libboost-dev \
+  13 | >>>     libboost-filesystem-dev libboost-system-dev libjsoncpp-dev \
+  14 | >>>     libdbus-1-dev libnetfilter-queue-dev libsystemd-dev libprotobuf-dev protobuf-compiler nodejs npm \
+  15 | >>>     && rm -rf /var/lib/apt/lists/*
+  16 |     COPY hassio-ihost-silabs-multiprotocol/otbr-patches/ /recipe/patches/
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends     build-essential cmake ninja-build git patch pkg-config     libmbedtls-dev libreadline-dev libncurses-dev libboost-dev     libboost-filesystem-dev libboost-system-dev libjsoncpp-dev     libdbus-1-dev libnetfilter-queue-dev libsystemd-dev libprotobuf-dev protobuf-compiler nodejs npm     && rm -rf /var/lib/apt/lists/*" did not complete successfully: exit code: 100

@@ -1,0 +1,10 @@
+#!/usr/bin/with-contenv bashio
+# The image's compiled security mode is authoritative; never infer it from a missing key.
+mode=$(cat /usr/share/sdk2026-build/cpc-mode) || exit 1
+case "$mode" in
+  ON) /usr/local/bin/cpc-key-preflight || exit 1 ;;
+  OFF) ;;
+  *) bashio::log.fatal "Invalid compiled CPC security mode"; exit 1 ;;
+esac
+bashio::log.info "Starting cpcd..."
+exec s6-notifyoncheck -d -s 300 -w 300 -n 0 /usr/bin/stdbuf -o0 /usr/local/bin/cpcd

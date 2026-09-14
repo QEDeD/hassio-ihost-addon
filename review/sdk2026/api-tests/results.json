@@ -1,0 +1,176 @@
+{
+  "client_version": "2.10.0",
+  "checks": [
+    "real SDK /api/actions accepts default Accept header: 200",
+    "client auto-detects camelCase and reads ID/address/RCP version",
+    "HA disable/reset/immediate ID read and absent JSON/TLV datasets",
+    "partial camelCase active dataset creation generates complete nested dataset",
+    "HA create/enable/read-TLV sequence",
+    "active TLV replacement and equivalent JSON round trip while disabled",
+    "nested camelCase pending dataset write and JSON/TLV reads",
+    "reset clears active/pending datasets with no legacy DELETE calls"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/actions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/actions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/ba-id",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/ext-address",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/coprocessor/version",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/node/state",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/node",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/ba-id",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/active",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/active",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/pending",
+      "status": 204
+    },
+    {
+      "method": "PUT",
+      "path": "/node/dataset/active",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/active",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/node/state",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/active",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/node/state",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/node/dataset/active",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/active",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/active",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/node/state",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/node/dataset/pending",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/pending",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/pending",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/node/state",
+      "status": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/node",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/ba-id",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/active",
+      "status": 204
+    },
+    {
+      "method": "GET",
+      "path": "/node/dataset/pending",
+      "status": 204
+    }
+  ],
+  "server_command": [
+    "/sdk2026-api-tests/otbr-agent",
+    "--vendor-name",
+    "SDK API Test",
+    "--model-name",
+    "Isolated simulation",
+    "-I",
+    "wpan0",
+    "-B",
+    "lo",
+    "-d",
+    "6",
+    "-v",
+    "-s",
+    "--data-path",
+    "/sdk2026-api-tests/state",
+    "--auto-attach=0",
+    "spinel+hdlc+forkpty:///sdk2026-api-tests/ot-rcp?forkpty-arg=1"
+  ],
+  "status": "passed",
+  "server_exit": 0
+}

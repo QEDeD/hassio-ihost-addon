@@ -1,0 +1,18 @@
+{
+  "Status": "exited",
+  "Running": false,
+  "Paused": false,
+  "Restarting": false,
+  "OOMKilled": false,
+  "Dead": false,
+  "Pid": 0,
+  "ExitCode": 1,
+  "Error": "",
+  "StartedAt": "2026-09-14T09:12:33.346692098Z",
+  "FinishedAt": "2026-09-14T09:12:36.674499935Z",
+  "Health": {
+    "Status": "unhealthy",
+    "FailingStreak": 0,
+    "Log": []
+  }
+}

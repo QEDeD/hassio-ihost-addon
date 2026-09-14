@@ -1,0 +1,576 @@
+-- OpenThread Source Directory: /sdk2026-native/ot-br-posix/third_party/openthread/repo
+-- OT_APP_CLI=ON
+-- OT_APP_NCP=ON
+-- OT_APP_RCP=ON
+-- OT_FTD=ON
+-- OT_MTD=OFF
+-- OT_RCP=ON
+-- - - - - - - - - - - - - - - - - 
+-- OpenThread ON/OFF/Unspecified Configs
+-- OT_15_4=""
+-- OT_ANDROID_NDK=""
+-- OT_ANYCAST_LOCATOR=""
+-- OT_ASSERT=""
+-- OT_BACKBONE_ROUTER=""
+-- OT_BACKBONE_ROUTER_DUA_NDPROXYING=""
+-- OT_BACKBONE_ROUTER_MULTICAST_ROUTING=""
+-- OT_BLE_TCAT=""
+-- OT_BORDER_ADMITTER=""
+-- OT_BORDER_AGENT=""
+-- OT_BORDER_AGENT_EPSKC=""
+-- OT_BORDER_AGENT_ID=""
+-- OT_BORDER_AGENT_MESHCOP_SERVICE=""
+-- OT_BORDER_AGENT_TRACKER=""
+-- OT_BORDER_AGENT_TXT_DATA_PARSER=""
+-- OT_BORDER_ROUTER=ON --> OPENTHREAD_CONFIG_BORDER_ROUTER_ENABLE=1
+-- OT_BORDER_ROUTING=ON --> OPENTHREAD_CONFIG_BORDER_ROUTING_ENABLE=1
+-- OT_BORDER_ROUTING_DHCP6_PD=""
+-- OT_BORDER_ROUTING_DHCP6_PD_CLIENT=""
+-- OT_BORDER_ROUTING_COUNTERS=""
+-- OT_BORDER_ROUTING_MULTI_AIL_DETECTION=""
+-- OT_CHANNEL_MANAGER=""
+-- OT_CHANNEL_MANAGER_CSL=""
+-- OT_CHANNEL_MONITOR=""
+-- OT_CHANNEL_MONITOR_AUTO_START=""
+-- OT_COAP=""
+-- OT_COAP_BLOCK=""
+-- OT_COAP_OBSERVE=""
+-- OT_COAPS=""
+-- OT_COMMISSIONER=""
+-- OT_CSL_AUTO_SYNC=""
+-- OT_CSL_DEBUG=""
+-- OT_CSL_RECEIVER=""
+-- OT_CSL_RECEIVER_LOCAL_TIME_SYNC=""
+-- OT_DATASET_UPDATER=""
+-- OT_DEVICE_PROP_LEADER_WEIGHT=""
+-- OT_DHCP6_CLIENT=""
+-- OT_DHCP6_SERVER=""
+-- OT_DIAGNOSTIC=""
+-- OT_DNS_CLIENT=ON --> OPENTHREAD_CONFIG_DNS_CLIENT_ENABLE=1
+-- OT_DNS_CLIENT_BIND_UDP_THREAD_NETIF=""
+-- OT_DNS_CLIENT_OVER_TCP=""
+-- OT_DNS_DSO=""
+-- OT_DNS_UPSTREAM_QUERY=""
+-- OT_DNSSD_DISCOVERY_PROXY=ON --> OPENTHREAD_CONFIG_DNSSD_DISCOVERY_PROXY_ENABLE=1
+-- OT_DNSSD_SERVER=ON --> OPENTHREAD_CONFIG_DNSSD_SERVER_ENABLE=1
+-- OT_DUA=""
+-- OT_DYNAMIC_STORE_FRAME_AHEAD_COUNTER=""
+-- OT_ECDSA=ON --> OPENTHREAD_CONFIG_ECDSA_ENABLE=1
+-- OT_EXTERNAL_HEAP=""
+-- OT_FIREWALL=""
+-- OT_HISTORY_TRACKER=""
+-- OT_IP6_FRAGM=""
+-- OT_IP6_INIT_ADDR_POOL=""
+-- OT_JAM_DETECTION=""
+-- OT_JOINER=""
+-- OT_LINK_METRICS_INITIATOR=""
+-- OT_LINK_METRICS_MANAGER=""
+-- OT_LINK_METRICS_SUBJECT=""
+-- OT_LINK_RAW=""
+-- OT_LOG_LEVEL_DYNAMIC=""
+-- OT_MAC_FILTER=""
+-- OT_MDNS=ON --> OPENTHREAD_CONFIG_MULTICAST_DNS_ENABLE=1
+-- OT_MDNS_VERBOSE=""
+-- OT_MDNS_VERBOSE_STATE=""
+-- OT_MESH_DIAG=""
+-- OT_MESSAGE_USE_HEAP=""
+-- OT_MLE_LONG_ROUTES=""
+-- OT_MLR=""
+-- OT_MULTIPAN_RCP=""
+-- OT_MULTIPLE_INSTANCE=""
+-- OT_NAT64_BORDER_ROUTING=""
+-- OT_NAT64_FAVORED_PREFIX_NOTIFICATION=""
+-- OT_NAT64_TRANSLATOR=""
+-- OT_NEIGHBOR_DISCOVERY_AGENT=""
+-- OT_NETDATA_PUBLISHER=""
+-- OT_NETDIAG_CLIENT=""
+-- OT_NETDIAG_VENDOR_INFO=""
+-- OT_OPERATIONAL_DATASET_AUTO_INIT=""
+-- OT_OTNS=""
+-- OT_P2P=""
+-- OT_PING_SENDER=ON --> OPENTHREAD_CONFIG_PING_SENDER_ENABLE=1
+-- OT_PLATFORM_BOOTLOADER_MODE=""
+-- OT_PLATFORM_DNSSD=ON --> OPENTHREAD_CONFIG_PLATFORM_DNSSD_ENABLE=1
+-- OT_PLATFORM_KEY_REF=""
+-- OT_PLATFORM_LOG_CRASH_DUMP=""
+-- OT_PLATFORM_NETIF=""
+-- OT_PLATFORM_POWER_CALIBRATION=""
+-- OT_PLATFORM_UDP=""
+-- OT_REFERENCE_DEVICE=""
+-- OT_SEEKER=""
+-- OT_SERVICE=ON --> OPENTHREAD_CONFIG_TMF_NETDATA_SERVICE_ENABLE=1
+-- OT_SETTINGS_RAM=""
+-- OT_SLAAC=""
+-- OT_SNTP_CLIENT=""
+-- OT_SRP_ADV_PROXY=ON --> OPENTHREAD_CONFIG_SRP_SERVER_ADVERTISING_PROXY_ENABLE=1
+-- OT_SRP_CLIENT=ON --> OPENTHREAD_CONFIG_SRP_CLIENT_ENABLE=1
+-- OT_SRP_SERVER=ON --> OPENTHREAD_CONFIG_SRP_SERVER_ENABLE=1
+-- OT_SRP_SERVER_FAST_START_MODE=""
+-- OT_STEERING_DATA=""
+-- OT_TCP=""
+-- OT_TIME_SYNC=""
+-- OT_TREL=""
+-- OT_TREL_MANAGE_DNSSD=""
+-- OT_TX_BEACON_PAYLOAD=""
+-- OT_TX_QUEUE_STATS=""
+-- OT_UDP_FORWARD=""
+-- OT_UPTIME=""
+-- OT_VERHOEFF_CHECKSUM=""
+-- OT_WAKEUP_COORDINATOR=""
+-- OT_WAKEUP_END_DEVICE=""
+-- OT_SPINEL_CP_RESET_FAIL_CALLBACK_ENABLE=""
+-- - - - - - - - - - - - - - - - - 
+-- OT_PLATFORM="simulation"
+-- OT_CRYPTO_LIB=""
+-- OT_THREAD_VERSION="1.4" -> OPENTHREAD_CONFIG_THREAD_VERSION=OT_THREAD_VERSION_1_4
+-- OT_LOG_LEVEL=""
+-- OT_LOG_OUTPUT=""
+-- OT_VENDOR_NAME=""
+-- OT_VENDOR_MODEL=""
+-- OT_VENDOR_SW_VERSION=""
+-- OT_BORDER_AGENT_SERVICE_NAME=""
+-- OT_POWER_SUPPLY=""
+-- OT_BORDER_ROUTING_DHCP6_PD_MIN_LIFETIME=""
+-- OT_LOG_MAX_SIZE=""
+-- OT_MAC_CSL_REQUEST_AHEAD_US=""
+-- OT_MLE_MAX_CHILDREN=""
+-- OT_RCP_RESTORATION_MAX_COUNT=""
+-- OT_RCP_TIME_SYNC_INTERVAL=""
+-- OT_RCP_TX_WAIT_TIME_SECS=""
+-- OT_VENDOR_OUI=""
+-- OpenThread CMake build type: Debug
+-- Package Name: OPENTHREAD
+-- Setting default package version: 
+-- Package Version: 
+-- OT_PLATFORM_CONFIG="openthread-core-simulation-config.h"
+CMake Deprecation Warning at third_party/mbedtls/repo/CMakeLists.txt:21 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+-- USING O3
+-- Configuring done (0.1s)
+-- Generating done (0.1s)
+-- Build files have been written to: /sdk2026-native/discovery-tests
+[1/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/aria.c.o
+[2/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/aesni.c.o
+[3/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/aesce.c.o
+[4/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/aes.c.o
+[5/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/asn1parse.c.o
+[6/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/base64.c.o
+[7/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/asn1write.c.o
+[8/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/bignum_mod.c.o
+[9/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/bignum_mod_raw.c.o
+[10/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/block_cipher.c.o
+[11/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/camellia.c.o
+[12/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/bignum_core.c.o
+[13/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/chacha20.c.o
+[14/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/chachapoly.c.o
+[15/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ccm.c.o
+[16/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/bignum.c.o
+[17/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/cipher_wrap.c.o
+[18/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/constant_time.c.o
+[19/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/cipher.c.o
+[20/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/cmac.c.o
+[21/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/des.c.o
+[22/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/dhm.c.o
+[23/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ctr_drbg.c.o
+[24/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecdh.c.o
+[25/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecdsa.c.o
+[26/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecjpake.c.o
+[27/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecp_curves.c.o
+[28/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecp_curves_new.c.o
+[29/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ecp.c.o
+[30/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/entropy.c.o
+[31/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/error.c.o
+[32/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/entropy_poll.c.o
+[33/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/gcm.c.o
+[34/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/hkdf.c.o
+[35/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/lmots.c.o
+[36/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/hmac_drbg.c.o
+[37/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/lms.c.o
+[38/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/md.c.o
+[39/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/md5.c.o
+[40/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/nist_kw.c.o
+[41/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/memory_buffer_alloc.c.o
+[42/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/padlock.c.o
+[43/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pem.c.o
+[44/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/oid.c.o
+[45/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pk.c.o
+[46/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pk_ecc.c.o
+[47/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pkcs12.c.o
+[48/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pk_wrap.c.o
+[49/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pkcs5.c.o
+[50/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/platform.c.o
+[51/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pkwrite.c.o
+[52/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/pkparse.c.o
+[53/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/platform_util.c.o
+[54/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto.c.o
+[55/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/poly1305.c.o
+[56/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_aead.c.o
+[57/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_cipher.c.o
+[58/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_ecp.c.o
+[59/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_client.c.o
+[60/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_driver_wrappers_no_static.c.o
+[61/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_ffdh.c.o
+[62/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_hash.c.o
+[63/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_mac.c.o
+[64/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_pake.c.o
+[65/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_rsa.c.o
+[66/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_se.c.o
+[67/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_storage.c.o
+[68/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_crypto_slot_management.c.o
+[69/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_its_file.c.o
+[70/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/ripemd160.c.o
+[71/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/rsa.c.o
+[72/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/psa_util.c.o
+[73/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/rsa_alt_helpers.c.o
+[74/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/sha1.c.o
+[75/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/sha512.c.o
+[76/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/sha256.c.o
+[77/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/sha3.c.o
+[78/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/threading.c.o
+[79/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/timing.c.o
+[80/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/version.c.o
+[81/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedcrypto.dir/version_features.c.o
+[82/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/pkcs7.c.o
+[83/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509_create.c.o
+[84/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509_crl.c.o
+[85/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509_csr.c.o
+[86/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509.c.o
+[87/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509write.c.o
+[88/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509write_crt.c.o
+[89/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509write_csr.c.o
+[90/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedx509.dir/x509_crt.c.o
+[91/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/debug.c.o
+[92/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/mps_reader.c.o
+[93/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/mps_trace.c.o
+[94/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/net_sockets.c.o
+[95/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_cache.c.o
+[96/415] Linking C static library third_party/mbedtls/repo/library/libmbedcrypto.a
+[97/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_ciphersuites.c.o
+[98/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_cookie.c.o
+[99/415] Linking C static library third_party/mbedtls/repo/library/libmbedx509.a
+[100/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_client.c.o
+[101/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_ticket.c.o
+[102/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_debug_helpers_generated.c.o
+[103/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls12_server.c.o
+[104/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls13_keys.c.o
+[105/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls12_client.c.o
+[106/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_msg.c.o
+[107/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls13_server.c.o
+[108/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls13_client.c.o
+[109/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls.c.o
+[110/415] Building C object third_party/mbedtls/repo/library/CMakeFiles/mbedtls.dir/ssl_tls13_generic.c.o
+[111/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_fastopen.c.o
+[112/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/cc/cc_newreno.c.o
+[113/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_reass.c.o
+[114/415] Linking C static library third_party/mbedtls/repo/library/libmbedtls.a
+[115/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_output.c.o
+[116/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_input.c.o
+[117/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_sack.c.o
+[118/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_subr.c.o
+[119/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_timer.c.o
+[120/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_timewait.c.o
+[121/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/lib/bitmap.c.o
+[122/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/bsdtcp/tcp_usrreq.c.o
+[123/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/lib/lbuf.c.o
+[124/415] Building C object third_party/tcplp/CMakeFiles/tcplp-ftd.dir/lib/cbuf.c.o
+[125/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/backbone_router_ftd_api.cpp.o
+[126/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/ble_secure_api.cpp.o
+[127/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/border_agent_admitter_api.cpp.o
+[128/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/border_agent_api.cpp.o
+[129/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/border_agent_ephemeral_key_api.cpp.o
+[130/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/border_agent_tracker_api.cpp.o
+[131/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/border_agent_txt_data_api.cpp.o
+[132/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/channel_manager_api.cpp.o
+[133/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/channel_monitor_api.cpp.o
+[134/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/backbone_router_api.cpp.o
+[135/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/coap_api.cpp.o
+[136/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/coap_secure_api.cpp.o
+[137/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/commissioner_api.cpp.o
+[138/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/border_router_api.cpp.o
+[139/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/border_routing_api.cpp.o
+[140/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/child_supervision_api.cpp.o
+[141/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/dataset_updater_api.cpp.o
+[142/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/diags_api.cpp.o
+[143/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/crypto_api.cpp.o
+[144/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/dataset_ftd_api.cpp.o
+[145/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/dataset_api.cpp.o
+[146/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/error_api.cpp.o
+[147/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/heap_api.cpp.o
+[148/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/history_tracker_api.cpp.o
+[149/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/dns_api.cpp.o
+[150/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/dns_server_api.cpp.o
+[151/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/jam_detection_api.cpp.o
+[152/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/icmp6_api.cpp.o
+[153/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/joiner_api.cpp.o
+[154/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/instance_api.cpp.o
+[155/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/link_metrics_api.cpp.o
+[156/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/ip6_api.cpp.o
+[157/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/mdns_api.cpp.o
+[158/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/logging_api.cpp.o
+[159/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/link_raw_api.cpp.o
+[160/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/link_api.cpp.o
+[161/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/mesh_diag_api.cpp.o
+[162/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/multi_radio_api.cpp.o
+[163/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/multi_ail_detection_api.cpp.o
+[164/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/nat64_api.cpp.o
+[165/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/message_api.cpp.o
+[166/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/netdata_api.cpp.o
+[167/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/network_time_api.cpp.o
+[168/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/p2p_api.cpp.o
+[169/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/netdata_publisher_api.cpp.o
+[170/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/random_crypto_api.cpp.o
+[171/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/netdiag_api.cpp.o
+[172/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/ping_sender_api.cpp.o
+[173/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/random_noncrypto_api.cpp.o
+[174/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/seeker_api.cpp.o
+[175/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/radio_stats_api.cpp.o
+[176/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/sntp_api.cpp.o
+[177/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/srp_client_api.cpp.o
+[178/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/server_api.cpp.o
+[179/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/srp_server_api.cpp.o
+[180/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/srp_client_buffers_api.cpp.o
+[181/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/steering_data_api.cpp.o
+[182/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/tasklet_api.cpp.o
+[183/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/tcp_api.cpp.o
+[184/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/thread_api.cpp.o
+[185/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/trel_api.cpp.o
+[186/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/tcp_ext_api.cpp.o
+[187/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/verhoeff_checksum_api.cpp.o
+[188/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/backbone_router/backbone_tmf.cpp.o
+[189/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/backbone_router/bbr_local.cpp.o
+[190/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/backbone_router/bbr_manager.cpp.o
+[191/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/backbone_router/multicast_listeners_table.cpp.o
+[192/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/backbone_router/ndproxy_table.cpp.o
+[193/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/thread_ftd_api.cpp.o
+[194/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/api/udp_api.cpp.o
+[195/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/backbone_router/bbr_leader.cpp.o
+[196/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/border_router/dhcp6_pd_client.cpp.o
+[197/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/border_router/br_log.cpp.o
+[198/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/border_router/br_tracker.cpp.o
+[199/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/border_router/br_types.cpp.o
+[200/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/border_router/infra_if.cpp.o
+[201/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/border_router/multi_ail_detector.cpp.o
+[202/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/border_router/routing_manager.cpp.o
+[203/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/coap/coap_secure.cpp.o
+[204/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/appender.cpp.o
+[205/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/binary_search.cpp.o
+[206/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/border_router/rx_ra_tracker.cpp.o
+[207/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/coap/coap.cpp.o
+[208/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/bit_utils.cpp.o
+[209/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/data.cpp.o
+[210/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/error.cpp.o
+[211/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/coap/coap_message.cpp.o
+[212/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/crc.cpp.o
+[213/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/frame_data.cpp.o
+[214/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/frame_builder.cpp.o
+[215/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/heap_string.cpp.o
+[216/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/heap_data.cpp.o
+[217/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/heap.cpp.o
+[218/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/offset_range.cpp.o
+[219/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/notifier.cpp.o
+[220/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/log.cpp.o
+[221/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/preference.cpp.o
+[222/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/random.cpp.o
+[223/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/string.cpp.o
+[224/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/message.cpp.o
+[225/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/settings.cpp.o
+[226/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/tasklet.cpp.o
+[227/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/time_ticker.cpp.o
+[228/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/trickle_timer.cpp.o
+[229/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/timer.cpp.o
+[230/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/tlvs.cpp.o
+[231/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/crypto/aes_ecb.cpp.o
+[232/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/crypto/aes_ccm.cpp.o
+[233/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/crypto/hkdf_sha256.cpp.o
+[234/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/crypto/hmac_sha256.cpp.o
+[235/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/crypto/mbedtls.cpp.o
+[236/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/common/uptime.cpp.o
+[237/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/crypto/sha256.cpp.o
+[238/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/crypto/storage.cpp.o
+[239/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/diags/factory_diags.cpp.o
+[240/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/crypto/crypto_platform_psa.cpp.o
+[241/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/crypto/crypto_platform_mbedtls.cpp.o
+[242/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/channel_mask.cpp.o
+[243/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/link_raw.cpp.o
+[244/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/data_poll_handler.cpp.o
+[245/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/mac_filter.cpp.o
+[246/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/data_poll_sender.cpp.o
+[247/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/mac_header_ie.cpp.o
+[248/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/instance/instance.cpp.o
+[249/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/mac_frame.cpp.o
+[250/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/mac_types.cpp.o
+[251/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/mac.cpp.o
+[252/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/scan_result.cpp.o
+[253/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/sub_mac_csl_receiver.cpp.o
+[254/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/sub_mac_wed.cpp.o
+[255/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/wakeup_tx_scheduler.cpp.o
+[256/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/border_agent.cpp.o
+[257/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/border_agent_admitter.cpp.o
+[258/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/mac_links.cpp.o
+[259/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/border_agent_ephemeral_key.cpp.o
+[260/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/border_agent_tracker.cpp.o
+[261/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/commissioner.cpp.o
+[262/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/sub_mac_callbacks.cpp.o
+[263/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/mac/sub_mac.cpp.o
+[264/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/border_agent_txt_data.cpp.o
+[265/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/dataset_updater.cpp.o
+[266/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/extended_panid.cpp.o
+[267/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/joiner.cpp.o
+[268/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/dataset.cpp.o
+[269/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/dataset_manager_ftd.cpp.o
+[270/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/dataset_manager.cpp.o
+[271/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/meshcop_tlvs.cpp.o
+[272/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/meshcop.cpp.o
+[273/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/joiner_router.cpp.o
+[274/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/meshcop_leader.cpp.o
+[275/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/seeker.cpp.o
+[276/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/network_name.cpp.o
+[277/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/tcat_agent.cpp.o
+[278/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/timestamp.cpp.o
+[279/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/steering_data.cpp.o
+[280/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/dhcp6_client.cpp.o
+[281/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/checksum.cpp.o
+[282/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/dhcp6_server.cpp.o
+[283/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/network_identity.cpp.o
+[284/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/dhcp6_types.cpp.o
+[285/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/meshcop/secure_transport.cpp.o
+[286/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/dns_dso.cpp.o
+[287/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/dns_platform.cpp.o
+[288/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/dns_client.cpp.o
+[289/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/dnssd.cpp.o
+[290/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/dns_types.cpp.o
+[291/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/ip4_types.cpp.o
+[292/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/dnssd_server.cpp.o
+[293/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/icmp6.cpp.o
+[294/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/ip6_headers.cpp.o
+[295/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/ip6_address.cpp.o
+[296/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/ip6_filter.cpp.o
+[297/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/ip6.cpp.o
+[298/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/ip6_mpl.cpp.o
+[299/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/nd_agent.cpp.o
+[300/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/nat64_translator.cpp.o
+[301/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/nd6.cpp.o
+[302/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/sntp_client.cpp.o
+[303/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/socket.cpp.o
+[304/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/netif.cpp.o
+[305/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/slaac_address.cpp.o
+[306/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/srp_advertising_proxy.cpp.o
+[307/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/mdns.cpp.o
+[308/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/srp_server.cpp.o
+[309/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/srp_client.cpp.o
+[310/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/radio/ble_secure.cpp.o
+[311/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/tcp6.cpp.o
+[312/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/tcp6_ext.cpp.o
+[313/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/net/udp6.cpp.o
+[314/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/radio/trel_interface.cpp.o
+[315/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/radio/trel_link.cpp.o
+[316/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/radio/radio.cpp.o
+[317/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/radio/trel_packet.cpp.o
+[318/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/radio/trel_peer.cpp.o
+[319/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/radio/trel_peer_discoverer.cpp.o
+[320/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/radio/radio_callbacks.cpp.o
+[321/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/radio/radio_platform.cpp.o
+[322/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/anycast_locator.cpp.o
+[323/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/announce_begin_server.cpp.o
+[324/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/announce_sender.cpp.o
+[325/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/address_resolver.cpp.o
+[326/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/child.cpp.o
+[327/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/child_supervision.cpp.o
+[328/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/child_table.cpp.o
+[329/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/csl_tx_scheduler.cpp.o
+[330/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/discover_scanner.cpp.o
+[331/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/energy_scan_server.cpp.o
+[332/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/dua_manager.cpp.o
+[333/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/link_metrics_types.cpp.o
+[334/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/link_metrics.cpp.o
+[335/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/indirect_sender.cpp.o
+[336/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/key_manager.cpp.o
+[337/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/link_quality.cpp.o
+[338/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/lowpan.cpp.o
+[339/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/mesh_forwarder_mtd.cpp.o
+[340/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/mesh_forwarder.cpp.o
+[341/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/mesh_forwarder_ftd.cpp.o
+[342/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/mle_p2p.cpp.o
+[343/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/mle_tlvs.cpp.o
+[344/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/message_framer.cpp.o
+[345/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/mle_types.cpp.o
+[346/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/mle_ftd.cpp.o
+[347/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/mlr_manager.cpp.o
+[348/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/neighbor.cpp.o
+[349/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/mle.cpp.o
+[350/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/neighbor_table.cpp.o
+[351/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_leader.cpp.o
+[352/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_data.cpp.o
+[353/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_leader_ftd.cpp.o
+[354/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_local.cpp.o
+[355/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_tlvs.cpp.o
+[356/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_notifier.cpp.o
+[357/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_publisher.cpp.o
+[358/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_service.cpp.o
+[359/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_diagnostic_tlvs.cpp.o
+[360/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_data_types.cpp.o
+[361/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/peer.cpp.o
+[362/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/peer_table.cpp.o
+[363/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/radio_selector.cpp.o
+[364/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_diagnostic.cpp.o
+[365/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/network_diagnostic_types.cpp.o
+[366/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/panid_query_server.cpp.o
+[367/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/thread_link_info.cpp.o
+[368/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/router.cpp.o
+[369/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/time_sync_service.cpp.o
+[370/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/src_match_controller.cpp.o
+[371/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/router_table.cpp.o
+[372/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/thread_netif.cpp.o
+[373/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/version.cpp.o
+[374/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/channel_manager.cpp.o
+[375/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/channel_monitor.cpp.o
+[376/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/tmf.cpp.o
+[377/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/heap.cpp.o
+[378/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/uri_paths.cpp.o
+[379/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/thread/vendor_info.cpp.o
+[380/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/history_tracker.cpp.o
+[381/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/history_tracker_client.cpp.o
+[382/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/history_tracker_server.cpp.o
+[383/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/jam_detector.cpp.o
+[384/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/history_tracker_tlvs.cpp.o
+[385/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/link_metrics_manager.cpp.o
+[386/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/otns.cpp.o
+[387/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/parse_cmdline.cpp.o
+[388/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/flash.cpp.o
+[389/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/mesh_diag.cpp.o
+[390/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/power_calibration.cpp.o
+[391/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/verhoeff_checksum.cpp.o
+[392/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/ping_sender.cpp.o
+[393/415] Building CXX object src/lib/hdlc/CMakeFiles/openthread-hdlc.dir/hdlc.cpp.o
+[394/415] Building C object src/lib/spinel/CMakeFiles/openthread-spinel-ncp.dir/spinel.c.o
+[395/415] Building CXX object src/lib/spinel/CMakeFiles/openthread-spinel-ncp.dir/spinel_buffer.cpp.o
+[396/415] Building CXX object src/lib/spinel/CMakeFiles/openthread-spinel-ncp.dir/spinel_helper.cpp.o
+[397/415] Building CXX object src/lib/spinel/CMakeFiles/openthread-spinel-ncp.dir/spinel_decoder.cpp.o
+[398/415] Building CXX object src/core/CMakeFiles/openthread-ftd.dir/utils/srp_client_buffers.cpp.o
+[399/415] Building CXX object src/lib/spinel/CMakeFiles/openthread-spinel-ncp.dir/spinel_encoder.cpp.o
+[400/415] Building CXX object src/lib/url/CMakeFiles/openthread-url.dir/url.cpp.o
+[401/415] Linking CXX static library third_party/tcplp/libtcplp-ftd.a
+[402/415] Building CXX object tests/unit/CMakeFiles/ot-test-platform-ftd.dir/test_util.cpp.o
+[403/415] Building CXX object src/lib/spinel/CMakeFiles/openthread-spinel-ncp.dir/spinel_prop_codec.cpp.o
+[404/415] Linking CXX static library src/lib/hdlc/libopenthread-hdlc.a
+[405/415] Linking CXX static library src/lib/url/libopenthread-url.a
+[406/415] Linking CXX static library src/lib/spinel/libopenthread-spinel-ncp.a
+[407/415] Building CXX object tests/unit/CMakeFiles/ot-test-platform-ftd.dir/test_platform.cpp.o
+[408/415] Linking CXX static library tests/unit/libot-test-platform-ftd.a
+[409/415] Building CXX object tests/unit/CMakeFiles/ot-test-dnssd_discovery_proxy.dir/test_dnssd_discovery_proxy.cpp.o
+[410/415] Linking CXX static library src/core/libopenthread-ftd.a
+[411/415] Building CXX object tests/unit/CMakeFiles/ot-test-mdns.dir/test_mdns.cpp.o
+[412/415] Building CXX object tests/unit/CMakeFiles/ot-test-srp_adv_proxy.dir/test_srp_adv_proxy.cpp.o
+[413/415] Linking CXX executable tests/unit/ot-test-mdns
+[414/415] Linking CXX executable tests/unit/ot-test-dnssd_discovery_proxy
+[415/415] Linking CXX executable tests/unit/ot-test-srp_adv_proxy
+All tests passed
+All tests passed
+All tests passed

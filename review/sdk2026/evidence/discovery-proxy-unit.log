@@ -1,0 +1,885 @@
+00:00:00.000 --------------------------------------------------------------------------------------------
+00:00:00.000 TestProxyBasic
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.814 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.814 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.814 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Add a route prefix (with NAT64 flag) to network data
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Browse()
+00:00:22.000 AdvanceTime for 0.010
+00:00:22.000 otPlatDnssdStartBrowser("_avenger._udp", sub-type:"(null)")
+00:00:22.010 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.010 Invoke Browser callback
+00:00:22.010 Invoking browser callback
+00:00:22.010     serviceType    : "_avenger._udp"
+00:00:22.010     subType        : "(null)"
+00:00:22.010     serviceInstance: "hulk"
+00:00:22.010     ttl            : 300
+00:00:22.010     if-index       : 1
+00:00:22.010 otPlatDnssdStopBrowser("_avenger._udp", sub-type:"(null)")
+00:00:22.010 otPlatDnssdStartSrvResolver("hulk", "_avenger._udp")
+00:00:22.010 AdvanceTime for 0.010
+00:00:22.020 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.020 Invoke SRV resolver callback
+00:00:22.020 Invoking SRV resolver callback
+00:00:22.020     serviceInstance: hulk
+00:00:22.020     serviceType    : _avenger._udp
+00:00:22.020     hostName       : compound
+00:00:22.020     port           : 7777
+00:00:22.020     priority       : 0
+00:00:22.020     weight         : 0
+00:00:22.020     ttl            : 300
+00:00:22.020     if-index       : 1
+00:00:22.020 otPlatDnssdStopSrvResolver("hulk", "_avenger._udp")
+00:00:22.020 otPlatDnssdStartTxtResolver("hulk", "_avenger._udp")
+00:00:22.020 AdvanceTime for 0.010
+00:00:22.030 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.030 Invoke TXT resolver callback
+00:00:22.030 Invoking TXT resolver callback
+00:00:22.030     serviceInstance: hulk
+00:00:22.030     serviceType    : _avenger._udp
+00:00:22.030     txt-data-len   : 5
+00:00:22.030     ttl            : 300
+00:00:22.030     if-index       : 1
+00:00:22.030 otPlatDnssdStopTxtResolver("hulk", "_avenger._udp")
+00:00:22.030 otPlatDnssdStartIp6AddressResolver("compound")
+00:00:22.030 AdvanceTime for 0.010
+00:00:22.040 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.040 Invoke Address Resolver callback
+00:00:22.040 Invoking Ip6 resolver callback
+00:00:22.040     hostName       : compound
+00:00:22.040     if-index       : 1
+00:00:22.040     numAddresses   : 1
+00:00:22.040     address[0]     : fd00:0:0:0:0:0:0:1234
+00:00:22.040     ttl[0]         : 300
+00:00:22.040 otPlatDnssdStopIp6AddressResolver("compound")
+00:00:22.040 AdvanceTime for 0.010
+00:00:22.040 BrowseCallback
+00:00:22.040    Error: OK
+00:00:22.040    ServiceName: _avenger._udp.default.service.arpa.
+00:00:22.040    1) hulk
+00:00:22.040    TTL: 10
+00:00:22.040    Port: 7777
+00:00:22.040    Weight: 0
+00:00:22.040    HostName: compound.default.service.arpa.
+00:00:22.040    HostAddr: fd00:0:0:0:0:0:0:1234
+00:00:22.040    TxtDataLength: 5
+00:00:22.040    TxtDataTTL: 10
+00:00:22.050 --------------------------------------------------------------------------------------------
+00:00:22.050 ResolveService() with dot `.` character in service instance label
+00:00:22.050 AdvanceTime for 0.010
+00:00:22.050 otPlatDnssdStartSrvResolver("iron.man", "_avenger._udp")
+00:00:22.060 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.060 Invoke SRV Resolver callback for wrong name
+00:00:22.060 Invoking SRV resolver callback
+00:00:22.060     serviceInstance: hulk
+00:00:22.060     serviceType    : _avenger._udp
+00:00:22.060     hostName       : compound
+00:00:22.060     port           : 7777
+00:00:22.060     priority       : 0
+00:00:22.060     weight         : 0
+00:00:22.060     ttl            : 300
+00:00:22.060     if-index       : 1
+00:00:22.060 AdvanceTime for 0.010
+00:00:22.070 Invoke SRV Resolver callback for correct name
+00:00:22.070 Invoking SRV resolver callback
+00:00:22.070     serviceInstance: iron.man
+00:00:22.070     serviceType    : _avenger._udp
+00:00:22.070     hostName       : starktower
+00:00:22.070     port           : 1024
+00:00:22.070     priority       : 0
+00:00:22.070     weight         : 0
+00:00:22.070     ttl            : 300
+00:00:22.070     if-index       : 1
+00:00:22.070 otPlatDnssdStopSrvResolver("iron.man", "_avenger._udp")
+00:00:22.070 otPlatDnssdStartTxtResolver("iron.man", "_avenger._udp")
+00:00:22.070 AdvanceTime for 0.010
+00:00:22.080 Invoke TXT Resolver callback
+00:00:22.080 Invoking TXT resolver callback
+00:00:22.080     serviceInstance: iron.man
+00:00:22.080     serviceType    : _avenger._udp
+00:00:22.080     txt-data-len   : 5
+00:00:22.080     ttl            : 300
+00:00:22.080     if-index       : 1
+00:00:22.080 otPlatDnssdStopTxtResolver("iron.man", "_avenger._udp")
+00:00:22.080 otPlatDnssdStartIp6AddressResolver("starktower")
+00:00:22.080 AdvanceTime for 0.010
+00:00:22.090 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.090 Invoke Address Resolver callback
+00:00:22.090 Invoking Ip6 resolver callback
+00:00:22.090     hostName       : starktower
+00:00:22.090     if-index       : 1
+00:00:22.090     numAddresses   : 1
+00:00:22.090     address[0]     : fd00:0:0:0:0:0:0:1234
+00:00:22.090     ttl[0]         : 300
+00:00:22.090 otPlatDnssdStopIp6AddressResolver("starktower")
+00:00:22.090 AdvanceTime for 0.010
+00:00:22.090 ServiceCallback
+00:00:22.090    Error: OK
+00:00:22.090    InstLabel: iron.man
+00:00:22.090    ServiceName: _avenger._udp.default.service.arpa.
+00:00:22.090    TTL: 10
+00:00:22.090    Port: 1024
+00:00:22.090    Weight: 0
+00:00:22.090    HostName: starktower.default.service.arpa.
+00:00:22.090    HostAddr: fd00:0:0:0:0:0:0:1234
+00:00:22.090    TxtDataLength: 5
+00:00:22.090    TxtDataTTL: 10
+00:00:22.090    NumHostAddresses: 1
+00:00:22.090       fd00:0:0:0:0:0:0:1234
+00:00:22.100 --------------------------------------------------------------------------------------------
+00:00:22.100 ResolveAddress()
+00:00:22.100 AdvanceTime for 0.010
+00:00:22.100 otPlatDnssdStartIp6AddressResolver("earth")
+00:00:22.110 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.110 Invoke Address Resolver callback
+00:00:22.110 Invoking Ip6 resolver callback
+00:00:22.110     hostName       : earth
+00:00:22.110     if-index       : 1
+00:00:22.110     numAddresses   : 1
+00:00:22.110     address[0]     : fd00:0:0:0:0:0:0:7777
+00:00:22.110     ttl[0]         : 300
+00:00:22.110 otPlatDnssdStopIp6AddressResolver("earth")
+00:00:22.110 AdvanceTime for 0.010
+00:00:22.110 AddressCallback
+00:00:22.110    Error: OK
+00:00:22.110    HostName: earth.default.service.arpa.
+00:00:22.110    NumHostAddresses: 1
+00:00:22.110       fd00:0:0:0:0:0:0:7777
+00:00:22.120 --------------------------------------------------------------------------------------------
+00:00:22.120 ResolveIp4Address()
+00:00:22.120 AdvanceTime for 0.010
+00:00:22.120 otPlatDnssdStartIp4AddressResolver("shield")
+00:00:22.130 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.130 Invoke IPv4 Address Resolver callback
+00:00:22.130 Invoking Ip4 resolver callback
+00:00:22.130     hostName       : shield
+00:00:22.130     if-index       : 1
+00:00:22.130     numAddresses   : 1
+00:00:22.130     address[0]     : 0:0:0:0:0:ffff:102:304
+00:00:22.130     ttl[0]         : 300
+00:00:22.130 otPlatDnssdStopIp4AddressResolver("shield")
+00:00:22.130 AdvanceTime for 0.010
+00:00:22.130 AddressCallback
+00:00:22.130    Error: OK
+00:00:22.130    HostName: shield.default.service.arpa.
+00:00:22.130    NumHostAddresses: 1
+00:00:22.130       64:ff9b:0:0:0:0:102:304
+00:00:22.140 --------------------------------------------------------------------------------------------
+00:00:22.140 QueryRecord() for KEY and hostname
+00:00:22.140 AdvanceTime for 0.010
+00:00:22.140 otPlatDnssdStartRecordQuerier(shield, (null), KEY)
+00:00:22.150 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.150 Invoke Record Querier callback
+00:00:22.150 Invoking record callback
+00:00:22.150     firstLabel     : shield
+00:00:22.150     nextLabels     : (null)
+00:00:22.150     recordType     : KEY
+00:00:22.150     ttl            : 300
+00:00:22.150     if-index       : 1
+00:00:22.150     dataLength     : 10
+00:00:22.150     data           : 00112233445566778899
+00:00:22.150 otPlatDnssdStopRecordQuerier("shield, (null), KEY")
+00:00:22.150 AdvanceTime for 0.010
+00:00:22.150 RecordCallback
+00:00:22.150    Error: OK
+00:00:22.150    QueryName: shield.default.service.arpa.
+00:00:22.150    NumRecords: 1
+00:00:22.150    Record 0
+00:00:22.150       Name: shield.default.service.arpa.
+00:00:22.150       Type: 25 (KEY)
+00:00:22.150       TTL: 10
+00:00:22.150       Data: 00112233445566778899
+00:00:22.160 --------------------------------------------------------------------------------------------
+00:00:22.160 QueryRecord() for KEY and service instance name
+00:00:22.160 AdvanceTime for 0.010
+00:00:22.160 otPlatDnssdStartRecordQuerier(iron.man, _avenger._udp, KEY)
+00:00:22.170 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.170 Invoke Record Querier callback
+00:00:22.170 Invoking record callback
+00:00:22.170     firstLabel     : iron.man
+00:00:22.170     nextLabels     : _avenger._udp
+00:00:22.170     recordType     : KEY
+00:00:22.170     ttl            : 300
+00:00:22.170     if-index       : 1
+00:00:22.170     dataLength     : 10
+00:00:22.170     data           : 00112233445566778899
+00:00:22.170 otPlatDnssdStopRecordQuerier("iron.man, _avenger._udp, KEY")
+00:00:22.170 AdvanceTime for 0.010
+00:00:22.170 RecordCallback
+00:00:22.170    Error: OK
+00:00:22.170    QueryName: iron.man._avenger._udp.default.service.arpa.
+00:00:22.170    NumRecords: 1
+00:00:22.170    Record 0
+00:00:22.170       Name: iron.man._avenger._udp.default.service.arpa.
+00:00:22.170       Type: 25 (KEY)
+00:00:22.170       TTL: 10
+00:00:22.170       Data: 00112233445566778899
+00:00:22.180 --------------------------------------------------------------------------------------------
+00:00:22.180 QueryRecord() for CNAME that requires RDATA translation
+00:00:22.180 AdvanceTime for 0.010
+00:00:22.180 otPlatDnssdStartRecordQuerier(avengers, (null), CNAME)
+00:00:22.190 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.190 Invoke Record Querier callback
+00:00:22.190 Invoking record callback
+00:00:22.190     firstLabel     : avengers
+00:00:22.190     nextLabels     : (null)
+00:00:22.190     recordType     : CNAME
+00:00:22.190     ttl            : 300
+00:00:22.190     if-index       : 1
+00:00:22.190     dataLength     : 18
+00:00:22.190     data           : 0a70726f746563746f7273056c6f63616c00
+00:00:22.190 otPlatDnssdStopRecordQuerier("avengers, (null), CNAME")
+00:00:22.190 AdvanceTime for 0.010
+00:00:22.190 RecordCallback
+00:00:22.190    Error: OK
+00:00:22.190    QueryName: avengers.default.service.arpa.
+00:00:22.190    NumRecords: 1
+00:00:22.190    Record 0
+00:00:22.190       Name: avengers.default.service.arpa.
+00:00:22.190       Type: 5 (CNAME)
+00:00:22.190       TTL: 10
+00:00:22.190       Data: 0a70726f746563746f72730764656661756c740773657276696365046172706100
+00:00:22.200 --------------------------------------------------------------------------------------------
+00:00:22.200 QueryRecord() for ANY and host name
+00:00:22.200 AdvanceTime for 0.010
+00:00:22.200 otPlatDnssdStartRecordQuerier(shield, (null), ANY)
+00:00:22.210 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.210 Invoke Record Querier callback
+00:00:22.210 Invoking record callback
+00:00:22.210     firstLabel     : shield
+00:00:22.210     nextLabels     : (null)
+00:00:22.210     recordType     : KEY
+00:00:22.210     ttl            : 300
+00:00:22.210     if-index       : 1
+00:00:22.210     dataLength     : 10
+00:00:22.210     data           : 00112233445566778899
+00:00:22.210 otPlatDnssdStopRecordQuerier("shield, (null), ANY")
+00:00:22.210 AdvanceTime for 0.010
+00:00:22.210 RecordCallback
+00:00:22.210    Error: OK
+00:00:22.210    QueryName: shield.default.service.arpa.
+00:00:22.210    NumRecords: 1
+00:00:22.210    Record 0
+00:00:22.210       Name: shield.default.service.arpa.
+00:00:22.210       Type: 25 (KEY)
+00:00:22.210       TTL: 10
+00:00:22.210       Data: 00112233445566778899
+00:00:22.220 --------------------------------------------------------------------------------------------
+00:00:22.220 QueryRecord() for ANY and service instance name
+00:00:22.220 AdvanceTime for 0.010
+00:00:22.220 otPlatDnssdStartRecordQuerier(iron.man, _avenger._udp, ANY)
+00:00:22.230 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.230 Invoke Record Querier callback
+00:00:22.230 Invoking record callback
+00:00:22.230     firstLabel     : iron.man
+00:00:22.230     nextLabels     : _avenger._udp
+00:00:22.230     recordType     : KEY
+00:00:22.230     ttl            : 300
+00:00:22.230     if-index       : 1
+00:00:22.230     dataLength     : 10
+00:00:22.230     data           : 00112233445566778899
+00:00:22.230 otPlatDnssdStopRecordQuerier("iron.man, _avenger._udp, ANY")
+00:00:22.230 AdvanceTime for 0.010
+00:00:22.230 RecordCallback
+00:00:22.230    Error: OK
+00:00:22.230    QueryName: iron.man._avenger._udp.default.service.arpa.
+00:00:22.230    NumRecords: 1
+00:00:22.230    Record 0
+00:00:22.230       Name: iron.man._avenger._udp.default.service.arpa.
+00:00:22.230       Type: 25 (KEY)
+00:00:22.230       TTL: 10
+00:00:22.230       Data: 00112233445566778899
+00:00:22.240 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.240 Stop DNS-SD server
+00:00:22.240 AdvanceTime for 0.010
+00:00:22.250 Finalizing OT instance
+00:00:22.250 End of TestProxyBasic
+00:00:22.250 --------------------------------------------------------------------------------------------
+00:00:22.250 TestProxySubtypeBrowse
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.392 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.392 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.392 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Browse() for sub-type service
+00:00:22.000 AdvanceTime for 0.010
+00:00:22.000 otPlatDnssdStartBrowser("_avenger._udp", sub-type:"_god")
+00:00:22.010 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.010 Invoke Browser callback
+00:00:22.010 Invoking browser callback
+00:00:22.010     serviceType    : "_avenger._udp"
+00:00:22.010     subType        : "_god"
+00:00:22.010     serviceInstance: "thor"
+00:00:22.010     ttl            : 300
+00:00:22.010     if-index       : 1
+00:00:22.010 otPlatDnssdStopBrowser("_avenger._udp", sub-type:"_god")
+00:00:22.010 otPlatDnssdStartSrvResolver("thor", "_avenger._udp")
+00:00:22.010 AdvanceTime for 0.010
+00:00:22.020 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.020 Invoke Service Resolver callback
+00:00:22.020 Invoking SRV resolver callback
+00:00:22.020     serviceInstance: thor
+00:00:22.020     serviceType    : _avenger._udp
+00:00:22.020     hostName       : asgard
+00:00:22.020     port           : 1234
+00:00:22.020     priority       : 1125
+00:00:22.020     weight         : 29281
+00:00:22.020     ttl            : 300
+00:00:22.020     if-index       : 1
+00:00:22.020 otPlatDnssdStopSrvResolver("thor", "_avenger._udp")
+00:00:22.020 otPlatDnssdStartTxtResolver("thor", "_avenger._udp")
+00:00:22.020 AdvanceTime for 0.010
+00:00:22.030 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.030 Invoke Service Resolver callback
+00:00:22.030 Invoking TXT resolver callback
+00:00:22.030     serviceInstance: thor
+00:00:22.030     serviceType    : _avenger._udp
+00:00:22.030     txt-data-len   : 5
+00:00:22.030     ttl            : 300
+00:00:22.030     if-index       : 1
+00:00:22.030 otPlatDnssdStopTxtResolver("thor", "_avenger._udp")
+00:00:22.030 otPlatDnssdStartIp6AddressResolver("asgard")
+00:00:22.030 AdvanceTime for 0.010
+00:00:22.040 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.040 Invoke Address Resolver callback
+00:00:22.040 Invoking Ip6 resolver callback
+00:00:22.040     hostName       : asgard
+00:00:22.040     if-index       : 1
+00:00:22.040     numAddresses   : 1
+00:00:22.040     address[0]     : fd00:0:0:0:0:0:0:1234
+00:00:22.040     ttl[0]         : 300
+00:00:22.040 otPlatDnssdStopIp6AddressResolver("asgard")
+00:00:22.040 AdvanceTime for 0.010
+00:00:22.040 BrowseCallback
+00:00:22.040    Error: OK
+00:00:22.040    ServiceName: _god._sub._avenger._udp.default.service.arpa.
+00:00:22.040    1) thor
+00:00:22.040    TTL: 10
+00:00:22.040    Port: 1234
+00:00:22.040    Weight: 29281
+00:00:22.040    HostName: asgard.default.service.arpa.
+00:00:22.040    HostAddr: fd00:0:0:0:0:0:0:1234
+00:00:22.040    TxtDataLength: 5
+00:00:22.040    TxtDataTTL: 10
+00:00:22.050 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.050 Stop DNS-SD server
+00:00:22.050 AdvanceTime for 0.010
+00:00:22.060 Finalizing OT instance
+00:00:22.060 End of TestProxySubtypeBrowse
+00:00:22.060 --------------------------------------------------------------------------------------------
+00:00:22.060 TestProxyTimeout
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Increase default response retry timeout on DNS client
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Browse()
+00:00:22.000 AdvanceTime for 0.010
+00:00:22.000 otPlatDnssdStartBrowser("_game._ps5", sub-type:"(null)")
+00:00:22.010 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.010 Wait for timeout and check empty response on client
+00:00:22.010 AdvanceTime for 10.000
+   00:00:22.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:26.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:28.000 otPlatDnssdStopBrowser("_game._ps5", sub-type:"(null)")
+00:00:28.000 BrowseCallback
+00:00:28.000    Error: OK
+00:00:28.000    ServiceName: _game._ps5.default.service.arpa.
+   00:00:30.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:32.010 --------------------------------------------------------------------------------------------
+00:00:32.010 Timeout during service resolution
+00:00:32.010 AdvanceTime for 0.010
+00:00:32.010 otPlatDnssdStartBrowser("_avenger._udp", sub-type:"(null)")
+00:00:32.020 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:32.020 Invoke Browser callback
+00:00:32.020 Invoking browser callback
+00:00:32.020     serviceType    : "_avenger._udp"
+00:00:32.020     subType        : "(null)"
+00:00:32.020     serviceInstance: "spiderman"
+00:00:32.020     ttl            : 300
+00:00:32.020     if-index       : 1
+00:00:32.020 otPlatDnssdStopBrowser("_avenger._udp", sub-type:"(null)")
+00:00:32.020 otPlatDnssdStartSrvResolver("spiderman", "_avenger._udp")
+00:00:32.020 AdvanceTime for 0.010
+00:00:32.030 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:32.030 Wait for timeout
+00:00:32.030 AdvanceTime for 10.000
+   00:00:34.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:38.010 otPlatDnssdStopSrvResolver("spiderman", "_avenger._udp")
+00:00:38.010 BrowseCallback
+00:00:38.010    Error: OK
+00:00:38.010    ServiceName: _avenger._udp.default.service.arpa.
+00:00:38.010    1) spiderman
+   00:00:38.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:42.030 --------------------------------------------------------------------------------------------
+00:00:42.030 Timeout during multiple requests
+00:00:42.030 Browse()
+00:00:42.030 AdvanceTime for 0.010
+00:00:42.030 otPlatDnssdStartBrowser("_avenger._udp", sub-type:"(null)")
+00:00:42.040 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:42.040 Another Browse()
+00:00:42.040 AdvanceTime for 0.010
+00:00:42.040 otPlatDnssdStartBrowser("_game._udp", sub-type:"(null)")
+00:00:42.050 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:42.050 ResolveService()
+00:00:42.050 AdvanceTime for 0.010
+00:00:42.050 otPlatDnssdStartSrvResolver("wanda", "_avenger._udp")
+00:00:42.060 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:42.060 ResolveAddress()
+00:00:42.060 AdvanceTime for 0.010
+00:00:42.060 otPlatDnssdStartIp6AddressResolver("earth")
+00:00:42.070 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:42.070 QueryRecord()
+00:00:42.070 AdvanceTime for 0.010
+00:00:42.070 otPlatDnssdStartRecordQuerier(iron.man, _avenger._udp, KEY)
+00:00:42.080 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:42.080 Wait for timeout for all requests
+00:00:42.080 AdvanceTime for 10.000
+   00:00:42.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:46.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:48.030 otPlatDnssdStopBrowser("_avenger._udp", sub-type:"(null)")
+00:00:48.030 BrowseCallback
+00:00:48.030    Error: OK
+00:00:48.030    ServiceName: _avenger._udp.default.service.arpa.
+00:00:48.040 otPlatDnssdStopBrowser("_game._udp", sub-type:"(null)")
+00:00:48.040 BrowseCallback
+00:00:48.040    Error: OK
+00:00:48.040    ServiceName: _game._udp.default.service.arpa.
+00:00:48.050 otPlatDnssdStopSrvResolver("wanda", "_avenger._udp")
+00:00:48.050 ServiceCallback
+00:00:48.050    Error: OK
+00:00:48.050    InstLabel: wanda
+00:00:48.050    ServiceName: _avenger._udp.default.service.arpa.
+00:00:48.060 otPlatDnssdStopIp6AddressResolver("earth")
+00:00:48.060 AddressCallback
+00:00:48.060    Error: OK
+00:00:48.060    HostName: earth.default.service.arpa.
+00:00:48.060    NumHostAddresses: 0
+00:00:48.070 otPlatDnssdStopRecordQuerier("iron.man, _avenger._udp, KEY")
+00:00:48.070 RecordCallback
+00:00:48.070    Error: OK
+00:00:48.070    QueryName: iron.man._avenger._udp.default.service.arpa.
+00:00:48.070    NumRecords: 0
+   00:00:50.262 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:52.080 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:52.080 Stop DNS-SD server
+00:00:52.080 AdvanceTime for 0.010
+00:00:52.090 Finalizing OT instance
+00:00:52.090 End of TestProxyTimeout
+00:00:52.090 --------------------------------------------------------------------------------------------
+00:00:52.090 TestProxySharedResolver
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.298 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.298 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.298 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 ResolveAddress()
+00:00:22.000 AdvanceTime for 0.010
+00:00:22.000 otPlatDnssdStartIp6AddressResolver("knowhere")
+00:00:22.010 ResolveService()
+00:00:22.010 AdvanceTime for 0.010
+00:00:22.010 otPlatDnssdStartSrvResolver("starlord", "_guardian._glaxy")
+00:00:22.020 Browse()
+00:00:22.020 AdvanceTime for 0.010
+00:00:22.020 otPlatDnssdStartBrowser("_guardian._glaxy", sub-type:"(null)")
+00:00:22.030 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.030 Invoke Browser callback
+00:00:22.030 Invoking browser callback
+00:00:22.030     serviceType    : "_guardian._glaxy"
+00:00:22.030     subType        : "(null)"
+00:00:22.030     serviceInstance: "starlord"
+00:00:22.030     ttl            : 300
+00:00:22.030     if-index       : 1
+00:00:22.030 otPlatDnssdStopBrowser("_guardian._glaxy", sub-type:"(null)")
+00:00:22.030 AdvanceTime for 0.010
+00:00:22.040 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.040 Invoke Service Resolver callback
+00:00:22.040 Invoking SRV resolver callback
+00:00:22.040     serviceInstance: starlord
+00:00:22.040     serviceType    : _guardian._glaxy
+00:00:22.040     hostName       : knowhere
+00:00:22.040     port           : 3333
+00:00:22.040     priority       : 0
+00:00:22.040     weight         : 0
+00:00:22.040     ttl            : 300
+00:00:22.040     if-index       : 1
+00:00:22.040 otPlatDnssdStopSrvResolver("starlord", "_guardian._glaxy")
+00:00:22.040 otPlatDnssdStartTxtResolver("starlord", "_guardian._glaxy")
+00:00:22.040 AdvanceTime for 0.010
+00:00:22.050 Invoking TXT resolver callback
+00:00:22.050     serviceInstance: starlord
+00:00:22.050     serviceType    : _guardian._glaxy
+00:00:22.050     txt-data-len   : 5
+00:00:22.050     ttl            : 300
+00:00:22.050     if-index       : 1
+00:00:22.050 otPlatDnssdStopTxtResolver("starlord", "_guardian._glaxy")
+00:00:22.050 AdvanceTime for 0.010
+00:00:22.060 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.060 Invoke Address Resolver callback
+00:00:22.060 Invoking Ip6 resolver callback
+00:00:22.060     hostName       : knowhere
+00:00:22.060     if-index       : 1
+00:00:22.060     numAddresses   : 2
+00:00:22.060     address[0]     : fd00:0:0:0:0:0:0:5555
+00:00:22.060     ttl[0]         : 300
+00:00:22.060     address[1]     : fd00:0:0:0:0:0:0:1234
+00:00:22.060     ttl[1]         : 300
+00:00:22.060 otPlatDnssdStopIp6AddressResolver("knowhere")
+00:00:22.060 AdvanceTime for 0.010
+00:00:22.060 AddressCallback
+00:00:22.060    Error: OK
+00:00:22.060    HostName: knowhere.default.service.arpa.
+00:00:22.060    NumHostAddresses: 2
+00:00:22.060       fd00:0:0:0:0:0:0:5555
+00:00:22.060       fd00:0:0:0:0:0:0:1234
+00:00:22.060 ServiceCallback
+00:00:22.060    Error: OK
+00:00:22.060    InstLabel: starlord
+00:00:22.060    ServiceName: _guardian._glaxy.default.service.arpa.
+00:00:22.060    TTL: 10
+00:00:22.060    Port: 3333
+00:00:22.060    Weight: 0
+00:00:22.060    HostName: knowhere.default.service.arpa.
+00:00:22.060    HostAddr: fd00:0:0:0:0:0:0:5555
+00:00:22.060    TxtDataLength: 5
+00:00:22.060    TxtDataTTL: 10
+00:00:22.060    NumHostAddresses: 2
+00:00:22.060       fd00:0:0:0:0:0:0:5555
+00:00:22.060       fd00:0:0:0:0:0:0:1234
+00:00:22.060 BrowseCallback
+00:00:22.060    Error: OK
+00:00:22.060    ServiceName: _guardian._glaxy.default.service.arpa.
+00:00:22.060    1) starlord
+00:00:22.060    TTL: 10
+00:00:22.060    Port: 3333
+00:00:22.060    Weight: 0
+00:00:22.060    HostName: knowhere.default.service.arpa.
+00:00:22.060    HostAddr: fd00:0:0:0:0:0:0:5555
+00:00:22.060    TxtDataLength: 5
+00:00:22.060    TxtDataTTL: 10
+00:00:22.070 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.070 Stop DNS-SD server
+00:00:22.070 AdvanceTime for 0.010
+00:00:22.080 Finalizing OT instance
+00:00:22.080 End of TestProxySharedResolver
+00:00:22.080 --------------------------------------------------------------------------------------------
+00:00:22.080 TestProxyFilterInvalidAddresses
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.100 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.100 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.100 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 ResolveAddress()
+00:00:22.000 AdvanceTime for 0.010
+00:00:22.000 otPlatDnssdStartIp6AddressResolver("host")
+00:00:22.010 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.010 Invoke Address Resolver callback with invalid addresses
+00:00:22.010 Invoking Ip6 resolver callback
+00:00:22.010     hostName       : host
+00:00:22.010     if-index       : 1
+00:00:22.010     numAddresses   : 4
+00:00:22.010     address[0]     : 0:0:0:0:0:0:0:0
+00:00:22.010     ttl[0]         : 300
+00:00:22.010     address[1]     : fe80:0:0:0:0:0:0:1234
+00:00:22.010     ttl[1]         : 300
+00:00:22.010     address[2]     : ff00:0:0:0:0:0:0:1234
+00:00:22.010     ttl[2]         : 300
+00:00:22.010     address[3]     : 0:0:0:0:0:0:0:1
+00:00:22.010     ttl[3]         : 300
+00:00:22.010 AdvanceTime for 0.010
+00:00:22.020 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.020 Invoke Address Resolver callback with invalid addresses with one valid
+00:00:22.020 Invoking Ip6 resolver callback
+00:00:22.020     hostName       : host
+00:00:22.020     if-index       : 1
+00:00:22.020     numAddresses   : 5
+00:00:22.020     address[0]     : 0:0:0:0:0:0:0:0
+00:00:22.020     ttl[0]         : 300
+00:00:22.020     address[1]     : fe80:0:0:0:0:0:0:1234
+00:00:22.020     ttl[1]         : 300
+00:00:22.020     address[2]     : ff00:0:0:0:0:0:0:1234
+00:00:22.020     ttl[2]         : 300
+00:00:22.020     address[3]     : 0:0:0:0:0:0:0:1
+00:00:22.020     ttl[3]         : 300
+00:00:22.020     address[4]     : f00:0:0:0:0:0:0:1234
+00:00:22.020     ttl[4]         : 300
+00:00:22.020 otPlatDnssdStopIp6AddressResolver("host")
+00:00:22.020 AdvanceTime for 0.010
+00:00:22.020 AddressCallback
+00:00:22.020    Error: OK
+00:00:22.020    HostName: host.default.service.arpa.
+00:00:22.020    NumHostAddresses: 1
+00:00:22.020       f00:0:0:0:0:0:0:1234
+00:00:22.030 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.030 Stop DNS-SD server
+00:00:22.030 AdvanceTime for 0.010
+00:00:22.040 Finalizing OT instance
+00:00:22.040 End of TestProxyFilterInvalidAddresses
+00:00:22.040 --------------------------------------------------------------------------------------------
+00:00:22.040 TestProxyStateChanges
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.713 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.713 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.713 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Signal DNS-SD platform state is stopped and not yet ready
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 ResolveAddress()
+00:00:22.000 AdvanceTime for 0.010
+00:00:22.000 AddressCallback
+00:00:22.000    Error: NotFound
+00:00:22.010 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.010 Signal DNS-SD platform state is now ready
+00:00:22.010 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.010 ResolveAddress()
+00:00:22.010 AdvanceTime for 0.010
+00:00:22.010 otPlatDnssdStartIp6AddressResolver("host")
+00:00:22.020 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.020 Browse()
+00:00:22.020 AdvanceTime for 0.010
+00:00:22.020 otPlatDnssdStartBrowser("_magic._udp", sub-type:"(null)")
+00:00:22.030 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.030 Signal infra-if is not running
+00:00:22.030 otPlatDnssdStopIp6AddressResolver("host")
+00:00:22.030 otPlatDnssdStopBrowser("_magic._udp", sub-type:"(null)")
+00:00:22.030 AdvanceTime for 0.010
+00:00:22.030 BrowseCallback
+00:00:22.030    Error: OK
+00:00:22.030    ServiceName: _magic._udp.default.service.arpa.
+00:00:22.030 AddressCallback
+00:00:22.030    Error: NotFound
+00:00:22.040 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.040 ResolveAddress()
+00:00:22.040 AdvanceTime for 0.010
+00:00:22.040 AddressCallback
+00:00:22.040    Error: NotFound
+00:00:22.050 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.050 Signal that infra-if is running again 
+00:00:22.050 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.050 ResolveService()
+00:00:22.050 AdvanceTime for 0.010
+00:00:22.050 otPlatDnssdStartSrvResolver("captain.america", "_avenger._udp")
+00:00:22.060 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.060 Signal DNS-SD platform state is stopped
+00:00:22.060 AdvanceTime for 0.010
+00:00:22.060 ServiceCallback
+00:00:22.060    Error: OK
+00:00:22.060    InstLabel: captain.america
+00:00:22.060    ServiceName: _avenger._udp.default.service.arpa.
+00:00:22.070 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.070 Signal DNS-SD platform state is ready again
+00:00:22.070 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.070 Browse()
+00:00:22.070 AdvanceTime for 0.010
+00:00:22.070 otPlatDnssdStartBrowser("_magical._udp", sub-type:"(null)")
+00:00:22.080 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.080 Stop DNS-SD server
+00:00:22.080 otPlatDnssdStopBrowser("_magical._udp", sub-type:"(null)")
+00:00:22.080 AdvanceTime for 0.010
+00:00:22.080 BrowseCallback
+00:00:22.080    Error: Failed
+00:00:22.090 Finalizing OT instance
+00:00:22.090 End of TestProxyStateChanges
+00:00:22.090 --------------------------------------------------------------------------------------------
+00:00:22.090 TestProxyInvokeCallbackFromStartApi
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.370 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.370 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.370 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Enable invoking of callback directly from otPlatDnssdStart{Browsers/Resolver} APIs
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Browse()
+00:00:22.000 AdvanceTime for 0.010
+00:00:22.000 otPlatDnssdStartBrowser("_guardian._glaxy", sub-type:"(null)")
+00:00:22.000 Invoking browser callback
+00:00:22.000     serviceType    : "_guardian._glaxy"
+00:00:22.000     subType        : "(null)"
+00:00:22.000     serviceInstance: "mantis"
+00:00:22.000     ttl            : 300
+00:00:22.000     if-index       : 1
+00:00:22.000 otPlatDnssdStopBrowser("_guardian._glaxy", sub-type:"(null)")
+00:00:22.000 otPlatDnssdStartSrvResolver("mantis", "_guardian._glaxy")
+00:00:22.000 Invoking SRV resolver callback
+00:00:22.000     serviceInstance: mantis
+00:00:22.000     serviceType    : _guardian._glaxy
+00:00:22.000     hostName       : nova
+00:00:22.000     port           : 3333
+00:00:22.000     priority       : 20812
+00:00:22.000     weight         : 23563
+00:00:22.000     ttl            : 300
+00:00:22.000     if-index       : 1
+00:00:22.000 otPlatDnssdStopSrvResolver("mantis", "_guardian._glaxy")
+00:00:22.000 otPlatDnssdStartTxtResolver("mantis", "_guardian._glaxy")
+00:00:22.000 Invoking TXT resolver callback
+00:00:22.000     serviceInstance: mantis
+00:00:22.000     serviceType    : _guardian._glaxy
+00:00:22.000     txt-data-len   : 5
+00:00:22.000     ttl            : 300
+00:00:22.000     if-index       : 1
+00:00:22.000 otPlatDnssdStopTxtResolver("mantis", "_guardian._glaxy")
+00:00:22.000 otPlatDnssdStartIp6AddressResolver("nova")
+00:00:22.000 Invoking Ip6 resolver callback
+00:00:22.000     hostName       : nova
+00:00:22.000     if-index       : 1
+00:00:22.000     numAddresses   : 2
+00:00:22.000     address[0]     : fd00:0:0:0:0:0:0:5555
+00:00:22.000     ttl[0]         : 300
+00:00:22.000     address[1]     : fd00:0:0:0:0:0:0:1234
+00:00:22.000     ttl[1]         : 300
+00:00:22.000 otPlatDnssdStopIp6AddressResolver("nova")
+00:00:22.000 Invoking Ip6 resolver callback
+00:00:22.000     hostName       : nova
+00:00:22.000     if-index       : 1
+00:00:22.000     numAddresses   : 2
+00:00:22.000     address[0]     : fd00:0:0:0:0:0:0:5555
+00:00:22.000     ttl[0]         : 300
+00:00:22.000     address[1]     : fd00:0:0:0:0:0:0:1234
+00:00:22.000     ttl[1]         : 300
+00:00:22.000 BrowseCallback
+00:00:22.000    Error: OK
+00:00:22.000    ServiceName: _guardian._glaxy.default.service.arpa.
+00:00:22.000    1) mantis
+00:00:22.000    TTL: 10
+00:00:22.000    Port: 3333
+00:00:22.000    Weight: 23563
+00:00:22.000    HostName: nova.default.service.arpa.
+00:00:22.000    HostAddr: fd00:0:0:0:0:0:0:5555
+00:00:22.000    TxtDataLength: 5
+00:00:22.000    TxtDataTTL: 10
+00:00:22.010 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.010 ResolveService()
+00:00:22.010 AdvanceTime for 0.010
+00:00:22.010 otPlatDnssdStartSrvResolver("mantis", "_guardian._glaxy")
+00:00:22.010 Invoking SRV resolver callback
+00:00:22.010     serviceInstance: mantis
+00:00:22.010     serviceType    : _guardian._glaxy
+00:00:22.010     hostName       : nova
+00:00:22.010     port           : 3333
+00:00:22.010     priority       : 20812
+00:00:22.010     weight         : 23563
+00:00:22.010     ttl            : 300
+00:00:22.010     if-index       : 1
+00:00:22.010 otPlatDnssdStopSrvResolver("mantis", "_guardian._glaxy")
+00:00:22.010 otPlatDnssdStartTxtResolver("mantis", "_guardian._glaxy")
+00:00:22.010 Invoking TXT resolver callback
+00:00:22.010     serviceInstance: mantis
+00:00:22.010     serviceType    : _guardian._glaxy
+00:00:22.010     txt-data-len   : 5
+00:00:22.010     ttl            : 300
+00:00:22.010     if-index       : 1
+00:00:22.010 otPlatDnssdStopTxtResolver("mantis", "_guardian._glaxy")
+00:00:22.010 otPlatDnssdStartIp6AddressResolver("nova")
+00:00:22.010 Invoking Ip6 resolver callback
+00:00:22.010     hostName       : nova
+00:00:22.010     if-index       : 1
+00:00:22.010     numAddresses   : 2
+00:00:22.010     address[0]     : fd00:0:0:0:0:0:0:5555
+00:00:22.010     ttl[0]         : 300
+00:00:22.010     address[1]     : fd00:0:0:0:0:0:0:1234
+00:00:22.010     ttl[1]         : 300
+00:00:22.010 otPlatDnssdStopIp6AddressResolver("nova")
+00:00:22.010 Invoking Ip6 resolver callback
+00:00:22.010     hostName       : nova
+00:00:22.010     if-index       : 1
+00:00:22.010     numAddresses   : 2
+00:00:22.010     address[0]     : fd00:0:0:0:0:0:0:5555
+00:00:22.010     ttl[0]         : 300
+00:00:22.010     address[1]     : fd00:0:0:0:0:0:0:1234
+00:00:22.010     ttl[1]         : 300
+00:00:22.010 ServiceCallback
+00:00:22.010    Error: OK
+00:00:22.010    InstLabel: mantis
+00:00:22.010    ServiceName: _guardian._glaxy.default.service.arpa.
+00:00:22.010    TTL: 10
+00:00:22.010    Port: 3333
+00:00:22.010    Weight: 23563
+00:00:22.010    HostName: nova.default.service.arpa.
+00:00:22.010    HostAddr: fd00:0:0:0:0:0:0:5555
+00:00:22.010    TxtDataLength: 5
+00:00:22.010    TxtDataTTL: 10
+00:00:22.010    NumHostAddresses: 2
+00:00:22.010       fd00:0:0:0:0:0:0:5555
+00:00:22.010       fd00:0:0:0:0:0:0:1234
+00:00:22.020 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.020 ResolveAddress()
+00:00:22.020 AdvanceTime for 0.010
+00:00:22.020 otPlatDnssdStartIp6AddressResolver("nova")
+00:00:22.020 Invoking Ip6 resolver callback
+00:00:22.020     hostName       : nova
+00:00:22.020     if-index       : 1
+00:00:22.020     numAddresses   : 2
+00:00:22.020     address[0]     : fd00:0:0:0:0:0:0:5555
+00:00:22.020     ttl[0]         : 300
+00:00:22.020     address[1]     : fd00:0:0:0:0:0:0:1234
+00:00:22.020     ttl[1]         : 300
+00:00:22.020 otPlatDnssdStopIp6AddressResolver("nova")
+00:00:22.020 Invoking Ip6 resolver callback
+00:00:22.020     hostName       : nova
+00:00:22.020     if-index       : 1
+00:00:22.020     numAddresses   : 2
+00:00:22.020     address[0]     : fd00:0:0:0:0:0:0:5555
+00:00:22.020     ttl[0]         : 300
+00:00:22.020     address[1]     : fd00:0:0:0:0:0:0:1234
+00:00:22.020     ttl[1]         : 300
+00:00:22.020 AddressCallback
+00:00:22.020    Error: OK
+00:00:22.020    HostName: nova.default.service.arpa.
+00:00:22.020    NumHostAddresses: 2
+00:00:22.020       fd00:0:0:0:0:0:0:5555
+00:00:22.020       fd00:0:0:0:0:0:0:1234
+00:00:22.030 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.030 QueryRecord()
+00:00:22.030 AdvanceTime for 0.010
+00:00:22.030 otPlatDnssdStartRecordQuerier(drax, _guardian._glaxy, KEY)
+00:00:22.030 Invoking record callback
+00:00:22.030     firstLabel     : drax
+00:00:22.030     nextLabels     : _guardian._glaxy
+00:00:22.030     recordType     : KEY
+00:00:22.030     ttl            : 300
+00:00:22.030     if-index       : 1
+00:00:22.030     dataLength     : 10
+00:00:22.030     data           : 00112233445566778899
+00:00:22.030 otPlatDnssdStopRecordQuerier("drax, _guardian._glaxy, KEY")
+00:00:22.030 Invoking record callback
+00:00:22.030     firstLabel     : drax
+00:00:22.030     nextLabels     : _guardian._glaxy
+00:00:22.030     recordType     : KEY
+00:00:22.030     ttl            : 300
+00:00:22.030     if-index       : 1
+00:00:22.030     dataLength     : 10
+00:00:22.030     data           : 00112233445566778899
+00:00:22.030 RecordCallback
+00:00:22.030    Error: OK
+00:00:22.030    QueryName: drax._guardian._glaxy.default.service.arpa.
+00:00:22.030    NumRecords: 1
+00:00:22.030    Record 0
+00:00:22.030       Name: drax._guardian._glaxy.default.service.arpa.
+00:00:22.030       Type: 25 (KEY)
+00:00:22.030       TTL: 10
+00:00:22.030       Data: 00112233445566778899
+00:00:22.040 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.040 Stop DNS-SD server
+00:00:22.040 AdvanceTime for 0.010
+00:00:22.050 Finalizing OT instance
+00:00:22.050 End of TestProxyInvokeCallbackFromStartApi
+All tests passed

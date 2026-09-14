@@ -1,0 +1,80 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.sdk2026
+#1 transferring dockerfile: 2.76kB done
+#1 WARN: FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 4)
+#1 WARN: FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 20)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf
+#2 DONE 0.0s
+
+#3 [internal] load metadata for ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [stage-1 1/9] FROM ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf
+#5 resolve ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf 0.0s done
+#5 DONE 0.0s
+
+#6 [sdk2026-builder 1/6] FROM ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+#6 resolve ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d 0.0s done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 13.51kB 0.0s done
+#7 DONE 0.0s
+
+#8 [sdk2026-builder 5/6] COPY review/sdk2026/recipe/ /recipe/
+#8 CACHED
+
+#9 [sdk2026-builder 2/6] COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+#9 CACHED
+
+#10 [stage-1 2/9] COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+#10 CACHED
+
+#11 [sdk2026-builder 6/6] RUN bash /recipe/build-in-container.sh
+#11 CACHED
+
+#12 [stage-1 3/9] RUN sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends     libmbedtls21 libreadline8t64 libboost-filesystem1.83.0 libboost-system1.83.0     libjsoncpp26 libnetfilter-queue1 libsystemd0 libprotobuf-lite32t64 socat iproute2 iptables ipset netcat-openbsd iputils-ping     python3 python3-aiohttp python3-cryptography python3-yarl     && rm -rf /var/lib/apt/lists/*
+#12 CACHED
+
+#13 [sdk2026-builder 3/6] RUN sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends     build-essential cmake ninja-build git patch pkg-config     libmbedtls-dev libreadline-dev libncurses-dev libboost-dev     libboost-filesystem-dev libboost-system-dev libjsoncpp-dev     libdbus-1-dev libnetfilter-queue-dev libsystemd-dev libprotobuf-dev protobuf-compiler nodejs npm     && rm -rf /var/lib/apt/lists/*
+#13 CACHED
+
+#14 [sdk2026-builder 4/6] COPY hassio-ihost-silabs-multiprotocol/otbr-patches/ /recipe/patches/
+#14 CACHED
+
+#15 [stage-1 4/9] COPY --from=sdk2026-builder /sdk2026-install/ /
+#15 CACHED
+
+#16 [stage-1 5/9] COPY hassio-ihost-silabs-multiprotocol/rootfs/ /
+#16 CACHED
+
+#17 [stage-1 6/9] COPY review/sdk2026/runtime/ /sdk2026-runtime/
+#17 DONE 0.0s
+
+#18 [stage-1 7/9] RUN bash /sdk2026-runtime/install.sh
+#18 DONE 0.2s
+
+#19 [stage-1 8/9] RUN ldconfig &&     for binary in /usr/local/bin/cpcd /usr/local/bin/zigbeed /usr/sbin/otbr-agent /usr/sbin/otbr-web /usr/sbin/ot-ctl; do       test -x "$binary" && ldd "$binary" > /tmp/sdk2026-ldd.txt &&       ! grep -q 'not found' /tmp/sdk2026-ldd.txt || exit 1;     done && rm /tmp/sdk2026-ldd.txt && touch /accept_silabs_msla
+#19 DONE 0.3s
+
+#20 exporting to image
+#20 exporting layers 0.1s done
+#20 exporting manifest sha256:850e6c200e2d0dab4e087d71cb2c182004054acbe02c47eadd11d2c3689c431c done
+#20 exporting config sha256:a22a77b1608831fc62aa81c0ebef4f340faa83c2f7c85ae94ad53d0f748897cc done
+#20 exporting attestation manifest sha256:fd486998556014fbf988570868d5888e629c01899da356dee637145f3966da8b
+#20 exporting attestation manifest sha256:fd486998556014fbf988570868d5888e629c01899da356dee637145f3966da8b done
+#20 exporting manifest list sha256:367c32916fe8c8d27c48709e81340974d41b9f511716611a49beff226a8f874b done
+#20 naming to docker.io/local/otbr-sdk2026:encrypted done
+#20 unpacking to docker.io/local/otbr-sdk2026:encrypted 0.0s done
+#20 DONE 0.2s
+
+ 2 warnings found (use docker --debug to expand):
+ - FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 20)
+ - FromPlatformFlagConstDisallowed: FROM --platform flag should not use constant value "linux/amd64" (line 4)

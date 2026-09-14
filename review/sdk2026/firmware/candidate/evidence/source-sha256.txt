@@ -1,0 +1,4 @@
+6e8cb03e94369d6e7d2fad286aa1f6a8d12e053371fa32a1488e86280145f9f3  /sdk2026-firmware/candidate-v3/source/README-MP-RCP.md
+311be88effa602bbd40264ec51abfd90f3ee39d4591e3918ff98639f75ff74e8  /sdk2026-firmware/candidate-v3/source/app.c
+d964c98bd8eea7f9f0ea0a60e2c0099169cd0f23568e499980c277979ab90f41  /sdk2026-firmware/candidate-v3/source/app.h
+6ebfe4a1697bf59a0f2f5f3d335f0adb59b49fab1b368d9e1c09220a7ea17916  /sdk2026-firmware/candidate-v3/source/rcp-uart-802154.slcp

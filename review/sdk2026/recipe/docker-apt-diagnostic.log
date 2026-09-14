@@ -1,0 +1,322 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.apt-check
+#1 transferring dockerfile: 503B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/3] FROM ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d
+#4 resolve ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d 0.0s done
+#4 CACHED
+
+#5 [internal] load build context
+#5 transferring context: 167B done
+#5 DONE 0.0s
+
+#6 [2/3] COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+#6 DONE 0.0s
+
+#7 [3/3] RUN sh /pin-debian-snapshot.sh && apt-get update && ls -la /var/lib/apt/lists && cat /etc/apt/sources.list.d/debian.sources && apt-cache policy build-essential && apt-config dump && apt-get -s install build-essential
+#7 0.280 Get:1 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie InRelease [140 kB]
+#7 0.305 Get:2 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie-updates InRelease [47.3 kB]
+#7 0.315 Get:3 https://snapshot.debian.org/archive/debian-security/20260914T000000Z trixie-security InRelease [43.4 kB]
+#7 0.340 Get:4 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie/main amd64 Packages [9678 kB]
+#7 1.083 Get:5 https://snapshot.debian.org/archive/debian/20260914T000000Z trixie-updates/main amd64 Packages [4412 B]
+#7 1.091 Get:6 https://snapshot.debian.org/archive/debian-security/20260914T000000Z trixie-security/main amd64 Packages [261 kB]
+#7 1.537 Fetched 10.2 MB in 1s (7473 kB/s)
+#7 1.537 Reading package lists...
+#7 1.868 total 21088
+#7 1.868 drwxr-xr-x 1 root root     4096 Sep 14 09:00 .
+#7 1.868 drwxr-xr-x 1 root root     4096 Aug  5 15:47 ..
+#7 1.868 drwxr-xr-x 2 _apt root     4096 Sep 14 09:00 auxfiles
+#7 1.868 -rw-r----- 1 root root        0 Sep 14 09:00 lock
+#7 1.868 drwx------ 2 _apt root     4096 Sep 14 09:00 partial
+#7 1.868 -rw-r--r-- 1 root root    43409 Sep 13 12:13 snapshot.debian.org_archive_debian-security_20260914T000000Z_dists_trixie-security_InRelease
+#7 1.868 -rw-r--r-- 1 root root   522673 Sep 12 11:36 snapshot.debian.org_archive_debian-security_20260914T000000Z_dists_trixie-security_main_binary-amd64_Packages.lz4
+#7 1.868 -rw-r--r-- 1 root root    47340 Sep 13 20:36 snapshot.debian.org_archive_debian_20260914T000000Z_dists_trixie-updates_InRelease
+#7 1.868 -rw-r--r-- 1 root root     7277 Jul 18 08:18 snapshot.debian.org_archive_debian_20260914T000000Z_dists_trixie-updates_main_binary-amd64_Packages.lz4
+#7 1.868 -rw-r--r-- 1 root root   140421 Sep 12 08:14 snapshot.debian.org_archive_debian_20260914T000000Z_dists_trixie_InRelease
+#7 1.868 -rw-r--r-- 1 root root 20802454 Sep 12 08:09 snapshot.debian.org_archive_debian_20260914T000000Z_dists_trixie_main_binary-amd64_Packages.lz4
+#7 1.869 Types: deb
+#7 1.869 URIs: https://snapshot.debian.org/archive/debian/20260914T000000Z/
+#7 1.869 Suites: trixie trixie-updates
+#7 1.869 Components: main
+#7 1.869 Signed-By: /usr/share/keyrings/debian-archive-keyring.pgp
+#7 1.869 Check-Valid-Until: no
+#7 1.869 
+#7 1.869 Types: deb
+#7 1.869 URIs: https://snapshot.debian.org/archive/debian-security/20260914T000000Z/
+#7 1.869 Suites: trixie-security
+#7 1.869 Components: main
+#7 1.869 Signed-By: /usr/share/keyrings/debian-archive-keyring.pgp
+#7 1.869 Check-Valid-Until: no
+#7 1.904 APT "";
+#7 1.904 APT::Architecture "amd64";
+#7 1.904 APT::Build-Essential "";
+#7 1.904 APT::Build-Essential:: "build-essential";
+#7 1.904 APT::Install-Recommends "1";
+#7 1.904 APT::Install-Suggests "0";
+#7 1.904 APT::Key "";
+#7 1.904 APT::Key::Assert-Pubkey-Algo ">=rsa2048,ed25519,ed448,nistp256,nistp384,nistp512,brainpoolP256r1,brainpoolP320r1,brainpoolP384r1,brainpoolP512r1,secp256k1";
+#7 1.904 APT::Key::Assert-Pubkey-Algo::Next ">=rsa2048,ed25519,ed448,nistp256,nistp384,nistp512";
+#7 1.904 APT::Key::Assert-Pubkey-Algo::Future ">=rsa3072,ed25519,ed448";
+#7 1.904 APT::Sandbox "";
+#7 1.904 APT::Sandbox::User "_apt";
+#7 1.904 APT::NeverAutoRemove "";
+#7 1.904 APT::NeverAutoRemove:: "^firmware-linux.*";
+#7 1.904 APT::NeverAutoRemove:: "^linux-firmware$";
+#7 1.904 APT::NeverAutoRemove:: "^linux-image-[a-z0-9]*$";
+#7 1.904 APT::NeverAutoRemove:: "^linux-image-[a-z0-9]*-[a-z0-9]*$";
+#7 1.904 APT::VersionedKernelPackages "";
+#7 1.904 APT::VersionedKernelPackages:: "linux-.*";
+#7 1.904 APT::VersionedKernelPackages:: "kfreebsd-.*";
+#7 1.904 APT::VersionedKernelPackages:: "gnumach-.*";
+#7 1.904 APT::VersionedKernelPackages:: ".*-modules";
+#7 1.904 APT::VersionedKernelPackages:: ".*-kernel";
+#7 1.904 APT::Never-MarkAuto-Sections "";
+#7 1.904 APT::Never-MarkAuto-Sections:: "metapackages";
+#7 1.904 APT::Never-MarkAuto-Sections:: "tasks";
+#7 1.904 APT::Move-Autobit-Sections "";
+#7 1.904 APT::Move-Autobit-Sections:: "oldlibs";
+#7 1.904 APT::Snapshot "20260713T000000Z";
+#7 1.904 APT::Get "";
+#7 1.904 APT::Get::AllowUnauthenticated "false";
+#7 1.904 APT::Update "";
+#7 1.904 APT::Update::Error-Mode "any";
+#7 1.904 APT::Update::Post-Invoke "";
+#7 1.904 APT::Update::Post-Invoke:: "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true";
+#7 1.904 APT::AutoRemove "";
+#7 1.904 APT::AutoRemove::SuggestsImportant "false";
+#7 1.904 APT::Architectures "";
+#7 1.904 APT::Architectures:: "amd64";
+#7 1.904 APT::Compressor "";
+#7 1.904 APT::Compressor::. "";
+#7 1.904 APT::Compressor::.::Name ".";
+#7 1.904 APT::Compressor::.::Extension "";
+#7 1.904 APT::Compressor::.::Binary "";
+#7 1.904 APT::Compressor::.::Cost "0";
+#7 1.904 APT::Compressor::zstd "";
+#7 1.904 APT::Compressor::zstd::Name "zstd";
+#7 1.904 APT::Compressor::zstd::Extension ".zst";
+#7 1.904 APT::Compressor::zstd::Binary "false";
+#7 1.904 APT::Compressor::zstd::Cost "60";
+#7 1.904 APT::Compressor::lz4 "";
+#7 1.904 APT::Compressor::lz4::Name "lz4";
+#7 1.904 APT::Compressor::lz4::Extension ".lz4";
+#7 1.904 APT::Compressor::lz4::Binary "false";
+#7 1.904 APT::Compressor::lz4::Cost "50";
+#7 1.904 APT::Compressor::gzip "";
+#7 1.904 APT::Compressor::gzip::Name "gzip";
+#7 1.904 APT::Compressor::gzip::Extension ".gz";
+#7 1.904 APT::Compressor::gzip::Binary "gzip";
+#7 1.904 APT::Compressor::gzip::Cost "100";
+#7 1.904 APT::Compressor::gzip::CompressArg "";
+#7 1.904 APT::Compressor::gzip::CompressArg:: "-6n";
+#7 1.904 APT::Compressor::gzip::UncompressArg "";
+#7 1.904 APT::Compressor::gzip::UncompressArg:: "-d";
+#7 1.904 APT::Compressor::xz "";
+#7 1.904 APT::Compressor::xz::Name "xz";
+#7 1.904 APT::Compressor::xz::Extension ".xz";
+#7 1.904 APT::Compressor::xz::Binary "false";
+#7 1.904 APT::Compressor::xz::Cost "200";
+#7 1.904 APT::Compressor::bzip2 "";
+#7 1.904 APT::Compressor::bzip2::Name "bzip2";
+#7 1.904 APT::Compressor::bzip2::Extension ".bz2";
+#7 1.904 APT::Compressor::bzip2::Binary "false";
+#7 1.904 APT::Compressor::bzip2::Cost "300";
+#7 1.904 APT::Compressor::lzma "";
+#7 1.904 APT::Compressor::lzma::Name "lzma";
+#7 1.904 APT::Compressor::lzma::Extension ".lzma";
+#7 1.904 APT::Compressor::lzma::Binary "false";
+#7 1.904 APT::Compressor::lzma::Cost "400";
+#7 1.904 APT::Compressor::lzma::CompressArg "";
+#7 1.904 APT::Compressor::lzma::CompressArg:: "--suffix=";
+#7 1.904 APT::Compressor::lzma::CompressArg:: "-6";
+#7 1.904 APT::Compressor::lzma::UncompressArg "";
+#7 1.904 APT::Compressor::lzma::UncompressArg:: "--suffix=";
+#7 1.904 APT::Compressor::lzma::UncompressArg:: "-d";
+#7 1.904 Dir "/";
+#7 1.904 Dir::State "var/lib/apt";
+#7 1.904 Dir::State::lists "lists/";
+#7 1.904 Dir::State::cdroms "cdroms.list";
+#7 1.904 Dir::State::extended_states "extended_states";
+#7 1.904 Dir::State::status "/var/lib/dpkg/status";
+#7 1.904 Dir::Cache "var/cache/apt";
+#7 1.904 Dir::Cache::archives "archives/";
+#7 1.904 Dir::Cache::srcpkgcache "";
+#7 1.904 Dir::Cache::pkgcache "";
+#7 1.904 Dir::Etc "etc/apt";
+#7 1.904 Dir::Etc::sourcelist "sources.list";
+#7 1.904 Dir::Etc::sourceparts "sources.list.d";
+#7 1.904 Dir::Etc::main "apt.conf";
+#7 1.904 Dir::Etc::netrc "auth.conf";
+#7 1.904 Dir::Etc::netrcparts "auth.conf.d";
+#7 1.904 Dir::Etc::parts "apt.conf.d";
+#7 1.904 Dir::Etc::preferences "preferences";
+#7 1.904 Dir::Etc::preferencesparts "preferences.d";
+#7 1.904 Dir::Etc::trustedparts "trusted.gpg.d";
+#7 1.904 Dir::Boot "boot";
+#7 1.904 Dir::Usr "usr";
+#7 1.904 Dir::Bin "";
+#7 1.904 Dir::Bin::methods "/usr/lib/apt/methods";
+#7 1.904 Dir::Bin::solvers "";
+#7 1.904 Dir::Bin::solvers:: "/usr/lib/apt/solvers";
+#7 1.904 Dir::Bin::planners "";
+#7 1.904 Dir::Bin::planners:: "/usr/lib/apt/planners";
+#7 1.904 Dir::Bin::dpkg "/usr/bin/dpkg";
+#7 1.904 Dir::Bin::gzip "/bin/gzip";
+#7 1.904 Dir::Bin::bzip2 "/bin/bzip2";
+#7 1.904 Dir::Bin::xz "/usr/bin/xz";
+#7 1.904 Dir::Bin::lz4 "/usr/bin/lz4";
+#7 1.904 Dir::Bin::zstd "/usr/bin/zstd";
+#7 1.904 Dir::Bin::lzma "/usr/bin/lzma";
+#7 1.904 Dir::Media "";
+#7 1.904 Dir::Media::MountPath "/media/apt";
+#7 1.904 Dir::Log "var/log/apt";
+#7 1.904 Dir::Log::Terminal "term.log";
+#7 1.904 Dir::Log::History "history.log";
+#7 1.904 Dir::Log::Planner "eipp.log.xz";
+#7 1.904 Dir::Ignore-Files-Silently "";
+#7 1.904 Dir::Ignore-Files-Silently:: "~$";
+#7 1.904 Dir::Ignore-Files-Silently:: "\.disabled$";
+#7 1.904 Dir::Ignore-Files-Silently:: "\.bak$";
+#7 1.904 Dir::Ignore-Files-Silently:: "\.dpkg-[a-z]+$";
+#7 1.904 Dir::Ignore-Files-Silently:: "\.ucf-[a-z]+$";
+#7 1.904 Dir::Ignore-Files-Silently:: "\.save$";
+#7 1.904 Dir::Ignore-Files-Silently:: "\.orig$";
+#7 1.904 Dir::Ignore-Files-Silently:: "\.distUpgrade$";
+#7 1.904 Acquire "";
+#7 1.904 Acquire::AllowInsecureRepositories "false";
+#7 1.904 Acquire::AllowWeakRepositories "0";
+#7 1.904 Acquire::AllowDowngradeToInsecureRepositories "false";
+#7 1.904 Acquire::cdrom "";
+#7 1.904 Acquire::cdrom::mount "/media/cdrom/";
+#7 1.904 Acquire::IndexTargets "";
+#7 1.904 Acquire::IndexTargets::deb "";
+#7 1.904 Acquire::IndexTargets::deb::Packages "";
+#7 1.904 Acquire::IndexTargets::deb::Packages::MetaKey "$(COMPONENT)/binary-$(ARCHITECTURE)/Packages";
+#7 1.904 Acquire::IndexTargets::deb::Packages::flatMetaKey "Packages";
+#7 1.904 Acquire::IndexTargets::deb::Packages::ShortDescription "Packages";
+#7 1.904 Acquire::IndexTargets::deb::Packages::Description "$(RELEASE)/$(COMPONENT) $(ARCHITECTURE) Packages";
+#7 1.904 Acquire::IndexTargets::deb::Packages::flatDescription "$(RELEASE) Packages";
+#7 1.904 Acquire::IndexTargets::deb::Packages::Optional "0";
+#7 1.904 Acquire::IndexTargets::deb::Translations "";
+#7 1.904 Acquire::IndexTargets::deb::Translations::MetaKey "$(COMPONENT)/i18n/Translation-$(LANGUAGE)";
+#7 1.904 Acquire::IndexTargets::deb::Translations::flatMetaKey "$(LANGUAGE)";
+#7 1.904 Acquire::IndexTargets::deb::Translations::ShortDescription "Translation-$(LANGUAGE)";
+#7 1.904 Acquire::IndexTargets::deb::Translations::Description "$(RELEASE)/$(COMPONENT) Translation-$(LANGUAGE)";
+#7 1.904 Acquire::IndexTargets::deb::Translations::flatDescription "$(RELEASE) Translation-$(LANGUAGE)";
+#7 1.904 Acquire::IndexTargets::deb-src "";
+#7 1.904 Acquire::IndexTargets::deb-src::Sources "";
+#7 1.904 Acquire::IndexTargets::deb-src::Sources::MetaKey "$(COMPONENT)/source/Sources";
+#7 1.904 Acquire::IndexTargets::deb-src::Sources::flatMetaKey "Sources";
+#7 1.904 Acquire::IndexTargets::deb-src::Sources::ShortDescription "Sources";
+#7 1.904 Acquire::IndexTargets::deb-src::Sources::Description "$(RELEASE)/$(COMPONENT) Sources";
+#7 1.904 Acquire::IndexTargets::deb-src::Sources::flatDescription "$(RELEASE) Sources";
+#7 1.904 Acquire::IndexTargets::deb-src::Sources::Optional "0";
+#7 1.904 Acquire::Changelogs "";
+#7 1.904 Acquire::Changelogs::URI "";
+#7 1.904 Acquire::Changelogs::URI::Origin "";
+#7 1.904 Acquire::Changelogs::URI::Origin::Debian "https://metadata.ftp-master.debian.org/changelogs/@CHANGEPATH@_changelog";
+#7 1.904 Acquire::Changelogs::URI::Origin::Ubuntu "https://changelogs.ubuntu.com/changelogs/pool/@CHANGEPATH@/changelog";
+#7 1.904 Acquire::Changelogs::AlwaysOnline "";
+#7 1.904 Acquire::Changelogs::AlwaysOnline::Origin "";
+#7 1.904 Acquire::Changelogs::AlwaysOnline::Origin::Ubuntu "1";
+#7 1.904 Acquire::Snapshots "";
+#7 1.904 Acquire::Snapshots::URI "";
+#7 1.904 Acquire::Snapshots::URI::Origin "";
+#7 1.904 Acquire::Snapshots::URI::Origin::Debian "http://snapshot.debian.org/archive/debian/@SNAPSHOTID@/";
+#7 1.904 Acquire::Snapshots::URI::Origin::Ubuntu "https://snapshot.ubuntu.com/ubuntu/@SNAPSHOTID@/";
+#7 1.904 Acquire::Snapshots::URI::Override "";
+#7 1.904 Acquire::Snapshots::URI::Override::Label "";
+#7 1.904 Acquire::Snapshots::URI::Override::Label::Debian-Security "http://snapshot.debian.org/archive/debian-security/@SNAPSHOTID@/";
+#7 1.904 Acquire::Snapshots::URI::Host "";
+#7 1.904 Acquire::Snapshots::URI::Host::archive.ubuntu.com "https://snapshot.ubuntu.com/@PATH@/@SNAPSHOTID@/";
+#7 1.904 Acquire::Snapshots::URI::Host::deb.debian.org "http://snapshot.debian.org/archive/@PATH@/@SNAPSHOTID@/";
+#7 1.904 Acquire::Snapshots::URI::Host::.archive.ubuntu.com "https://snapshot.ubuntu.com/@PATH@/@SNAPSHOTID@/";
+#7 1.904 Acquire::Snapshots::URI::Host::security.ubuntu.com "https://snapshot.ubuntu.com/@PATH@/@SNAPSHOTID@/";
+#7 1.904 Acquire::Snapshots::URI::Host::ppa.launchpadcontent.net "https://snapshot.ppa.launchpadcontent.net/@PATH@/@SNAPSHOTID@/";
+#7 1.904 Acquire::Snapshots::URI::Host::ppa.launchpad.net "https://snapshot.ppa.launchpadcontent.net/@PATH@/@SNAPSHOTID@/";
+#7 1.904 Acquire::Check-Valid-Until "true";
+#7 1.904 Acquire::GzipIndexes "true";
+#7 1.904 Acquire::Languages "";
+#7 1.904 Acquire::Languages:: "none";
+#7 1.904 Acquire::CompressionTypes "";
+#7 1.904 Acquire::CompressionTypes::xz "xz";
+#7 1.904 Acquire::CompressionTypes::bz2 "bzip2";
+#7 1.904 Acquire::CompressionTypes::lzma "lzma";
+#7 1.904 Acquire::CompressionTypes::gz "gzip";
+#7 1.904 Acquire::CompressionTypes::lz4 "lz4";
+#7 1.904 Acquire::CompressionTypes::zst "zstd";
+#7 1.904 DPkg "";
+#7 1.904 DPkg::Path "/usr/sbin:/usr/bin:/sbin:/bin";
+#7 1.904 DPkg::Pre-Install-Pkgs "";
+#7 1.904 DPkg::Pre-Install-Pkgs:: "/usr/sbin/dpkg-preconfigure --apt || true";
+#7 1.904 DPkg::Post-Invoke "";
+#7 1.904 DPkg::Post-Invoke:: "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true";
+#7 1.904 Binary "apt-config";
+#7 1.904 Binary::apt-cdrom "";
+#7 1.904 Binary::apt-cdrom::APT "";
+#7 1.904 Binary::apt-cdrom::APT::Internal "";
+#7 1.904 Binary::apt-cdrom::APT::Internal::OpProgress "";
+#7 1.904 Binary::apt-cdrom::APT::Internal::OpProgress::EraseLines "0";
+#7 1.904 Binary::apt "";
+#7 1.904 Binary::apt::APT "";
+#7 1.904 Binary::apt::APT::Color "1";
+#7 1.904 Binary::apt::APT::Output-Version "30";
+#7 1.904 Binary::apt::APT::Cache "";
+#7 1.904 Binary::apt::APT::Cache::Show "";
+#7 1.904 Binary::apt::APT::Cache::Show::Version "2";
+#7 1.904 Binary::apt::APT::Cache::AllVersions "0";
+#7 1.904 Binary::apt::APT::Cache::ShowVirtuals "1";
+#7 1.904 Binary::apt::APT::Cache::Search "";
+#7 1.904 Binary::apt::APT::Cache::Search::Version "2";
+#7 1.904 Binary::apt::APT::Cache::ShowDependencyType "1";
+#7 1.904 Binary::apt::APT::Cache::ShowVersion "1";
+#7 1.904 Binary::apt::APT::Get "";
+#7 1.904 Binary::apt::APT::Get::Upgrade-Allow-New "1";
+#7 1.904 Binary::apt::APT::Get::Update "";
+#7 1.904 Binary::apt::APT::Get::Update::InteractiveReleaseInfoChanges "1";
+#7 1.904 Binary::apt::APT::Cmd "";
+#7 1.904 Binary::apt::APT::Cmd::Show-Update-Stats "1";
+#7 1.904 Binary::apt::APT::Cmd::Pattern-Only "1";
+#7 1.904 Binary::apt::APT::Keep-Downloaded-Packages "0";
+#7 1.904 Binary::apt::DPkg "";
+#7 1.904 Binary::apt::DPkg::Progress-Fancy "1";
+#7 1.904 Binary::apt::DPkg::Lock "";
+#7 1.904 Binary::apt::DPkg::Lock::Timeout "120";
+#7 1.904 Binary::apt::Pager "1";
+#7 1.904 CommandLine "";
+#7 1.904 CommandLine::AsString "apt-config dump";
+#7 1.911 Reading package lists...
+#7 1.931 Building dependency tree...
+#7 1.931 Reading state information...
+#7 1.932 E: Unable to locate package build-essential
+#7 ERROR: process "/bin/sh -c sh /pin-debian-snapshot.sh && apt-get update && ls -la /var/lib/apt/lists && cat /etc/apt/sources.list.d/debian.sources && apt-cache policy build-essential && apt-config dump && apt-get -s install build-essential" did not complete successfully: exit code: 100
+------
+ > [3/3] RUN sh /pin-debian-snapshot.sh && apt-get update && ls -la /var/lib/apt/lists && cat /etc/apt/sources.list.d/debian.sources && apt-cache policy build-essential && apt-config dump && apt-get -s install build-essential:
+1.904 Binary::apt::DPkg::Progress-Fancy "1";
+1.904 Binary::apt::DPkg::Lock "";
+1.904 Binary::apt::DPkg::Lock::Timeout "120";
+1.904 Binary::apt::Pager "1";
+1.904 CommandLine "";
+1.904 CommandLine::AsString "apt-config dump";
+1.911 Reading package lists...
+1.931 Building dependency tree...
+1.931 Reading state information...
+1.932 E: Unable to locate package build-essential
+------
+Dockerfile.apt-check:5
+--------------------
+   3 |     ENV DEBIAN_FRONTEND=noninteractive
+   4 |     COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+   5 | >>> RUN sh /pin-debian-snapshot.sh && apt-get update && ls -la /var/lib/apt/lists && cat /etc/apt/sources.list.d/debian.sources && apt-cache policy build-essential && apt-config dump && apt-get -s install build-essential
+   6 |     
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c sh /pin-debian-snapshot.sh && apt-get update && ls -la /var/lib/apt/lists && cat /etc/apt/sources.list.d/debian.sources && apt-cache policy build-essential && apt-config dump && apt-get -s install build-essential" did not complete successfully: exit code: 100

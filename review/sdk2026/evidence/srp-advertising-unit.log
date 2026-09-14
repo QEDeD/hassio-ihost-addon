@@ -1,0 +1,1340 @@
+00:00:00.000 --------------------------------------------------------------------------------------------
+00:00:00.000 TestDnssdRequestIdRange
+00:00:00.000 End of TestDnssdRequestIdRange
+00:00:00.000 --------------------------------------------------------------------------------------------
+00:00:00.000 TestSrpAdvProxy
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Add an on-mesh prefix (with SLAAC) to network data
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Start SRP server
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:20.000 Start SRP client
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Register a service
+00:00:22.000 AdvanceTime for 2.000
+   00:00:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:22.461 otPlatDnssdRegisterKey(aRequestId: 1)
+00:00:22.461    name           : awesomehost
+00:00:22.461    serviceType    : (null)
+00:00:22.461    key data-len   : 68
+00:00:22.461    TTL            : 180
+00:00:22.461 otPlatDnssdRegisterHost(aRequestId: 2)
+00:00:22.461    hostName       : awesomehost
+00:00:22.461    numAddresses   : 1
+00:00:22.461    Address 0      : fd00:cafe:beef:0:1556:b152:4f27:f767
+00:00:22.461    TTL            : 180
+00:00:22.461    Infra-if index : 1
+00:00:22.461 otPlatDnssdRegisterKey(aRequestId: 3)
+00:00:22.461    name           : service1
+00:00:22.461    serviceType    : _srv1._udp
+00:00:22.461    key data-len   : 68
+00:00:22.461    TTL            : 180
+00:00:22.461 otPlatDnssdRegisterService(aRequestId: 4)
+00:00:22.461    hostName       : awesomehost
+00:00:22.461    serviceInstance: service1
+00:00:22.461    serviceType    : _srv1._udp
+00:00:22.461    num sub-types  : 3
+00:00:22.461    sub-type 0     : _sub1
+00:00:22.461    sub-type 1     : _sub2
+00:00:22.461    sub-type 2     : _sub3
+00:00:22.461    TXT data len   : 19
+00:00:22.461    port           : 777
+00:00:22.461    priority       : 2
+00:00:22.461    weight         : 1
+00:00:22.461    TTL            : 180
+00:00:22.461    Infra-if index : 1
+00:00:22.461 HandleSrpClientCallback() called with error OK
+00:00:24.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:24.000 Register a second service
+00:00:24.000 AdvanceTime for 2.000
+00:00:24.121 otPlatDnssdRegisterKey(aRequestId: 5)
+00:00:24.121    name           : service2
+00:00:24.121    serviceType    : _matter._udp
+00:00:24.121    key data-len   : 68
+00:00:24.121    TTL            : 180
+00:00:24.121 otPlatDnssdRegisterService(aRequestId: 6)
+00:00:24.121    hostName       : awesomehost
+00:00:24.121    serviceInstance: service2
+00:00:24.121    serviceType    : _matter._udp
+00:00:24.121    num sub-types  : 1
+00:00:24.121    sub-type 0     : _44444444
+00:00:24.121    TXT data len   : 1
+00:00:24.121    port           : 555
+00:00:24.121    priority       : 3
+00:00:24.121    weight         : 0
+00:00:24.121    TTL            : 180
+00:00:24.121    Infra-if index : 1
+00:00:24.121 HandleSrpClientCallback() called with error OK
+00:00:26.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:26.000 Wait for longer than lease interval for client to refresh
+00:00:26.000 AdvanceTime for 181.000
+   00:00:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:01:54.169 HandleSrpClientCallback() called with error OK
+   00:01:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:03:24.526 HandleSrpClientCallback() called with error OK
+   00:03:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:03:27.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:03:27.000 Add a new on-mesh prefix so to get a new host address
+00:03:27.000 AdvanceTime for 15.000
+00:03:27.375 otPlatDnssdRegisterHost(aRequestId: 7)
+00:03:27.375    hostName       : awesomehost
+00:03:27.375    numAddresses   : 2
+00:03:27.375    Address 0      : fd00:abba:0:0:231e:c3:c26c:96c
+00:03:27.375    Address 1      : fd00:cafe:beef:0:1556:b152:4f27:f767
+00:03:27.375    TTL            : 180
+00:03:27.375    Infra-if index : 1
+00:03:27.375 HandleSrpClientCallback() called with error OK
+   00:03:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:03:42.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:03:42.000 Remove the first service on client
+00:03:42.000 AdvanceTime for 2.000
+   00:03:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:03:42.321 otPlatDnssdUnregisterService(aRequestId: 0)
+00:03:42.321    hostName       : awesomehost
+00:03:42.321    serviceInstance: service1
+00:03:42.321    serviceName    : _srv1._udp
+00:03:42.321    Infra-if index : 1
+00:03:42.321 HandleSrpClientCallback() called with error OK
+00:03:44.000 AdvanceTime for 181.000
+   00:03:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:05:12.527 HandleSrpClientCallback() called with error OK
+   00:05:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:06:42.843 HandleSrpClientCallback() called with error OK
+00:06:45.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:06:45.000 Change service 2 on client, remove its sub-type
+00:06:45.000 AdvanceTime for 2.000
+00:06:45.354 otPlatDnssdRegisterService(aRequestId: 8)
+00:06:45.354    hostName       : awesomehost
+00:06:45.354    serviceInstance: service2
+00:06:45.354    serviceType    : _matter._udp
+00:06:45.354    num sub-types  : 0
+00:06:45.354    TXT data len   : 1
+00:06:45.354    port           : 555
+00:06:45.354    priority       : 3
+00:06:45.354    weight         : 0
+00:06:45.354    TTL            : 180
+00:06:45.354    Infra-if index : 1
+00:06:45.354 HandleSrpClientCallback() called with error OK
+   00:06:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:06:47.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:06:47.000 Remove the host on client
+00:06:47.000 AdvanceTime for 2.000
+00:06:47.133 otPlatDnssdUnregisterService(aRequestId: 0)
+00:06:47.133    hostName       : awesomehost
+00:06:47.133    serviceInstance: service2
+00:06:47.133    serviceName    : _matter._udp
+00:06:47.133    Infra-if index : 1
+00:06:47.133 otPlatDnssdUnregisterHost(aRequestId: 0)
+00:06:47.133    hostName       : awesomehost
+00:06:47.133    Infra-if index : 1
+00:06:47.133 HandleSrpClientCallback() called with error OK
+00:06:49.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:06:49.000 Remove the host on client again and force an update to be sent to server
+00:06:49.000 AdvanceTime for 2.000
+00:06:49.290 HandleSrpClientCallback() called with error OK
+   00:06:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:06:51.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:06:51.000 Re-add service 1 on client and register with server
+00:06:51.000 AdvanceTime for 2.000
+00:06:51.202 otPlatDnssdRegisterHost(aRequestId: 9)
+00:06:51.202    hostName       : awesomehost
+00:06:51.202    numAddresses   : 2
+00:06:51.202    Address 0      : fd00:abba:0:0:231e:c3:c26c:96c
+00:06:51.202    Address 1      : fd00:cafe:beef:0:1556:b152:4f27:f767
+00:06:51.202    TTL            : 180
+00:06:51.202    Infra-if index : 1
+00:06:51.202 otPlatDnssdRegisterService(aRequestId: 10)
+00:06:51.202    hostName       : awesomehost
+00:06:51.202    serviceInstance: service1
+00:06:51.202    serviceType    : _srv1._udp
+00:06:51.202    num sub-types  : 3
+00:06:51.202    sub-type 0     : _sub1
+00:06:51.202    sub-type 1     : _sub2
+00:06:51.202    sub-type 2     : _sub3
+00:06:51.202    TXT data len   : 19
+00:06:51.202    port           : 777
+00:06:51.202    priority       : 2
+00:06:51.202    weight         : 1
+00:06:51.202    TTL            : 180
+00:06:51.202    Infra-if index : 1
+00:06:51.202 HandleSrpClientCallback() called with error OK
+00:06:53.000 AdvanceTime for 181.000
+   00:06:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:07:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:08:21.443 HandleSrpClientCallback() called with error OK
+   00:08:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:08:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:09:51.737 HandleSrpClientCallback() called with error OK
+00:09:54.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:09:54.000 Disable SRP client and wait for lease time to expire
+00:09:54.000 AdvanceTime for 181.000
+   00:09:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:09:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:10:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:11:58.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:02.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:06.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:10.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:14.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:18.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:22.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:26.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:30.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:34.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:38.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:42.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:46.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:12:50.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:12:51.737 otPlatDnssdUnregisterService(aRequestId: 0)
+00:12:51.737    hostName       : awesomehost
+00:12:51.737    serviceInstance: service1
+00:12:51.737    serviceName    : _srv1._udp
+00:12:51.737    Infra-if index : 1
+00:12:51.737 otPlatDnssdUnregisterHost(aRequestId: 0)
+00:12:51.737    hostName       : awesomehost
+00:12:51.737    Infra-if index : 1
+   00:12:54.152 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:12:55.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:12:55.000 Disable SRP server
+00:12:55.000 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:12:55.000    name           : service2
+00:12:55.000 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:12:55.000    name           : service1
+00:12:55.000 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:12:55.000    name           : awesomehost
+00:12:55.000 AdvanceTime for 0.100
+00:12:55.100 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:12:55.100 Finalize OT instance and validate all heap allocations are freed
+00:12:55.100 End of TestSrpAdvProxy
+00:12:55.100 --------------------------------------------------------------------------------------------
+00:12:55.100 TestSrpAdvProxyDnssdStateChange
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Add an on-mesh prefix (with SLAAC) to network data
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Start SRP server
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:20.000 Start SRP client
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Register a services
+00:00:22.000 AdvanceTime for 2.000
+00:00:22.256 HandleSrpClientCallback() called with error OK
+   00:00:22.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:24.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:24.000 Register a second service
+00:00:24.000 AdvanceTime for 2.000
+00:00:24.471 HandleSrpClientCallback() called with error OK
+00:00:26.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:26.000 Update DNS-SD state and signal that state is changed
+00:00:26.000 otPlatDnssdRegisterKey(aRequestId: 1)
+00:00:26.000    name           : awesomehost
+00:00:26.000    serviceType    : (null)
+00:00:26.000    key data-len   : 68
+00:00:26.000    TTL            : 180
+00:00:26.000 otPlatDnssdRegisterHost(aRequestId: 2)
+00:00:26.000    hostName       : awesomehost
+00:00:26.000    numAddresses   : 1
+00:00:26.000    Address 0      : fd00:cafe:beef:0:cf8b:944:ca8b:7366
+00:00:26.000    TTL            : 180
+00:00:26.000    Infra-if index : 1
+00:00:26.000 otPlatDnssdRegisterKey(aRequestId: 3)
+00:00:26.000    name           : service1
+00:00:26.000    serviceType    : _srv1._udp
+00:00:26.000    key data-len   : 68
+00:00:26.000    TTL            : 180
+00:00:26.000 otPlatDnssdRegisterService(aRequestId: 4)
+00:00:26.000    hostName       : awesomehost
+00:00:26.000    serviceInstance: service1
+00:00:26.000    serviceType    : _srv1._udp
+00:00:26.000    num sub-types  : 3
+00:00:26.000    sub-type 0     : _sub1
+00:00:26.000    sub-type 1     : _sub2
+00:00:26.000    sub-type 2     : _sub3
+00:00:26.000    TXT data len   : 19
+00:00:26.000    port           : 777
+00:00:26.000    priority       : 2
+00:00:26.000    weight         : 1
+00:00:26.000    TTL            : 180
+00:00:26.000    Infra-if index : 1
+00:00:26.000 otPlatDnssdRegisterKey(aRequestId: 5)
+00:00:26.000    name           : service2
+00:00:26.000    serviceType    : _matter._udp
+00:00:26.000    key data-len   : 68
+00:00:26.000    TTL            : 180
+00:00:26.000 otPlatDnssdRegisterService(aRequestId: 6)
+00:00:26.000    hostName       : awesomehost
+00:00:26.000    serviceInstance: service2
+00:00:26.000    serviceType    : _matter._udp
+00:00:26.000    num sub-types  : 1
+00:00:26.000    sub-type 0     : _44444444
+00:00:26.000    TXT data len   : 1
+00:00:26.000    port           : 555
+00:00:26.000    priority       : 3
+00:00:26.000    weight         : 0
+00:00:26.000    TTL            : 180
+00:00:26.000    Infra-if index : 1
+00:00:26.000 AdvanceTime for 0.005
+00:00:26.005 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:26.005 Wait for longer than lease interval for client to refresh
+00:00:26.005 AdvanceTime for 181.000
+   00:00:26.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:30.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:34.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:38.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:42.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:46.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:50.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:54.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:58.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:02.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:06.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:10.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:14.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:18.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:22.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:26.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:30.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:34.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:38.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:42.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:46.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:50.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:01:54.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:01:54.869 HandleSrpClientCallback() called with error OK
+   00:01:58.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:02.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:06.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:10.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:14.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:18.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:22.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:26.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:30.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:34.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:38.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:42.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:46.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:50.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:54.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:02:58.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:02.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:06.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:10.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:14.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:18.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:22.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:03:25.227 HandleSrpClientCallback() called with error OK
+   00:03:26.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:03:27.005 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:03:27.005 Update DNS-SD state to `STOPPED` and signal its change
+00:03:27.005 AdvanceTime for 0.005
+00:03:27.010 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:03:27.010 Wait for longer than lease interval for client to refresh
+00:03:27.010 AdvanceTime for 181.000
+   00:03:30.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:34.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:38.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:42.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:46.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:50.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:54.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:03:58.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:02.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:06.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:10.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:14.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:18.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:22.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:26.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:30.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:34.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:38.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:42.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:46.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:50.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:04:54.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:04:55.422 HandleSrpClientCallback() called with error OK
+   00:04:58.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:02.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:06.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:10.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:14.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:18.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:22.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:26.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:30.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:34.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:38.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:42.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:46.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:50.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:54.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:05:58.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:02.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:06.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:10.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:14.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:18.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:06:22.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:06:25.464 HandleSrpClientCallback() called with error OK
+   00:06:26.590 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:06:28.010 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:06:28.010 Update DNS-SD state to `READY` and signal its change
+00:06:28.010 otPlatDnssdRegisterKey(aRequestId: 7)
+00:06:28.010    name           : awesomehost
+00:06:28.010    serviceType    : (null)
+00:06:28.010    key data-len   : 68
+00:06:28.010    TTL            : 180
+00:06:28.010 otPlatDnssdRegisterHost(aRequestId: 8)
+00:06:28.010    hostName       : awesomehost
+00:06:28.010    numAddresses   : 1
+00:06:28.010    Address 0      : fd00:cafe:beef:0:cf8b:944:ca8b:7366
+00:06:28.010    TTL            : 180
+00:06:28.010    Infra-if index : 1
+00:06:28.010 otPlatDnssdRegisterKey(aRequestId: 9)
+00:06:28.010    name           : service1
+00:06:28.010    serviceType    : _srv1._udp
+00:06:28.010    key data-len   : 68
+00:06:28.010    TTL            : 180
+00:06:28.010 otPlatDnssdRegisterService(aRequestId: 10)
+00:06:28.010    hostName       : awesomehost
+00:06:28.010    serviceInstance: service1
+00:06:28.010    serviceType    : _srv1._udp
+00:06:28.010    num sub-types  : 3
+00:06:28.010    sub-type 0     : _sub1
+00:06:28.010    sub-type 1     : _sub2
+00:06:28.010    sub-type 2     : _sub3
+00:06:28.010    TXT data len   : 19
+00:06:28.010    port           : 777
+00:06:28.010    priority       : 2
+00:06:28.010    weight         : 1
+00:06:28.010    TTL            : 180
+00:06:28.010    Infra-if index : 1
+00:06:28.010 otPlatDnssdRegisterKey(aRequestId: 11)
+00:06:28.010    name           : service2
+00:06:28.010    serviceType    : _matter._udp
+00:06:28.010    key data-len   : 68
+00:06:28.010    TTL            : 180
+00:06:28.010 otPlatDnssdRegisterService(aRequestId: 12)
+00:06:28.010    hostName       : awesomehost
+00:06:28.010    serviceInstance: service2
+00:06:28.010    serviceType    : _matter._udp
+00:06:28.010    num sub-types  : 1
+00:06:28.010    sub-type 0     : _44444444
+00:06:28.010    TXT data len   : 1
+00:06:28.010    port           : 555
+00:06:28.010    priority       : 3
+00:06:28.010    weight         : 0
+00:06:28.010    TTL            : 180
+00:06:28.010    Infra-if index : 1
+00:06:28.010 AdvanceTime for 0.005
+00:06:28.015 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:06:28.015 Update DNS-SD state to `STOPPED` and signal its change
+00:06:28.015 AdvanceTime for 0.005
+00:06:28.020 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:06:28.020 Remove the first service on client
+00:06:28.020 AdvanceTime for 2.000
+00:06:28.415 HandleSrpClientCallback() called with error OK
+00:06:30.020 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:06:30.020 Update DNS-SD state to `READY` and signal its change #2
+00:06:30.020 otPlatDnssdRegisterKey(aRequestId: 13)
+00:06:30.020    name           : awesomehost
+00:06:30.020    serviceType    : (null)
+00:06:30.020    key data-len   : 68
+00:06:30.020    TTL            : 180
+00:06:30.020 otPlatDnssdRegisterHost(aRequestId: 14)
+00:06:30.020    hostName       : awesomehost
+00:06:30.020    numAddresses   : 1
+00:06:30.020    Address 0      : fd00:cafe:beef:0:cf8b:944:ca8b:7366
+00:06:30.020    TTL            : 180
+00:06:30.020    Infra-if index : 1
+00:06:30.020 otPlatDnssdRegisterKey(aRequestId: 15)
+00:06:30.020    name           : service2
+00:06:30.020    serviceType    : _matter._udp
+00:06:30.020    key data-len   : 68
+00:06:30.020    TTL            : 180
+00:06:30.020 otPlatDnssdRegisterService(aRequestId: 16)
+00:06:30.020    hostName       : awesomehost
+00:06:30.020    serviceInstance: service2
+00:06:30.020    serviceType    : _matter._udp
+00:06:30.020    num sub-types  : 1
+00:06:30.020    sub-type 0     : _44444444
+00:06:30.020    TXT data len   : 1
+00:06:30.020    port           : 555
+00:06:30.020    priority       : 3
+00:06:30.020    weight         : 0
+00:06:30.020    TTL            : 180
+00:06:30.020    Infra-if index : 1
+00:06:30.020 otPlatDnssdRegisterKey(aRequestId: 17)
+00:06:30.020    name           : service1
+00:06:30.020    serviceType    : _srv1._udp
+00:06:30.020    key data-len   : 68
+00:06:30.020    TTL            : 180
+00:06:30.020 AdvanceTime for 0.005
+00:06:30.025 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:06:30.025 Disable SRP server
+00:06:30.025 otPlatDnssdUnregisterService(aRequestId: 0)
+00:06:30.025    hostName       : awesomehost
+00:06:30.025    serviceInstance: service2
+00:06:30.025    serviceName    : _matter._udp
+00:06:30.025    Infra-if index : 1
+00:06:30.025 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:06:30.025    name           : service2
+00:06:30.025 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:06:30.025    name           : service1
+00:06:30.025 otPlatDnssdUnregisterHost(aRequestId: 0)
+00:06:30.025    hostName       : awesomehost
+00:06:30.025    Infra-if index : 1
+00:06:30.025 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:06:30.025    name           : awesomehost
+00:06:30.025 AdvanceTime for 0.100
+00:06:30.125 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:06:30.125 Finalize OT instance and validate all heap allocations are freed
+00:06:30.125 End of TestSrpAdvProxyDnssdStateChange
+00:06:30.125 --------------------------------------------------------------------------------------------
+00:06:30.125 TestSrpAdvProxyDelayedCallback
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Add an on-mesh prefix (with SLAAC) to network data
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Start SRP server
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.618 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.618 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.618 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:20.000 Start SRP client
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Register a service, invoke the registration callback after some delay
+00:00:22.000 AdvanceTime for 1.000
+00:00:22.356 otPlatDnssdRegisterKey(aRequestId: 1)
+00:00:22.356    name           : awesomehost
+00:00:22.356    serviceType    : (null)
+00:00:22.356    key data-len   : 68
+00:00:22.356    TTL            : 180
+00:00:22.356 otPlatDnssdRegisterHost(aRequestId: 2)
+00:00:22.356    hostName       : awesomehost
+00:00:22.356    numAddresses   : 1
+00:00:22.356    Address 0      : fd00:cafe:beef:0:e1c4:c675:f964:4542
+00:00:22.356    TTL            : 180
+00:00:22.356    Infra-if index : 1
+00:00:22.356 otPlatDnssdRegisterKey(aRequestId: 3)
+00:00:22.356    name           : service1
+00:00:22.356    serviceType    : _srv1._udp
+00:00:22.356    key data-len   : 68
+00:00:22.356    TTL            : 180
+00:00:22.356 otPlatDnssdRegisterService(aRequestId: 4)
+00:00:22.356    hostName       : awesomehost
+00:00:22.356    serviceInstance: service1
+00:00:22.356    serviceType    : _srv1._udp
+00:00:22.356    num sub-types  : 3
+00:00:22.356    sub-type 0     : _sub1
+00:00:22.356    sub-type 1     : _sub2
+00:00:22.356    sub-type 2     : _sub3
+00:00:22.356    TXT data len   : 19
+00:00:22.356    port           : 777
+00:00:22.356    priority       : 2
+00:00:22.356    weight         : 1
+00:00:22.356    TTL            : 180
+00:00:22.356    Infra-if index : 1
+   00:00:22.618 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:23.000 AdvanceTime for 0.010
+00:00:23.010 AdvanceTime for 0.010
+00:00:23.010 HandleSrpClientCallback() called with error OK
+00:00:23.020 AdvanceTime for 0.100
+00:00:23.120 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:23.120 Register a second service, invoke registration callback with `kErrorDuplicated`
+00:00:23.120 AdvanceTime for 1.000
+00:00:23.576 otPlatDnssdRegisterKey(aRequestId: 5)
+00:00:23.576    name           : service2
+00:00:23.576    serviceType    : _matter._udp
+00:00:23.576    key data-len   : 68
+00:00:23.576    TTL            : 180
+00:00:23.576 otPlatDnssdRegisterService(aRequestId: 6)
+00:00:23.576    hostName       : awesomehost
+00:00:23.576    serviceInstance: service2
+00:00:23.576    serviceType    : _matter._udp
+00:00:23.576    num sub-types  : 1
+00:00:23.576    sub-type 0     : _44444444
+00:00:23.576    TXT data len   : 1
+00:00:23.576    port           : 555
+00:00:23.576    priority       : 3
+00:00:23.576    weight         : 0
+00:00:23.576    TTL            : 180
+00:00:23.576    Infra-if index : 1
+00:00:24.120 AdvanceTime for 0.100
+00:00:24.120 HandleSrpClientCallback() called with error Duplicated
+00:00:24.220 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:24.220 Try registering service again from client, invoke callback with success
+00:00:24.220 AdvanceTime for 1.000
+00:00:24.298 otPlatDnssdRegisterKey(aRequestId: 7)
+00:00:24.298    name           : service2
+00:00:24.298    serviceType    : _matter._udp
+00:00:24.298    key data-len   : 68
+00:00:24.298    TTL            : 180
+00:00:24.298 otPlatDnssdRegisterService(aRequestId: 8)
+00:00:24.298    hostName       : awesomehost
+00:00:24.298    serviceInstance: service2
+00:00:24.298    serviceType    : _matter._udp
+00:00:24.298    num sub-types  : 1
+00:00:24.298    sub-type 0     : _44444444
+00:00:24.298    TXT data len   : 1
+00:00:24.298    port           : 555
+00:00:24.298    priority       : 3
+00:00:24.298    weight         : 0
+00:00:24.298    TTL            : 180
+00:00:24.298    Infra-if index : 1
+00:00:25.220 AdvanceTime for 0.100
+00:00:25.220 HandleSrpClientCallback() called with error OK
+00:00:25.320 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:25.320 Change the service and register again, but ignore the registration callback
+00:00:25.320 AdvanceTime for 1.000
+00:00:25.603 otPlatDnssdRegisterService(aRequestId: 9)
+00:00:25.603    hostName       : awesomehost
+00:00:25.603    serviceInstance: service2
+00:00:25.603    serviceType    : _matter._udp
+00:00:25.603    num sub-types  : 0
+00:00:25.603    TXT data len   : 1
+00:00:25.603    port           : 555
+00:00:25.603    priority       : 3
+00:00:25.603    weight         : 0
+00:00:25.603    TTL            : 180
+00:00:25.603    Infra-if index : 1
+00:00:26.320 AdvanceTime for 2.000
+   00:00:26.618 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:26.853 HandleSrpClientCallback() called with error Security
+00:00:27.403 otPlatDnssdRegisterService(aRequestId: 10)
+00:00:27.403    hostName       : awesomehost
+00:00:27.403    serviceInstance: service2
+00:00:27.403    serviceType    : _matter._udp
+00:00:27.403    num sub-types  : 0
+00:00:27.403    TXT data len   : 1
+00:00:27.403    port           : 555
+00:00:27.403    priority       : 3
+00:00:27.403    weight         : 0
+00:00:27.403    TTL            : 180
+00:00:27.403    Infra-if index : 1
+00:00:28.320 AdvanceTime for 3.000
+00:00:28.653 HandleSrpClientCallback() called with error Security
+00:00:30.463 otPlatDnssdRegisterService(aRequestId: 11)
+00:00:30.463    hostName       : awesomehost
+00:00:30.463    serviceInstance: service2
+00:00:30.463    serviceType    : _matter._udp
+00:00:30.463    num sub-types  : 0
+00:00:30.463    TXT data len   : 1
+00:00:30.463    port           : 555
+00:00:30.463    priority       : 3
+00:00:30.463    weight         : 0
+00:00:30.463    TTL            : 180
+00:00:30.463    Infra-if index : 1
+   00:00:30.618 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:31.320 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:31.320 Disable SRP server
+00:00:31.320 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:31.320    hostName       : awesomehost
+00:00:31.320    serviceInstance: service1
+00:00:31.320    serviceName    : _srv1._udp
+00:00:31.320    Infra-if index : 1
+00:00:31.320 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:31.320    name           : service1
+00:00:31.320 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:31.320    hostName       : awesomehost
+00:00:31.320    serviceInstance: service2
+00:00:31.320    serviceName    : _matter._udp
+00:00:31.320    Infra-if index : 1
+00:00:31.320 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:31.320    name           : service2
+00:00:31.320 otPlatDnssdUnregisterHost(aRequestId: 0)
+00:00:31.320    hostName       : awesomehost
+00:00:31.320    Infra-if index : 1
+00:00:31.320 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:31.320    name           : awesomehost
+00:00:31.320 AdvanceTime for 0.100
+00:00:31.420 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:31.420 Finalize OT instance and validate all heap allocations are freed
+00:00:31.420 End of TestSrpAdvProxyDelayedCallback
+00:00:31.420 --------------------------------------------------------------------------------------------
+00:00:31.420 TestSrpAdvProxyReplacedEntries
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Add an on-mesh prefix (with SLAAC) to network data
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Start SRP server
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.000 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.000 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.000 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:20.000 Set AdvTimeout to 5 minutes on AdvProxy
+00:00:20.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:20.000 Start SRP client
+00:00:20.000 AdvanceTime for 2.000
+   00:00:22.000 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Register a service and do not invoke the registration request callbacks
+00:00:22.000 AdvanceTime for 1.200
+00:00:22.371 otPlatDnssdRegisterKey(aRequestId: 1)
+00:00:22.371    name           : awesomehost
+00:00:22.371    serviceType    : (null)
+00:00:22.371    key data-len   : 68
+00:00:22.371    TTL            : 7200
+00:00:22.371 otPlatDnssdRegisterHost(aRequestId: 2)
+00:00:22.371    hostName       : awesomehost
+00:00:22.371    numAddresses   : 1
+00:00:22.371    Address 0      : fd00:cafe:beef:0:cfb5:5325:c10c:3700
+00:00:22.371    TTL            : 7200
+00:00:22.371    Infra-if index : 1
+00:00:22.371 otPlatDnssdRegisterKey(aRequestId: 3)
+00:00:22.371    name           : service1
+00:00:22.371    serviceType    : _srv1._udp
+00:00:22.371    key data-len   : 68
+00:00:22.371    TTL            : 7200
+00:00:22.371 otPlatDnssdRegisterService(aRequestId: 4)
+00:00:22.371    hostName       : awesomehost
+00:00:22.371    serviceInstance: service1
+00:00:22.371    serviceType    : _srv1._udp
+00:00:22.371    num sub-types  : 3
+00:00:22.371    sub-type 0     : _sub1
+00:00:22.371    sub-type 1     : _sub2
+00:00:22.371    sub-type 2     : _sub3
+00:00:22.371    TXT data len   : 19
+00:00:22.371    port           : 777
+00:00:22.371    priority       : 2
+00:00:22.371    weight         : 1
+00:00:22.371    TTL            : 7200
+00:00:22.371    Infra-if index : 1
+00:00:23.200 AdvanceTime for 2.000
+00:00:24.171 HandleSrpClientCallback() called with error ResponseTimeout
+00:00:25.200 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:25.200 Invoke the DNS-SD API callbacks
+00:00:25.200 AdvanceTime for 0.100
+00:00:25.200 HandleSrpClientCallback() called with error OK
+00:00:25.300 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:25.300 Check outstanding Adv being replaced
+00:00:25.300 AdvanceTime for 1.200
+00:00:25.536 otPlatDnssdRegisterService(aRequestId: 5)
+00:00:25.536    hostName       : awesomehost
+00:00:25.536    serviceInstance: service1
+00:00:25.536    serviceType    : _srv1._udp
+00:00:25.536    num sub-types  : 0
+00:00:25.536    TXT data len   : 19
+00:00:25.536    port           : 777
+00:00:25.536    priority       : 2
+00:00:25.536    weight         : 1
+00:00:25.536    TTL            : 7200
+00:00:25.536    Infra-if index : 1
+   00:00:26.000 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:26.500 AdvanceTime for 1.200
+00:00:26.683 otPlatDnssdRegisterService(aRequestId: 6)
+00:00:26.683    hostName       : awesomehost
+00:00:26.683    serviceInstance: service1
+00:00:26.683    serviceType    : _srv1._udp
+00:00:26.683    num sub-types  : 3
+00:00:26.683    sub-type 0     : _sub1
+00:00:26.683    sub-type 1     : _sub2
+00:00:26.683    sub-type 2     : _sub3
+00:00:26.683    TXT data len   : 19
+00:00:26.683    port           : 777
+00:00:26.683    priority       : 2
+00:00:26.683    weight         : 1
+00:00:26.683    TTL            : 7200
+00:00:26.683    Infra-if index : 1
+00:00:27.700 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:27.700 Invoke the replaced entry DNS-SD API callback
+00:00:27.700 AdvanceTime for 0.100
+00:00:27.800 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:27.800 Invoke the new entry DNS-SD API callback
+00:00:27.800 AdvanceTime for 0.100
+00:00:27.800 HandleSrpClientCallback() called with error OK
+00:00:27.900 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:27.900 Check replacing Adv being blocked till old Adv is completed
+00:00:27.900 AdvanceTime for 1.200
+00:00:28.345 otPlatDnssdRegisterService(aRequestId: 7)
+00:00:28.345    hostName       : awesomehost
+00:00:28.345    serviceInstance: service1
+00:00:28.345    serviceType    : _srv1._udp
+00:00:28.345    num sub-types  : 0
+00:00:28.345    TXT data len   : 19
+00:00:28.345    port           : 777
+00:00:28.345    priority       : 2
+00:00:28.345    weight         : 1
+00:00:28.345    TTL            : 7200
+00:00:28.345    Infra-if index : 1
+00:00:28.345 otPlatDnssdRegisterKey(aRequestId: 8)
+00:00:28.345    name           : service2
+00:00:28.345    serviceType    : _matter._udp
+00:00:28.345    key data-len   : 68
+00:00:28.345    TTL            : 7200
+00:00:28.345 otPlatDnssdRegisterService(aRequestId: 9)
+00:00:28.345    hostName       : awesomehost
+00:00:28.345    serviceInstance: service2
+00:00:28.345    serviceType    : _matter._udp
+00:00:28.345    num sub-types  : 1
+00:00:28.345    sub-type 0     : _44444444
+00:00:28.345    TXT data len   : 1
+00:00:28.345    port           : 555
+00:00:28.345    priority       : 3
+00:00:28.345    weight         : 0
+00:00:28.345    TTL            : 7200
+00:00:28.345    Infra-if index : 1
+00:00:29.100 AdvanceTime for 1.200
+00:00:29.337 otPlatDnssdRegisterService(aRequestId: 10)
+00:00:29.337    hostName       : awesomehost
+00:00:29.337    serviceInstance: service2
+00:00:29.337    serviceType    : _matter._udp
+00:00:29.337    num sub-types  : 1
+00:00:29.337    sub-type 0     : _44444444
+00:00:29.337    TXT data len   : 1
+00:00:29.337    port           : 2222
+00:00:29.337    priority       : 3
+00:00:29.337    weight         : 0
+00:00:29.337    TTL            : 7200
+00:00:29.337    Infra-if index : 1
+   00:00:30.000 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:30.300 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:30.300 Invoke the callback for new registration replacing old one first
+00:00:30.300 AdvanceTime for 0.100
+00:00:30.400 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:30.400 Invoke the callback for replaced Adv services
+00:00:30.400 AdvanceTime for 0.100
+00:00:30.400 HandleSrpClientCallback() called with error OK
+00:00:30.500 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:30.500 Check replacing Adv being blocked till old Adv is completed when removing services
+00:00:30.500 AdvanceTime for 1.200
+00:00:30.689 otPlatDnssdRegisterService(aRequestId: 11)
+00:00:30.689    hostName       : awesomehost
+00:00:30.689    serviceInstance: service1
+00:00:30.689    serviceType    : _srv1._udp
+00:00:30.689    num sub-types  : 3
+00:00:30.689    sub-type 0     : _sub1
+00:00:30.689    sub-type 1     : _sub2
+00:00:30.689    sub-type 2     : _sub3
+00:00:30.689    TXT data len   : 19
+00:00:30.689    port           : 777
+00:00:30.689    priority       : 2
+00:00:30.689    weight         : 1
+00:00:30.689    TTL            : 7200
+00:00:30.689    Infra-if index : 1
+00:00:30.689 otPlatDnssdRegisterService(aRequestId: 12)
+00:00:30.689    hostName       : awesomehost
+00:00:30.689    serviceInstance: service2
+00:00:30.689    serviceType    : _matter._udp
+00:00:30.689    num sub-types  : 1
+00:00:30.689    sub-type 0     : _44444444
+00:00:30.689    TXT data len   : 1
+00:00:30.689    port           : 555
+00:00:30.689    priority       : 3
+00:00:30.689    weight         : 0
+00:00:30.689    TTL            : 7200
+00:00:30.689    Infra-if index : 1
+00:00:31.700 AdvanceTime for 1.200
+00:00:32.009 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:32.009    hostName       : awesomehost
+00:00:32.009    serviceInstance: service1
+00:00:32.009    serviceName    : _srv1._udp
+00:00:32.009    Infra-if index : 1
+00:00:32.900 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:32.900 Invoke the callback for replaced Adv services
+00:00:32.900 AdvanceTime for 0.100
+00:00:32.900 HandleSrpClientCallback() called with error OK
+00:00:33.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:33.000 Disable SRP server
+00:00:33.000 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:33.000    hostName       : awesomehost
+00:00:33.000    serviceInstance: service2
+00:00:33.000    serviceName    : _matter._udp
+00:00:33.000    Infra-if index : 1
+00:00:33.000 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:33.000    name           : service2
+00:00:33.000 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:33.000    name           : service1
+00:00:33.000 otPlatDnssdUnregisterHost(aRequestId: 0)
+00:00:33.000    hostName       : awesomehost
+00:00:33.000    Infra-if index : 1
+00:00:33.000 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:33.000    name           : awesomehost
+00:00:33.000 AdvanceTime for 0.100
+00:00:33.100 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:33.100 Finalize OT instance and validate all heap allocations are freed
+00:00:33.100 End of TestSrpAdvProxyReplacedEntries
+00:00:33.100 --------------------------------------------------------------------------------------------
+00:00:33.100 TestSrpAdvProxyHostWithOffMeshRoutableAddress
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Start SRP server
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.253 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.253 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.253 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:20.000 Start SRP client
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Register a service
+00:00:22.000 AdvanceTime for 2.000
+00:00:22.029 otPlatDnssdRegisterKey(aRequestId: 1)
+00:00:22.029    name           : awesomehost
+00:00:22.029    serviceType    : (null)
+00:00:22.029    key data-len   : 68
+00:00:22.029    TTL            : 400
+00:00:22.029 otPlatDnssdRegisterHost(aRequestId: 2)
+00:00:22.029    hostName       : awesomehost
+00:00:22.029    numAddresses   : 0
+00:00:22.029    TTL            : 400
+00:00:22.029    Infra-if index : 1
+00:00:22.029 otPlatDnssdRegisterKey(aRequestId: 3)
+00:00:22.029    name           : service1
+00:00:22.029    serviceType    : _srv1._udp
+00:00:22.029    key data-len   : 68
+00:00:22.029    TTL            : 400
+00:00:22.029 otPlatDnssdRegisterService(aRequestId: 4)
+00:00:22.029    hostName       : awesomehost
+00:00:22.029    serviceInstance: service1
+00:00:22.029    serviceType    : _srv1._udp
+00:00:22.029    num sub-types  : 3
+00:00:22.029    sub-type 0     : _sub1
+00:00:22.029    sub-type 1     : _sub2
+00:00:22.029    sub-type 2     : _sub3
+00:00:22.029    TXT data len   : 19
+00:00:22.029    port           : 777
+00:00:22.029    priority       : 2
+00:00:22.029    weight         : 1
+00:00:22.029    TTL            : 400
+00:00:22.029    Infra-if index : 1
+00:00:22.029 HandleSrpClientCallback() called with error OK
+   00:00:22.253 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:24.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:24.000 Register a second service
+00:00:24.000 AdvanceTime for 2.000
+00:00:24.358 otPlatDnssdRegisterKey(aRequestId: 5)
+00:00:24.358    name           : service2
+00:00:24.358    serviceType    : _matter._udp
+00:00:24.358    key data-len   : 68
+00:00:24.358    TTL            : 400
+00:00:24.358 otPlatDnssdRegisterService(aRequestId: 6)
+00:00:24.358    hostName       : awesomehost
+00:00:24.358    serviceInstance: service2
+00:00:24.358    serviceType    : _matter._udp
+00:00:24.358    num sub-types  : 1
+00:00:24.358    sub-type 0     : _44444444
+00:00:24.358    TXT data len   : 1
+00:00:24.358    port           : 555
+00:00:24.358    priority       : 3
+00:00:24.358    weight         : 0
+00:00:24.358    TTL            : 400
+00:00:24.358    Infra-if index : 1
+00:00:24.358 HandleSrpClientCallback() called with error OK
+00:00:26.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:26.000 Disable SRP server
+00:00:26.000 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:26.000    hostName       : awesomehost
+00:00:26.000    serviceInstance: service1
+00:00:26.000    serviceName    : _srv1._udp
+00:00:26.000    Infra-if index : 1
+00:00:26.000 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:26.000    name           : service1
+00:00:26.000 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:26.000    hostName       : awesomehost
+00:00:26.000    serviceInstance: service2
+00:00:26.000    serviceName    : _matter._udp
+00:00:26.000    Infra-if index : 1
+00:00:26.000 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:26.000    name           : service2
+00:00:26.000 otPlatDnssdUnregisterHost(aRequestId: 0)
+00:00:26.000    hostName       : awesomehost
+00:00:26.000    Infra-if index : 1
+00:00:26.000 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:26.000    name           : awesomehost
+00:00:26.000 AdvanceTime for 0.100
+00:00:26.100 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:26.100 Finalize OT instance and validate all heap allocations are freed
+00:00:26.100 End of TestSrpAdvProxyHostWithOffMeshRoutableAddress
+00:00:26.100 --------------------------------------------------------------------------------------------
+00:00:26.100 TestSrpAdvProxyRemoveBeforeCommitted
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Add an on-mesh prefix (with SLAAC) to network data
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Start SRP server
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.166 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.166 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.166 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:20.000 Start SRP client
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Register host and one service
+00:00:22.000 AdvanceTime for 2.000
+   00:00:22.166 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:22.252 otPlatDnssdRegisterKey(aRequestId: 1)
+00:00:22.252    name           : awesomehost
+00:00:22.252    serviceType    : (null)
+00:00:22.252    key data-len   : 68
+00:00:22.252    TTL            : 7200
+00:00:22.252 otPlatDnssdRegisterHost(aRequestId: 2)
+00:00:22.252    hostName       : awesomehost
+00:00:22.252    numAddresses   : 1
+00:00:22.252    Address 0      : fd00:cafe:beef:0:d828:eab:461e:6821
+00:00:22.252    TTL            : 7200
+00:00:22.252    Infra-if index : 1
+00:00:22.252 otPlatDnssdRegisterKey(aRequestId: 3)
+00:00:22.252    name           : service1
+00:00:22.252    serviceType    : _srv1._udp
+00:00:22.252    key data-len   : 68
+00:00:22.252    TTL            : 7200
+00:00:22.252 otPlatDnssdRegisterService(aRequestId: 4)
+00:00:22.252    hostName       : awesomehost
+00:00:22.252    serviceInstance: service1
+00:00:22.252    serviceType    : _srv1._udp
+00:00:22.252    num sub-types  : 3
+00:00:22.252    sub-type 0     : _sub1
+00:00:22.252    sub-type 1     : _sub2
+00:00:22.252    sub-type 2     : _sub3
+00:00:22.252    TXT data len   : 19
+00:00:22.252    port           : 777
+00:00:22.252    priority       : 2
+00:00:22.252    weight         : 1
+00:00:22.252    TTL            : 7200
+00:00:22.252    Infra-if index : 1
+00:00:22.252 HandleSrpClientCallback() called with error OK
+00:00:24.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:24.000 Set AdvTimeout to 5 minutes on AdvProxy
+00:00:24.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:24.000 Remove service1 while adding a new service2 and do not invoke callback from DNSSD plat
+00:00:24.000 AdvanceTime for 1.000
+00:00:24.227 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:24.227    hostName       : awesomehost
+00:00:24.227    serviceInstance: service1
+00:00:24.227    serviceName    : _srv1._udp
+00:00:24.227    Infra-if index : 1
+00:00:24.227 otPlatDnssdRegisterKey(aRequestId: 5)
+00:00:24.227    name           : service2
+00:00:24.227    serviceType    : _matter._udp
+00:00:24.227    key data-len   : 68
+00:00:24.227    TTL            : 7200
+00:00:24.227 otPlatDnssdRegisterService(aRequestId: 6)
+00:00:24.227    hostName       : awesomehost
+00:00:24.227    serviceInstance: service2
+00:00:24.227    serviceType    : _matter._udp
+00:00:24.227    num sub-types  : 1
+00:00:24.227    sub-type 0     : _44444444
+00:00:24.227    TXT data len   : 1
+00:00:24.227    port           : 555
+00:00:24.227    priority       : 3
+00:00:24.227    weight         : 0
+00:00:24.227    TTL            : 7200
+00:00:24.227    Infra-if index : 1
+00:00:25.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:25.000 Remove host and its services without removing key-lease
+00:00:25.000 AdvanceTime for 1.000
+00:00:25.253 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:25.253    hostName       : awesomehost
+00:00:25.253    serviceInstance: service2
+00:00:25.253    serviceName    : _matter._udp
+00:00:25.253    Infra-if index : 1
+00:00:25.253 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:25.253    hostName       : awesomehost
+00:00:25.253    serviceInstance: service1
+00:00:25.253    serviceName    : _srv1._udp
+00:00:25.253    Infra-if index : 1
+00:00:25.253 otPlatDnssdUnregisterHost(aRequestId: 0)
+00:00:25.253    hostName       : awesomehost
+00:00:25.253    Infra-if index : 1
+00:00:26.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:26.000 Invoke callback for last key registration
+00:00:26.000 AdvanceTime for 0.050
+00:00:26.000 HandleSrpClientCallback() called with error OK
+00:00:26.050 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:26.050 Disable SRP server
+00:00:26.050 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:26.050    name           : service2
+00:00:26.050 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:26.050    name           : service1
+00:00:26.050 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:26.050    name           : awesomehost
+00:00:26.050 AdvanceTime for 0.100
+00:00:26.150 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:26.150 Finalize OT instance and validate all heap allocations are freed
+00:00:26.150 End of TestSrpAdvProxyRemoveBeforeCommitted
+00:00:26.150 --------------------------------------------------------------------------------------------
+00:00:26.150 TestSrpAdvProxyFullyRemoveBeforeCommitted
+00:00:00.000 AdvanceTime for 10.000
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Add an on-mesh prefix (with SLAAC) to network data
+00:00:10.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:10.000 Start SRP server
+00:00:10.000 AdvanceTime for 10.000
+   00:00:10.222 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:14.222 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+   00:00:18.222 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:20.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:20.000 Start SRP client
+00:00:20.000 AdvanceTime for 2.000
+00:00:22.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:22.000 Register host and one service
+00:00:22.000 AdvanceTime for 2.000
+00:00:22.209 otPlatDnssdRegisterKey(aRequestId: 1)
+00:00:22.209    name           : awesomehost
+00:00:22.209    serviceType    : (null)
+00:00:22.209    key data-len   : 68
+00:00:22.209    TTL            : 7200
+00:00:22.209 otPlatDnssdRegisterHost(aRequestId: 2)
+00:00:22.209    hostName       : awesomehost
+00:00:22.209    numAddresses   : 1
+00:00:22.209    Address 0      : fd00:cafe:beef:0:fd70:c6f7:d2b6:1354
+00:00:22.209    TTL            : 7200
+00:00:22.209    Infra-if index : 1
+00:00:22.209 otPlatDnssdRegisterKey(aRequestId: 3)
+00:00:22.209    name           : service1
+00:00:22.209    serviceType    : _srv1._udp
+00:00:22.209    key data-len   : 68
+00:00:22.209    TTL            : 7200
+00:00:22.209 otPlatDnssdRegisterService(aRequestId: 4)
+00:00:22.209    hostName       : awesomehost
+00:00:22.209    serviceInstance: service1
+00:00:22.209    serviceType    : _srv1._udp
+00:00:22.209    num sub-types  : 3
+00:00:22.209    sub-type 0     : _sub1
+00:00:22.209    sub-type 1     : _sub2
+00:00:22.209    sub-type 2     : _sub3
+00:00:22.209    TXT data len   : 19
+00:00:22.209    port           : 777
+00:00:22.209    priority       : 2
+00:00:22.209    weight         : 1
+00:00:22.209    TTL            : 7200
+00:00:22.209    Infra-if index : 1
+00:00:22.209 HandleSrpClientCallback() called with error OK
+   00:00:22.222 [C] BorderRouting-: Failed to send RS 1/3 - Failed
+00:00:24.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:24.000 Set AdvTimeout to 5 minutes on AdvProxy
+00:00:24.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:24.000 Remove service1 while adding a new service2 and do not invoke callback from DNSSD plat
+00:00:24.000 AdvanceTime for 1.000
+00:00:24.354 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:24.354    hostName       : awesomehost
+00:00:24.354    serviceInstance: service1
+00:00:24.354    serviceName    : _srv1._udp
+00:00:24.354    Infra-if index : 1
+00:00:24.354 otPlatDnssdRegisterKey(aRequestId: 5)
+00:00:24.354    name           : service2
+00:00:24.354    serviceType    : _matter._udp
+00:00:24.354    key data-len   : 68
+00:00:24.354    TTL            : 7200
+00:00:24.354 otPlatDnssdRegisterService(aRequestId: 6)
+00:00:24.354    hostName       : awesomehost
+00:00:24.354    serviceInstance: service2
+00:00:24.354    serviceType    : _matter._udp
+00:00:24.354    num sub-types  : 1
+00:00:24.354    sub-type 0     : _44444444
+00:00:24.354    TXT data len   : 1
+00:00:24.354    port           : 555
+00:00:24.354    priority       : 3
+00:00:24.354    weight         : 0
+00:00:24.354    TTL            : 7200
+00:00:24.354    Infra-if index : 1
+00:00:25.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:25.000 Remove host and its services and remove key-lease
+00:00:25.000 AdvanceTime for 1.000
+00:00:25.163 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:25.163    name           : service1
+00:00:25.163 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:25.163    hostName       : awesomehost
+00:00:25.163    serviceInstance: service2
+00:00:25.163    serviceName    : _matter._udp
+00:00:25.163    Infra-if index : 1
+00:00:25.163 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:25.163    name           : service2
+00:00:25.163 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:25.163    name           : awesomehost
+00:00:25.163 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:25.163    name           : awesomehost
+00:00:25.163 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:25.163    name           : awesomehost
+00:00:25.163 otPlatDnssdUnregisterKey(aRequestId: 0)
+00:00:25.163    name           : service1
+00:00:25.163 otPlatDnssdUnregisterService(aRequestId: 0)
+00:00:25.163    hostName       : awesomehost
+00:00:25.163    serviceInstance: service1
+00:00:25.163    serviceName    : _srv1._udp
+00:00:25.163    Infra-if index : 1
+00:00:25.163 otPlatDnssdUnregisterHost(aRequestId: 0)
+00:00:25.163    hostName       : awesomehost
+00:00:25.163    Infra-if index : 1
+00:00:25.163 HandleSrpClientCallback() called with error OK
+00:00:26.000 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:26.000 Disable SRP server
+00:00:26.000 AdvanceTime for 0.100
+00:00:26.100 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+00:00:26.100 Finalize OT instance and validate all heap allocations are freed
+00:00:26.100 End of TestSrpAdvProxyFullyRemoveBeforeCommitted
+All tests passed

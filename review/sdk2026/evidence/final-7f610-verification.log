@@ -1,0 +1,6 @@
+4.9.1
+GIT commit: 87f6dbda4eef05e4538589c195099c3daf8f6f6b
+GIT branch: 
+14 synthetic key checks passed; no key creation, rewriting or disclosure
+HTTP root bytes: 25001 local QR bytes: 56694 JS files checked: 9
+Assembled image verification passed; no radio or live HA tested.

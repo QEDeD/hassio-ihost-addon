@@ -1,0 +1,45 @@
+# Build from the repository root with review/sdk2026/build-host-sdk2026.sh.
+# Isolated AMD64 candidate: existing add-on Dockerfile/build.yaml are unchanged.
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian@sha256:88f7241f3c91775e16457778a79dc8155484c379c7f5e0c556c99ff99b3f11bf
+FROM --platform=linux/amd64 ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d AS sdk2026-builder
+USER root
+ENV DEBIAN_FRONTEND=noninteractive
+ARG CPC_ENCRYPTION
+ARG BUILD_JOBS=4
+COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+RUN sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends \
+    build-essential cmake ninja-build git patch pkg-config \
+    libmbedtls-dev libreadline-dev libncurses-dev libboost-dev \
+    libboost-filesystem-dev libboost-system-dev libjsoncpp-dev \
+    libdbus-1-dev libnetfilter-queue-dev libsystemd-dev libprotobuf-dev protobuf-compiler nodejs npm \
+    && rm -rf /var/lib/apt/lists/*
+COPY hassio-ihost-silabs-multiprotocol/otbr-patches/ /recipe/patches/
+COPY review/sdk2026/recipe/ /recipe/
+RUN bash /recipe/build-in-container.sh
+
+FROM --platform=linux/amd64 ${BUILD_FROM}
+ARG CPC_ENCRYPTION
+LABEL io.sdk2026.cpc-encryption="${CPC_ENCRYPTION}" \
+      io.sdk2026.sdk-version="2026.6.1" \
+      io.sdk2026.status="isolated-integration-candidate"
+COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+RUN sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends \
+    libmbedtls21 libreadline8t64 libboost-filesystem1.83.0 libboost-system1.83.0 \
+    libjsoncpp26 libnetfilter-queue1 libsystemd0 libprotobuf-lite32t64 socat iproute2 iptables ipset netcat-openbsd iputils-ping \
+    python3 python3-aiohttp python3-cryptography python3-yarl \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=sdk2026-builder /sdk2026-install/ /
+COPY hassio-ihost-silabs-multiprotocol/rootfs/ /
+COPY review/sdk2026/runtime/ /sdk2026-runtime/
+RUN bash /sdk2026-runtime/install.sh
+# Fail image creation on a missing shared library, without starting any daemon.
+RUN ldconfig && \
+    for binary in /usr/local/bin/cpcd /usr/local/bin/zigbeed /usr/sbin/otbr-agent /usr/sbin/otbr-web /usr/sbin/ot-ctl; do \
+      test -x "$binary" && ldd "$binary" > /tmp/sdk2026-ldd.txt && \
+      ! grep -q 'not found' /tmp/sdk2026-ldd.txt || exit 1; \
+    done && rm /tmp/sdk2026-ldd.txt && touch /accept_silabs_msla
+ENV BORDER_ROUTING=1 BACKBONE_ROUTER=1 WEB_GUI=1 DOCKER=1 \
+    S6_STAGE2_HOOK=/etc/s6-overlay/scripts/enable-check.sh
+HEALTHCHECK --interval=10s --start-period=120s CMD /etc/s6-overlay/scripts/zigbeed-healthcheck
+WORKDIR /
+ENTRYPOINT ["/init"]

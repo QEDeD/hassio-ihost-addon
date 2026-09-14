@@ -1,0 +1,27 @@
+# Offline candidate artifact build; no devices, serial mounts or running services.
+FROM --platform=linux/amd64 ghcr.io/nabucasa/silabs-firmware-builder@sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d AS build
+USER root
+ENV DEBIAN_FRONTEND=noninteractive
+COPY review/sdk2026/recipe/pin-debian-snapshot.sh /pin-debian-snapshot.sh
+RUN sh /pin-debian-snapshot.sh && apt-get update && apt-get install -y --no-install-recommends \
+    cmake ninja-build python3 gzip \
+    && mkdir -p /package-evidence \
+    && dpkg-query -W > /package-evidence/installed-packages.txt \
+    && cp /etc/apt/sources.list.d/debian.sources /package-evidence/debian.sources \
+    && cp /etc/apt/apt.conf.d/99sdk2026-snapshot /package-evidence/apt-snapshot.conf \
+    && sha256sum /var/lib/apt/lists/*InRelease > /package-evidence/inrelease-sha256.txt \
+    && rm -rf /var/lib/apt/lists/*
+COPY review/sdk2026/firmware/build-offline.sh /firmware/build-offline.sh
+COPY review/sdk2026/firmware/verify-offline.sh /firmware/verify-offline.sh
+ARG BUILD_JOBS=2
+RUN --network=none WORK=/sdk2026-firmware JOBS="$BUILD_JOBS" bash /firmware/build-offline.sh \
+    && WORK=/sdk2026-firmware bash /firmware/verify-offline.sh \
+    && cp -a /package-evidence /sdk2026-firmware/evidence/ \
+    && cp /pin-debian-snapshot.sh /sdk2026-firmware/evidence/package-setup.sh \
+    && cp /firmware/*.sh /sdk2026-firmware/evidence/
+FROM scratch AS artifacts
+COPY --from=build /sdk2026-firmware/source /source
+COPY --from=build /sdk2026-firmware/generated/config /config
+COPY --from=build /sdk2026-firmware/generated/autogen /autogen
+COPY --from=build /sdk2026-firmware/generated/cmake_gcc/build/base /artifacts
+COPY --from=build /sdk2026-firmware/evidence /evidence

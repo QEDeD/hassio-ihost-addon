@@ -1,0 +1,341 @@
+
+/sdk2026-firmware/candidate-v3/generated/cmake_gcc/build/base/rcp-uart-802154.out:     file format elf32-littlearm
+
+
+Disassembly of section text_application_ram:
+
+Disassembly of section .text:
+
+00018338 <open_endpoint.constprop.0>:
+   18338:	e92d 43f7 	stmdb	sp!, {r0, r1, r2, r4, r5, r6, r7, r8, r9, lr}
+
+#if defined(SL_CATALOG_CPC_SECONDARY_PRESENT)
+/***************************************************************************//**
+ * Open a specialized endpoint
+ ******************************************************************************/
+static sl_status_t open_endpoint(sl_cpc_endpoint_handle_t *endpoint_handle,
+   1833c:	4699      	mov	r9, r3
+  sl_cpc_endpoint_state_t state;
+  sl_cpc_endpoint_t *ep;
+  sl_status_t status;
+
+  if (inst == NULL) {
+    inst = sli_cpc_get_instance(id);
+   1833e:	4b61      	ldr	r3, [pc, #388]	@ (184c4 <open_endpoint.constprop.0+0x18c>)
+static sl_status_t open_endpoint(sl_cpc_endpoint_handle_t *endpoint_handle,
+   18340:	4606      	mov	r6, r0
+    inst = sli_cpc_get_instance(id);
+   18342:	2900      	cmp	r1, #0
+   18344:	bf14      	ite	ne
+   18346:	4688      	movne	r8, r1
+   18348:	4698      	moveq	r8, r3
+    if (inst == NULL) {
+      return SL_STATUS_INVALID_PARAMETER;
+    }
+  }
+
+  if (inst->cpc_core_in_reset) {
+   1834a:	f898 30c4 	ldrb.w	r3, [r8, #196]	@ 0xc4
+static sl_status_t open_endpoint(sl_cpc_endpoint_handle_t *endpoint_handle,
+   1834e:	4617      	mov	r7, r2
+  if (inst->cpc_core_in_reset) {
+   18350:	2b00      	cmp	r3, #0
+   18352:	f040 80b1 	bne.w	184b8 <open_endpoint.constprop.0+0x180>
+  ep = find_instance_endpoint(inst, id);
+   18356:	4611      	mov	r1, r2
+   18358:	4640      	mov	r0, r8
+   1835a:	f7ee fc57 	bl	6c0c <find_instance_endpoint.lto_priv.0>
+  if (ep != NULL) {
+   1835e:	4605      	mov	r5, r0
+   18360:	2800      	cmp	r0, #0
+   18362:	d161      	bne.n	18428 <open_endpoint.constprop.0+0xf0>
+  #if (SL_CPC_DEBUG_MEMORY_ALLOCATOR_COUNTERS == 1)
+  MCU_ENTER_ATOMIC();
+  #endif
+
+  // Dynamically allocate the endpoint
+  *endpoint = calloc(1, sizeof(sl_cpc_endpoint_t));
+   18364:	21a8      	movs	r1, #168	@ 0xa8
+   18366:	2001      	movs	r0, #1
+   18368:	f003 fd5e 	bl	1be28 <calloc>
+  if (*endpoint == NULL) {
+   1836c:	4604      	mov	r4, r0
+   1836e:	2800      	cmp	r0, #0
+   18370:	f000 80a4 	beq.w	184bc <open_endpoint.constprop.0+0x184>
+  ep->configured_tx_window_size = 1;
+   18374:	f240 1301 	movw	r3, #257	@ 0x101
+   18378:	8183      	strh	r3, [r0, #12]
+  ep->state = SL_CPC_STATE_CLOSED;
+   1837a:	2302      	movs	r3, #2
+  ep->flags = flags;   // Flags should be set using the set_option API.
+   1837c:	f880 9009 	strb.w	r9, [r0, #9]
+  ep->state = SL_CPC_STATE_CLOSED;
+   18380:	f880 3050 	strb.w	r3, [r0, #80]	@ 0x50
+  ep->id = id;
+   18384:	7207      	strb	r7, [r0, #8]
+  ep->seq = 0;
+   18386:	8145      	strh	r5, [r0, #10]
+  ep->frames_count_re_transmit_queue = 0;
+   18388:	73c5      	strb	r5, [r0, #15]
+  ep->node.node = NULL;
+   1838a:	6005      	str	r5, [r0, #0]
+ *       perform a millisecond to tick conversion.
+ ******************************************************************************/
+static inline uint32_t sli_cpc_timer_ms_to_tick(uint16_t time_ms)
+{
+#if (defined(SL_CATALOG_SLEEPTIMER_PRESENT))
+  return sl_sleeptimer_ms_to_tick(time_ms);
+   1838c:	2064      	movs	r0, #100	@ 0x64
+   1838e:	f00d faff 	bl	25990 <sl_sleeptimer_ms_to_tick>
+  if (id == SL_CPC_ENDPOINT_SYSTEM
+   18392:	2f01      	cmp	r7, #1
+   18394:	bf94      	ite	ls
+   18396:	2300      	movls	r3, #0
+   18398:	2301      	movhi	r3, #1
+  ep->frame_counter_rx = 0;
+   1839a:	e9c4 5526 	strd	r5, r5, [r4, #152]	@ 0x98
+  if (id == SL_CPC_ENDPOINT_SYSTEM
+   1839e:	f884 30a0 	strb.w	r3, [r4, #160]	@ 0xa0
+/***************************************************************************//**
+ * Initializes a singly-linked list.
+ ******************************************************************************/
+void sl_slist_init(sl_slist_node_t **head)
+{
+  *head = 0;
+   183a2:	e9c4 5521 	strd	r5, r5, [r4, #132]	@ 0x84
+void sl_slist_push(sl_slist_node_t **head,
+                   sl_slist_node_t *item)
+{
+  EFM_ASSERT((item != NULL) && (head != NULL));
+
+  item->node = *head;
+   183a6:	f8d8 3000 	ldr.w	r3, [r8]
+  *head = 0;
+   183aa:	e9c4 5523 	strd	r5, r5, [r4, #140]	@ 0x8c
+  ep->re_transmit_timeout = sli_cpc_timer_ms_to_tick(SLI_CPC_INIT_RE_TRANSMIT_TIMEOUT_MS);
+   183ae:	6160      	str	r0, [r4, #20]
+  ep->instance = inst;
+   183b0:	f8c4 80a4 	str.w	r8, [r4, #164]	@ 0xa4
+   183b4:	f8c4 5094 	str.w	r5, [r4, #148]	@ 0x94
+  item->node = *head;
+   183b8:	6023      	str	r3, [r4, #0]
+  *head = item;
+   183ba:	f8c8 4000 	str.w	r4, [r8]
+  EFM_ASSERT((head != NULL) && (cmp_fnct != NULL));
+
+  do {
+    swapped = false;
+
+    pp_item_l = head;
+   183be:	4641      	mov	r1, r8
+    swapped = false;
+   183c0:	2000      	movs	r0, #0
+    // Loop until end of list is found.
+    while ((*pp_item_l != NULL) && ((*pp_item_l)->node != NULL)) {
+   183c2:	680a      	ldr	r2, [r1, #0]
+   183c4:	b10a      	cbz	r2, 183ca <open_endpoint.constprop.0+0x92>
+   183c6:	6813      	ldr	r3, [r2, #0]
+   183c8:	bb03      	cbnz	r3, 1840c <open_endpoint.constprop.0+0xd4>
+      } else {
+        pp_item_l = &((*pp_item_l)->node);
+      }
+    }
+    // Re-loop until no items have been swapped.
+  } while (swapped == true);
+   183ca:	2800      	cmp	r0, #0
+   183cc:	d1f7      	bne.n	183be <open_endpoint.constprop.0+0x86>
+ */
+__STATIC_FORCEINLINE uint32_t __get_BASEPRI(void)
+{
+  uint32_t result;
+
+  __ASM volatile ("MRS %0, basepri" : "=r" (result) );
+   183ce:	f3ef 8311 	mrs	r3, BASEPRI
+  \details Assigns the given value to the Base Priority register.
+  \param [in]    basePri  Base Priority value to set
+ */
+__STATIC_FORCEINLINE void __set_BASEPRI(uint32_t basePri)
+{
+  __ASM volatile ("MSR basepri, %0" : : "r" (basePri) : "memory");
+   183d2:	2230      	movs	r2, #48	@ 0x30
+   183d4:	f382 8811 	msr	BASEPRI, r2
+  endpoint_handle->ref_count = 1u;
+   183d8:	2201      	movs	r2, #1
+  endpoint_handle->id = id;
+   183da:	7137      	strb	r7, [r6, #4]
+  endpoint_handle->ref_count = 1u;
+   183dc:	60b2      	str	r2, [r6, #8]
+  endpoint_handle->ep = (void*) ep;
+   183de:	6034      	str	r4, [r6, #0]
+   183e0:	f383 8811 	msr	BASEPRI, r3
+           so that all instructions following the ISB are fetched from cache or memory,
+           after the instruction has been completed.
+ */
+__STATIC_FORCEINLINE void __ISB(void)
+{
+  __ASM volatile ("isb 0xF":::"memory");
+   183e4:	f3bf 8f6f 	isb	sy
+    return status;
+  }
+
+  // Set TX windows size
+  ep = (sl_cpc_endpoint_t *) endpoint_handle->ep;
+  ep->configured_tx_window_size = tx_window_size;
+   183e8:	f240 1301 	movw	r3, #257	@ 0x101
+  ep = (sl_cpc_endpoint_t *) endpoint_handle->ep;
+   183ec:	f8d6 8000 	ldr.w	r8, [r6]
+  status = handle_to_ep_enter_api(endpoint_handle, &ep);
+   183f0:	4630      	mov	r0, r6
+  ep->configured_tx_window_size = tx_window_size;
+   183f2:	f8a8 300c 	strh.w	r3, [r8, #12]
+  status = handle_to_ep_enter_api(endpoint_handle, &ep);
+   183f6:	a901      	add	r1, sp, #4
+   183f8:	f7ee fd52 	bl	6ea0 <handle_to_ep_enter_api.lto_priv.0>
+  if (status != SL_STATUS_OK) {
+   183fc:	4605      	mov	r5, r0
+   183fe:	b1e8      	cbz	r0, 1843c <open_endpoint.constprop.0+0x104>
+    return status;
+   18400:	2402      	movs	r4, #2
+
+    default:
+      break;
+  }
+#else
+  (void)sl_memory_free(ptr);
+   18402:	4640      	mov	r0, r8
+   18404:	f00d f9c8 	bl	25798 <sl_memory_free>
+    sli_cpc_free_endpoint(ep->instance, ep);
+
+    SL_CPC_JOURNAL_RECORD_INFO("Failed to start listening for ep", id);
+    SL_CPC_JOURNAL_RECORD_INFO("Failed to start listening status", status);
+
+    return status;
+   18408:	4625      	mov	r5, r4
+#endif
+}
+   1840a:	e013      	b.n	18434 <open_endpoint.constprop.0+0xfc>
+  if (ep_left->id < ep_right->id) {
+   1840c:	f892 c008 	ldrb.w	ip, [r2, #8]
+   18410:	7a1d      	ldrb	r5, [r3, #8]
+   18412:	45ac      	cmp	ip, r5
+        sl_slist_node_t *p_tmp = p_item_r->node;
+   18414:	bf29      	itett	cs
+   18416:	6818      	ldrcs	r0, [r3, #0]
+        pp_item_l = &((*pp_item_l)->node);
+   18418:	4611      	movcc	r1, r2
+        p_item_r->node = *pp_item_l;
+   1841a:	601a      	strcs	r2, [r3, #0]
+        (*pp_item_l)->node = p_tmp;
+   1841c:	6010      	strcs	r0, [r2, #0]
+        *pp_item_l = p_item_r;
+   1841e:	bf22      	ittt	cs
+   18420:	600b      	strcs	r3, [r1, #0]
+        swapped = true;
+   18422:	2001      	movcs	r0, #1
+        pp_item_l = &(p_item_r->node);
+   18424:	4619      	movcs	r1, r3
+   18426:	e7cc      	b.n	183c2 <open_endpoint.constprop.0+0x8a>
+        if (state == SL_CPC_STATE_OPEN) {
+   18428:	f890 3050 	ldrb.w	r3, [r0, #80]	@ 0x50
+    return SL_STATUS_BUSY;
+   1842c:	2b01      	cmp	r3, #1
+   1842e:	bf0c      	ite	eq
+   18430:	252e      	moveq	r5, #46	@ 0x2e
+   18432:	2504      	movne	r5, #4
+
+  SL_CPC_JOURNAL_RECORD_INFO("Endpoint opened", ep->id);
+
+  SLI_CPC_DEBUG_TRACE_CORE_OPEN_ENDPOINT(ep->instance);
+  return status;
+}
+   18434:	4628      	mov	r0, r5
+   18436:	b003      	add	sp, #12
+   18438:	e8bd 83f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, pc}
+  if (ep->configured_tx_window_size != ep->current_tx_window_space
+   1843c:	9f01      	ldr	r7, [sp, #4]
+   1843e:	7b3a      	ldrb	r2, [r7, #12]
+   18440:	7b7b      	ldrb	r3, [r7, #13]
+   18442:	4293      	cmp	r3, r2
+   18444:	d101      	bne.n	1844a <open_endpoint.constprop.0+0x112>
+      || ep->configured_tx_window_size > SL_CPC_TRANSMIT_WINDOW_MAX_SIZE) {
+   18446:	2b01      	cmp	r3, #1
+   18448:	d004      	beq.n	18454 <open_endpoint.constprop.0+0x11c>
+    cpc_exit_api(endpoint_handle);
+   1844a:	4630      	mov	r0, r6
+   1844c:	f7ee fd1b 	bl	6e86 <cpc_exit_api.lto_priv.0>
+    return SL_STATUS_INVALID_PARAMETER;
+   18450:	2421      	movs	r4, #33	@ 0x21
+   18452:	e7d6      	b.n	18402 <open_endpoint.constprop.0+0xca>
+   18454:	f897 3050 	ldrb.w	r3, [r7, #80]	@ 0x50
+   18458:	3b01      	subs	r3, #1
+   1845a:	2b04      	cmp	r3, #4
+   1845c:	d82a      	bhi.n	184b4 <open_endpoint.constprop.0+0x17c>
+   1845e:	e8df f003 	tbb	[pc, r3]
+   18462:	031f      	.short	0x031f
+   18464:	1f29      	.short	0x1f29
+   18466:	08          	.byte	0x08
+   18467:	00          	.byte	0x00
+  if (ep->id == SL_CPC_ENDPOINT_SYSTEM) {
+   18468:	7a39      	ldrb	r1, [r7, #8]
+   1846a:	b981      	cbnz	r1, 1848e <open_endpoint.constprop.0+0x156>
+    ep->state = SL_CPC_STATE_CONNECTED;
+   1846c:	2305      	movs	r3, #5
+   1846e:	f887 3050 	strb.w	r3, [r7, #80]	@ 0x50
+    status = SL_STATUS_OK;
+   18472:	2400      	movs	r4, #0
+  cpc_exit_api(endpoint_handle);
+   18474:	4630      	mov	r0, r6
+   18476:	f7ee fd06 	bl	6e86 <cpc_exit_api.lto_priv.0>
+  if (status == SL_STATUS_OK || status == SL_STATUS_IN_PROGRESS) {
+   1847a:	b10c      	cbz	r4, 18480 <open_endpoint.constprop.0+0x148>
+   1847c:	2c05      	cmp	r4, #5
+   1847e:	d1c0      	bne.n	18402 <open_endpoint.constprop.0+0xca>
+  ep->flags |= SL_CPC_ENDPOINT_FLAG_LEGACY_API;
+   18480:	f898 3009 	ldrb.w	r3, [r8, #9]
+   18484:	f043 0310 	orr.w	r3, r3, #16
+   18488:	f888 3009 	strb.w	r3, [r8, #9]
+  return status;
+   1848c:	e7d2      	b.n	18434 <open_endpoint.constprop.0+0xfc>
+/***************************************************************************//**
+ * Get the system endpoint associated to an endpoint.
+ ******************************************************************************/
+static sli_cpc_system_endpoint_t* endpoint_get_system_ep(sl_cpc_endpoint_t *ep)
+{
+  if (ep != NULL && ep->instance != NULL) {
+   1848e:	f8d7 00a4 	ldr.w	r0, [r7, #164]	@ 0xa4
+   18492:	b1a8      	cbz	r0, 184c0 <open_endpoint.constprop.0+0x188>
+  if (sli_cpc_reboot_is_sequence_done(endpoint_get_system_ep(ep))) {
+   18494:	f890 3095 	ldrb.w	r3, [r0, #149]	@ 0x95
+   18498:	b923      	cbnz	r3, 184a4 <open_endpoint.constprop.0+0x16c>
+  ep->state = SL_CPC_STATE_OPEN;
+   1849a:	2301      	movs	r3, #1
+   1849c:	f887 3050 	strb.w	r3, [r7, #80]	@ 0x50
+    status = SL_STATUS_IN_PROGRESS;
+   184a0:	2405      	movs	r4, #5
+   184a2:	e7e7      	b.n	18474 <open_endpoint.constprop.0+0x13c>
+ * Endpoint was opened, notify the host/primary
+ ******************************************************************************/
+sl_status_t sli_cpc_system_send_opening_notification(sli_cpc_system_endpoint_t *system_ep,
+                                                     uint8_t endpoint_id)
+{
+  return send_endpoint_state(system_ep, endpoint_id, SL_CPC_STATE_OPEN);
+   184a4:	2201      	movs	r2, #1
+   184a6:	3084      	adds	r0, #132	@ 0x84
+   184a8:	f7ef f8d0 	bl	764c <send_endpoint_state.lto_priv.0>
+    if (status != SL_STATUS_OK) {
+   184ac:	4604      	mov	r4, r0
+   184ae:	2800      	cmp	r0, #0
+   184b0:	d0f3      	beq.n	1849a <open_endpoint.constprop.0+0x162>
+   184b2:	e7df      	b.n	18474 <open_endpoint.constprop.0+0x13c>
+  if (ep->state == SL_CPC_STATE_OPEN || ep->state == SL_CPC_STATE_CONNECTING) {
+   184b4:	2402      	movs	r4, #2
+   184b6:	e7dd      	b.n	18474 <open_endpoint.constprop.0+0x13c>
+    return SL_STATUS_BUSY;
+   184b8:	2504      	movs	r5, #4
+   184ba:	e7bb      	b.n	18434 <open_endpoint.constprop.0+0xfc>
+        status = SL_STATUS_ALLOCATION_FAILED;
+   184bc:	2519      	movs	r5, #25
+   184be:	e7b9      	b.n	18434 <open_endpoint.constprop.0+0xfc>
+   184c0:	7c43      	ldrb	r3, [r0, #17]
+   184c2:	deff      	udf	#255	@ 0xff
+   184c4:	20003e84 	.word	0x20003e84
