@@ -1,0 +1,53 @@
+{
+  "file": "donglee_mg21_multipan_beta_4.6.0_115200.gbl",
+  "size": 246596,
+  "sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+  "crc32_entire_file": "0x2144df1c",
+  "gbl_crc_residue_matches": true,
+  "tags": [
+    {
+      "offset": "0x0",
+      "tag": "0x3a617eb",
+      "length": 8,
+      "payload_hex": "0000000300000000"
+    },
+    {
+      "offset": "0x10",
+      "tag": "0xf40a0af4",
+      "length": 28,
+      "payload_hex": "22000000010000000000000000000000000000000000000000000000"
+    },
+    {
+      "offset": "0x34",
+      "tag": "0xfd0303fd",
+      "length": 728,
+      "address": "0x4000",
+      "data_length": 724,
+      "end_exclusive": "0x42d4"
+    },
+    {
+      "offset": "0x314",
+      "tag": "0xfd0303fd",
+      "length": 245788,
+      "address": "0x42e0",
+      "data_length": 245784,
+      "end_exclusive": "0x402f8"
+    },
+    {
+      "offset": "0x3c338",
+      "tag": "0xfc0404fc",
+      "length": 4,
+      "payload_hex": "45977836"
+    }
+  ],
+  "relevant_ascii_strings": [
+    "CPC Endpoint Lock",
+    "CPC Core",
+    "CPC Endpoints List Lock",
+    "Bluetooth HCI CPC",
+    "D:/Users/Coolkit/SimplicityStudio/SDKs/simplicity_sdk_12_01/protocol/openthread/platform-abstraction/efr32/radio.c",
+    "D:/Users/Coolkit/SimplicityStudio/SDKs/simplicity_sdk_12_01/util/third_party/openthread/examples/platforms/utils/mac_frame.cpp",
+    "SL-OPENTHREAD/2.6.1.0_GitHub-7f6723ffb; EFR32; Mar 31 2025 17:13:46",
+    "D:/Users/Coolkit/SimplicityStudio/SDKs/simplicity_sdk_12_01/util/third_party/openthread/src/lib/spinel/spinel_buffer.cpp"
+  ]
+}

@@ -1,44 +1,33 @@
-# Installation proposal — not ready to flash
+# Installation proposal — recovery gate remains open
 
-This is a proposed sequence, not authorization to install or a verified installation procedure. The next gate is read-only identification of the actual dongle, installed firmware, bootloader, persistent storage and recovery options. The offline candidate must not be flashed before that gate is resolved.
+Updated2026-09-14. This document supersedes earlier requests for model identification or a bootloader probe. The operator confirmed SONOFF ZBDongle-E; the authorized probe observed Gecko Bootloader1.12.00 / SONOFF1.0.1 and CPC4.6.0, then restored normal operation.
 
-## What is verified
+## Current decision
 
-The SDK 2026.6.1 encrypted multi-PAN RCP candidate compiled; generated ECDH/security settings and linked shared-endpoint encryption/default-denied remote unbind were checked. Eight offline API tests passed. The final host image rebuilt successfully with fixed signed Debian snapshot inputs; its ID is recorded in evidence/final-image-id.txt. Packaging, service-graph, key-parser and web checks passed; real-s6 missing/malformed-key failure paths also passed on the final image; see lifecycle-tests/README.md. These checks do not establish working host/radio binding, radio traffic or hardware compatibility. Firmware evidence and exact candidate inputs are in [firmware/README.md](firmware/README.md); key behavior is assessed in [CPC-SECURITY.md](CPC-SECURITY.md).
+Do not flash production yet. The application-only candidate and a vendor rollback candidate are prepared, but restoration of relevant radio state and a matched current host recovery set are not established. No installation, binding or publication is authorized by this proposal.
 
-## Next gate: establish the actual installation
+See [recovery decision](recovery/DECISION.md), [host state and backup evidence](recovery/HOST-STATE.md), [rollback artifact](recovery/rollback/README.md), and [candidate package](firmware/package/README.md).
 
-Non-disruptive inspection is already authorized. Continue that inventory: inspect the dongle label and connection, collect existing host/device metadata and logs, and read available firmware/bootloader information through documented methods that do not reset, disconnect or take ownership of the active radio. Do not open a second serial client, enter a bootloader, stop services, unbind, erase or flash as part of this gate. If a fact requires interruption, record it as unresolved and propose a separate maintenance action.
+## Prepared artifacts
 
-Record these missing facts before selecting a firmware or flashing procedure:
+- SDK2026.6.1 encrypted host image: sha256:7f6104879bfe004823b03c3db5ba67d90ea1366d854372bba1732baa1e250f6b.
+- Clean firmware ELF: SHA256165a4a603d42eedd346b8e5e881662d41b9689eaecc762848d86535dfe064f74.
+- Application-only GBL3: SHA256b5deda18cba9f07f03f5faeb5d6969e51110bf0bd8450dd00bb3cf14047a9d50; reproducible packaging, vendor parsing and independent payload comparison passed. No bootloader or Secure Engine upgrade, compression or firmware-package encryption. CPC link encryption is enabled independently.
+- Official SONOFF4.6.0/115200 rollback candidate: SHA25640fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787. Strong model/version/baud match; not proven identical to installed bytes or tested rollback.
 
-- Exact board model/revision, MCU and physical serial path, including any VM USB passthrough; candidate ZBDongle-E/EFR32MG21 assumptions are unconfirmed.
-- Current radio firmware identity, multi-PAN/CPC mode, UART settings, bootloader identity/version, and documented supported update/recovery method.
-- Actual radio owner and host consumers: which process opens the serial device, how Thread and Zigbee reach it, and which services must stop/start together. Only one process may own the radio; do not run the old and candidate CPC hosts concurrently.
-- Existing CPC binding/encryption state, expected host key location and backup coverage, plus where Thread and Zigbee network state resides. Inventory metadata without exposing keys or network secrets in logs or this repository.
-- Bootloader/application/NVM layout and preservation rules of both current and candidate firmware, including the chosen flashing tool's erase behavior. The candidate's compiled layout alone does not prove preservation.
-- An obtainable, identified known-good matched host/radio version pair, its settings and recoverable private state, and a documented way to restore it. A VM snapshot restores host-side files/state captured in that VM; it does not restore radio firmware, radio NVM or radio-held binding keys. Host and radio state must match after recovery.
+Offline API, host packaging and failure-path checks are recorded in STATUS.md and linked evidence. They do not establish physical radio compatibility or recovery.
 
-Gate output should be an evidence record plus a specific compatibility/recovery decision. If hardware identity, state preservation or recoverability remains uncertain, pause before flashing; resolve it through documentation or a spare radio.
+## Facts required before a concrete cutover
 
-## Proposed later stages, each requiring its preceding gate
+1. Actual bootloader acceptance/policy and application erase behavior. Current vendor-tool parsing is not hardware acceptance.
+2. Baseline radio storage/startup layout and a supported preservation/restoration method; compare before and after encrypted binding. The candidate stores a persistent radio binding key. A VM snapshot cannot restore it.
+3. A matched current host recovery set and immutable installed image identity. The latest inspected Supervisor app backup omits Z2M's real /config/zigbee2mqtt directory and excludes HA/Matter; the operator's separate Proxmox backup has not been assessed here.
+4. Protected backups for host Zigbee tokens, Thread datasets, Z2M data, Matter fabric state and any CPC key. Do not print or commit their contents.
 
-1. **Prepare the matched pair and recovery set.** Finish and review the host build/tests, then select the exact host image and compatible firmware together. Record their immutable identities, transport settings, security mode and applicable update procedure. Back up the existing host configuration, Thread/Zigbee state using their supported mechanisms, and any current CPC binding key in private protected storage. Verify that backups are readable and that the recovery process restores the matched pair and corresponding state. Keep secrets out of this review directory. Use a spare/test radio for uncertain erase, lost-key or destructive recovery experiments.
-2. **Approve a bounded maintenance procedure.** Once hardware and preservation facts are established, write the exact stop/update/start actions and rollback triggers for review. Stop the current radio owner and its dependent consumers in the documented order. Update only through the verified procedure, preserving required network/binding storage. No firmware identifier, erase option or device command is specified here because the actual device and supported procedure are not yet verified.
-3. **Establish encrypted CPC deliberately.** If already bound, use the matching existing key; do not replace it. If confirmed unbound, perform one explicitly authorized ECDH binding over a physically trusted connection, since the exchange is not authenticated against an active intermediary. Store the resulting host key in the configured private persistent location with restrictive permissions and secure backup. Confirm normal startup uses that key. Missing, malformed or mismatched keys must stop startup for diagnosis; no automatic rebind, unbind, key generation/replacement, or plaintext fallback is an accepted recovery action.
-4. **Validate and preserve state.** Confirm one radio owner, successful encrypted session, and representative Thread and Zigbee traffic with the existing networks and devices. Check logs without disclosing secrets. Validate planned restart/power-cycle persistence and host-key backup/restore only under a controlled procedure with the original key protected; do not destroy the only working key or trigger radio erasure to prove recovery on the production dongle. Verify network state and service health after each step.
-5. **Rollback when acceptance fails.** Stop the candidate radio owner and restore the identified known-good matched host/firmware pair and its corresponding private state using the verified recovery method. Retain CPC keys even if intentionally returning to an unencrypted baseline. Do not assume the old host can communicate with candidate firmware, that a host snapshot reverses radio changes, or that reflashing preserves/restores binding and network state. If these facts were not proven during preparation, rollback readiness was not established and installation should not have started.
+## Conditional future sequence
 
-Completion would require observed operation and persistence of both Thread and Zigbee, confirmed encrypted CPC behavior, protected recoverable key/network state, and a credible matched rollback route. Offline compilation and API checks satisfy only the preparation evidence; no live installation step has been performed by this proposal.
+After these facts are established and the operator approves the exact interruption: coordinate with the HA peer; verify protected recovery artifacts and baseline health; stop Z2M then the current Multiprotocol owner; update only the application through the verified method; bind only if explicitly authorized and confirmed unbound; protect the resulting host key; start the matched CPC/zigbeed/OTBR services and then Z2M; verify encrypted CPC and fresh Zigbee/Thread/Matter behavior and persistence.
 
-## Read-only installation evidence, 2026-09-14
-The documented access check passed. Live HA Core is2026.9.2. The active app is local_codex_ihost_otbr_focused, version0.2.3-ordered, started. Stock81bc2df9_hassio_ihost_silabs_multiprotocol1.0.2 is stopped. Matter Server9.2.0 and Zigbee2MQTT2.14.1-1 are also started; their exact current consumers/transports must be identified before a cutover.
-The active Multiprotocol app selects a Sonoff USB serial-by-id device,115200 baud, flow_control=false, otbr_enable=true. The full unique serial is intentionally omitted from this contribution record. This metadata matches proposed serial settings but does not establish the physical board revision/MCU or bootloader. A filtered existing-log query produced no version/encryption matches; no serial probing was performed.
+Preserve the existing Z2M endpoint tcp://local-codex-ihost-otbr-focused:9999 or explicitly include its change. Only one radio owner may run. Stop on failed image acceptance, binding mismatch, missing state or loss of network behavior. Do not automatically erase, unbind, regenerate keys, downgrade or fall back to plaintext. Recovery must use the previously verified matched firmware/host/state procedure.
 
-The Zigbee2MQTT app reports serial.port=tcp://local-codex-ihost-otbr-focused:9999 and adapter=ember. Preserve that bridge hostname/port or explicitly coordinate the consumer change; installing a differently named app alone is not a transparent replacement. Supervisor hardware lists ttyUSB0 but supplies no model/vendor values in the queried fields, so it does not establish MCU/bootloader identity.
-
-## Exact next operator input
-Confirm the model/revision printed on the connected dongle without unplugging it; a readable label photo is sufficient. Existing software metadata is generic and has not established that it is the provisional ZBDongle-E target. This is identification only, not approval to flash. Then match the vendor update/bootloader/storage procedure to that actual model. Any probe that must stop the app, reset the radio or enter the bootloader needs a separately specified maintenance approval; it is not included in read-only inventory.
-
-## Hardware identification update
-Operator confirmed ZBDongle-E. Authorized coordinated probe identified Sonoff v1.0.1 / Gecko Bootloader1.12.00 and returned to existing CPC4.6.0; both apps restored and fresh Thread/Matter reports verified. See bootloader-probe/README.md and probe.log. This supersedes the earlier request for a label/bootloader probe; no further photo is needed. Exact rollback firmware and SDK storage/GBL compatibility remain to be established before any flashing approval.
+Exact destructive commands are deliberately not presented as ready to execute while their preservation and recovery prerequisites remain unresolved. The next action is the focused offline investigation in recovery/DECISION.md; a spare equivalent radio is the practical alternative if source/storage evidence cannot establish a credible production recovery route. Successful spare operation alone would not prove preservation of the production dongle's existing state.
