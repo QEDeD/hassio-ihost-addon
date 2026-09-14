@@ -1,3 +1,5 @@
+Current closeout (2026-09-14): see review/sdk2026/recovery/FINAL-ASSESSMENT.md and BACKUP-20260914.md. A new current host backup closes the earlier missing backup coverage; production radio recovery and candidate hardware acceptance remain unverified.
+
 # SDK 2026.6.1 offline candidate
 
 Offline preparation is verified to the scope below. This is not installation or flashing approval. The next gate is physical hardware identification and a matched recovery decision.

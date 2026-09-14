@@ -1,3 +1,5 @@
+Current closeout (2026-09-14): see review/sdk2026/recovery/FINAL-ASSESSMENT.md and BACKUP-20260914.md. A new current host backup closes the earlier missing backup coverage; production radio recovery and candidate hardware acceptance remain unverified.
+
 # Current host state and backup coverage
 
 Read-only inspection: 2026-09-14. No backup, restart, configuration change, secret export, Docker/SSH installation, radio operation or live write was performed. Only metadata, filenames, archive member listings and explicitly selected non-secret configuration fields were returned. Raw backup/state contents were not copied into this repository.

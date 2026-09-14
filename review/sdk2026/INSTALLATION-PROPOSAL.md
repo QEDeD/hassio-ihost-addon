@@ -1,3 +1,5 @@
+Current closeout (2026-09-14): see review/sdk2026/recovery/FINAL-ASSESSMENT.md and BACKUP-20260914.md. A new current host backup closes the earlier missing backup coverage; production radio recovery and candidate hardware acceptance remain unverified.
+
 # Installation proposal — recovery gate remains open
 
 Updated2026-09-14. This document supersedes earlier requests for model identification or a bootloader probe. The operator confirmed SONOFF ZBDongle-E; the authorized probe observed Gecko Bootloader1.12.00 / SONOFF1.0.1 and CPC4.6.0, then restored normal operation.
