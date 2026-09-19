@@ -55,12 +55,12 @@ Run in the reviewed isolated maintenance process/container context, with no TCP 
 | Observed stock CPCd result | Interpretation / next action |
 |---|---|
 | `Unbind successful...`, exit 0 without already-unbound warning | Secondary reported removal succeeded and its storage absence check passed. |
-| `The secondary was already not bound`, then success, exit 0 | Secondary reported no binding key in the matched backend. Preserve this distinction. |
+| `The secondary was already not bound`, then success, exit 0 | Secondary reported no binding key in the matched backend. The stock command distinguishes this; the prepared wrapper deliberately records only unbound-confirmed for either successful outcome. |
 | Permission denial, storage/transport failure, timeout or missing affirmative completion | Unconfirmed recovery. Stop and retain protected evidence; no retry or fallback is implied. |
 
 The command intentionally deletes CPC key material. `PROP_SECURITY_STATE` is only session state and is insufficient as a bound/unbound probe. Do not enable frame/debug tracing or expose key material while collecting the stock exit status and informational result.
 
-After either affirmative result, return immediately to the exact approved normal candidate application. Only then perform a separately approved single ECDH bind into a fresh protected destination, preserve its matching key, and reconnect before starting the existing networks. Preserve the failed original key evidence. If return upload or binding fails, leave services stopped and escalate that observed state. The recovery application permits unauthenticated local unbind by design and must not remain deployed for normal use. No production step is authorized by this document.
+After either affirmative result, return immediately to the exact approved normal candidate application. Only then perform a separately approved single ECDH bind into a fresh protected destination, preserve its matching key, then verify encryption during normal startup with existing stores; this immediately becomes network-active. Preserve the failed original key evidence. If return upload or binding fails, leave services stopped and escalate that observed state. The recovery application permits unauthenticated local unbind by design and must not remain deployed for normal use. No production step is authorized by this document.
 
 ## Reproduction and retained evidence
 

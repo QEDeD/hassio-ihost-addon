@@ -1,0 +1,12 @@
+{
+  "date": "2026-09-19",
+  "source": "HA /backup/feec49c2.tar",
+  "protected_copy": "/home/wsluser/.local/share/ha-recovery/sdk2026-20260919/historical-feec49c2.tar",
+  "bytes": 129986560,
+  "sha256": "0d3d71398a963bb9199aee781b1560ba5509f2de5a563f068758077b21f5d141",
+  "directory_mode": "0700",
+  "file_mode": "0600",
+  "required_archive_components_present": true,
+  "fresh_or_coherent": false,
+  "scope": "Independent historical backup copy path verified; not the pre-trial recovery point. No archive contents committed."
+}

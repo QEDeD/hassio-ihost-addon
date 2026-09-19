@@ -1,0 +1,48 @@
+{
+  "apps/app.py": {
+    "source_url": "https://raw.githubusercontent.com/home-assistant/supervisor/2026.09.2/supervisor/apps/app.py",
+    "sha256": "55a371d77d830ce10fbdd683a682ccbf34a489375c94339d99b8a97ce9ad3d9b",
+    "functions": {
+      "update": {
+        "same_text_as_rehearsed_2026_09_0": true,
+        "present": true
+      },
+      "rebuild": {
+        "same_text_as_rehearsed_2026_09_0": true,
+        "present": true
+      },
+      "test_update_schema": {
+        "same_text_as_rehearsed_2026_09_0": true,
+        "present": true
+      },
+      "begin_backup": {
+        "same_text_as_rehearsed_2026_09_0": true,
+        "present": true
+      },
+      "end_backup": {
+        "same_text_as_rehearsed_2026_09_0": true,
+        "present": true
+      }
+    }
+  },
+  "apps/manager.py": {
+    "source_url": "https://raw.githubusercontent.com/home-assistant/supervisor/2026.09.2/supervisor/apps/manager.py",
+    "sha256": "678674feadf51f03e62d9174401cae3abc2842db289d800042a9dee9dedbef7b",
+    "functions": {
+      "update": {
+        "same_text_as_rehearsed_2026_09_0": true,
+        "present": true
+      }
+    }
+  },
+  "apps/data.py": {
+    "source_url": "https://raw.githubusercontent.com/home-assistant/supervisor/2026.09.2/supervisor/apps/data.py",
+    "sha256": "b1a205634cecbab1d5aadc407feae9b03feb6d1c91c68f38a16a21a62c7fb47c",
+    "functions": {
+      "update": {
+        "same_text_as_rehearsed_2026_09_0": true,
+        "present": true
+      }
+    }
+  }
+}
