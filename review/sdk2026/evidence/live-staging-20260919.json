@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-19",
+  "baseline_observed_utc": "2026-09-19T18:05:15Z",
+  "os": "18.3",
+  "core": "2026.9.3",
+  "supervisor": "2026.09.2",
+  "healthy": true,
+  "supported": true,
+  "apps": {
+    "local_codex_ihost_otbr_focused": "0.2.3-ordered",
+    "45df7312_zigbee2mqtt": "2.14.1-1",
+    "core_matter_server": "9.2.0",
+    "core_ssh": "10.5.0"
+  },
+  "all_apps_started": true,
+  "serial_target": "/dev/ttyUSB0",
+  "zigbee_channel": 25,
+  "zigbee_topic": "zigbee2mqtt/stue_loft_computerbord_bulb_01/get",
+  "zigbee_last_seen_utc": "2026-09-19T18:08:32Z",
+  "alpstuga_reports_utc": "2026-09-19T18:05:15Z",
+  "plug_power_report_utc": "2026-09-19T18:05:17Z",
+  "archive": "/share/codex-sdk2026-stage-20260919/flasher-bundle.tar",
+  "archive_sha256": "ca589f0efc1d722db1ca0b75c2a9b7734a7896c84db48f486f2bb9e44accdfe0",
+  "archive_bytes": 32706560,
+  "firmware_directory": "/share/codex-sdk2026-stage-20260919/bundle/firmware",
+  "flasher": "/tmp/codex-sdk2026-flasher/bin/universal-silabs-flasher",
+  "temporary_apk_group": ".codex-sdk2026-flasher",
+  "validation": {
+    "all_bundle_hashes": true,
+    "pip_check": true,
+    "flasher_help": true,
+    "three_local_gbl_parses": true,
+    "original_package_versions_retained": true,
+    "serial_access": false,
+    "firmware_changes": false,
+    "radio_app_changes": false
+  },
+  "cleanup": "After trial closeout remove temporary APK group and exact venv path; retain independent recovery bundle. Stage package logs under /share/codex-sdk2026-stage-20260919. Revalidate tool if SSH app restarts/updates."
+}

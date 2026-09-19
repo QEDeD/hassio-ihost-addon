@@ -8,7 +8,7 @@ options = ["--device", "/dev/serial/by-id/TEST-NOT-A-DEVICE", "--bootloader-rese
 async def check(argv):
     with patch.object(flash, "Flasher") as factory, patch.object(flash, "_cmd_flash", new_callable=AsyncMock) as action:
         await flash.main(argv)
-        factory.assert_called_once_with(device="/dev/serial/by-id/TEST-NOT-A-DEVICE", probe_methods=[(ApplicationType.BOOTLOADER,115200),(ApplicationType.CPC,115200)], bootloader_reset=(ResetTarget.RTS_DTR,))
+        factory.assert_called_once_with(device="/dev/serial/by-id/TEST-NOT-A-DEVICE", probe_methods=[(ApplicationType("bootloader"),115200),(ApplicationType("cpc"),115200)], bootloader_reset=(ResetTarget("rts_dtr"),))
         action.assert_awaited_once()
         assert action.await_args.args[0].firmware == "/bundle/firmware/candidate.gbl"
 async def main():
