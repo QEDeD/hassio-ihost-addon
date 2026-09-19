@@ -1,0 +1,9 @@
+{
+  "dns_policy": "#define OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF 1",
+  "files": {
+    "/sdk2026-host/zigbeed/build/release/zigbeed": "983abe4ad018ce358e74e353b7ed5035f4733bbc86c70667631f3bf97a5ab530",
+    "/sdk2026-install/usr/sbin/otbr-agent": "ffc58d0917f7a89c7d706fa67b7784fb4897d8bfea8f8a2c74e405a376f26ba3",
+    "/opt/silabs/sdks/simplicity_sdk_2026.6.1/zigbee/stack/platform/sl_zigbee_token_host.c": "eaa441401ec430f578e83339e25a757d3a55f6f1a85044d1570098c0ea0bd0c5",
+    "/sdk2026-host/ot-br-posix/third_party/openthread/repo/src/posix/platform/resolver.cpp": "ab1c64468ef768f93d65d3185a8a05deada308c7772628fa0b09d5c11de61e1e"
+  }
+}

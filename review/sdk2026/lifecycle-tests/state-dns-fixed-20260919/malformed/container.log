@@ -1,0 +1,29 @@
+/package/admin/s6-overlay/libexec/preinit: info: container permissions: uid=0 (root), euid=0, gid=0 (root), egid=0
+[12:14:27] INFO: [32mGenerating cpcd configuration.[0m
+/package/admin/s6-overlay/libexec/preinit: info: /run permissions: uid=0 (root), gid=0 (root), perms=oxorgxgruxuwur
+/run/s6/basedir/scripts/rc.init: info: hook /etc/s6-overlay/scripts/enable-check.sh exited 0
+s6-rc: info: service s6rc-oneshot-runner: starting
+s6-rc: info: service s6rc-oneshot-runner successfully started
+s6-rc: info: service fix-attrs: starting
+s6-rc: info: service cpcd-config: starting
+s6-rc: info: service fix-attrs successfully started
+s6-rc: info: service legacy-cont-init: starting
+cont-init: info: running /etc/cont-init.d/check-cpcd-shm.sh
+cont-init: info: /etc/cont-init.d/check-cpcd-shm.sh exited 0
+s6-rc: info: service legacy-cont-init successfully started
+[12:14:27] INFO: [32mCPC ended with exit code 1 (signal 0)...[0m
+s6-rc: info: service cpcd-config successfully started
+s6-rc: info: service cpcd: starting
+CPC key must contain exactly 32 hexadecimal characters and an optional single line ending; refusing encrypted startup. Restore the matching key or use the approved provisioning procedure.
+s6-svlisten: fatal: some services reported permanent failure or their supervisor died
+s6-rc: warning: unable to start service cpcd: command exited 1
+/run/s6/basedir/scripts/rc.init: warning: s6-rc failed to properly bring all the services up! Check your logs (in /run/uncaught-logs/current if you have in-container logging) for more information.
+/run/s6/basedir/scripts/rc.init: fatal: stopping the container.
+s6-rc: info: service legacy-cont-init: stopping
+s6-rc: info: service cpcd-config: stopping
+s6-rc: info: service cpcd-config successfully stopped
+s6-rc: info: service legacy-cont-init successfully stopped
+s6-rc: info: service fix-attrs: stopping
+s6-rc: info: service fix-attrs successfully stopped
+s6-rc: warning: service s6rc-oneshot-runner is marked as essential, not stopping it
+

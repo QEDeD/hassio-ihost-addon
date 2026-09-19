@@ -1,3 +1,5 @@
+Historical proposal: use [EXECUTION.md](EXECUTION.md) for the current route and unresolved gates. This file is not a ready-to-execute procedure.
+
 Latest proposed next step: [defined spare-radio experiment](recovery/SPARE-EXPERIMENT.md). The functional state assessment no longer requires byte-identical radio restoration by default. A spare and test-host serial mapping remain external prerequisites; no production cutover is proposed. See [state map](recovery/FUNCTIONAL-STATE.md) and [retained tested host](recovery/REUSE-FINDINGS.md).
 
 Current closeout (2026-09-14): see review/sdk2026/recovery/FINAL-ASSESSMENT.md and BACKUP-20260914.md. A new current host backup closes the earlier missing backup coverage; production radio recovery and candidate hardware acceptance remain unverified.

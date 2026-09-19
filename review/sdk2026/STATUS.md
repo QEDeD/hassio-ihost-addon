@@ -1,3 +1,5 @@
+Current execution record: [EXECUTION.md](EXECUTION.md). The following is historical offline-candidate evidence; its next-step recommendations and image identities may be superseded.
+
 Current closeout (2026-09-14): see review/sdk2026/recovery/FINAL-ASSESSMENT.md and BACKUP-20260914.md. A new current host backup closes the earlier missing backup coverage; production radio recovery and candidate hardware acceptance remain unverified.
 
 # SDK 2026.6.1 offline candidate

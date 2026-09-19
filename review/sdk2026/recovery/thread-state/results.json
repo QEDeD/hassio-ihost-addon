@@ -1,0 +1,48 @@
+{
+  "scope": "Synthetic POSIX settings I/O only; not daemon, radio, counter-engine or production migration",
+  "sources": {
+    "baseline-settings.cpp": "0b237f108c68c37117f7101f283514518739f6402044ea4d7520f665013d979f",
+    "baseline-posix-settings.hpp": "b211a5440ea38d1e4593b1a1d2086642d5f8f9800341a2867f9e1a91e8cc5116",
+    "candidate-settings.cpp": "130d161d34dbc5a4d9393989b7172de4bf0e2588924cc9c2af6877d550ee1164",
+    "candidate-settings_file.cpp": "83e22e3410b19fa8d1b04928ee0524de2a631d33db82b041d42ba77a395213f7"
+  },
+  "checks": [
+    {
+      "backend": "old",
+      "action": "write",
+      "phase": 1,
+      "result": "PASS write phase=1 all 10 synthetic keys"
+    },
+    {
+      "backend": "new",
+      "action": "read",
+      "phase": 1,
+      "result": "PASS read phase=1 all 10 synthetic keys"
+    },
+    {
+      "backend": "new",
+      "action": "write",
+      "phase": 2,
+      "result": "PASS write phase=2 all 10 synthetic keys"
+    },
+    {
+      "backend": "old",
+      "action": "read",
+      "phase": 2,
+      "result": "PASS read phase=2 all 10 synthetic keys"
+    },
+    {
+      "backend": "old",
+      "action": "write",
+      "phase": 3,
+      "result": "PASS write phase=3 all 10 synthetic keys"
+    },
+    {
+      "backend": "new",
+      "action": "read",
+      "phase": 3,
+      "result": "PASS read phase=3 all 10 synthetic keys"
+    }
+  ],
+  "newer_only_record_survives_old_write": true
+}
