@@ -2,6 +2,10 @@
 
 Updated 2026-09-19. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
 
+## Operator scheduling decision — September 19 evening
+
+The operator deferred actual firmware flashing and the service window until tomorrow, September 20 (Europe/Copenhagen), because a replacement dongle cannot be obtained tonight if recovery fails. No disruptive trial work tonight. This is a scheduling decision, not production-procedure approval or authorization for an automatic start tomorrow. Leave the existing app/firmware running; preserve published images, staged files and completed evidence. Await operator readiness and concrete trial approval. Then refresh the baseline, staged runtime/hashes and coordination checks; take fresh coherent independently copied backups inside the approved window. Do not assume a spare has been acquired. The goal was already marked blocked pending approval; this decision does not replace the upgrade objective or request a new goal.
+
 ## Resumption and compression correction
 
 The operator explicitly resumed execution on 2026-09-19. Their earlier statement that the goal was paused was descriptive, not a pause request; the agent's subsequent pause was a mistake. Do not revive that interpretation. Only an explicit operator request authorizes pausing. The goal service was verified active on resumption.
