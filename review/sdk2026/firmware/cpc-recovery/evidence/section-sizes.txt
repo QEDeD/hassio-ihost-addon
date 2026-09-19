@@ -1,0 +1,28 @@
+/sdk2026-cpc-recovery/generated/cmake_gcc/build/base/cpc_secondary_vcom_security_device_recovery.out  :
+section                        size         addr
+.vectors                        308        16384
+.bootloader_reset_section         4    536870912
+.stack                         4096    536870920
+.bss                           3500    536875016
+text_application_ram            472    536878520
+.text                         62408        17168
+.ARM.exidx                        8        79576
+.copy.table                      12        79584
+.zero.table                       0        79596
+.data                           408    536878992
+.memory_manager_heap          57048    536879400
+.nvm                          40960   4294205440
+.ARM.attributes                  54            0
+.comment                         69            0
+.debug_line_str                 653            0
+.debug_info                  561011            0
+.debug_abbrev                 68622            0
+.debug_loclists              226753            0
+.debug_aranges                13112            0
+.debug_rnglists               21544            0
+.debug_line                  256906            0
+.debug_str                   138001            0
+.debug_frame                  37988            0
+Total                       1493937
+
+

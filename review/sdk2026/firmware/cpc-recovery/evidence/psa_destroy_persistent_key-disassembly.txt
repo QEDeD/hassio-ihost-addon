@@ -1,0 +1,32 @@
+
+/sdk2026-cpc-recovery/generated/cmake_gcc/build/base/cpc_secondary_vcom_security_device_recovery.out:     file format elf32-littlearm
+
+
+Disassembly of section text_application_ram:
+
+Disassembly of section .text:
+
+0001018a <psa_destroy_persistent_key>:
+   1018a:	b513      	push	{r0, r1, r4, lr}
+   1018c:	2100      	movs	r1, #0
+   1018e:	466a      	mov	r2, sp
+   10190:	4604      	mov	r4, r0
+   10192:	f001 f857 	bl	11244 <psa_its_get_info>
+   10196:	308c      	adds	r0, #140	@ 0x8c
+   10198:	d102      	bne.n	101a0 <psa_destroy_persistent_key+0x16>
+   1019a:	2000      	movs	r0, #0
+   1019c:	b002      	add	sp, #8
+   1019e:	bd10      	pop	{r4, pc}
+   101a0:	2100      	movs	r1, #0
+   101a2:	4620      	mov	r0, r4
+   101a4:	f7fc ffe8 	bl	d178 <psa_its_remove>
+   101a8:	4601      	mov	r1, r0
+   101aa:	b110      	cbz	r0, 101b2 <psa_destroy_persistent_key+0x28>
+   101ac:	f06f 0098 	mvn.w	r0, #152	@ 0x98
+   101b0:	e7f4      	b.n	1019c <psa_destroy_persistent_key+0x12>
+   101b2:	466a      	mov	r2, sp
+   101b4:	4620      	mov	r0, r4
+   101b6:	f001 f845 	bl	11244 <psa_its_get_info>
+   101ba:	308c      	adds	r0, #140	@ 0x8c
+   101bc:	d0ed      	beq.n	1019a <psa_destroy_persistent_key+0x10>
+   101be:	e7f5      	b.n	101ac <psa_destroy_persistent_key+0x22>

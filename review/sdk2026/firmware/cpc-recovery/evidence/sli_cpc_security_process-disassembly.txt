@@ -1,0 +1,575 @@
+
+/sdk2026-cpc-recovery-package/input/cpc_secondary_vcom_security_device_recovery.out:     file format elf32-littlearm
+
+
+Disassembly of section text_application_ram:
+
+Disassembly of section .text:
+
+000074f8 <sli_cpc_security_process>:
+    74f8:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+    74fc:	4cb0      	ldr	r4, [pc, #704]	@ (77c0 <sli_cpc_security_process+0x2c8>)
+    74fe:	b0c5      	sub	sp, #276	@ 0x114
+    7500:	7823      	ldrb	r3, [r4, #0]
+    7502:	b123      	cbz	r3, 750e <sli_cpc_security_process+0x16>
+    7504:	f7ff ff06 	bl	7314 <security_recover_endpoint>
+    7508:	7823      	ldrb	r3, [r4, #0]
+    750a:	2b00      	cmp	r3, #0
+    750c:	d14c      	bne.n	75a8 <sli_cpc_security_process+0xb0>
+    750e:	4dad      	ldr	r5, [pc, #692]	@ (77c4 <sli_cpc_security_process+0x2cc>)
+    7510:	782b      	ldrb	r3, [r5, #0]
+    7512:	2b00      	cmp	r3, #0
+    7514:	d048      	beq.n	75a8 <sli_cpc_security_process+0xb0>
+    7516:	2601      	movs	r6, #1
+    7518:	2300      	movs	r3, #0
+    751a:	48ab      	ldr	r0, [pc, #684]	@ (77c8 <sli_cpc_security_process+0x2d0>)
+    751c:	9600      	str	r6, [sp, #0]
+    751e:	f10d 0212 	add.w	r2, sp, #18
+    7522:	a905      	add	r1, sp, #20
+    7524:	f007 fbec 	bl	ed00 <sl_cpc_read>
+    7528:	4604      	mov	r4, r0
+    752a:	2800      	cmp	r0, #0
+    752c:	f040 8288 	bne.w	7a40 <sli_cpc_security_process+0x548>
+    7530:	9d05      	ldr	r5, [sp, #20]
+    7532:	886a      	ldrh	r2, [r5, #2]
+    7534:	b293      	uxth	r3, r2
+    7536:	0412      	lsls	r2, r2, #16
+    7538:	d405      	bmi.n	7546 <sli_cpc_security_process+0x4e>
+    753a:	1e5a      	subs	r2, r3, #1
+    753c:	2a04      	cmp	r2, #4
+    753e:	d907      	bls.n	7550 <sli_cpc_security_process+0x58>
+    7540:	f44f 7142 	mov.w	r1, #776	@ 0x308
+    7544:	e001      	b.n	754a <sli_cpc_security_process+0x52>
+    7546:	f240 3103 	movw	r1, #771	@ 0x303
+    754a:	48a0      	ldr	r0, [pc, #640]	@ (77cc <sli_cpc_security_process+0x2d4>)
+    754c:	f007 ff67 	bl	f41e <sli_cpc_assert_fail>
+    7550:	2206      	movs	r2, #6
+    7552:	435a      	muls	r2, r3
+    7554:	f8df 829c 	ldr.w	r8, [pc, #668]	@ 77f4 <sli_cpc_security_process+0x2fc>
+    7558:	8829      	ldrh	r1, [r5, #0]
+    755a:	f838 2002 	ldrh.w	r2, [r8, r2]
+    755e:	4291      	cmp	r1, r2
+    7560:	d002      	beq.n	7568 <sli_cpc_security_process+0x70>
+    7562:	f240 310d 	movw	r1, #781	@ 0x30d
+    7566:	e7f0      	b.n	754a <sli_cpc_security_process+0x52>
+    7568:	3b02      	subs	r3, #2
+    756a:	2b03      	cmp	r3, #3
+    756c:	d805      	bhi.n	757a <sli_cpc_security_process+0x82>
+    756e:	e8df f013 	tbh	[pc, r3, lsl #1]
+    7572:	0020      	.short	0x0020
+    7574:	0159002d 	.word	0x0159002d
+    7578:	023b      	.short	0x023b
+    757a:	2104      	movs	r1, #4
+    757c:	4b94      	ldr	r3, [pc, #592]	@ (77d0 <sli_cpc_security_process+0x2d8>)
+    757e:	792a      	ldrb	r2, [r5, #4]
+    7580:	7019      	strb	r1, [r3, #0]
+    7582:	2100      	movs	r1, #0
+    7584:	7059      	strb	r1, [r3, #1]
+    7586:	2101      	movs	r1, #1
+    7588:	7099      	strb	r1, [r3, #2]
+    758a:	f06f 017f 	mvn.w	r1, #127	@ 0x7f
+    758e:	70d9      	strb	r1, [r3, #3]
+    7590:	4990      	ldr	r1, [pc, #576]	@ (77d4 <sli_cpc_security_process+0x2dc>)
+    7592:	7809      	ldrb	r1, [r1, #0]
+    7594:	b959      	cbnz	r1, 75ae <sli_cpc_security_process+0xb6>
+    7596:	2a01      	cmp	r2, #1
+    7598:	bf18      	it	ne
+    759a:	2424      	movne	r4, #36	@ 0x24
+    759c:	605c      	str	r4, [r3, #4]
+    759e:	f7ff ff21 	bl	73e4 <send_response.constprop.0>
+    75a2:	9805      	ldr	r0, [sp, #20]
+    75a4:	f7ff fcc4 	bl	6f30 <sl_cpc_free_rx_buffer>
+    75a8:	b045      	add	sp, #276	@ 0x114
+    75aa:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+    75ae:	2412      	movs	r4, #18
+    75b0:	e7f4      	b.n	759c <sli_cpc_security_process+0xa4>
+    75b2:	2204      	movs	r2, #4
+    75b4:	4b86      	ldr	r3, [pc, #536]	@ (77d0 <sli_cpc_security_process+0x2d8>)
+    75b6:	701a      	strb	r2, [r3, #0]
+    75b8:	2200      	movs	r2, #0
+    75ba:	705a      	strb	r2, [r3, #1]
+    75bc:	2202      	movs	r2, #2
+    75be:	709a      	strb	r2, [r3, #2]
+    75c0:	f06f 027f 	mvn.w	r2, #127	@ 0x7f
+    75c4:	70da      	strb	r2, [r3, #3]
+    75c6:	2224      	movs	r2, #36	@ 0x24
+    75c8:	605a      	str	r2, [r3, #4]
+    75ca:	e7e8      	b.n	759e <sli_cpc_security_process+0xa6>
+    75cc:	4a82      	ldr	r2, [pc, #520]	@ (77d8 <sli_cpc_security_process+0x2e0>)
+    75ce:	1d2b      	adds	r3, r5, #4
+    75d0:	f105 0124 	add.w	r1, r5, #36	@ 0x24
+    75d4:	f853 0b04 	ldr.w	r0, [r3], #4
+    75d8:	428b      	cmp	r3, r1
+    75da:	f842 0b04 	str.w	r0, [r2], #4
+    75de:	d1f9      	bne.n	75d4 <sli_cpc_security_process+0xdc>
+    75e0:	a80a      	add	r0, sp, #40	@ 0x28
+    75e2:	f007 ff20 	bl	f426 <mbedtls_mpi_init>
+    75e6:	a810      	add	r0, sp, #64	@ 0x40
+    75e8:	f007 ff1d 	bl	f426 <mbedtls_mpi_init>
+    75ec:	a818      	add	r0, sp, #96	@ 0x60
+    75ee:	f007 ff1a 	bl	f426 <mbedtls_mpi_init>
+    75f2:	2020      	movs	r0, #32
+    75f4:	f007 f8ce 	bl	e794 <malloc>
+    75f8:	4606      	mov	r6, r0
+    75fa:	b910      	cbnz	r0, 7602 <sli_cpc_security_process+0x10a>
+    75fc:	f240 215a 	movw	r1, #602	@ 0x25a
+    7600:	e7a3      	b.n	754a <sli_cpc_security_process+0x52>
+    7602:	2020      	movs	r0, #32
+    7604:	f007 f8c6 	bl	e794 <malloc>
+    7608:	4607      	mov	r7, r0
+    760a:	b910      	cbnz	r0, 7612 <sli_cpc_security_process+0x11a>
+    760c:	f44f 7118 	mov.w	r1, #608	@ 0x260
+    7610:	e79b      	b.n	754a <sli_cpc_security_process+0x52>
+    7612:	a820      	add	r0, sp, #128	@ 0x80
+    7614:	f007 fe0e 	bl	f234 <psa_key_attributes_init>
+    7618:	f44f 4380 	mov.w	r3, #16384	@ 0x4000
+    761c:	a830      	add	r0, sp, #192	@ 0xc0
+    761e:	9330      	str	r3, [sp, #192]	@ 0xc0
+    7620:	f007 fe10 	bl	f244 <psa_extend_key_usage_flags>
+    7624:	9b30      	ldr	r3, [sp, #192]	@ 0xc0
+    7626:	f8df a1d0 	ldr.w	sl, [pc, #464]	@ 77f8 <sli_cpc_security_process+0x300>
+    762a:	9322      	str	r3, [sp, #136]	@ 0x88
+    762c:	4b6b      	ldr	r3, [pc, #428]	@ (77dc <sli_cpc_security_process+0x2e4>)
+    762e:	a906      	add	r1, sp, #24
+    7630:	a820      	add	r0, sp, #128	@ 0x80
+    7632:	f8cd a08c 	str.w	sl, [sp, #140]	@ 0x8c
+    7636:	9320      	str	r3, [sp, #128]	@ 0x80
+    7638:	f001 fa74 	bl	8b24 <psa_generate_key>
+    763c:	b338      	cbz	r0, 768e <sli_cpc_security_process+0x196>
+    763e:	f007 fe0d 	bl	f25c <psa_status_to_sl_status>
+    7642:	4604      	mov	r4, r0
+    7644:	4630      	mov	r0, r6
+    7646:	2120      	movs	r1, #32
+    7648:	f000 fe74 	bl	8334 <mbedtls_platform_zeroize>
+    764c:	2120      	movs	r1, #32
+    764e:	4638      	mov	r0, r7
+    7650:	f000 fe70 	bl	8334 <mbedtls_platform_zeroize>
+    7654:	4638      	mov	r0, r7
+    7656:	f007 f8a5 	bl	e7a4 <free>
+    765a:	4630      	mov	r0, r6
+    765c:	f007 f8a2 	bl	e7a4 <free>
+    7660:	4e5f      	ldr	r6, [pc, #380]	@ (77e0 <sli_cpc_security_process+0x2e8>)
+    7662:	4b60      	ldr	r3, [pc, #384]	@ (77e4 <sli_cpc_security_process+0x2ec>)
+    7664:	4630      	mov	r0, r6
+    7666:	681a      	ldr	r2, [r3, #0]
+    7668:	495f      	ldr	r1, [pc, #380]	@ (77e8 <sli_cpc_security_process+0x2f0>)
+    766a:	f00a fbd8 	bl	11e1e <memcpy>
+    766e:	2206      	movs	r2, #6
+    7670:	886b      	ldrh	r3, [r5, #2]
+    7672:	f846 4c04 	str.w	r4, [r6, #-4]
+    7676:	fb02 8203 	mla	r2, r2, r3, r8
+    767a:	ea6f 4343 	mvn.w	r3, r3, lsl #17
+    767e:	ea6f 4353 	mvn.w	r3, r3, lsr #17
+    7682:	8852      	ldrh	r2, [r2, #2]
+    7684:	f826 3c06 	strh.w	r3, [r6, #-6]
+    7688:	f826 2c08 	strh.w	r2, [r6, #-8]
+    768c:	e787      	b.n	759e <sli_cpc_security_process+0xa6>
+    768e:	2220      	movs	r2, #32
+    7690:	4b54      	ldr	r3, [pc, #336]	@ (77e4 <sli_cpc_security_process+0x2ec>)
+    7692:	4955      	ldr	r1, [pc, #340]	@ (77e8 <sli_cpc_security_process+0x2f0>)
+    7694:	9806      	ldr	r0, [sp, #24]
+    7696:	f008 f9b9 	bl	fa0c <psa_export_public_key>
+    769a:	4681      	mov	r9, r0
+    769c:	b148      	cbz	r0, 76b2 <sli_cpc_security_process+0x1ba>
+    769e:	9806      	ldr	r0, [sp, #24]
+    76a0:	f008 f8f2 	bl	f888 <psa_destroy_key>
+    76a4:	b110      	cbz	r0, 76ac <sli_cpc_security_process+0x1b4>
+    76a6:	f240 2177 	movw	r1, #631	@ 0x277
+    76aa:	e74e      	b.n	754a <sli_cpc_security_process+0x52>
+    76ac:	9006      	str	r0, [sp, #24]
+    76ae:	4648      	mov	r0, r9
+    76b0:	e7c5      	b.n	763e <sli_cpc_security_process+0x146>
+    76b2:	f04f 0920 	mov.w	r9, #32
+    76b6:	2220      	movs	r2, #32
+    76b8:	494b      	ldr	r1, [pc, #300]	@ (77e8 <sli_cpc_security_process+0x2f0>)
+    76ba:	a810      	add	r0, sp, #64	@ 0x40
+    76bc:	f007 ff05 	bl	f4ca <mbedtls_mpi_read_binary_le>
+    76c0:	2220      	movs	r2, #32
+    76c2:	4949      	ldr	r1, [pc, #292]	@ (77e8 <sli_cpc_security_process+0x2f0>)
+    76c4:	a810      	add	r0, sp, #64	@ 0x40
+    76c6:	f007 ff36 	bl	f536 <mbedtls_mpi_write_binary>
+    76ca:	2220      	movs	r2, #32
+    76cc:	4942      	ldr	r1, [pc, #264]	@ (77d8 <sli_cpc_security_process+0x2e0>)
+    76ce:	a80a      	add	r0, sp, #40	@ 0x28
+    76d0:	f007 ff13 	bl	f4fa <mbedtls_mpi_read_binary>
+    76d4:	2220      	movs	r2, #32
+    76d6:	4940      	ldr	r1, [pc, #256]	@ (77d8 <sli_cpc_security_process+0x2e0>)
+    76d8:	a80a      	add	r0, sp, #40	@ 0x28
+    76da:	f007 ff26 	bl	f52a <mbedtls_mpi_write_binary_le>
+    76de:	ab08      	add	r3, sp, #32
+    76e0:	4650      	mov	r0, sl
+    76e2:	9302      	str	r3, [sp, #8]
+    76e4:	e9cd 7900 	strd	r7, r9, [sp]
+    76e8:	464b      	mov	r3, r9
+    76ea:	4a3b      	ldr	r2, [pc, #236]	@ (77d8 <sli_cpc_security_process+0x2e0>)
+    76ec:	9906      	ldr	r1, [sp, #24]
+    76ee:	f008 fb0c 	bl	fd0a <psa_raw_key_agreement>
+    76f2:	4682      	mov	sl, r0
+    76f4:	b148      	cbz	r0, 770a <sli_cpc_security_process+0x212>
+    76f6:	9806      	ldr	r0, [sp, #24]
+    76f8:	f008 f8c6 	bl	f888 <psa_destroy_key>
+    76fc:	b110      	cbz	r0, 7704 <sli_cpc_security_process+0x20c>
+    76fe:	f240 218d 	movw	r1, #653	@ 0x28d
+    7702:	e722      	b.n	754a <sli_cpc_security_process+0x52>
+    7704:	9006      	str	r0, [sp, #24]
+    7706:	4650      	mov	r0, sl
+    7708:	e799      	b.n	763e <sli_cpc_security_process+0x146>
+    770a:	464a      	mov	r2, r9
+    770c:	4639      	mov	r1, r7
+    770e:	a818      	add	r0, sp, #96	@ 0x60
+    7710:	f007 fef3 	bl	f4fa <mbedtls_mpi_read_binary>
+    7714:	464a      	mov	r2, r9
+    7716:	4639      	mov	r1, r7
+    7718:	a818      	add	r0, sp, #96	@ 0x60
+    771a:	f007 ff06 	bl	f52a <mbedtls_mpi_write_binary_le>
+    771e:	ab07      	add	r3, sp, #28
+    7720:	e9cd 9300 	strd	r9, r3, [sp]
+    7724:	464a      	mov	r2, r9
+    7726:	4633      	mov	r3, r6
+    7728:	4639      	mov	r1, r7
+    772a:	4830      	ldr	r0, [pc, #192]	@ (77ec <sli_cpc_security_process+0x2f4>)
+    772c:	f008 fa02 	bl	fb34 <psa_hash_compute>
+    7730:	4681      	mov	r9, r0
+    7732:	9806      	ldr	r0, [sp, #24]
+    7734:	f1b9 0f00 	cmp.w	r9, #0
+    7738:	d104      	bne.n	7744 <sli_cpc_security_process+0x24c>
+    773a:	f8dd a01c 	ldr.w	sl, [sp, #28]
+    773e:	f1ba 0f20 	cmp.w	sl, #32
+    7742:	d006      	beq.n	7752 <sli_cpc_security_process+0x25a>
+    7744:	f008 f8a0 	bl	f888 <psa_destroy_key>
+    7748:	2800      	cmp	r0, #0
+    774a:	d0af      	beq.n	76ac <sli_cpc_security_process+0x1b4>
+    774c:	f240 219a 	movw	r1, #666	@ 0x29a
+    7750:	e6fb      	b.n	754a <sli_cpc_security_process+0x52>
+    7752:	f008 f899 	bl	f888 <psa_destroy_key>
+    7756:	4681      	mov	r9, r0
+    7758:	b120      	cbz	r0, 7764 <sli_cpc_security_process+0x26c>
+    775a:	4651      	mov	r1, sl
+    775c:	4630      	mov	r0, r6
+    775e:	f000 fde9 	bl	8334 <mbedtls_platform_zeroize>
+    7762:	e7a4      	b.n	76ae <sli_cpc_security_process+0x1b6>
+    7764:	f8df b06c 	ldr.w	fp, [pc, #108]	@ 77d4 <sli_cpc_security_process+0x2dc>
+    7768:	9006      	str	r0, [sp, #24]
+    776a:	f89b 3000 	ldrb.w	r3, [fp]
+    776e:	b10b      	cbz	r3, 7774 <sli_cpc_security_process+0x27c>
+    7770:	2401      	movs	r4, #1
+    7772:	e767      	b.n	7644 <sli_cpc_security_process+0x14c>
+    7774:	a830      	add	r0, sp, #192	@ 0xc0
+    7776:	f007 fd5d 	bl	f234 <psa_key_attributes_init>
+    777a:	f04f 0a01 	mov.w	sl, #1
+    777e:	2300      	movs	r3, #0
+    7780:	a809      	add	r0, sp, #36	@ 0x24
+    7782:	9333      	str	r3, [sp, #204]	@ 0xcc
+    7784:	f8cd a024 	str.w	sl, [sp, #36]	@ 0x24
+    7788:	f007 fd5c 	bl	f244 <psa_extend_key_usage_flags>
+    778c:	9b09      	ldr	r3, [sp, #36]	@ 0x24
+    778e:	2210      	movs	r2, #16
+    7790:	9332      	str	r3, [sp, #200]	@ 0xc8
+    7792:	f44f 4384 	mov.w	r3, #16896	@ 0x4200
+    7796:	9335      	str	r3, [sp, #212]	@ 0xd4
+    7798:	4b15      	ldr	r3, [pc, #84]	@ (77f0 <sli_cpc_security_process+0x2f8>)
+    779a:	4631      	mov	r1, r6
+    779c:	e9cd 3a30 	strd	r3, sl, [sp, #192]	@ 0xc0
+    77a0:	4603      	mov	r3, r0
+    77a2:	a830      	add	r0, sp, #192	@ 0xc0
+    77a4:	f000 ffba 	bl	871c <psa_import_key>
+    77a8:	4681      	mov	r9, r0
+    77aa:	2110      	movs	r1, #16
+    77ac:	4630      	mov	r0, r6
+    77ae:	f000 fdc1 	bl	8334 <mbedtls_platform_zeroize>
+    77b2:	f119 0f8b 	cmn.w	r9, #139	@ 0x8b
+    77b6:	d121      	bne.n	77fc <sli_cpc_security_process+0x304>
+    77b8:	f240 3181 	movw	r1, #897	@ 0x381
+    77bc:	e6c5      	b.n	754a <sli_cpc_security_process+0x52>
+    77be:	bf00      	nop
+    77c0:	20001d16 	.word	0x20001d16
+    77c4:	2000211b 	.word	0x2000211b
+    77c8:	200011cc 	.word	0x200011cc
+    77cc:	00012c7e 	.word	0x00012c7e
+    77d0:	20001d60 	.word	0x20001d60
+    77d4:	20001cd5 	.word	0x20001cd5
+    77d8:	20001cf6 	.word	0x20001cf6
+    77dc:	00ff7141 	.word	0x00ff7141
+    77e0:	20001d68 	.word	0x20001d68
+    77e4:	20001fc0 	.word	0x20001fc0
+    77e8:	20001cd6 	.word	0x20001cd6
+    77ec:	02000009 	.word	0x02000009
+    77f0:	00801001 	.word	0x00801001
+    77f4:	000135e8 	.word	0x000135e8
+    77f8:	09020000 	.word	0x09020000
+    77fc:	f1b9 0f00 	cmp.w	r9, #0
+    7800:	d109      	bne.n	7816 <sli_cpc_security_process+0x31e>
+    7802:	9b09      	ldr	r3, [sp, #36]	@ 0x24
+    7804:	f5b3 4f84 	cmp.w	r3, #16896	@ 0x4200
+    7808:	d002      	beq.n	7810 <sli_cpc_security_process+0x318>
+    780a:	f240 3187 	movw	r1, #903	@ 0x387
+    780e:	e69c      	b.n	754a <sli_cpc_security_process+0x52>
+    7810:	f88b a000 	strb.w	sl, [fp]
+    7814:	e716      	b.n	7644 <sli_cpc_security_process+0x14c>
+    7816:	4648      	mov	r0, r9
+    7818:	f007 fd20 	bl	f25c <psa_status_to_sl_status>
+    781c:	1e04      	subs	r4, r0, #0
+    781e:	bf18      	it	ne
+    7820:	2401      	movne	r4, #1
+    7822:	e70f      	b.n	7644 <sli_cpc_security_process+0x14c>
+    7824:	4b97      	ldr	r3, [pc, #604]	@ (7a84 <sli_cpc_security_process+0x58c>)
+    7826:	781b      	ldrb	r3, [r3, #0]
+    7828:	2b00      	cmp	r3, #0
+    782a:	f000 80d2 	beq.w	79d2 <sli_cpc_security_process+0x4da>
+    782e:	4f96      	ldr	r7, [pc, #600]	@ (7a88 <sli_cpc_security_process+0x590>)
+    7830:	2220      	movs	r2, #32
+    7832:	2100      	movs	r1, #0
+    7834:	a818      	add	r0, sp, #96	@ 0x60
+    7836:	f00a faea 	bl	11e0e <memset>
+    783a:	783b      	ldrb	r3, [r7, #0]
+    783c:	1d2e      	adds	r6, r5, #4
+    783e:	2b05      	cmp	r3, #5
+    7840:	d102      	bne.n	7848 <sli_cpc_security_process+0x350>
+    7842:	2003      	movs	r0, #3
+    7844:	f7ff fd12 	bl	726c <set_state>
+    7848:	4633      	mov	r3, r6
+    784a:	ae20      	add	r6, sp, #128	@ 0x80
+    784c:	f103 0c20 	add.w	ip, r3, #32
+    7850:	4632      	mov	r2, r6
+    7852:	6818      	ldr	r0, [r3, #0]
+    7854:	6859      	ldr	r1, [r3, #4]
+    7856:	3308      	adds	r3, #8
+    7858:	c203      	stmia	r2!, {r0, r1}
+    785a:	4563      	cmp	r3, ip
+    785c:	4616      	mov	r6, r2
+    785e:	d1f7      	bne.n	7850 <sli_cpc_security_process+0x358>
+    7860:	2140      	movs	r1, #64	@ 0x40
+    7862:	488a      	ldr	r0, [pc, #552]	@ (7a8c <sli_cpc_security_process+0x594>)
+    7864:	f008 fab1 	bl	fdca <psa_generate_random>
+    7868:	b9f0      	cbnz	r0, 78a8 <sli_cpc_security_process+0x3b0>
+    786a:	4b88      	ldr	r3, [pc, #544]	@ (7a8c <sli_cpc_security_process+0x594>)
+    786c:	ae28      	add	r6, sp, #160	@ 0xa0
+    786e:	f103 0c20 	add.w	ip, r3, #32
+    7872:	4632      	mov	r2, r6
+    7874:	6818      	ldr	r0, [r3, #0]
+    7876:	6859      	ldr	r1, [r3, #4]
+    7878:	3308      	adds	r3, #8
+    787a:	c203      	stmia	r2!, {r0, r1}
+    787c:	4563      	cmp	r3, ip
+    787e:	4616      	mov	r6, r2
+    7880:	d1f7      	bne.n	7872 <sli_cpc_security_process+0x37a>
+    7882:	2320      	movs	r3, #32
+    7884:	f10d 0940 	add.w	r9, sp, #64	@ 0x40
+    7888:	ae30      	add	r6, sp, #192	@ 0xc0
+    788a:	9300      	str	r3, [sp, #0]
+    788c:	2240      	movs	r2, #64	@ 0x40
+    788e:	464b      	mov	r3, r9
+    7890:	487f      	ldr	r0, [pc, #508]	@ (7a90 <sli_cpc_security_process+0x598>)
+    7892:	9601      	str	r6, [sp, #4]
+    7894:	a920      	add	r1, sp, #128	@ 0x80
+    7896:	f008 f94d 	bl	fb34 <psa_hash_compute>
+    789a:	9b30      	ldr	r3, [sp, #192]	@ 0xc0
+    789c:	2b20      	cmp	r3, #32
+    789e:	d002      	beq.n	78a6 <sli_cpc_security_process+0x3ae>
+    78a0:	f240 31e3 	movw	r1, #995	@ 0x3e3
+    78a4:	e651      	b.n	754a <sli_cpc_security_process+0x52>
+    78a6:	b178      	cbz	r0, 78c8 <sli_cpc_security_process+0x3d0>
+    78a8:	2401      	movs	r4, #1
+    78aa:	4b7a      	ldr	r3, [pc, #488]	@ (7a94 <sli_cpc_security_process+0x59c>)
+    78ac:	605c      	str	r4, [r3, #4]
+    78ae:	2206      	movs	r2, #6
+    78b0:	886b      	ldrh	r3, [r5, #2]
+    78b2:	4978      	ldr	r1, [pc, #480]	@ (7a94 <sli_cpc_security_process+0x59c>)
+    78b4:	fb02 8203 	mla	r2, r2, r3, r8
+    78b8:	ea6f 4343 	mvn.w	r3, r3, lsl #17
+    78bc:	ea6f 4353 	mvn.w	r3, r3, lsr #17
+    78c0:	8852      	ldrh	r2, [r2, #2]
+    78c2:	804b      	strh	r3, [r1, #2]
+    78c4:	800a      	strh	r2, [r1, #0]
+    78c6:	e66a      	b.n	759e <sli_cpc_security_process+0xa6>
+    78c8:	46b4      	mov	ip, r6
+    78ca:	e899 0003 	ldmia.w	r9, {r0, r1}
+    78ce:	4a72      	ldr	r2, [pc, #456]	@ (7a98 <sli_cpc_security_process+0x5a0>)
+    78d0:	f89d 304e 	ldrb.w	r3, [sp, #78]	@ 0x4e
+    78d4:	8091      	strh	r1, [r2, #4]
+    78d6:	0c09      	lsrs	r1, r1, #16
+    78d8:	6010      	str	r0, [r2, #0]
+    78da:	7191      	strb	r1, [r2, #6]
+    78dc:	9812      	ldr	r0, [sp, #72]	@ 0x48
+    78de:	f8bd 104c 	ldrh.w	r1, [sp, #76]	@ 0x4c
+    78e2:	7353      	strb	r3, [r2, #13]
+    78e4:	f8c2 0007 	str.w	r0, [r2, #7]
+    78e8:	f8a2 100b 	strh.w	r1, [r2, #11]
+    78ec:	f105 0324 	add.w	r3, r5, #36	@ 0x24
+    78f0:	f105 0e44 	add.w	lr, r5, #68	@ 0x44
+    78f4:	4662      	mov	r2, ip
+    78f6:	6818      	ldr	r0, [r3, #0]
+    78f8:	6859      	ldr	r1, [r3, #4]
+    78fa:	3308      	adds	r3, #8
+    78fc:	c203      	stmia	r2!, {r0, r1}
+    78fe:	4573      	cmp	r3, lr
+    7900:	4694      	mov	ip, r2
+    7902:	d1f7      	bne.n	78f4 <sli_cpc_security_process+0x3fc>
+    7904:	4b65      	ldr	r3, [pc, #404]	@ (7a9c <sli_cpc_security_process+0x5a4>)
+    7906:	f10d 0ce0 	add.w	ip, sp, #224	@ 0xe0
+    790a:	f103 0e20 	add.w	lr, r3, #32
+    790e:	4662      	mov	r2, ip
+    7910:	6818      	ldr	r0, [r3, #0]
+    7912:	6859      	ldr	r1, [r3, #4]
+    7914:	3308      	adds	r3, #8
+    7916:	c203      	stmia	r2!, {r0, r1}
+    7918:	4573      	cmp	r3, lr
+    791a:	4694      	mov	ip, r2
+    791c:	d1f7      	bne.n	790e <sli_cpc_security_process+0x416>
+    791e:	f10d 0928 	add.w	r9, sp, #40	@ 0x28
+    7922:	464b      	mov	r3, r9
+    7924:	2210      	movs	r2, #16
+    7926:	f44f 4084 	mov.w	r0, #16896	@ 0x4200
+    792a:	a940      	add	r1, sp, #256	@ 0x100
+    792c:	f008 f817 	bl	f95e <psa_export_key>
+    7930:	9b0a      	ldr	r3, [sp, #40]	@ 0x28
+    7932:	2b10      	cmp	r3, #16
+    7934:	d002      	beq.n	793c <sli_cpc_security_process+0x444>
+    7936:	f240 410c 	movw	r1, #1036	@ 0x40c
+    793a:	e606      	b.n	754a <sli_cpc_security_process+0x52>
+    793c:	b120      	cbz	r0, 7948 <sli_cpc_security_process+0x450>
+    793e:	2150      	movs	r1, #80	@ 0x50
+    7940:	4630      	mov	r0, r6
+    7942:	f000 fcf7 	bl	8334 <mbedtls_platform_zeroize>
+    7946:	e7af      	b.n	78a8 <sli_cpc_security_process+0x3b0>
+    7948:	2320      	movs	r3, #32
+    794a:	2250      	movs	r2, #80	@ 0x50
+    794c:	4631      	mov	r1, r6
+    794e:	9300      	str	r3, [sp, #0]
+    7950:	484f      	ldr	r0, [pc, #316]	@ (7a90 <sli_cpc_security_process+0x598>)
+    7952:	ab18      	add	r3, sp, #96	@ 0x60
+    7954:	f8cd 9004 	str.w	r9, [sp, #4]
+    7958:	f008 f8ec 	bl	fb34 <psa_hash_compute>
+    795c:	2150      	movs	r1, #80	@ 0x50
+    795e:	4682      	mov	sl, r0
+    7960:	4630      	mov	r0, r6
+    7962:	f000 fce7 	bl	8334 <mbedtls_platform_zeroize>
+    7966:	990a      	ldr	r1, [sp, #40]	@ 0x28
+    7968:	2920      	cmp	r1, #32
+    796a:	d002      	beq.n	7972 <sli_cpc_security_process+0x47a>
+    796c:	f240 4125 	movw	r1, #1061	@ 0x425
+    7970:	e5eb      	b.n	754a <sli_cpc_security_process+0x52>
+    7972:	f1ba 0f00 	cmp.w	sl, #0
+    7976:	d001      	beq.n	797c <sli_cpc_security_process+0x484>
+    7978:	a818      	add	r0, sp, #96	@ 0x60
+    797a:	e7e2      	b.n	7942 <sli_cpc_security_process+0x44a>
+    797c:	783b      	ldrb	r3, [r7, #0]
+    797e:	2b03      	cmp	r3, #3
+    7980:	d103      	bne.n	798a <sli_cpc_security_process+0x492>
+    7982:	4b47      	ldr	r3, [pc, #284]	@ (7aa0 <sli_cpc_security_process+0x5a8>)
+    7984:	6818      	ldr	r0, [r3, #0]
+    7986:	f007 ff7f 	bl	f888 <psa_destroy_key>
+    798a:	4648      	mov	r0, r9
+    798c:	f007 fc52 	bl	f234 <psa_key_attributes_init>
+    7990:	4b44      	ldr	r3, [pc, #272]	@ (7aa4 <sli_cpc_security_process+0x5ac>)
+    7992:	a809      	add	r0, sp, #36	@ 0x24
+    7994:	930d      	str	r3, [sp, #52]	@ 0x34
+    7996:	f44f 7340 	mov.w	r3, #768	@ 0x300
+    799a:	9309      	str	r3, [sp, #36]	@ 0x24
+    799c:	f007 fc52 	bl	f244 <psa_extend_key_usage_flags>
+    79a0:	9b09      	ldr	r3, [sp, #36]	@ 0x24
+    79a2:	4941      	ldr	r1, [pc, #260]	@ (7aa8 <sli_cpc_security_process+0x5b0>)
+    79a4:	930c      	str	r3, [sp, #48]	@ 0x30
+    79a6:	2300      	movs	r3, #0
+    79a8:	2220      	movs	r2, #32
+    79aa:	e9cd 130a 	strd	r1, r3, [sp, #40]	@ 0x28
+    79ae:	930f      	str	r3, [sp, #60]	@ 0x3c
+    79b0:	a918      	add	r1, sp, #96	@ 0x60
+    79b2:	4648      	mov	r0, r9
+    79b4:	4b3a      	ldr	r3, [pc, #232]	@ (7aa0 <sli_cpc_security_process+0x5a8>)
+    79b6:	f000 feb1 	bl	871c <psa_import_key>
+    79ba:	4606      	mov	r6, r0
+    79bc:	2120      	movs	r1, #32
+    79be:	a818      	add	r0, sp, #96	@ 0x60
+    79c0:	f000 fcb8 	bl	8334 <mbedtls_platform_zeroize>
+    79c4:	2e00      	cmp	r6, #0
+    79c6:	f47f af6f 	bne.w	78a8 <sli_cpc_security_process+0x3b0>
+    79ca:	2004      	movs	r0, #4
+    79cc:	f7ff fc4e 	bl	726c <set_state>
+    79d0:	e76b      	b.n	78aa <sli_cpc_security_process+0x3b2>
+    79d2:	2211      	movs	r2, #17
+    79d4:	482f      	ldr	r0, [pc, #188]	@ (7a94 <sli_cpc_security_process+0x59c>)
+    79d6:	2140      	movs	r1, #64	@ 0x40
+    79d8:	7102      	strb	r2, [r0, #4]
+    79da:	7143      	strb	r3, [r0, #5]
+    79dc:	7183      	strb	r3, [r0, #6]
+    79de:	71c3      	strb	r3, [r0, #7]
+    79e0:	3008      	adds	r0, #8
+    79e2:	f000 fca7 	bl	8334 <mbedtls_platform_zeroize>
+    79e6:	e762      	b.n	78ae <sli_cpc_security_process+0x3b6>
+    79e8:	f04f 32aa 	mov.w	r2, #2863311530	@ 0xaaaaaaaa
+    79ec:	f04f 33aa 	mov.w	r3, #2863311530	@ 0xaaaaaaaa
+    79f0:	e9cd 2330 	strd	r2, r3, [sp, #192]	@ 0xc0
+    79f4:	4b24      	ldr	r3, [pc, #144]	@ (7a88 <sli_cpc_security_process+0x590>)
+    79f6:	7818      	ldrb	r0, [r3, #0]
+    79f8:	1f43      	subs	r3, r0, #5
+    79fa:	4258      	negs	r0, r3
+    79fc:	4158      	adcs	r0, r3
+    79fe:	f00a f9a8 	bl	11d52 <sl_cpc_security_on_unbind_request>
+    7a02:	f04f 33aa 	mov.w	r3, #2863311530	@ 0xaaaaaaaa
+    7a06:	4299      	cmp	r1, r3
+    7a08:	bf08      	it	eq
+    7a0a:	4298      	cmpeq	r0, r3
+    7a0c:	d116      	bne.n	7a3c <sli_cpc_security_process+0x544>
+    7a0e:	e9dd 0130 	ldrd	r0, r1, [sp, #192]	@ 0xc0
+    7a12:	4299      	cmp	r1, r3
+    7a14:	bf08      	it	eq
+    7a16:	4298      	cmpeq	r0, r3
+    7a18:	d110      	bne.n	7a3c <sli_cpc_security_process+0x544>
+    7a1a:	f7ff fd37 	bl	748c <sl_cpc_security_unbind>
+    7a1e:	2106      	movs	r1, #6
+    7a20:	886b      	ldrh	r3, [r5, #2]
+    7a22:	4a1c      	ldr	r2, [pc, #112]	@ (7a94 <sli_cpc_security_process+0x59c>)
+    7a24:	fb01 8803 	mla	r8, r1, r3, r8
+    7a28:	ea6f 4343 	mvn.w	r3, r3, lsl #17
+    7a2c:	ea6f 4353 	mvn.w	r3, r3, lsr #17
+    7a30:	f8b8 1002 	ldrh.w	r1, [r8, #2]
+    7a34:	8053      	strh	r3, [r2, #2]
+    7a36:	8011      	strh	r1, [r2, #0]
+    7a38:	6050      	str	r0, [r2, #4]
+    7a3a:	e5b0      	b.n	759e <sli_cpc_security_process+0xa6>
+    7a3c:	2008      	movs	r0, #8
+    7a3e:	e7ee      	b.n	7a1e <sli_cpc_security_process+0x526>
+    7a40:	281b      	cmp	r0, #27
+    7a42:	d11b      	bne.n	7a7c <sli_cpc_security_process+0x584>
+    7a44:	4c19      	ldr	r4, [pc, #100]	@ (7aac <sli_cpc_security_process+0x5b4>)
+    7a46:	7823      	ldrb	r3, [r4, #0]
+    7a48:	2b00      	cmp	r3, #0
+    7a4a:	f43f adad 	beq.w	75a8 <sli_cpc_security_process+0xb0>
+    7a4e:	782b      	ldrb	r3, [r5, #0]
+    7a50:	b913      	cbnz	r3, 7a58 <sli_cpc_security_process+0x560>
+    7a52:	f240 11e5 	movw	r1, #485	@ 0x1e5
+    7a56:	e578      	b.n	754a <sli_cpc_security_process+0x52>
+    7a58:	2300      	movs	r3, #0
+    7a5a:	4915      	ldr	r1, [pc, #84]	@ (7ab0 <sli_cpc_security_process+0x5b8>)
+    7a5c:	702b      	strb	r3, [r5, #0]
+    7a5e:	880a      	ldrh	r2, [r1, #0]
+    7a60:	4b14      	ldr	r3, [pc, #80]	@ (7ab4 <sli_cpc_security_process+0x5bc>)
+    7a62:	3204      	adds	r2, #4
+    7a64:	9300      	str	r3, [sp, #0]
+    7a66:	4814      	ldr	r0, [pc, #80]	@ (7ab8 <sli_cpc_security_process+0x5c0>)
+    7a68:	4633      	mov	r3, r6
+    7a6a:	b292      	uxth	r2, r2
+    7a6c:	f7fd fa2c 	bl	4ec8 <sl_cpc_write>
+    7a70:	b110      	cbz	r0, 7a78 <sli_cpc_security_process+0x580>
+    7a72:	f44f 71f6 	mov.w	r1, #492	@ 0x1ec
+    7a76:	e568      	b.n	754a <sli_cpc_security_process+0x52>
+    7a78:	7020      	strb	r0, [r4, #0]
+    7a7a:	e595      	b.n	75a8 <sli_cpc_security_process+0xb0>
+    7a7c:	f7ff fc4a 	bl	7314 <security_recover_endpoint>
+    7a80:	e592      	b.n	75a8 <sli_cpc_security_process+0xb0>
+    7a82:	bf00      	nop
+    7a84:	20001cd5 	.word	0x20001cd5
+    7a88:	20001da8 	.word	0x20001da8
+    7a8c:	20001d68 	.word	0x20001d68
+    7a90:	02000009 	.word	0x02000009
+    7a94:	20001d60 	.word	0x20001d60
+    7a98:	200011b0 	.word	0x200011b0
+    7a9c:	20001d88 	.word	0x20001d88
+    7aa0:	200011c4 	.word	0x200011c4
+    7aa4:	05480200 	.word	0x05480200
+    7aa8:	01002400 	.word	0x01002400
+    7aac:	20001d17 	.word	0x20001d17
+    7ab0:	20001d18 	.word	0x20001d18
+    7ab4:	00007399 	.word	0x00007399
+    7ab8:	200011cc 	.word	0x200011cc

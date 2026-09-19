@@ -1,0 +1,12 @@
+
+/sdk2026-cpc-recovery/generated/cmake_gcc/build/base/cpc_secondary_vcom_security_device_recovery.out:     file format elf32-littlearm
+
+
+Disassembly of section text_application_ram:
+
+Disassembly of section .text:
+
+00011d52 <sl_cpc_security_on_unbind_request>:
+   11d52:	f04f 30aa 	mov.w	r0, #2863311530	@ 0xaaaaaaaa
+   11d56:	f04f 31aa 	mov.w	r1, #2863311530	@ 0xaaaaaaaa
+   11d5a:	4770      	bx	lr

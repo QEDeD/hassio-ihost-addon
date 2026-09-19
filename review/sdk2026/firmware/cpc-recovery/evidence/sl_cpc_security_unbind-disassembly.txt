@@ -1,0 +1,51 @@
+
+/sdk2026-cpc-recovery/generated/cmake_gcc/build/base/cpc_secondary_vcom_security_device_recovery.out:     file format elf32-littlearm
+
+
+Disassembly of section text_application_ram:
+
+Disassembly of section .text:
+
+0000748c <sl_cpc_security_unbind>:
+    748c:	4b17      	ldr	r3, [pc, #92]	@ (74ec <sl_cpc_security_unbind+0x60>)
+    748e:	b510      	push	{r4, lr}
+    7490:	681c      	ldr	r4, [r3, #0]
+    7492:	3c04      	subs	r4, #4
+    7494:	1d23      	adds	r3, r4, #4
+    7496:	d10a      	bne.n	74ae <sl_cpc_security_unbind+0x22>
+    7498:	f44f 4084 	mov.w	r0, #16896	@ 0x4200
+    749c:	f008 fe6a 	bl	10174 <psa_is_key_present_in_storage>
+    74a0:	b980      	cbnz	r0, 74c4 <sl_cpc_security_unbind+0x38>
+    74a2:	4b13      	ldr	r3, [pc, #76]	@ (74f0 <sl_cpc_security_unbind+0x64>)
+    74a4:	781b      	ldrb	r3, [r3, #0]
+    74a6:	b1fb      	cbz	r3, 74e8 <sl_cpc_security_unbind+0x5c>
+    74a8:	f240 3197 	movw	r1, #919	@ 0x397
+    74ac:	e003      	b.n	74b6 <sl_cpc_security_unbind+0x2a>
+    74ae:	6823      	ldr	r3, [r4, #0]
+    74b0:	b923      	cbnz	r3, 74bc <sl_cpc_security_unbind+0x30>
+    74b2:	f240 1145 	movw	r1, #325	@ 0x145
+    74b6:	480f      	ldr	r0, [pc, #60]	@ (74f4 <sl_cpc_security_unbind+0x68>)
+    74b8:	f007 ffb1 	bl	f41e <sli_cpc_assert_fail>
+    74bc:	68a0      	ldr	r0, [r4, #8]
+    74be:	4798      	blx	r3
+    74c0:	6864      	ldr	r4, [r4, #4]
+    74c2:	e7e6      	b.n	7492 <sl_cpc_security_unbind+0x6>
+    74c4:	f44f 4084 	mov.w	r0, #16896	@ 0x4200
+    74c8:	f008 fe5f 	bl	1018a <psa_destroy_persistent_key>
+    74cc:	4604      	mov	r4, r0
+    74ce:	b108      	cbz	r0, 74d4 <sl_cpc_security_unbind+0x48>
+    74d0:	2001      	movs	r0, #1
+    74d2:	bd10      	pop	{r4, pc}
+    74d4:	f44f 4084 	mov.w	r0, #16896	@ 0x4200
+    74d8:	f008 fe4c 	bl	10174 <psa_is_key_present_in_storage>
+    74dc:	2801      	cmp	r0, #1
+    74de:	d0f7      	beq.n	74d0 <sl_cpc_security_unbind+0x44>
+    74e0:	4b03      	ldr	r3, [pc, #12]	@ (74f0 <sl_cpc_security_unbind+0x64>)
+    74e2:	4620      	mov	r0, r4
+    74e4:	701c      	strb	r4, [r3, #0]
+    74e6:	e7f4      	b.n	74d2 <sl_cpc_security_unbind+0x46>
+    74e8:	2011      	movs	r0, #17
+    74ea:	e7f2      	b.n	74d2 <sl_cpc_security_unbind+0x46>
+    74ec:	200011ac 	.word	0x200011ac
+    74f0:	20001cd5 	.word	0x20001cd5
+    74f4:	00012c7e 	.word	0x00012c7e

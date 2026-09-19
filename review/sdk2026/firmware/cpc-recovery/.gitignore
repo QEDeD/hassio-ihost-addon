@@ -1,0 +1,4 @@
+# Generated vendor trees and bulky debugging output are retained locally only.
+output/
+build.log
+package/parsed-application.s37

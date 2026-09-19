@@ -1,0 +1,43 @@
+{
+  "sdk": "2026.6.1",
+  "builder_image": "sha256:aaeedf3cceb95dc15a9d3333093e76957ef20d06f94d3f7b23d5bd88d337a85d",
+  "files": [
+    {
+      "path": "cpc/src/sl_cpc_security.c",
+      "sha256": "07d0740a9e25cfaaaa87bd0726ac7b7a948089d0e9fb601564e72e8c1f2c07c8"
+    },
+    {
+      "path": "cpc_app/cpc_secondary_vcom_security_device_recovery/cpc_app.c",
+      "sha256": "1b4a6efe6f60a8131b6d4cc5561204cb7839467102b37046d4b7ce4f5a2e870e"
+    },
+    {
+      "path": "platform_core/platform/emdrv/nvm3/src/nvm3_default.c",
+      "sha256": "b9dc0b2233a314dda94f5f2be0e09a118e5f703821132c771bb215a03e60a2d4"
+    },
+    {
+      "path": "platform_core/platform/emdrv/nvm3/src/nvm3_default_common_linker.c",
+      "sha256": "5cc9ee3b69a7ca1430968c3916bb72954df05e543bdfe08c309f5e8fac0c77e1"
+    },
+    {
+      "path": "platform_core/platform/security/sl_component/sl_psa_driver/src/sl_psa_its_nvm3.c",
+      "sha256": "69c08dae1c0d300fb15471f9937a90ca816a632ef969dd572f8e88f5f3006b08"
+    },
+    {
+      "path": "mbedtls/library/psa_crypto_storage.c",
+      "sha256": "55ef84fcc6148d416d334cebba87c758c5e02f46757344189de098e5bffa131e"
+    },
+    {
+      "path": "cpc-daemon/security/private/protocol/protocol.c",
+      "sha256": "0cb03bbee66e8b2a92dfc562e78d613e5d7c29c58639c47885dce32ab15f5ca2"
+    },
+    {
+      "path": "cpc-daemon/security/private/thread/security_thread.c",
+      "sha256": "793bcc2b8debef56d5ea9238b9a299e0b55cc2fba97c8f4d4f3a9f3b721724d0"
+    },
+    {
+      "path": "cpc-daemon/security/private/keys/keys.c",
+      "sha256": "2386f68c85df9de4c1c40fa995b306fe2304bd573da9b3fc0399230a9cfc2aeb"
+    }
+  ],
+  "cpcd_commit": "87f6dbda4eef05e4538589c195099c3daf8f6f6b"
+}

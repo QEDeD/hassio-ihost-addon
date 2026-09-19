@@ -1,0 +1,12 @@
+--- a/cpc_secondary_vcom_security_device_recovery.slcp
++++ b/cpc_secondary_vcom_security_device_recovery.slcp
+@@ -37,7 +37,8 @@
+   - id: clock_manager
+   - id: cpc_secondary
+-  - id: cpc_secondary_recommended_uart_interface
++  - id: cpc_secondary_driver_uart_usart
++    instance: [vcom]
+   - id: cpc_security_secondary
+ define:
+   - name: DEBUG_EFM
+ configuration:

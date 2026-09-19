@@ -1,0 +1,33 @@
+{
+  "nvm3_default_config.h": {
+    "normalized_defines_equal": true,
+    "recovery_sha256": "2b740dee6bf5d2ad9cec6e3d7eb4778d204cd9dd4cad8ec532da772436824ecb",
+    "candidate_sha256": "2b740dee6bf5d2ad9cec6e3d7eb4778d204cd9dd4cad8ec532da772436824ecb"
+  },
+  "psa_crypto_config.h": {
+    "normalized_defines_equal": true,
+    "recovery_sha256": "5c5c5c9f990965331679bc51f1a5df62d4fd2a4cacdbcbc5cb8035044154e2c9",
+    "candidate_sha256": "cc5ea385ba73dbee4c57639c666a1061f2a1538bdded4761df74d388b35aa59b"
+  },
+  "sl_cpc_security_config.h": {
+    "normalized_defines_equal": true,
+    "recovery_sha256": "1209c6088cfeae33fb6bdd482ea834b5a590bd9bb2965e908dcb3666d1195310",
+    "candidate_sha256": "1209c6088cfeae33fb6bdd482ea834b5a590bd9bb2965e908dcb3666d1195310"
+  },
+  "initialization": {
+    "platform_identical": true,
+    "service_sequence_is_candidate_prefix": true,
+    "omitted_service_calls": [
+      "sli_protocol_crypto_init",
+      "sli_aes_seed_mask"
+    ],
+    "network_stack_init_absent": true
+  },
+  "linked_deletion": {
+    "startup_no_op": true,
+    "target_key": "0x4200",
+    "presence_check_before_after": true,
+    "no_erase_all_or_observer_registration_symbols": true,
+    "scope": "static source/binary evidence; not executed on hardware"
+  }
+}

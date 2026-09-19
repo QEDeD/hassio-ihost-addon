@@ -1,0 +1,11 @@
+--- a/cpc_app.c
++++ b/cpc_app.c
+@@ -29,7 +29,7 @@
+  ******************************************************************************/
+ void cpc_app_init(void)
+ {
+-  sl_cpc_security_unbind();
++  // Recovery is explicit: stock CPCd --unbind returns the operation status.
+ }
+ 
+ /***************************************************************************/ /**

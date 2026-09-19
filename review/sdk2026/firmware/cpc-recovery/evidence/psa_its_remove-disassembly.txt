@@ -1,0 +1,66 @@
+
+/sdk2026-cpc-recovery/generated/cmake_gcc/build/base/cpc_secondary_vcom_security_device_recovery.out:     file format elf32-littlearm
+
+
+Disassembly of section text_application_ram:
+
+Disassembly of section .text:
+
+0000d178 <psa_its_remove>:
+    d178:	b530      	push	{r4, r5, lr}
+    d17a:	b08d      	sub	sp, #52	@ 0x34
+    d17c:	460c      	mov	r4, r1
+    d17e:	4605      	mov	r5, r0
+    d180:	2210      	movs	r2, #16
+    d182:	2100      	movs	r1, #0
+    d184:	a808      	add	r0, sp, #32
+    d186:	f004 fe42 	bl	11e0e <memset>
+    d18a:	2200      	movs	r2, #0
+    d18c:	ab07      	add	r3, sp, #28
+    d18e:	9302      	str	r3, [sp, #8]
+    d190:	ab05      	add	r3, sp, #20
+    d192:	9301      	str	r3, [sp, #4]
+    d194:	ab06      	add	r3, sp, #24
+    d196:	4621      	mov	r1, r4
+    d198:	9300      	str	r3, [sp, #0]
+    d19a:	4628      	mov	r0, r5
+    d19c:	ab08      	add	r3, sp, #32
+    d19e:	e9cd 2205 	strd	r2, r2, [sp, #20]
+    d1a2:	f7ff fe07 	bl	cdb4 <find_nvm3_id>
+    d1a6:	4604      	mov	r4, r0
+    d1a8:	bb08      	cbnz	r0, d1ee <psa_its_remove+0x76>
+    d1aa:	9b09      	ldr	r3, [sp, #36]	@ 0x24
+    d1ac:	2b01      	cmp	r3, #1
+    d1ae:	d021      	beq.n	d1f4 <psa_its_remove+0x7c>
+    d1b0:	9d07      	ldr	r5, [sp, #28]
+    d1b2:	4b13      	ldr	r3, [pc, #76]	@ (d200 <psa_its_remove+0x88>)
+    d1b4:	4629      	mov	r1, r5
+    d1b6:	6818      	ldr	r0, [r3, #0]
+    d1b8:	f7fd f9e8 	bl	a58c <nvm3_deleteObject>
+    d1bc:	b9e8      	cbnz	r0, d1fa <psa_its_remove+0x82>
+    d1be:	f5a5 2306 	sub.w	r3, r5, #548864	@ 0x86000
+    d1c2:	f5a3 6350 	sub.w	r3, r3, #3328	@ 0xd00
+    d1c6:	2b81      	cmp	r3, #129	@ 0x81
+    d1c8:	f005 021f 	and.w	r2, r5, #31
+    d1cc:	d80d      	bhi.n	d1ea <psa_its_remove+0x72>
+    d1ce:	2101      	movs	r1, #1
+    d1d0:	480c      	ldr	r0, [pc, #48]	@ (d204 <psa_its_remove+0x8c>)
+    d1d2:	095b      	lsrs	r3, r3, #5
+    d1d4:	4091      	lsls	r1, r2
+    d1d6:	f850 2023 	ldr.w	r2, [r0, r3, lsl #2]
+    d1da:	404a      	eors	r2, r1
+    d1dc:	f840 2023 	str.w	r2, [r0, r3, lsl #2]
+    d1e0:	4628      	mov	r0, r5
+    d1e2:	f7ff fdbd 	bl	cd60 <set_tomb>
+    d1e6:	3001      	adds	r0, #1
+    d1e8:	d101      	bne.n	d1ee <psa_its_remove+0x76>
+    d1ea:	f06f 0486 	mvn.w	r4, #134	@ 0x86
+    d1ee:	4620      	mov	r0, r4
+    d1f0:	b00d      	add	sp, #52	@ 0x34
+    d1f2:	bd30      	pop	{r4, r5, pc}
+    d1f4:	f06f 0484 	mvn.w	r4, #132	@ 0x84
+    d1f8:	e7f9      	b.n	d1ee <psa_its_remove+0x76>
+    d1fa:	f06f 0491 	mvn.w	r4, #145	@ 0x91
+    d1fe:	e7f6      	b.n	d1ee <psa_its_remove+0x76>
+    d200:	20001ff4 	.word	0x20001ff4
+    d204:	20001aec 	.word	0x20001aec
