@@ -1,0 +1,32 @@
+{
+  "date": "2026-09-19",
+  "scope": "Final pre-trial manifest checks from HA; image sizes from exact AMD64 OCI manifests. No Supervisor layer pre-pull or production update.",
+  "images": [
+    {
+      "tag": "0.2.3-ordered",
+      "index_digest": "sha256:0224cb183592e0e83aac35ce9ed6f350654537b73b73c03b0ebb74a1f972b107",
+      "compressed_bytes": 210479736,
+      "ha_manifest_access": true
+    },
+    {
+      "tag": "0.3.1-sdk2026",
+      "index_digest": "sha256:f34bcbad0113df786aba81619b8ccf2b580bb1ac56ed8f3b3c23acc99c5c0844",
+      "compressed_bytes": 58933293,
+      "ha_manifest_access": true
+    },
+    {
+      "tag": "0.3.2-sdk2026-recovery-unbind",
+      "index_digest": "sha256:048dda7c6872f102376dbd2a83aeaa8d93baa1300b42f4ba667cbd82f05cec27",
+      "compressed_bytes": 58934254,
+      "ha_manifest_access": true
+    }
+  ],
+  "candidate_new_layer_bytes_vs_baseline": 24521297,
+  "candidate_and_recovery_unique_new_layer_bytes_vs_baseline": 24532560,
+  "largest_new_layer_bytes": 20251542,
+  "limits": [
+    "Manifest access does not establish cached layers or registry availability during recovery.",
+    "New-layer sizes are a manifest comparison, not an inventory of the HA Docker cache."
+  ],
+  "decision": "Use the supported stopped Supervisor update before firmware flash; do not build an additional pre-download mechanism for this trial. Recovery registry dependency remains explicit."
+}
