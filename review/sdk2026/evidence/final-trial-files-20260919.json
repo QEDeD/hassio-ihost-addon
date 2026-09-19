@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "variant": "candidate",
+  "version": "0.3.1-sdk2026",
+  "installed_files": [
+    "/etc/s6-overlay/s6-rc.d/local-observe/dependencies.d/base",
+    "/etc/s6-overlay/s6-rc.d/local-observe/run",
+    "/etc/s6-overlay/s6-rc.d/local-observe/type",
+    "/etc/s6-overlay/s6-rc.d/user/contents.d/local-observe",
+    "/usr/local/lib/local-service/observe.py",
+    "/usr/local/lib/local-service/state_guard.py",
+    "/usr/local/lib/local-service/trial_entrypoint.py",
+    "/usr/share/sdk2026-build/bind-device"
+  ],
+  "base_binaries_unchanged": true,
+  "scope": "No network, device or production mounts; installed byte validation"
+}

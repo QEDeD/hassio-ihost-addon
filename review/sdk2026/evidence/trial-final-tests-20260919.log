@@ -1,0 +1,37 @@
+test_abort_after_intent_never_retries (__main__.BindingTests.test_abort_after_intent_never_retries) ... ok
+test_actual_cpc_parser_reaches_missing_uart_without_key (__main__.BindingTests.test_actual_cpc_parser_reaches_missing_uart_without_key) ... ok
+test_actual_tempio_has_no_ha_auth_dependency (__main__.BindingTests.test_actual_tempio_has_no_ha_auth_dependency) ... ok
+test_cli_sanitizes_arbitrary_errors (__main__.BindingTests.test_cli_sanitizes_arbitrary_errors) ... ok
+test_complete_marker_corruption_blocks_run (__main__.BindingTests.test_complete_marker_corruption_blocks_run) ... ok
+test_completion_fsync_failure_removes_success_claim (__main__.BindingTests.test_completion_fsync_failure_removes_success_claim) ... ok
+test_config_failure_precedes_attempt (__main__.BindingTests.test_config_failure_precedes_attempt) ... ok
+test_existing_attempt_even_without_key (__main__.BindingTests.test_existing_attempt_even_without_key) ... ok
+test_existing_complete_even_without_attempt (__main__.BindingTests.test_existing_complete_even_without_attempt) ... ok
+test_incomplete_import_refused (__main__.BindingTests.test_incomplete_import_refused) ... ok
+test_intent_fsync_failure_never_spawns_cpc (__main__.BindingTests.test_intent_fsync_failure_never_spawns_cpc) ... ok
+test_key_fsync_failure_blocks_run (__main__.BindingTests.test_key_fsync_failure_blocks_run) ... ok
+test_lock_contention (__main__.BindingTests.test_lock_contention) ... ok
+test_malformed_or_false_positive_success_lines (__main__.BindingTests.test_malformed_or_false_positive_success_lines) ... ok
+test_missing (__main__.BindingTests.test_missing) ... ok
+test_no_success_marker (__main__.BindingTests.test_no_success_marker) ... ok
+test_nonzero (__main__.BindingTests.test_nonzero) ... ok
+test_output_limit_aborts_without_disclosing (__main__.BindingTests.test_output_limit_aborts_without_disclosing) ... ok
+test_partial (__main__.BindingTests.test_partial) ... ok
+test_plaintext_mode_refused (__main__.BindingTests.test_plaintext_mode_refused) ... ok
+test_prepare_delegates_without_radio (__main__.BindingTests.test_prepare_delegates_without_radio) ... ok
+test_prior_key_never_replaced (__main__.BindingTests.test_prior_key_never_replaced) ... ok
+test_real_guard_preserves_started_current_state_without_import (__main__.BindingTests.test_real_guard_preserves_started_current_state_without_import) ... ok
+test_signal (__main__.BindingTests.test_signal) ... ok
+test_split_vendor_success_marker (__main__.BindingTests.test_split_vendor_success_marker) ... ok
+test_success_marker_without_final_newline_is_incomplete (__main__.BindingTests.test_success_marker_without_final_newline_is_incomplete) ... ok
+test_success_nul_no_init_no_repeat_and_explicit_run (__main__.BindingTests.test_success_nul_no_init_no_repeat_and_explicit_run) ... ok
+test_symlink_key_never_followed (__main__.BindingTests.test_symlink_key_never_followed) ... ok
+test_timeout (__main__.BindingTests.test_timeout) ... ok
+test_timeout_cleans_descendant_group (__main__.BindingTests.test_timeout_cleans_descendant_group) ... ok
+test_unsafe_options_precede_attempt (__main__.BindingTests.test_unsafe_options_precede_attempt) ... ok
+test_wrapper_sigterm_cleans_process_group_and_no_output (__main__.BindingTests.test_wrapper_sigterm_cleans_process_group_and_no_output) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 1.744s
+
+OK

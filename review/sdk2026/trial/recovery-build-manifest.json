@@ -1,0 +1,29 @@
+{
+  "variant": "recovery-only-explicit-cpc-unbind",
+  "version": "0.3.2-sdk2026-recovery-unbind",
+  "slug": "codex_ihost_otbr_focused",
+  "base": {
+    "reference": "local/otbr-sdk2026:key-format-fixed-20260919",
+    "id": "sha256:eb72da990dd231d4cd30134f8af8fb162e7cca2330700635b375c99819d61aea",
+    "os": "linux",
+    "architecture": "amd64"
+  },
+  "files": {
+    "config.json": "e0f662fdb27f5e54a705b75f6183175f2dd20f138c0ee8b4c2ba4958397b0350",
+    "Dockerfile": "89d511145dce864502232e7327c53d2aaa1488e4f270df1d118aa9e93503fd2c",
+    "rootfs/etc/s6-overlay/s6-rc.d/local-observe/dependencies.d/base": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "rootfs/etc/s6-overlay/s6-rc.d/local-observe/run": "d609a3118667cf46f592858576898ce4256c180675ea68c6ecb697380fe032ed",
+    "rootfs/etc/s6-overlay/s6-rc.d/local-observe/type": "d0001a150b83f68f09004c5059045cb76a3f064eed4d42ce072bc3722c118006",
+    "rootfs/etc/s6-overlay/s6-rc.d/user/contents.d/local-observe": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "rootfs/usr/local/lib/local-service/observe.py": "7884575efbea5aa423a86a5e7e95bfb287d6ebe2c40ace3214bfe4f31cf6552a",
+    "rootfs/usr/local/lib/local-service/recovery_entrypoint.py": "986e261a1e38a570c00122d7edf3624c3bd5b925012f58412441b8b332450b6b",
+    "rootfs/usr/local/lib/local-service/state_guard.py": "0a21f9f44875a4e78717a38abb0b7e72c4ef69acad4d563d30572c22704f8388",
+    "rootfs/usr/local/lib/local-service/trial_entrypoint.py": "2cd1e1a6d279f5e6db62829799582e348098466a81fda8e5cdc159badffb8e7d",
+    "rootfs/usr/share/sdk2026-build/bind-device": "49909207bc4f5307eb9c2538179e070e29c3aa4507fe661cbd5587b699e36718",
+    "rootfs/usr/share/sdk2026-build/recovery-only": "cbb321a91c5675d6e154b78994e0db065660e6398113bc22a8ab8b66fd230e72"
+  },
+  "helper_source_commit": "391bb7c56e01ef34ae5ae0b8cd259f31fdb7d6d0",
+  "helper_source_path": "hassio-ihost-silabs-multiprotocol/tools/local-service",
+  "production_status": "offline-preparation-only",
+  "normal_startup": "refused; no init delegation"
+}

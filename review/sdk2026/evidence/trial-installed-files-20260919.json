@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "installed_manifest_files": [
+    "/etc/s6-overlay/s6-rc.d/local-observe/dependencies.d/base",
+    "/etc/s6-overlay/s6-rc.d/local-observe/run",
+    "/etc/s6-overlay/s6-rc.d/local-observe/type",
+    "/etc/s6-overlay/s6-rc.d/user/contents.d/local-observe",
+    "/usr/local/lib/local-service/observe.py",
+    "/usr/local/lib/local-service/state_guard.py",
+    "/usr/local/lib/local-service/trial_entrypoint.py",
+    "/usr/share/sdk2026-build/bind-device"
+  ],
+  "application_binaries_unchanged": true,
+  "automatic_discovery_suppressed": true,
+  "scope": "offline final wrapper; no radio or production state"
+}

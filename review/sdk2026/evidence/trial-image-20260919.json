@@ -1,0 +1,28 @@
+{
+  "image_id": "sha256:f37295ca2821ec4249a2178f5644f59c4dde64792e77563ed04b63b62b863736",
+  "architecture": "amd64",
+  "entrypoint": [
+    "python3",
+    "/usr/local/lib/local-service/trial_entrypoint.py"
+  ],
+  "version": "0.3.0-sdk2026",
+  "cpc_encryption": "ON",
+  "installed_file_check": "trial-installed-files-20260919.json",
+  "installed_wrapper_tests": "trial-wrapper-tests-20260919.log",
+  "assembly_verification": {
+    "script": "review/sdk2026/verify-image.sh",
+    "exit_code": 0,
+    "container": "sdk2026-packaged-verify-20260919",
+    "network": "none",
+    "devices": [],
+    "mounts": [],
+    "cpc_version": "4.9.1",
+    "key_fixtures": 20,
+    "s6_compile": "passed",
+    "linked_binaries": 5,
+    "http_root_bytes": 25001,
+    "local_qr_bytes": 56694,
+    "javascript_files": 9
+  },
+  "scope": "Offline only; no Supervisor, radio or production state. Verification container stopped."
+}

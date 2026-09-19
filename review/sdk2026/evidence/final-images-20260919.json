@@ -1,0 +1,26 @@
+[
+  {
+    "tag": "local/otbr-sdk2026-trial:0.3.1-sdk2026",
+    "id": "sha256:f34bcbad0113df786aba81619b8ccf2b580bb1ac56ed8f3b3c23acc99c5c0844",
+    "architecture": "amd64",
+    "entrypoint": [
+      "python3",
+      "/usr/local/lib/local-service/trial_entrypoint.py"
+    ],
+    "version": "0.3.1-sdk2026",
+    "encryption": "ON",
+    "scope": "Local offline image only; not published or installed in HA"
+  },
+  {
+    "tag": "local/otbr-sdk2026-recovery:0.3.2-sdk2026-recovery-unbind",
+    "id": "sha256:048dda7c6872f102376dbd2a83aeaa8d93baa1300b42f4ba667cbd82f05cec27",
+    "architecture": "amd64",
+    "entrypoint": [
+      "python3",
+      "/usr/local/lib/local-service/recovery_entrypoint.py"
+    ],
+    "version": "0.3.2-sdk2026-recovery-unbind",
+    "encryption": "ON",
+    "scope": "Local offline image only; not published or installed in HA"
+  }
+]

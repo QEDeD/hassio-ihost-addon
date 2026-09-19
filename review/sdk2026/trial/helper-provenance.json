@@ -1,0 +1,17 @@
+{
+  "files": [
+    {
+      "path": "hassio-ihost-silabs-multiprotocol/tools/local-service/state_guard.py",
+      "git_blob": "f3681d9fa331efa3fa2f5a018341d2560a96dc8e",
+      "normalized_sha256": "0a21f9f44875a4e78717a38abb0b7e72c4ef69acad4d563d30572c22704f8388"
+    },
+    {
+      "path": "hassio-ihost-silabs-multiprotocol/tools/local-service/observe.py",
+      "git_blob": "6a04f3cf018402887264e8054033d32ac0ddbcc1",
+      "normalized_sha256": "7884575efbea5aa423a86a5e7e95bfb287d6ebe2c40ace3214bfe4f31cf6552a"
+    }
+  ],
+  "commit": "391bb7c56e01ef34ae5ae0b8cd259f31fdb7d6d0",
+  "normalization": "UTF-8, CRLF replaced by LF (existing generator policy)",
+  "repository": "https://github.com/QEDeD/hassio-ihost-addon.git"
+}

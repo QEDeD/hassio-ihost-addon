@@ -1,0 +1,39 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 489B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/local/otbr-sdk2026:key-format-fixed-20260919
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/4] FROM docker.io/local/otbr-sdk2026:key-format-fixed-20260919@sha256:eb72da990dd231d4cd30134f8af8fb162e7cca2330700635b375c99819d61aea
+#4 resolve docker.io/local/otbr-sdk2026:key-format-fixed-20260919@sha256:eb72da990dd231d4cd30134f8af8fb162e7cca2330700635b375c99819d61aea 0.0s done
+#4 DONE 0.1s
+
+#5 [internal] load build context
+#5 transferring context: 31.66kB 0.0s done
+#5 DONE 0.0s
+
+#6 [2/4] COPY rootfs/ /
+#6 DONE 0.0s
+
+#7 [3/4] RUN rm /etc/s6-overlay/s6-rc.d/user/contents.d/otbr-agent-rest-discovery
+#7 DONE 0.2s
+
+#8 [4/4] RUN chmod 0755 /etc/s6-overlay/s6-rc.d/local-observe/run
+#8 DONE 0.2s
+
+#9 exporting to image
+#9 exporting layers 0.1s done
+#9 exporting manifest sha256:80013aecbe6c029dfcf32e3753ba5bd20d1ffc9231745979f236236f8df9e0aa done
+#9 exporting config sha256:b375480a9476b66d227f84ac397221c76ccb54e53dfd580608191c09fbaec98c done
+#9 exporting attestation manifest sha256:3b8e42879a6830889a9c4e382cb2c23366ec5f707db9e79f20c8fe8dcd1e04f1 0.0s done
+#9 exporting manifest list sha256:f37295ca2821ec4249a2178f5644f59c4dde64792e77563ed04b63b62b863736 done
+#9 naming to docker.io/local/otbr-sdk2026-trial:0.3.0-sdk2026 done
+#9 unpacking to docker.io/local/otbr-sdk2026-trial:0.3.0-sdk2026 0.1s done
+#9 DONE 0.2s
