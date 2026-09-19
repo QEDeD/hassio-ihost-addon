@@ -1,0 +1,231 @@
+From: Stefan Agner <stefan@agner.ch>
+Subject: [PATCH] Separate host and infrastructure DNS socket routing
+Upstream-Commit: 82eb4863ade08819cf35c28ff3c8bb9f93a06213
+Upstream: https://github.com/openthread/openthread/pull/13545
+License: BSD-3-Clause, The OpenThread Authors (retained source notices).
+
+Exact upstream source diff, applied to SDK2026.6.1 embedded OpenThread.
+Keep the default infra-binding policy for RDNSS, while host configured
+nameservers follow host routing. No implementation changes to upstream.
+
+diff --git a/src/posix/platform/openthread-posix-config.h b/src/posix/platform/openthread-posix-config.h
+index 99c85c893a0..ca7abd798a9 100644
+--- a/src/posix/platform/openthread-posix-config.h
++++ b/src/posix/platform/openthread-posix-config.h
+@@ -431,7 +431,13 @@
+ /**
+  * @def OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF
+  *
+- * Define as 1 to let the upstream DNS bind the socket to infra network interface.
++ * Define as 1 to bind the sockets used to query recursive DNS servers discovered through RDNSS
++ * to the infra network interface. Those servers are discovered on the infra link, so queries to
++ * them are always sent out that interface, regardless of the host routing table.
++ *
++ * Nameservers from the host's resolv.conf (or set via `otSysUpstreamDnsSetServerList()`) are
++ * host-wide configuration and are always reached following the host's routing table, independent
++ * of this setting.
+  */
+ #ifndef OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF
+ #define OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF 1
+diff --git a/src/posix/platform/resolver.cpp b/src/posix/platform/resolver.cpp
+index d4ae49e468c..0430bf0757b 100644
+--- a/src/posix/platform/resolver.cpp
++++ b/src/posix/platform/resolver.cpp
+@@ -227,7 +227,8 @@ void Resolver::BorderRoutingRdnssCallback(void)
+ otError Resolver::SendQueryToServer(Transaction        *aTxn,
+                                     const otIp6Address &aServerAddress,
+                                     const char         *aPacket,
+-                                    uint16_t            aLength)
++                                    uint16_t            aLength,
++                                    bool                aViaInfraNetif)
+ {
+     otError      error = OT_ERROR_NONE;
+     otIp4Address ip4Addr;
+@@ -246,6 +247,8 @@ otError Resolver::SendQueryToServer(Transaction        *aTxn,
+     }
+     else
+     {
++        int fd = (aViaInfraNetif && aTxn->mInfraUdpFd6 >= 0) ? aTxn->mInfraUdpFd6 : aTxn->mUdpFd6;
++
+         memcpy(&serverAddr6.sin6_addr, &aServerAddress, sizeof(otIp6Address));
+         serverAddr6.sin6_family = AF_INET6;
+         serverAddr6.sin6_port   = htons(53);
+@@ -255,7 +258,7 @@ otError Resolver::SendQueryToServer(Transaction        *aTxn,
+             serverAddr6.sin6_scope_id = otSysGetInfraNetifIndex();
+         }
+ 
+-        VerifyOrExit(sendto(aTxn->mUdpFd6, aPacket, aLength, MSG_DONTWAIT, reinterpret_cast<sockaddr *>(&serverAddr6),
++        VerifyOrExit(sendto(fd, aPacket, aLength, MSG_DONTWAIT, reinterpret_cast<sockaddr *>(&serverAddr6),
+                             sizeof(serverAddr6)) > 0,
+                      error = OT_ERROR_NO_ROUTE);
+     }
+@@ -283,7 +286,8 @@ void Resolver::Query(otPlatDnsUpstreamQuery *aTxn, const otMessage *aQuery)
+ 
+     for (uint32_t i = 0; i < mRecursiveDnsServerCount; i++)
+     {
+-        if (SendQueryToServer(txn, mRecursiveDnsServerList[i], packet, length) == OT_ERROR_NONE)
++        if (SendQueryToServer(txn, mRecursiveDnsServerList[i], packet, length, /* aViaInfraNetif */ true) ==
++            OT_ERROR_NONE)
+         {
+             serverCount++;
+         }
+@@ -291,7 +295,8 @@ void Resolver::Query(otPlatDnsUpstreamQuery *aTxn, const otMessage *aQuery)
+ 
+     for (uint32_t i = 0; i < mUpstreamDnsServerCount; i++)
+     {
+-        if (SendQueryToServer(txn, mUpstreamDnsServerList[i], packet, length) == OT_ERROR_NONE)
++        if (SendQueryToServer(txn, mUpstreamDnsServerList[i], packet, length, /* aViaInfraNetif */ false) ==
++            OT_ERROR_NONE)
+         {
+             serverCount++;
+         }
+@@ -335,23 +340,35 @@ Resolver::Transaction *Resolver::AllocateTransaction(otPlatDnsUpstreamQuery *aTh
+     {
+         if (txn.mThreadTxn == nullptr)
+         {
+-            fd4OrError = CreateUdpSocket(AF_INET);
++            fd4OrError = CreateUdpSocket(AF_INET, /* aBindToInfraNetif */ false);
+             if (fd4OrError < 0)
+             {
+                 LogInfo("Failed to create socket for upstream resolver: %d", fd4OrError);
+                 break;
+             }
+ 
+-            fd6OrError = CreateUdpSocket(AF_INET6);
++            fd6OrError = CreateUdpSocket(AF_INET6, /* aBindToInfraNetif */ false);
+             if (fd6OrError < 0)
+             {
+                 LogInfo("Failed to create socket for upstream resolver: %d", fd6OrError);
++                close(fd4OrError);
+                 break;
+             }
+ 
+-            ret             = &txn;
+-            ret->mUdpFd4    = fd4OrError;
+-            ret->mUdpFd6    = fd6OrError;
++            ret               = &txn;
++            ret->mUdpFd4      = fd4OrError;
++            ret->mUdpFd6      = fd6OrError;
++            ret->mInfraUdpFd6 = -1;
++#if OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF
++            if (mRecursiveDnsServerCount > 0)
++            {
++                ret->mInfraUdpFd6 = CreateUdpSocket(AF_INET6, /* aBindToInfraNetif */ true);
++                if (ret->mInfraUdpFd6 < 0)
++                {
++                    LogInfo("Failed to create infra-bound socket for upstream resolver, using unbound socket");
++                }
++            }
++#endif
+             ret->mThreadTxn = aThreadTxn;
+             break;
+         }
+@@ -419,6 +436,11 @@ void Resolver::CloseTransaction(Transaction *aTxn)
+         close(aTxn->mUdpFd6);
+         aTxn->mUdpFd6 = -1;
+     }
++    if (aTxn->mInfraUdpFd6 >= 0)
++    {
++        close(aTxn->mInfraUdpFd6);
++        aTxn->mInfraUdpFd6 = -1;
++    }
+     aTxn->mThreadTxn = nullptr;
+ }
+ 
+@@ -432,6 +454,11 @@ void Resolver::UpdateFdSet(Mainloop::Context &aContext)
+             Mainloop::AddToErrorFdSet(txn.mUdpFd4, aContext);
+             Mainloop::AddToReadFdSet(txn.mUdpFd6, aContext);
+             Mainloop::AddToErrorFdSet(txn.mUdpFd6, aContext);
++            if (txn.mInfraUdpFd6 >= 0)
++            {
++                Mainloop::AddToReadFdSet(txn.mInfraUdpFd6, aContext);
++                Mainloop::AddToErrorFdSet(txn.mInfraUdpFd6, aContext);
++            }
+         }
+     }
+ }
+@@ -453,6 +480,12 @@ void Resolver::Process(const Mainloop::Context &aContext)
+                 ForwardResponse(txn.mThreadTxn, txn.mUdpFd6);
+                 CloseTransaction(&txn);
+             }
++            else if (txn.mInfraUdpFd6 >= 0 && (Mainloop::HasFdErrored(txn.mInfraUdpFd6, aContext) ||
++                                               Mainloop::IsFdReadable(txn.mInfraUdpFd6, aContext)))
++            {
++                ForwardResponse(txn.mThreadTxn, txn.mInfraUdpFd6);
++                CloseTransaction(&txn);
++            }
+         }
+     }
+ }
+@@ -473,21 +506,36 @@ void Resolver::SetRecursiveDnsServerList(const otIp6Address *aRecursiveDnsServer
+     LogInfo("Set recursive DNS server list, count: %d", mRecursiveDnsServerCount);
+ }
+ 
+-int Resolver::CreateUdpSocket(sa_family_t aFamily)
++int Resolver::CreateUdpSocket(sa_family_t aFamily, bool aBindToInfraNetif)
+ {
+     int fd = -1;
+ 
+-    VerifyOrExit(otSysGetInfraNetifName() != nullptr, LogDebg("No infra network interface available"));
+     fd = socket(aFamily, SOCK_DGRAM, IPPROTO_UDP);
+     VerifyOrExit(fd >= 0, LogDebg("Failed to create the UDP socket: %s", strerror(errno)));
++
+ #if OPENTHREAD_POSIX_CONFIG_UPSTREAM_DNS_BIND_TO_INFRA_NETIF
+-    if (setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, otSysGetInfraNetifName(), strlen(otSysGetInfraNetifName())) < 0)
++    if (aBindToInfraNetif)
+     {
+-        LogDebg("Failed to bind the UDP socket to infra interface %s: %s", otSysGetInfraNetifName(), strerror(errno));
+-        close(fd);
+-        fd = -1;
+-        ExitNow();
++        const char *infraNetifName = otSysGetInfraNetifName();
++
++        if (infraNetifName == nullptr || infraNetifName[0] == '\0')
++        {
++            LogDebg("No infra network interface available");
++            close(fd);
++            fd = -1;
++            ExitNow();
++        }
++
++        if (setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, infraNetifName, strlen(infraNetifName)) < 0)
++        {
++            LogDebg("Failed to bind the UDP socket to infra interface %s: %s", infraNetifName, strerror(errno));
++            close(fd);
++            fd = -1;
++            ExitNow();
++        }
+     }
++#else
++    OT_UNUSED_VARIABLE(aBindToInfraNetif);
+ #endif
+ 
+ exit:
+diff --git a/src/posix/platform/resolver.hpp b/src/posix/platform/resolver.hpp
+index 5103905898b..5f4e115a7dc 100644
+--- a/src/posix/platform/resolver.hpp
++++ b/src/posix/platform/resolver.hpp
+@@ -135,9 +135,12 @@ class Resolver : public Logger<Resolver>
+         otPlatDnsUpstreamQuery *mThreadTxn;
+         int                     mUdpFd4;
+         int                     mUdpFd6;
++        // Socket bound to the infra netif, used for recursive DNS servers discovered
++        // on that link. -1 when unavailable (queries then use the unbound `mUdpFd6`).
++        int mInfraUdpFd6;
+     };
+ 
+-    static int CreateUdpSocket(sa_family_t aFamily);
++    static int CreateUdpSocket(sa_family_t aFamily, bool aBindToInfraNetif);
+ 
+     Transaction *GetTransaction(otPlatDnsUpstreamQuery *aThreadTxn);
+     Transaction *AllocateTransaction(otPlatDnsUpstreamQuery *aThreadTxn);
+@@ -145,7 +148,8 @@ class Resolver : public Logger<Resolver>
+     otError SendQueryToServer(Transaction        *aTxn,
+                               const otIp6Address &aServerAddress,
+                               const char         *aPacket,
+-                              uint16_t            aLength);
++                              uint16_t            aLength,
++                              bool                aViaInfraNetif);
+     void    ForwardResponse(otPlatDnsUpstreamQuery *aThreadTxn, int aFd);
+     void    CloseTransaction(Transaction *aTxn);
+     void    TryRefreshDnsServerList(void);

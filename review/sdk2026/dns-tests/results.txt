@@ -1,0 +1,15 @@
+Test image: sha256:f877330a2f4b8f0d497e28f9e0a4f76ba63466438d0b8aaef9da8d202b6a3ecd
+Network: none; no devices or volumes; source copied into temporary directory.
+Exit code: 0
+PASS negative control: original SDK + legacy global override fails RDNSS binding assertion
+patching file src/posix/platform/openthread-posix-config.h
+Hunk #1 succeeded at 420 (offset -11 lines).
+patching file src/posix/platform/resolver.cpp
+patching file src/posix/platform/resolver.hpp
+PASS host IPv4/IPv6 unbound, RDNSS bound and link-local scoped; cleanup
+PASS RDNSS socket polled, reply delivered and all transaction sockets closed
+PASS RDNSS bind failure falls back, failed socket closed
+PASS host DNS works without infrastructure interface
+PASS IPv6 allocation failure closes prior IPv4 socket
+PASS RDNSS allocation failure falls back without leak
+PASS exact upstream patch, six actual-source behavior groups; no physical network exercised

@@ -41,14 +41,16 @@ install -Dm755 zigbeed/build/release/zigbeed "$out/usr/local/bin/zigbeed"
 cp -a "$sdk/openthread_stack/util/third_party/ot-br-posix" ot-br-posix
 cp "$sdk/openthread/platform-abstraction/posix/openthread-core-silabs-posix-config.h" \
   ot-br-posix/third_party/openthread/repo/src/posix/platform/
-# These three existing patches apply to SDK2026.6.1 without fuzz. The -p4
+# These two frontend patches apply to SDK2026.6.1 without fuzz. The -p4
 # removes the legacy SDK prefix; relative paths within OTBR are unchanged.
 for patch_name in \
-  0001-Route-host-upstream-DNS-through-host-routing.patch \
   0001-web-generate-commissioning-qr-locally.patch \
   0002-web-lock-frontend-dependencies.patch; do
   patch --batch --fuzz=0 -d ot-br-posix -p4 < "/recipe/patches/$patch_name"
 done
+# SDK2026 includes RDNSS. Use upstream's separate host/infra sockets instead
+# of the legacy SDK global binding override (OpenThread PR13545).
+patch --batch --fuzz=0 -d ot-br-posix/third_party/openthread/repo -p1 < /recipe/dns-routing-sdk2026.patch
 patch --batch --fuzz=0 -d ot-br-posix -p1 < /recipe/no-console-sdk2026.patch
 cmake -S ot-br-posix -B otbr-build -G Ninja \
   -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=/usr \
