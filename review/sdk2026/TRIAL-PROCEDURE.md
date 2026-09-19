@@ -15,7 +15,7 @@ Keep the existing Zigbee and Thread/Matter networks operating on channel25 throu
 - Old radio GBL: `recovery/rollback/donglee_mg21_multipan_beta_4.6.0_115200.gbl`, SHA25640fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787. Vendor model/version match, not proven identical installed bytes or hardware-tested rollback.
 - Recovery-only radio GBL: `firmware/cpc-recovery/package/cpc-recovery-sdk2026-application-only.gbl`, SHA25622c4d75097b5cda0e8d60634cc1753d9615069398055b81b8c5a219e64f49897. Used only for the explicitly approved interrupted-binding branch.
 - Host images: candidate0.3.1-sdk2026 ID sha256:f34bcbad0113df786aba81619b8ccf2b580bb1ac56ed8f3b3c23acc99c5c0844; recovery0.3.2-sdk2026-recovery-unbind ID sha256:048dda7c6872f102376dbd2a83aeaa8d93baa1300b42f4ba667cbd82f05cec27. Retained old host0.2.3-ordered is in recovery/REUSE-FINDINGS.md. Record registry/platform identities after authorized delivery.
-- Flasher: universal-silabs-flasher1.1.0, the already demonstrated RTS/DTR reset method and `bootloader:115200,cpc:115200` probes. Stage its isolated SSH-app runtime and all three GBL files before downtime. Prior temporary Python/APK environment was removed; it is not currently installed. Verify package hashes, version and offline GBL parsing before touching serial. Never use a firmware URL during the outage.
+- Flasher: universal-silabs-flasher1.1.0, the already demonstrated RTS/DTR reset method and `bootloader:115200,cpc:115200` probes. The offline package/firmware bundle is preserved at C:/Users/Kristoffer/Git/otbr/sdk2026-flasher-bundle-20260919, with hashes in evidence/flasher-bundle-20260919.json. In the official SSH10.5.0 image with networking disabled and no radio attached, installation, pip consistency, CLI help and all three GBL parses passed; removing the temporary APK group restored the exact original package inventory. Stage and verify this isolated runtime on the actual SSH app before downtime. It is not installed on HA yet. Do not upgrade existing SSH packages; the rehearsed installer adds only absent packages. Never use a firmware URL during the outage.
 
 Pinned flasher command form after the exact local paths are staged:
 
@@ -26,7 +26,7 @@ Pinned flasher command form after the exact local paths are staged:
   flash --firmware /PRIVATE/STAGED-FILE.gbl
 ```
 
-The pinned1.1.0 CLI validates the GBL then uploads and runs it; it has no flash cross-upgrade/downgrade override flags. Do not copy flags from older tool versions or add `write-ieee`/`--force`. Physical bootloader acceptance remains untested. [Pinned implementation](https://raw.githubusercontent.com/NabuCasa/universal-silabs-flasher/v1.1.0/universal_silabs_flasher/flash.py).
+Inspection of the pinned1.1.0 wheel confirms the global parser is shared by the top-level and flash parsers, so the command above accepts options before flash. The optional additional mocked parser check is deferred while local Docker is unavailable; this does not invalidate the completed offline installation/GBL checks. The pinned1.1.0 CLI validates the GBL then uploads and runs it; it has no flash cross-upgrade/downgrade override flags. Do not copy flags from older tool versions or add `write-ieee`/`--force`. Physical bootloader acceptance remains untested. [Pinned implementation](https://raw.githubusercontent.com/NabuCasa/universal-silabs-flasher/v1.1.0/universal_silabs_flasher/flash.py).
 
 ## Preparation remaining before approval
 
@@ -68,8 +68,20 @@ Reserve60minutes of attended radio interruption, with a decision to accept or be
 - Failure before radio changes: restore the saved same-app configuration/options and original running state; no state restore should be necessary.
 - Failed candidate startup after traffic: stop writers and capture the latest full focused-app state and key before switching back. Restore the old application and retained old host once against latest stores; never rewind counters with the pre-trial backup. Confirm identities and fresh Zigbee/Thread/Matter behavior. Old firmware initialization after new PSA storage is a residual risk, not an established recovery result.
 - Interrupted/missing-key bind: optional R1 requires its own explicit approval and time allocation. Flash the separate recovery application; install stopped recovery-only host; explicitly run one unbind, require confirmation; explicitly archive original CPC directory intact; return to candidate application and host; explicitly bind once and back up the matching key before networks start. No deletion/retry/rearm occurs on normal startup. Preserve failed key evidence.
-- Do not stack R1, old rollback and repeated candidate flashes opportunistically. The reviewed final procedure must choose one branch and its latest start time within the combined window. If a branch fails, stop within its scope; further recovery requires a new decision. Host backups cannot restore radio NVM.
+- Permit at most one terminal old-host/old-firmware fallback, including after an early R1 failure only if fallback begins by T+35. Never return to the candidate after that fallback. R1 is for ambiguous/interrupted CPC binding only, not arbitrary storage or radio failure. Host backups cannot restore radio NVM.
+
+| Elapsed interruption | Required result / action |
+| --- | --- |
+| T+10 | Coherent initial backup independently verified; otherwise restore unchanged operation before flashing. |
+| T+20 | Normal candidate has binding, protected key copy and healthy initial traffic; alternatively enter the specifically approved R1 branch by this deadline. |
+| T+30 | Normal path finishes ten-minute observation and begins its controlled app restart. |
+| T+35 | Normal path passes restart checks or begins terminal old fallback. R1 must have completed its firmware/host transitions, explicit unbind/archive, candidate binding and protected key copy; otherwise use terminal fallback now if still feasible. |
+| T+40 | Successful R1 has healthy existing-network traffic. |
+| T+50–55 | Successful R1 completes observation and controlled restart. |
+| T+60 | Target closeout, not guaranteed recovery. |
+
+The old fallback allowance is20minutes plus5minutes margin, requiring a start byT+35. A failure during late R1 observation/restart cannot fit that allowance inside the same60minutes. Stop the affected services, preserve current state and obtain a concrete extension/recovery decision; do not conceal another firmware cycle inside the original budget. Never interrupt an in-progress flash because a timer expires. Bootloader inaccessibility, failed storage or old-radio initialization after candidate PSA changes may exceed the target or require network repair. The final approval must explicitly cover this residual risk; earlier acceptance of estimated downtime does not do so.
 
 ## Approval status
 
-Still preparation. Final host identities, delivery/staging route, bounded R1 timing, representative device set and independent procedure review must be completed before asking for production approval. A successful build is not deployment readiness. The meaningful operator decision will be acceptance of the concrete single-dongle trial and its residual recovery risk, not mechanics we can resolve ourselves.
+Still preparation. Final host identities, delivery/staging route, post-maintenance baseline and exact representative request paths must be completed before asking for production approval. Bounded R1 timing and the completed independent review are incorporated. A successful build is not deployment readiness. The meaningful operator decision will be acceptance of the concrete single-dongle trial and its residual recovery risk, not mechanics we can resolve ourselves.

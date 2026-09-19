@@ -11,6 +11,14 @@ No production trial has run. Fresh read-only baseline evidence selected the foll
 
 Record private before/after coordinator identity, Zigbee PAN/channel, Thread extended PAN/channel/active dataset identity and actual whole-store filename selection. Compare existing membership rather than interpreting a newly created network as success. Do not print keys/datasets. Keep powered-off devices and previously failing Hue delivery out of the representative pass criterion; separately report new regressions.
 
+## Concrete Zigbee read route
+
+Use HA's existing `mqtt.publish` service with `retain:false` and payload `{"state":""}` on `<current MQTT base>/<current friendly name>/get`. Resolve the current base and friendly name from bridge configuration/device mapping for IEEE `0x94b216fffeb4de94`; do not infer them from the HA entity ID. Subscribe to that device's state topic before sending and correlate a new response/last-seen with the request and Z2M read result. A retained or cached state, service-call success alone, or an unrelated report is insufficient. Only proceed if the installed device exposes state reading.
+
+This uses the documented existing get interface and needs no temporary extension. Alternative direct ZCL read, if required by the installed exposes: publish only `{"read":{"cluster":"genOnOff","attributes":["onOff"]}}` through the documented device set endpoint; verify the explicit ZCL response in the log. Despite that endpoint's name, this particular payload is a read, not an on/off command. Prefer the simpler get route when supported. [Zigbee2MQTT API](https://www.zigbee2mqtt.io/guide/usage/mqtt_topics_and_messages.html).
+
+These are request/response communication checks, not proof of physical actuation. Final trial approval should name any representative physical control and exact restoration step if physical control is part of acceptance; do not silently substitute read success for it. The existing computer plug supplies an active load and must not be switched. Fresh Matter reports and successful subscription recovery establish traffic; a new Matter attribute-read mechanism has not been selected or tested and is not an excuse to add custom tooling before evaluating the existing path.
+
 ## Encrypted CPC evidence without secret-bearing tracing
 
 Socket presence is only service readiness. The binding completion marker proves the bounded provisioning operation, not subsequent encrypted application traffic.
