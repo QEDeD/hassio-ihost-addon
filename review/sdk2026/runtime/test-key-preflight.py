@@ -19,9 +19,13 @@ with tempfile.TemporaryDirectory() as temp:
         assert (result.returncode == 0) == expected, result.stderr
         assert key not in result.stdout + result.stderr, "Key exposed in diagnostics"
         count += 1
-    for ending in (b"", b"\n", b"\r"):
+    # CPC v4.9.1 ECDH writer includes a trailing NUL (keys.c:416).
+    for ending in (b"", b"\n", b"\r", b"\x00"):
         path.write_bytes(key + ending); path.chmod(0o600); run(True)
-    for bad in (b"", key + b"\r\n", b"G" * 32, key + b"extra", key + b"\nsecond line"):
+        assert path.read_bytes() == key + ending, "Valid key was modified"
+    for bad in (b"", key + b"\r\n", b"G" * 32, key + b"extra", key + b"\nsecond line",
+                key + b"\x00\x00", key + b"\x00\n", key + b"\x00extra",
+                key[:16] + b"\x00" + key[16:], key[:-1] + b"\x00"):
         path.write_bytes(bad); run(False); assert path.read_bytes() == bad
     path.unlink(); run(False); assert not path.exists(), "Missing key was created"
     path.write_bytes(key); path.chmod(0o644); run(False)

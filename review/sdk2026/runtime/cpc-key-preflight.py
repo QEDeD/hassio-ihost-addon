@@ -18,8 +18,8 @@ def check(path):
             if not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid() or info.st_mode & 0o077:
                 raise ValueError("CPC key must be a private regular file owned by the service user (0600)")
             content = os.read(fd, 35)
-            if re.fullmatch(rb"[0-9a-fA-F]{32}(?:\n|\r)?", content) is None:
-                raise ValueError("CPC key must contain exactly 32 hexadecimal characters and an optional single line ending")
+            if re.fullmatch(rb"[0-9a-fA-F]{32}(?:\x00|\n|\r)?", content) is None:
+                raise ValueError("CPC key must contain exactly 32 hexadecimal characters and at most one NUL, LF or CR terminator")
         finally:
             os.close(fd)
     finally:
