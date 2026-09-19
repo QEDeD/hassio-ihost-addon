@@ -1,3 +1,5 @@
+Current result (2026-09-19): [RESULT-20260919.md](./RESULT-20260919.md) records exact-image descriptor extraction, metadata-only baseline comparison, a reproduced default-offset migration defect and the tested candidate SDK correction. The assessment below is the earlier source-only state.
+
 # Actual generated zigbeed token compatibility assessment
 
 Read-only assessment of retained /sdk2026-recipe-zigbeed and SDK2026.6.1 source. No production file, key, live service, token migration or radio was accessed. The supplied baseline token header is already known to be version2; this assessment did not re-read it.

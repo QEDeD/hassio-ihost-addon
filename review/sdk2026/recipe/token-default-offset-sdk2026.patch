@@ -1,0 +1,23 @@
+--- a/zigbee/stack/platform/sl_zigbee_token_host.c
++++ b/zigbee/stack/platform/sl_zigbee_token_host.c
+@@ -579,6 +579,7 @@
+     *finger++ = VERSION;
+     size_t i, j, nvmArraySizeToCopy, nvmTokOffset, nvmTokArraySize;
+     uint8_t* nvmTokFinger = NULL;
++    size_t defaultOffset = 0;
+     for (i = 0; i < sli_zigbee_token_count; i++) { // iterate through stack/app tokens
+       *finger++ = (uint8_t)((tokenNvm3Keys[i] & 0xFF000000) >> 24);
+       *finger++ = (uint8_t)((tokenNvm3Keys[i] & 0x00FF0000) >> 16);
+@@ -606,10 +607,11 @@
+       // set the remaining array elements (if any) to default
+       for (j = nvmArraySizeToCopy; j < tokenArraySize[i]; j++) {
+         memcpy(finger,
+-               (uint8_t *)&tokenDefaults[i],
++               tokenDefaults + defaultOffset,
+                tokenSize[i]);
+         finger += tokenSize[i];
+       }
++      defaultOffset += tokenSize[i];
+     }
+     free(origNvm);
+     origNvm = NULL;

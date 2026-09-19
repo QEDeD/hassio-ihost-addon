@@ -1,0 +1,17 @@
+{
+  "fixture_bytes": 6395,
+  "baseline_descriptors": 39,
+  "baseline_nonempty_tokens": 26,
+  "nonempty_tokens_preserved_exactly": 26,
+  "counter_tokens_preserved_exactly": true,
+  "network_key_tokens_preserved_exactly": true,
+  "restored_eui64_preserved_exactly": true,
+  "loader_exit": 8,
+  "default_checks": [
+    "default_check id=0x0001e12c count=1 mismatches=0",
+    "default_check id=0x00011000 count=128 mismatches=0",
+    "default_check id=0x00010800 count=64 mismatches=0",
+    "default_check id=0x00010880 count=64 mismatches=64"
+  ],
+  "all_defaults_correct": false
+}

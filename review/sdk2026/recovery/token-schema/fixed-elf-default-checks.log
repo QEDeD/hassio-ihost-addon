@@ -1,0 +1,4 @@
+default_check id=0x0001e12c count=1 mismatches=0
+default_check id=0x00011000 count=128 mismatches=0
+default_check id=0x00010800 count=64 mismatches=0
+default_check id=0x00010880 count=64 mismatches=0

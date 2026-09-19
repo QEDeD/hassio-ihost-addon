@@ -1,0 +1,34 @@
+{
+  "candidate_descriptors": 30,
+  "baseline_descriptors": 39,
+  "original_nonempty_tokens_preserved_exactly": 26,
+  "original_nonempty_tokens": 26,
+  "latest_synthetic_counters_preserved_exactly": true,
+  "keys_and_restored_eui64_preserved_exactly": true,
+  "changed_or_dropped_candidate_records": [
+    {
+      "id": "0x0001e12c",
+      "candidate_count": 1,
+      "baseline_count": null,
+      "candidate_payload_bytes": 4
+    },
+    {
+      "id": "0x00011000",
+      "candidate_count": 128,
+      "baseline_count": null,
+      "candidate_payload_bytes": 512
+    },
+    {
+      "id": "0x00010800",
+      "candidate_count": 64,
+      "baseline_count": 0,
+      "candidate_payload_bytes": 704
+    },
+    {
+      "id": "0x00010880",
+      "candidate_count": 64,
+      "baseline_count": 0,
+      "candidate_payload_bytes": 64
+    }
+  ]
+}

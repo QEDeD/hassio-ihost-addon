@@ -1,0 +1,15 @@
+{
+  "image": "sha256:f13e3adaea844f48f9e62b78ef92571a2c2b6790b3bc9da9799098638bf2e115",
+  "zigbeed_sha256": "983abe4ad018ce358e74e353b7ed5035f4733bbc86c70667631f3bf97a5ab530",
+  "baseline_descriptors": 39,
+  "migrated_descriptors": 30,
+  "nonempty_tokens_preserved_exactly": 26,
+  "all_counters_keys_restored_eui64_preserved_exactly": true,
+  "new_and_expanded_default_checks": [
+    "default_check id=0x0001e12c count=1 mismatches=0",
+    "default_check id=0x00011000 count=128 mismatches=0",
+    "default_check id=0x00010800 count=64 mismatches=0",
+    "default_check id=0x00010880 count=64 mismatches=0"
+  ],
+  "passed": true
+}

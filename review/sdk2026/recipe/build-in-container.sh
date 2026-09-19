@@ -34,6 +34,8 @@ slc signature trust --sdk="$sdk"
 slc generate --no-daemon --sdk="$sdk" --tool-path=/opt/silabs/python --with=linux_arch_64,zigbee_x86_64 \
   --project-file="$sdk/zigbee_app/zigbeed/zigbeed.slcp" \
   --destination="$work/zigbeed" --copy-proj-sources --output-type=makefile
+# Preserve packed defaults correctly when existing host token tables expand.
+patch --batch --fuzz=0 -d "$sdk" -p1 < /recipe/token-default-offset-sdk2026.patch
 make -C zigbeed -f zigbeed.Makefile -j "$jobs" release
 install -Dm755 zigbeed/build/release/zigbeed "$out/usr/local/bin/zigbeed"
 
