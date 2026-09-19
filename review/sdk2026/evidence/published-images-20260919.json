@@ -1,0 +1,14 @@
+[
+  {
+    "reference": "ghcr.io/qeded/otbr-integration-test-amd64:0.3.1-sdk2026",
+    "index_digest": "sha256:f34bcbad0113df786aba81619b8ccf2b580bb1ac56ed8f3b3c23acc99c5c0844",
+    "amd64_manifest_digest": "sha256:4617beb33fc56a998f10e70392f03b511c4b40fd503d117c238c48f8d10ddb10",
+    "HA_anonymous_manifest_fetch_verified": true
+  },
+  {
+    "reference": "ghcr.io/qeded/otbr-integration-test-amd64:0.3.2-sdk2026-recovery-unbind",
+    "index_digest": "sha256:048dda7c6872f102376dbd2a83aeaa8d93baa1300b42f4ba667cbd82f05cec27",
+    "amd64_manifest_digest": "sha256:87ec0d4f9827d072175ed232378a8b19efcb87255406d2f4b55a408e61eb7cfc",
+    "HA_anonymous_manifest_fetch_verified": true
+  }
+]
