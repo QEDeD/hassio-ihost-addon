@@ -1,6 +1,6 @@
 # SDK 2026.6.1 upgrade — current execution record
 
-Updated 2026-09-20 after follow-up receive diagnostic and verified recovery. Read this file and the saved goal after compression. Historical reports preserve evidence, not current authority. The full previous record is in [the archive](EXECUTION-HISTORY-THROUGH-LIFECYCLE-20260920.md).
+Updated 2026-09-20 after successful bootstrap diagnostic and verified recovery. Read this file and the saved goal after compression. Historical reports preserve evidence, not current authority. The full previous record is in [the archive](EXECUTION-HISTORY-THROUGH-LIFECYCLE-20260920.md).
 
 ## Objective and continuity
 
@@ -15,28 +15,25 @@ The operator wants execution to continue, not another goal-writing exercise. The
 - Only the main agent performs production mutations. Stop the relevant writers, preserve fresh coherent independent backups, use one serial owner and perform the specified restoration. Never interrupt an active upload to meet a deadline or overwrite advanced state with an older backup.
 - Offline preparation continues autonomously. Public upstream comments/PR publication retain their separate limits; existing permitted Git pushes and approved registry uploads must not be conflated with unrestricted publication.
 
-## Current checkpoint — follow-up receive trial complete; production restored
+## Current checkpoint — corrected diagnostic passed; production restored
 
-The operator's selected `continue` explicitly approved the one receive diagnostic and mandatory original restoration. That sequence completed once and its approval is consumed. Do not replay any helper flash/backup command. No additional trial follows from remaining clock time.
+Latest selected `go ahead` approved the exact RXB1 bootstrap trial. It completed once; that permission is now consumed. No replay or extra flash is authorized. Read RECEIVE-BOOTSTRAP-RESULT-20260920.md and evidence/receive-bootstrap-result-20260920.json.
 
-Read [RECEIVE-SNAPSHOT-RESULT-20260920.md](RECEIVE-SNAPSHOT-RESULT-20260920.md) and evidence/receive-snapshot-result-20260920.json. Exact candidate5d2ce0a0de6f2c4e0c0a495f34fc8614862c295877e8367c89ba102551f912dc produced a valid929byte RXS1 record:287756 loops, one TX completion, two RX callbacks, one invalid payload CRC, both receive-transfer resize calls failing their received-byte-count check. No overflow flag at first rejection; overflow appeared later. Terminal hardware destination and software descriptor head disagree. This narrows the defect but does not yet prove its cause.
+Candidate9b88fe804f87897091fee0a140dc68440ea26c170a36cae706ac38245b5dde60 replied4.9.1 on the first query in8.44ms; no retry needed. Valid929byteRXB1 record:289051 loops, two receive callbacks, one validU-frame, two TX completions, resize2OK/0failed, CRCerrors0, no UART overflow. This supports the initial DMA descriptor correction but is not normal-firmware/full-service qualification or a reliability benchmark.
 
-Original4.6.0 restored15:38:31UTC; original control passed15:38:58. Radio/Z2M restarted15:39:41/47; original settings restored. Radio interruption263.3seconds. Network identities/key/channel25/Thread dataset match. Zigbee read and Matter Identify passed; fresh changing ALPSTUGA reports. All113 original packages match and temporary tools are removed. At15:46:13 after382.8seconds observation all four apps/settings passed, with no newly unavailable radio entities. Two dishwasher controls changed availability as its programme started; logs are not claimed error-free.
+Original4.6.0 restored16:09:41UTC; original control passed16:10:11. Original radio/Z2M restarted16:11:03/12; interruption285.6seconds. Network identities/key/channel25/Thread dataset match. Zigbee read/Matter Identify pass; fresh changing ALPSTUGA reports. All113 original packages restored and temporary tools removed. After333seconds observation at16:16:48, all original app versions/options/policies/running states pass; no newly unavailable radio entities. Two unrelated Home Connect option switches changed availability while dishwasher stayed connected/running. Logs are not error-free.
 
-Private authoritative events: /home/wsluser/.local/share/ha-recovery/sdk2026-receive-20260920; HA /share/codex-sdk2026-receive-20260920. All event times use WSL UTC; Windows/tool clock differs by about7m45s. Use one clock for durations/deadlines, and refresh clocks before any subsequent window. Temporary remote Python is removed; use documented ha-api/SSH CLI, not helper t.api().
+Private authoritative events/backups: /home/wsluser/.local/share/ha-recovery/sdk2026-bootstrap-20260920; HA /share/codex-sdk2026-bootstrap-20260920. WSL UTC is the event clock; Windows/tool time differs. Temporary remote Python is removed: use ha-api/SSH CLI, not helper t.api().
 
 ## Current direction and next actions
 
-A source-grounded candidate correction is prepared in firmware/receive-bootstrap: static initial descriptor flags are populated before DMA load, leaving the reusable two-descriptor ring unchanged. It removes a plausible asynchronous load/live-register edit hazard, but original causation and real behavior remain unproved. Read RECEIVE-DMA-START-ANALYSIS-20260920.md.
+The next artifact is normal non-halting full firmware in firmware/receive-fix with only the RXB1-tested bootstrap driver correction. Original app/configuration/security retained; all diagnostic counters/hooks/SysTick/UART takeover removed. Parent exact-target build and4tests pass; independent source/linked review passes in RECEIVE-FIX-REVIEW-20260920.md. Packaging/record closeout is underway; no production staging or flash.
 
-All9 local tests, exact-target build, generated-config comparison, independent application-only package validation and fresh source/linked review pass. ELF8b5046f9d4cc7dedaecbdd4a3acd4cf2d57257834ab44164874b9ac049da31bd; GBL9b88fe804f87897091fee0a140dc68440ea26c170a36cae706ac38245b5dde60. RXB1 schema remains101words/929bytes. Sources and validation: evidence/receive-bootstrap-preparation-20260920.json; review: RECEIVE-BOOTSTRAP-REVIEW-20260920.md. Candidate not staged on HA or flashed; local container stopped. Both bounded workers are complete.
+1. Finish normal candidate package evidence and persist/commit it. Update the concrete full functional trial using existing approved recovery work; avoid another diagnostic matrix. New firmware/full-app cutover requires approval of that concrete scope, not reuse of the consumed one-diagnostic approval.
+2. Qualify normal CPC replies without instrumentation, encrypted CPC binding, network preservation/normal Zigbee+Thread/Matter operation, discovery, restart persistence and recovery. Existing wider restart synchronization caveats remain until tested.
+3. Reassess the nine prepared contributions as the upgrade qualifies; retain SDK2026.6.1 target. No spare/debugger assumed. Parent owns all live mutations; bounded implementation/review workers have finished.
 
-1. Obtain approval for concrete RECEIVE-BOOTSTRAP-TRIAL-20260920.md and a fresh sufficient recovery window; current consumed approval does not cover this new variant. Then stage exact bundle to fresh paths, verify live baseline/access and clocks, and execute one candidate capture followed by mandatory original restoration. Never reuse consumed helper paths/actions.
-2. Acceptance is at least one matched CPC version reply within the existing one-query/conditional-retry operation plus no resize or payload-CRC failures. Do not demand a second reply when first attempt succeeds. Startup announcement alone is insufficient. Keep wider restart synchronization and diagnostic timing limitations explicit.
-3. If this succeeds, prepare normal non-halting firmware and the next concrete functional trial; if it fails, classify from retained counters before selecting a new hypothesis. No automatic extra flash or broad component matrix.
-4. Once CPC responsiveness is fixed, return to encrypted binding, network-state compatibility, Zigbee/Thread/Matter checks, persistence and nine-contribution reassessment. No spare/debugger assumed. Parent owns production mutations.
-
-Earlier completed trials: POST-STARTUP-RESULT-20260920.md and CONNECTION-LIFECYCLE-RESULT-20260920.md. Their historical findings/approvals must not supersede this checkpoint.
+Earlier trials: RECEIVE-SNAPSHOT-RESULT-20260920.md, POST-STARTUP-RESULT-20260920.md and CONNECTION-LIFECYCLE-RESULT-20260920.md. Historical failures/permissions do not supersede this checkpoint.
 
 ## Evidence and reusable artifacts
 

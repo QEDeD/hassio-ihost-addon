@@ -1,0 +1,342 @@
+{
+  "status": "diagnostic passed; original production firmware/apps restored; representative checks and333second observation passed",
+  "candidate_sha256": "9b88fe804f87897091fee0a140dc68440ea26c170a36cae706ac38245b5dde60",
+  "original_sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+  "capture": {
+    "post_launch_bytes": 979,
+    "sha256": "d47f73d149747c02a82fbba600f3e68839660a75cc8e4b8c1bf9c35ea53248ca",
+    "valid_snapshot": true
+  },
+  "snapshot": {
+    "format_version": 1,
+    "build_id": 1381515825,
+    "core_hz": 80000000,
+    "systick_reload": 7999999,
+    "delivered_ticks": 40,
+    "snapshot_valid": 127,
+    "takeover_status": 7,
+    "phase": 5,
+    "cpc_enter": 289052,
+    "cpc_exit": 289052,
+    "tasklets_done": 289052,
+    "drivers_done": 289051,
+    "full_loop_done": 289051,
+    "txc_enter": 2,
+    "txc_exit": 2,
+    "rx_callback_enter": 2,
+    "rx_callback_exit": 2,
+    "tx_ready": 1,
+    "cpc_rxd_frame": 1,
+    "cpc_rxd_valid_uframe": 1,
+    "cpc_txd_completed": 2,
+    "cpc_driver_error": 0,
+    "cpc_driver_packet_dropped": 0,
+    "cpc_invalid_header_checksum": 0,
+    "cpc_invalid_payload_checksum": 0,
+    "entry_basepri": 0,
+    "entry_primask": 0,
+    "entry_faultmask": 0,
+    "scb_icsr": 2063,
+    "scb_shcsr": 985088,
+    "scb_cfsr": 0,
+    "scb_hfsr": 0,
+    "nvic_iser0": 2250249224,
+    "nvic_iser1": 125,
+    "nvic_ispr0": 0,
+    "nvic_ispr1": 0,
+    "nvic_iabr0": 0,
+    "nvic_iabr1": 0,
+    "priority_uart_tx": 80,
+    "priority_ldma": 80,
+    "priority_rtcc": 80,
+    "priority_systick": 0,
+    "usart_en": 1,
+    "usart_status": 8291,
+    "usart_ien": 1,
+    "usart_if": 8194,
+    "usart_ctrl": 1073741824,
+    "usart_ctrlx": 0,
+    "usart_clkdiv": 5296,
+    "usart_routeen": 16,
+    "usart_rxroute": 1,
+    "usart_txroute": 65537,
+    "read_channel": 0,
+    "write_channel": 1,
+    "ldma_en": 1,
+    "ldma_ctrl": 0,
+    "ldma_status": 134217736,
+    "ldma_ien": 3,
+    "ldma_if": 4,
+    "ldma_chstatus": 1,
+    "ldma_chbusy": 0,
+    "ldma_chdone": 6,
+    "ldma_reqdis": 0,
+    "rx_channel_ctrl": 51380320,
+    "rx_request_select": 262144,
+    "rx_channel_dst": 536891740,
+    "tx_channel_ctrl": 805306368,
+    "tx_request_select": 262146,
+    "tx_channel_dst": 1342537788,
+    "cmu_sysclkctrl": 1026,
+    "bus_clock_ungated": 1,
+    "first_bad_seen": 0,
+    "first_bad_header_length": 0,
+    "first_bad_driver_length": 0,
+    "first_bad_fcs": 0,
+    "first_bad_crc": 0,
+    "first_bad_control": 0,
+    "first_bad_uart_if": 0,
+    "rx_header_callbacks": 1,
+    "rx_payload_callbacks": 1,
+    "first_header_uart_if": 8194,
+    "first_payload_uart_if": 8194,
+    "resize_calls": 2,
+    "resize_ok": 2,
+    "resize_already": 0,
+    "resize_fail": 0,
+    "resize_last_requested": 7,
+    "resize_last_received": 0,
+    "recovery_dispatches": 0,
+    "recovery_runs": 0,
+    "header_expected": 1,
+    "next_rx_size": 7,
+    "recovery_flags": 0,
+    "rx_link": 536874498,
+    "desc0_ctrl": 50336000,
+    "desc0_dst": 536891740,
+    "desc0_link": 536874496,
+    "desc1_ctrl": 50336000,
+    "desc1_dst": 536891180,
+    "desc1_link": 536874480,
+    "head_index": 0
+  },
+  "launch_events": [
+    {
+      "event": "launch_observation_begin",
+      "expected_baudrate": 115200,
+      "expected_rtscts": false,
+      "expected_xonxoff": false,
+      "monotonic": 83459.655275077
+    },
+    {
+      "endpoint": 0,
+      "event": "non_version_frame",
+      "monotonic": 83459.71815154
+    },
+    {
+      "event": "query_begin",
+      "monotonic": 83459.905712196,
+      "phase": "early",
+      "sequence": 0
+    },
+    {
+      "event": "query_end",
+      "monotonic": 83459.914150484,
+      "phase": "early",
+      "result": "reply",
+      "rx_bytes": 29,
+      "sequence": 0,
+      "version": "4.9.1"
+    },
+    {
+      "event": "launch_observation_complete",
+      "monotonic": 83465.658114606,
+      "results": [
+        {
+          "phase": "early",
+          "result": "reply",
+          "rx_bytes": 29,
+          "sequence": 0,
+          "version": "4.9.1"
+        }
+      ]
+    }
+  ],
+  "host_requests": [
+    {
+      "hex": "14000a00c455d30200040003000000db12",
+      "bytes": 17,
+      "header_crc_valid": true,
+      "payload_crc_valid": true
+    }
+  ],
+  "first_reply_ms": 8.438287986791693,
+  "radio_interruption_seconds": 285.612459,
+  "events": [
+    {
+      "at": "2026-09-20T16:04:13.364111+00:00",
+      "stage": "preflight_started"
+    },
+    {
+      "at": "2026-09-20T16:04:13.793799+00:00",
+      "stage": "exact_bundle_uploaded_verified"
+    },
+    {
+      "at": "2026-09-20T16:06:14.239864+00:00",
+      "stage": "preflight_ready",
+      "original_packages": 113
+    },
+    {
+      "at": "2026-09-20T16:06:27.336892+00:00",
+      "stage": "first_writer_stop"
+    },
+    {
+      "at": "2026-09-20T16:06:59.455382+00:00",
+      "stage": "writers_stopped"
+    },
+    {
+      "at": "2026-09-20T16:07:04.644151+00:00",
+      "stage": "independent_coherent_backups_verified",
+      "elapsed": 37.307251
+    },
+    {
+      "at": "2026-09-20T16:07:32.989429+00:00",
+      "stage": "core_matter_restarted"
+    },
+    {
+      "at": "2026-09-20T16:07:44.008551+00:00",
+      "stage": "baseline_probe_begin"
+    },
+    {
+      "at": "2026-09-20T16:07:46.344682+00:00",
+      "stage": "baseline_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T16:07:59.187976+00:00",
+      "stage": "candidate_flash_begin",
+      "sha256": "9b88fe804f87897091fee0a140dc68440ea26c170a36cae706ac38245b5dde60",
+      "elapsed": 91.851077
+    },
+    {
+      "at": "2026-09-20T16:08:38.282034+00:00",
+      "stage": "candidate_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T16:08:54.843714+00:00",
+      "stage": "rollback_flash_begin",
+      "sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+      "elapsed": 147.50681
+    },
+    {
+      "at": "2026-09-20T16:09:41.713534+00:00",
+      "stage": "rollback_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T16:10:10.307682+00:00",
+      "stage": "rollback_probe_begin"
+    },
+    {
+      "at": "2026-09-20T16:10:11.383545+00:00",
+      "stage": "rollback_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T16:11:03.850110+00:00",
+      "stage": "local_codex_ihost_otbr_focused_restarted"
+    },
+    {
+      "at": "2026-09-20T16:11:12.949351+00:00",
+      "stage": "45df7312_zigbee2mqtt_restarted"
+    },
+    {
+      "at": "2026-09-20T16:11:13.460762+00:00",
+      "stage": "original_policies_restored",
+      "elapsed": 286.123862
+    },
+    {
+      "at": "2026-09-20T16:12:11.001034+00:00",
+      "stage": "representative_requests_completed"
+    },
+    {
+      "at": "2026-09-20T16:12:34.428884+00:00",
+      "stage": "temporary_tools_removed_original_packages_equal",
+      "count": 113
+    },
+    {
+      "at": "2026-09-20T16:17:16.472110+00:00",
+      "stage": "recovery_closeout",
+      "observation_seconds": 333.101888,
+      "newly_unavailable_radio_entities": 0,
+      "unrelated_dishwasher_controls": 2
+    }
+  ],
+  "identities": {
+    "coordinator_ieee": true,
+    "pan_id": true,
+    "extended_pan_id": true,
+    "channel": true,
+    "network_key": true,
+    "thread_dataset": true
+  },
+  "original_packages_preserved": 113,
+  "private_files_sha256": {
+    "candidate-flash.log": "52e49cd796efdbcb3fadcf00a72db8b09e5f247c6bcd1d2e8c725a4a6d5ff980",
+    "rollback-flash.log": "86a51e88c7d89c3c7e6da49d9a393783f6c216f66200b07fe813a264c12a6b51",
+    "decoded-snapshot.json": "b9f6f53c7c0ad32bd5959df4e52c7023cd17d9707468ab6294471128a06e0785",
+    "events.jsonl": "0e09de26bd9632c7880730a5a3851f89ceeb105ad9a7273a50805b09ce792907",
+    "recovery-closeout.json": "2c8bb21b97b0a310b9c5e71b366acb753b3a970ed9a063ec5280da7dedbbbe06"
+  },
+  "recovery": {
+    "at": "2026-09-20T16:16:48.431310+00:00",
+    "observation_seconds": 333.101888,
+    "newly_unavailable_entities": [
+      "switch.dishwasher_intensive_zone",
+      "switch.dishwasher_vario_speed"
+    ],
+    "apps": {
+      "local_codex_ihost_otbr_focused": {
+        "started": true,
+        "original_settings": true
+      },
+      "45df7312_zigbee2mqtt": {
+        "started": true,
+        "original_settings": true
+      },
+      "core_matter_server": {
+        "started": true,
+        "original_settings": true
+      },
+      "core_ssh": {
+        "started": true,
+        "original_settings": true
+      }
+    },
+    "alpstuga_reports": [
+      {
+        "entity_id": "sensor.alpstuga_air_quality_monitor_thread_routing_role",
+        "state": "leader",
+        "last_updated": "2026-09-20T16:11:35.252845+00:00"
+      },
+      {
+        "entity_id": "sensor.alpstuga_air_quality_monitor_temperature",
+        "state": "24.66",
+        "last_updated": "2026-09-20T16:16:30.446934+00:00"
+      },
+      {
+        "entity_id": "sensor.alpstuga_air_quality_monitor_humidity",
+        "state": "46.16",
+        "last_updated": "2026-09-20T16:16:30.448501+00:00"
+      },
+      {
+        "entity_id": "sensor.alpstuga_air_quality_monitor_carbon_dioxide",
+        "state": "610.0",
+        "last_updated": "2026-09-20T16:16:30.450477+00:00"
+      },
+      {
+        "entity_id": "sensor.alpstuga_air_quality_monitor_pm2_5",
+        "state": "2.0",
+        "last_updated": "2026-09-20T16:11:35.253757+00:00"
+      },
+      {
+        "entity_id": "sensor.alpstuga_air_quality_monitor_air_quality",
+        "state": "good",
+        "last_updated": "2026-09-20T16:11:35.253857+00:00"
+      }
+    ],
+    "radio_recovery_passed": true,
+    "availability_qualification": "Only two Home Connect dishwasher option switches became unavailable; dishwasher connectivity remained on and programme progress advanced from33 to58 while running. No new Zigbee/Thread/Matter unavailable entities."
+  }
+}

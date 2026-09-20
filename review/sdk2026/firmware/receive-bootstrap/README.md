@@ -1,6 +1,6 @@
-# Receive bootstrap candidate — unproved
+# Receive bootstrap diagnostic — hardware trial passed
 
-This isolated candidate tests the initial DMA descriptor-load hypothesis documented in `../../RECEIVE-DMA-START-ANALYSIS-20260920.md`. It is derived from `../receive-snapshot`; all prior source and evidence are preserved. It is not an established production fix.
+This isolated candidate tests the initial DMA descriptor-load hypothesis documented in `../../RECEIVE-DMA-START-ANALYSIS-20260920.md`. It is derived from `../receive-snapshot`; all prior source and evidence are preserved. Its bounded diagnostic trial passed; it is not an established production firmware release.
 
 ## Exact behavioral delta
 
@@ -34,4 +34,4 @@ Parent owns exact-target compilation, linked review, independent review, packagi
 
 Exact target compilation and all9 tests pass. Generated configuration is byte-identical to the tested receive snapshot. Fresh independent source/linked review passes: bootstrap .bss0x20000e10, four-word copy after seven-byte setup, flags before HAL start/DMB, original two-descriptor ring/head mapping preserved, no later live LINK/CTRL edits in restart.
 
-ELF SHA2568b5046f9d4cc7dedaecbdd4a3acd4cf2d57257834ab44164874b9ac049da31bd. Application-only GBL SHA2569b88fe804f87897091fee0a140dc68440ea26c170a36cae706ac38245b5dde60. Independent ELF/SREC/GBL byte equality, CRC and tag/page checks pass; program pages[0x4000,0x2c000), below NVM0xb4000, no bootloader/SE tags. Local packaging container stopped. Hardware behavior remains untested; see ../../RECEIVE-BOOTSTRAP-TRIAL-20260920.md for the separately approvable test.
+ELF SHA2568b5046f9d4cc7dedaecbdd4a3acd4cf2d57257834ab44164874b9ac049da31bd. Application-only GBL SHA2569b88fe804f87897091fee0a140dc68440ea26c170a36cae706ac38245b5dde60. Independent ELF/SREC/GBL byte equality, CRC and tag/page checks pass; program pages[0x4000,0x2c000), below NVM0xb4000, no bootloader/SE tags. Local packaging container stopped. The approved one-image trial passed: first CPC version reply4.9.1, both resize operationsOK, no checksum failures or overflow. Original firmware was restored. See ../../RECEIVE-BOOTSTRAP-RESULT-20260920.md. Normal firmware, encrypted service and restart qualification remain open.

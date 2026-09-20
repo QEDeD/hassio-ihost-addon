@@ -1,6 +1,6 @@
 # Receive bootstrap candidate — proposed bounded trial
 
-Status: offline tests, exact-target build, package checks and fresh independent source/linked review pass. Prepared for approval; not staged on HA or authorized for production. See RECEIVE-BOOTSTRAP-REVIEW-20260920.md.
+Status: approved and executed once; diagnostic passed and original production restored. Permission consumed; do not replay. See RECEIVE-BOOTSTRAP-RESULT-20260920.md.
 
 ## Question and scope
 
