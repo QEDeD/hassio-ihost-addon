@@ -1,0 +1,76 @@
+{
+  "prepared_at_utc": "2026-09-20T14:45:43.234740+00:00",
+  "status": "local staging prepared; not uploaded; not flashed",
+  "private_run_directory": "/home/wsluser/.local/share/ha-recovery/sdk2026-poststartup-20260920",
+  "remote_run_directory": "/share/codex-sdk2026-poststartup-20260920",
+  "archive": {
+    "files": 6,
+    "archive_bytes": 440320,
+    "archive_sha256": "99d3161c920af704988f89c92f7fc6844c8402431d69596011ad9c4b7870bcfe",
+    "firmware_unchanged": true,
+    "live_actions": false
+  },
+  "files": {
+    "firmware/candidate.gbl": {
+      "sha256": "76c560b9a0d78bfa9aa2cc8a5555144971434975859d714ff3cb12da16e8bb12",
+      "bytes": 159676,
+      "source": "firmware/post-startup-snapshot/package/post-startup-snapshot-sdk2026-application-only.gbl"
+    },
+    "firmware/rollback.gbl": {
+      "sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+      "bytes": 246596,
+      "source": "recovery/rollback/donglee_mg21_multipan_beta_4.6.0_115200.gbl"
+    },
+    "host/post-startup-snapshot/capture-launch.py": {
+      "sha256": "1d0e3f1b55f259d57fb52e3c4e1ca5e9a7e420d24721067f6b304a16bbdecee4",
+      "bytes": 488,
+      "source": "firmware/post-startup-snapshot/capture-launch.py"
+    },
+    "host/post-startup-snapshot/snapshot.py": {
+      "sha256": "ae01fdad760a62629d804b071a9f3ae174be7596f534a653c8b9f56818166fdb",
+      "bytes": 3108,
+      "source": "firmware/post-startup-snapshot/snapshot.py"
+    },
+    "host/post-startup-snapshot/fields.json": {
+      "sha256": "ed8aadd5a2aea4ec2612ebf6e90cda170dbea38201d3979258250482d337417b",
+      "bytes": 1318,
+      "source": "firmware/post-startup-snapshot/fields.json"
+    },
+    "host/connection-lifecycle/lifecycle.py": {
+      "sha256": "a9c666a0bf2120888b55a3ecdd3e5bea56289d38e0d629bf4b560125c560b0c4",
+      "bytes": 9336,
+      "source": "firmware/connection-lifecycle/lifecycle.py"
+    }
+  },
+  "helpers": {
+    "sdk2026_poststartup.py": {
+      "sha256": "0cfe50397c1271e0f106ea1b23bc169b32114b5bcb266f58fa48302d71845a0a",
+      "derived_from": "sdk2026_lifecycle.py",
+      "source_sha256": "ae625c08470555313a1035c30d7f232bcc0ea866f3947dde56a88e6af3077845"
+    },
+    "sdk2026_poststartup_window.py": {
+      "sha256": "c071d4be1e26001d383ccccb27665319e79b39a7a567110f6fa14773181fe3dd",
+      "derived_from": "sdk2026_lifecycle_window.py",
+      "source_sha256": "f45fa42face16029290f339047c1dc4399b5a64e5c5d668d6f3463f4c32e528f"
+    },
+    "sdk2026_poststartup_close.py": {
+      "sha256": "90733a7f0c1cee199044a8103c52e2310e6d53f9454663d39c47b982b59ca7f4",
+      "derived_from": "sdk2026_lifecycle_close.py",
+      "source_sha256": "57f667ef45880cd8d35eac5c7eecc03f9bc13a5e3e8c789957dfca87b5f0db3a"
+    }
+  },
+  "validation": [
+    "Both firmware files match independently reviewed SHA256 values",
+    "All archive members reread and hash-checked",
+    "Relative capture adapter import path preserved",
+    "All staged Python sources parsed without executing them",
+    "Three new execution helpers differ only in run paths, import names, candidate identity and capture layout; delta inspected"
+  ],
+  "live_prerequisites": [
+    "HA shared credential unlocked and combined access verified",
+    "New 90-minute window requested; not yet granted",
+    "Fresh baseline, maintenance and tools verified before writer stop",
+    "Fresh coherent independent backups before flash"
+  ],
+  "interpretation": "Prepared diagnostic is terminal and requires original firmware restoration regardless of report outcome."
+}

@@ -1,6 +1,6 @@
 # SDK 2026.6.1 upgrade — current execution record
 
-Updated 2026-09-20 after the completed connection-lifecycle trial. Read this file and the saved goal after compression. Historical reports preserve evidence, not current authority. The full previous record is in [the archive](EXECUTION-HISTORY-THROUGH-LIFECYCLE-20260920.md).
+Updated 2026-09-20 after local post-startup diagnostic staging. Read this file and the saved goal after compression. Historical reports preserve evidence, not current authority. The full previous record is in [the archive](EXECUTION-HISTORY-THROUGH-LIFECYCLE-20260920.md).
 
 ## Objective and continuity
 
@@ -19,7 +19,7 @@ The operator wants execution to continue, not another goal-writing exercise. The
 
 Focused review selected a RAM-counter/phase snapshot after four nominal seconds, followed by exclusive terminal UART output and mandatory original restoration. No continuous UART logging or stacked-PC shim. The first build caught nonexistent MG21 CLKEN0 assumptions; exact vendor CONFIG1 ungated-bus evidence corrected them. Final build/package and independent linked review pass, plus14host/4parser tests. ELF955146b29036c1ddde18f25d8db4a23622af584358eb0fa3966aa6deb88ca5de; GBL76c560b9a0d78bfa9aa2cc8a5555144971434975859d714ff3cb12da16e8bb12. Read POST-STARTUP-DIAGNOSTIC-REVIEW-20260920.md and POST-STARTUP-DIAGNOSTIC-TRIAL-20260920.md; exact files are in firmware/post-startup-snapshot/ and evidence/post-startup-preparation-20260920.json.
 
-HA access relocked; passphrase prompt cancelled and operator unlock requested asynchronously. Offline preparation continued. No live configuration, service or firmware changed. Next: after unlock, verify current authority/time, fresh live baseline/maintenance status, stage exact files and execute the prepared new procedure only with recovery reserve. Latest writer-stop start14:36UTC preserves45minutes before permission ends15:21UTC; do not rush or imply late unlock extends authority. Use new private event paths and fresh coherent backups. The remaining investigation is hardware observation, not another broad plan. All source/review agent assignments are complete.
+HA credential remains locked (non-prompting status checked14:34UTC). A fresh90minute window starting at operator confirmation and an unlock have been requested asynchronously, not granted. The previous latest writer-stop start14:36UTC must not be stretched by treating general continuation as a new duration. Local exact upload archive is prepared (440320bytes, SHA25699d3161c920af704988f89c92f7fc6844c8402431d69596011ad9c4b7870bcfe), with both firmware files and the capture import layout; all members reread/hash-checked. New private helpers have fresh run paths and only reviewed path/hash/import changes; none executed. See evidence/post-startup-staging-20260920.json and /home/wsluser/.local/share/ha-recovery/sdk2026-poststartup-20260920. No upload or live action occurred. Offline preparation continued. No live configuration, service or firmware changed. Next: after unlock, verify current authority/time, fresh live baseline/maintenance status, stage exact files and execute the prepared new procedure only with recovery reserve. Latest writer-stop start14:36UTC preserves45minutes before permission ends15:21UTC; do not rush or imply late unlock extends authority. Use new private event paths and fresh coherent backups. The remaining investigation is hardware observation, not another broad plan. All source/review agent assignments are complete.
 
 ## Latest production checkpoint - lifecycle trial completed; original production restored
 
@@ -36,15 +36,15 @@ Staging lesson: whole cached APK glob upgraded3 SSH libraries before downtime; s
 
 ## Current direction and next actions
 
-The operator asked whether another reflection is useful. The answer is a bounded diagnostic-design review, not a restart of the broad upgrade investigation. The lifecycle hypothesis is now tested; a repeat would add downtime without a new discriminator.
+The diagnostic design/build/packaging,18host/parser tests and independent linked review are complete. Freeze the artifact. Do not repeat broad source audits or completed lifecycle tests without new evidence.
 
-1. Choose a retrievable, low-perturbation diagnostic distinguishing request reception, first transmit completion and sustained firmware processing. Prefer existing SDK counters/hooks. Vendor counters require debugger access; the CPC journal needs an output transport. Neither alone solves retrieval on this dongle. Existing startup UART markers cannot simply be extended into active CPC: they require idle DMA/no pending TX IRQ and clear their own completion flag.
-2. Compare practical retrieval alternatives and their blind spots. Do not prescribe a compiler/IRQ/DMA change as a fix without evidence. Source audit has already checked vectors, masks, DMA allocation and UART routing without finding a demonstrated defect; do not repeat it broadly.
-3. Implement the chosen narrow diagnostic and reuse the pinned builder, strict application-only packaging, launch capture and mandatory original restoration. Verify observable output and interference/failure handling offline; obtain a fresh focused review before hardware.
-4. Execute only when the concrete test is ready within valid authority and enough recovery time remains. Otherwise continue preparation without rushing a flash or pausing the goal. Use new trial paths/event records, fresh baseline/backups and exact artifact identities.
-5. Interpret results against passing controls. Once CPC responsiveness is fixed, return to encrypted binding, network-state compatibility, normal Zigbee/Thread/Matter behavior, restart persistence and the nine-contribution reassessment.
+1. Once access and a sufficient authorized window are available, verify live baseline/maintenance, exact tools/artifacts and fresh staging; follow POST-STARTUP-DIAGNOSTIC-TRIAL-20260920.md with new private helpers/event paths. Check events first; no replay. Preserve45minutes for recovery.
+2. Execute one diagnostic capture and mandatory original restoration; finish identity, representative behavior, availability and package cleanup verification before investigating the report.
+3. Interpret the snapshot conditionally: RX not progressing -> UART/DMA evidence; RX progressing but processing stalled -> precise processing/IRQ boundary; processed traffic but missing completion -> TX completion/queue. Instrumented success is possible observer effect, not proof of a fix. Missing/invalid output is inconclusive; validate retrieval or reconsider debugger access instead of guessing another firmware patch.
+4. Compile exact target early and capture full build logs. Review material deltas, reuse existing recovery/capture evidence and use at most two independent bounded workers. Do not prepare a speculative matrix of firmware variants or add diagnostic machinery merely while waiting for hardware evidence.
+5. Once CPC responsiveness is fixed, return to encrypted binding, preserved network state, representative Zigbee/Thread/Matter behavior, restart persistence and the nine-contribution reassessment. A spare/debugger or vendor reproducer may reduce effort if the next observation remains inconclusive; no spare or physical debugger is assumed and no external message is authorized by this checkpoint.
 
-Assignments complete: candidate_boot_failure implemented the bounded diagnostic; review_terminal_snapshot independently reviewed design, source and linked artifact. Main agent owns integration and all live actions. No live diagnostic is running. Steps1-3 above are now complete for the first terminal snapshot; proceed from step4 and the current-work checkpoint.
+All worker assignments are complete. Main agent owns integration/live actions. The newest local staging helpers have not been executed; completed lifecycle helpers remain consumed.
 
 ## Evidence and reusable artifacts
 
