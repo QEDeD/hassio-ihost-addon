@@ -1,6 +1,6 @@
 # Proposed CPC diagnostic window — September 20, 2026
 
-Status: independently reviewed and ready for operator review. Planning only; no production authorization exercised by this document. The earlier trial approval is consumed.
+Status: explicitly approved and executed September20. This diagnostic allowance is consumed; see DIAGNOSTIC-RESULT-20260920.md. Retained below is the reviewed procedure, not authorization to repeat it.
 
 ## Purpose and success
 

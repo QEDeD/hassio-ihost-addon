@@ -2,15 +2,25 @@
 
 Updated 2026-09-20. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
 
-## Current checkpoint — trial rolled back, September20
+## Current checkpoint — diagnostic completed, September20
+
+Operator explicitly approved DIAGNOSTIC-PLAN-20260920.md after the CPC explanation. Executed once: old4.6.0 DEBUG control passed; full candidate uploaded but its probe received zero bytes/zero parsed frames; conditional CPC-only SDK2026 answered CPC4.9.1 with two valid frames; official old4.6.0 restored and probe passed. No binding/unbind, host image change, bootloader/SE update or extra flash cycle. The diagnostic authorization is consumed. See DIAGNOSTIC-RESULT-20260920.md and evidence/diagnostic-result-20260920.json.
+
+HA is restored to app0.2.3-ordered/radio4.6.0. Fresh Zigbee currentLevel read and ALPSTUGA Identify passed; all previously available entities returned and ALPSTUGA measurements changed through09:10:44UTC. Saved identities/channel25/Thread dataset data preserved; latest stopped host token/Thread files matched initial copies, with no old state restoration. One Matter plug reconnected after a delay; startup mDNS/fragment/subscription warnings are recorded, not hidden. Five-minute observation completed. Original options/policies/descriptor and113 SSH package versions restored; temporary flasher removed. Radio services restarted after about7m54s, closeout13m21s after first stop.
+
+Protected logs/backups: /home/wsluser/.local/share/ha-recovery/sdk2026-diagnostic-20260920; events record completed operations. Do not replay a flash after compression. Raw DEBUG bytes/backups remain outside Git. Source clocks differ slightly; event times establish approximate duration.
+
+Next executable work is offline investigation of what the full firmware initializes beyond the working CPC-only image, particularly HFXO activation and subsequent protocol/RAIL/OpenThread startup. The existing CPC-only image is now a demonstrated hardware control; its HFXO AUTO is disabled because RAIL is absent, so its success does not uniquely identify Thread as the fault. No concrete corrective patch yet. Narrow the next diagnostic to distinguish these remaining paths with observable evidence, reusing vendor mechanisms. No new production test until a revised concrete procedure is reviewed/approved. No worker remains assigned. SDK upgrade goal and nine-contribution reassessment remain open; this diagnostic does not qualify candidate network operation or encrypted binding.
+
+Logging lesson retained: decide what failure modes must be distinguished before testing, check sensitive data/volume/timing effects, then enable targeted private DEBUG where useful. Keep normal operation and binding outside frame tracing.
+
+## Historical checkpoint — first trial rolled back, September20
 
 The approved trial ran and encountered a candidate CPC-response failure before binding. The single terminal fallback succeeded. Production is restored to radio4.6.0/app0.2.3-ordered with fresh Zigbee/Matter reports, explicit Zigbee read and ALPSTUGA Identify success, original options/startup policies and network identities preserved. No candidate host start or binding occurred. Temporary flasher runtime/packages have been removed; the retained offline bundle must be restaged if a later trial is approved. No second candidate cycle is authorized under the consumed trial allowance. See TRIAL-RESULT-20260920.md and evidence/trial-result-20260920.json; private events and exact command results are under /home/wsluser/.local/share/ha-recovery/sdk2026-20260920.
 
 Offline failure analysis is complete: FAILURE-ANALYSIS-20260920.md integrates exact flasher logs/source, BOOT-COMPARISON-20260920.md and VENDOR-STARTUP-FINDINGS-20260920.md. No proven firmware defect or corrective patch. Upload completion and commanded launch are established; application health is not. Host/binding never ran. Exact baud/pins are internally consistent; missing metadata and a blanket old-bootloader requirement do not explain the evidence.
 
-Next executable action: obtain approval of DIAGNOSTIC-PLAN-20260920.md, then refresh live baseline and stage/check existing tools before its bounded window. This is a firmware-only diagnostic: keep baseline host installed; old-firmware DEBUG control, full candidate DEBUG probe, at most one conditional CPC-only probe, then mandatory old-firmware restoration. No bind/unbind or candidate host startup. Target20–30minutes/reserve45; old-firmware upload must start byT+20, with no interruption of an active upload. CPC-only initialization can write dongle NVM, which host backups cannot restore; rollback after that image is unproven and requires explicit acceptance. Operator may omit the optional image. Exact hashes, logging/privacy audit, command templates, branches and recovery checks are in the plan.
-
-The fresh-context Astra/high review and bounded logging audit are complete and integrated; no worker remains assigned. Planning did not change HA or rebuild firmware. Logging lesson: select diagnostic detail before testing based on questions it can answer, and check credential exposure, log volume, timing/performance and capture boundaries. For this trial global serialx/flasher DEBUG is private and pre-binding only; serial open/close RTS/DTR/flush effects limit conclusions. The SDK upgrade remains incomplete. Existing goal tool status was historically blocked; the user's planning instruction is not a pause request.
+The later diagnostic plan was reviewed, approved and completed; use the current checkpoint above. This first-trial section is historical. Its preparation/review findings remain in the linked reports.
 
 Operational corrections: Supervisor's Core backup requires Core's API; the stopped-writer backup used a supported three-app backup plus a direct stopped HA config archive, with independent copies verified before flashing. No stale state was restored. Supervisor store `version` is installed version; verify `version_latest` before same-app updates. Current detailed report supersedes historical ready/pending/has-flasher statements below.
 
@@ -110,7 +120,7 @@ Publication authority audit located original user messages: September13 09:41:55
 
 ## Next authority decision
 
-The September20 trial approval has been consumed; fallback restored the original system. Offline diagnosis and preparation continue under the existing goal. Request new production approval only after the revised diagnostic procedure has concrete images, ordered observations, recovery limits and independent review. Do not repeat the historical pretrial approval request or claim no flash has occurred.
+Both September20 physical trial allowances are consumed; baseline operation is restored. Continue offline investigation from the successful CPC-only comparison. Request further production approval only after evidence supports a concrete revised diagnostic or corrected candidate, with bounded recovery and independent review. Do not revive the completed initial approval/staging gates.
 
 ## Final pre-test gap analysis — 2026-09-19
 
