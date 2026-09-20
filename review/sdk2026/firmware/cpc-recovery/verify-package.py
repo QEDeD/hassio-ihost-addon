@@ -1,6 +1,8 @@
 import pathlib,struct,zlib,json,hashlib,sys,os,re
 root=pathlib.Path(sys.argv[1] if len(sys.argv)>1 else '/offline-package')
 expected_elf = os.environ.get('EXPECTED_ELF_SHA256', '780ad48b11ecd28c71e5443b8de704946b040388cde7d9de5eac354877986099')
+elf_basename = os.environ.get('ELF_BASENAME', 'cpc_secondary_vcom_security_device_recovery')
+assert re.fullmatch('[a-zA-Z0-9_-]+', elf_basename), 'Invalid ELF basename'
 gbl_name = os.environ.get('GBL_NAME', 'cpc-recovery-sdk2026-application-only.gbl')
 assert re.fullmatch('[0-9a-f]{64}', expected_elf), 'Invalid expected ELF hash'
 assert pathlib.PurePosixPath(gbl_name).name == gbl_name and '/' not in gbl_name and '\\' not in gbl_name and gbl_name.endswith('.gbl'), 'Invalid GBL basename'
@@ -23,7 +25,7 @@ def elf(path):
         segments.append({'physical_address':hex(pa),'bytes':filesz})
         for j,v in enumerate(b[off:off+filesz]): assert pa+j not in out; out[pa+j]=v
     return out,segments
-source=srec(root/'input/cpc_secondary_vcom_security_device_recovery.s37'); e,segs=elf(root/'input/cpc_secondary_vcom_security_device_recovery.out')
+source=srec(root/'input'/f'{elf_basename}.s37'); e,segs=elf(root/'input'/f'{elf_basename}.out')
 assert e==source,'ELF/SREC differ'
 parsed=srec(root/'output/parsed-application.s37')
 b=(root/'output'/gbl_name).read_bytes(); tags=[]; payload={}; off=0; app=None
@@ -43,7 +45,7 @@ assert tags[-1]['tag']=='0xfc0404fc' and tags[-1]['length']==4
 assert zlib.crc32(b)==0x2144df1c,'GBL CRC residue'
 assert parsed==payload,'Vendor parser and independent GBL payload differ'
 diff=[{'address':hex(a),'source':source.get(a),'gbl':payload.get(a)} for a in sorted(set(source)|set(payload)) if source.get(a)!=payload.get(a)]
-assert hashlib.sha256((root/'input/cpc_secondary_vcom_security_device_recovery.out').read_bytes()).hexdigest()==expected_elf,'Unexpected ELF input'
+assert hashlib.sha256((root/'input'/f'{elf_basename}.out').read_bytes()).hexdigest()==expected_elf,'Unexpected ELF input'
 def rd(a,n): return bytes(payload[a+i] for i in range(n))
 pointer=struct.unpack('<I',rd(0x4000+13*4,4))[0]
 properties=rd(pointer,80)
