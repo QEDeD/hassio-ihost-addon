@@ -1,0 +1,45 @@
+{
+  "source": {
+    "files_before": 8,
+    "files_after": 8,
+    "added": [],
+    "removed": [],
+    "changed": []
+  },
+  "config": {
+    "files_before": 17,
+    "files_after": 17,
+    "added": [],
+    "removed": [],
+    "changed": [
+      "sl_clock_manager_oscillator_config.h"
+    ]
+  },
+  "autogen": {
+    "files_before": 19,
+    "files_after": 19,
+    "added": [],
+    "removed": [],
+    "changed": [
+      ".slc_state/.crc_config.crc"
+    ]
+  },
+  "config_diff": [
+    "--- hardware-proven\n",
+    "+++ hfxo-diagnostic\n",
+    "@@ -60,7 +60,7 @@\n",
+    " // <SL_CLOCK_MANAGER_HFXO_EN_DISABLE=> DISABLE",
+    " // <d> SL_CLOCK_MANAGER_HFXO_EN_AUTO",
+    " #ifndef SL_CLOCK_MANAGER_HFXO_EN",
+    "-#define SL_CLOCK_MANAGER_HFXO_EN    SL_CLOCK_MANAGER_HFXO_EN_AUTO",
+    "+#define SL_CLOCK_MANAGER_HFXO_EN    1",
+    " #endif",
+    " ",
+    " // <o SL_CLOCK_MANAGER_HFXO_MODE> Mode"
+  ],
+  "elf_sha256": "fa14fd55f8e16ef6729572eb4d1dbc63c0b17762b6da640bf34352cbb4f3f913",
+  "gbl_sha256": "fcd9addc9323d92f23013056e93689e43213709f896c99a733348398d3283cb8",
+  "same_sdk_source_manifest": true,
+  "same_patched_source_manifest": true,
+  "same_build_package_inventory": true
+}

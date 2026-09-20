@@ -1,5 +1,9 @@
-import pathlib,struct,zlib,json,hashlib,sys
+import pathlib,struct,zlib,json,hashlib,sys,os,re
 root=pathlib.Path(sys.argv[1] if len(sys.argv)>1 else '/offline-package')
+expected_elf = os.environ.get('EXPECTED_ELF_SHA256', '780ad48b11ecd28c71e5443b8de704946b040388cde7d9de5eac354877986099')
+gbl_name = os.environ.get('GBL_NAME', 'cpc-recovery-sdk2026-application-only.gbl')
+assert re.fullmatch('[0-9a-f]{64}', expected_elf), 'Invalid expected ELF hash'
+assert pathlib.PurePosixPath(gbl_name).name == gbl_name and '/' not in gbl_name and '\\' not in gbl_name and gbl_name.endswith('.gbl'), 'Invalid GBL basename'
 def srec(path):
     out={}
     for line in path.read_text().splitlines():
@@ -22,7 +26,7 @@ def elf(path):
 source=srec(root/'input/cpc_secondary_vcom_security_device_recovery.s37'); e,segs=elf(root/'input/cpc_secondary_vcom_security_device_recovery.out')
 assert e==source,'ELF/SREC differ'
 parsed=srec(root/'output/parsed-application.s37')
-b=(root/'output/cpc-recovery-sdk2026-application-only.gbl').read_bytes(); tags=[]; payload={}; off=0; app=None
+b=(root/'output'/gbl_name).read_bytes(); tags=[]; payload={}; off=0; app=None
 while off<len(b):
     tag,n=struct.unpack_from('<II',b,off); data=b[off+8:off+8+n]; assert len(data)==n
     item={'offset':off,'tag':hex(tag),'length':n}; tags.append(item)
@@ -39,7 +43,7 @@ assert tags[-1]['tag']=='0xfc0404fc' and tags[-1]['length']==4
 assert zlib.crc32(b)==0x2144df1c,'GBL CRC residue'
 assert parsed==payload,'Vendor parser and independent GBL payload differ'
 diff=[{'address':hex(a),'source':source.get(a),'gbl':payload.get(a)} for a in sorted(set(source)|set(payload)) if source.get(a)!=payload.get(a)]
-assert hashlib.sha256((root/'input/cpc_secondary_vcom_security_device_recovery.out').read_bytes()).hexdigest()=='780ad48b11ecd28c71e5443b8de704946b040388cde7d9de5eac354877986099','Unexpected ELF input'
+assert hashlib.sha256((root/'input/cpc_secondary_vcom_security_device_recovery.out').read_bytes()).hexdigest()==expected_elf,'Unexpected ELF input'
 def rd(a,n): return bytes(payload[a+i] for i in range(n))
 pointer=struct.unpack('<I',rd(0x4000+13*4,4))[0]
 properties=rd(pointer,80)

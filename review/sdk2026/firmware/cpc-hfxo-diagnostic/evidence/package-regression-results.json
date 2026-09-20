@@ -1,0 +1,19 @@
+[
+  {
+    "case": "unchanged original package with defaults",
+    "passed": true
+  },
+  {
+    "case": "incorrect expected ELF rejected",
+    "passed": true
+  },
+  {
+    "case": "non-basename rejected",
+    "passed": true
+  },
+  {
+    "case": "new diagnostic validated in offline packaging container",
+    "passed": true,
+    "gbl_sha256": "fcd9addc9323d92f23013056e93689e43213709f896c99a733348398d3283cb8"
+  }
+]

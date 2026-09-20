@@ -2,7 +2,17 @@
 
 Updated 2026-09-20. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
 
-## Current checkpoint — diagnostic completed, September20
+## Current checkpoint — narrower diagnostic prepared, September20
+
+The user requested evidence analysis, a critically reviewed next route and implementation. Offline preparation now provides a CPC-only variant with one functional configuration change: HFXO_EN=1. It reuses the hardware-proven recovery recipe, SDK source, patches and build-package inventory unchanged. Generated source/config/catalog/startup comparisons and linked-code checks confirm the intended crystal initialization, unchanged SYSCLK/PCLK and UART/security/storage settings. Application-only GBL SHA256 fcd9addc9323d92f23013056e93689e43213709f896c99a733348398d3283cb8; exact ELF fa14fd55f8e16ef6729572eb4d1dbc63c0b17762b6da640bf34352cbb4f3f913. Strict package checks pass, as do original-package regression and invalid-input rejection checks.
+
+This is a diagnostic, not a fix. The configured clock path may return early when inherited SYSCLK already uses HFXO, so a successful reply would not prove all crystal waits executed. No proven missing PSA/RAIL prerequisite was found. A pass prioritizes the later protocol-crypto/RADIOAES and RAIL/OpenThread paths; silence prioritizes the added crystal path/interactions before any tuning. Avoid prebuilding a series of speculative variants. See NEXT-INVESTIGATION-20260920.md and firmware/cpc-hfxo-diagnostic/README.md.
+
+HFXO-TRIAL-PLAN-20260920.md proposes only one new-image upload then mandatory old4.6.0 restoration, with fresh stopped-writer backups, bounded private DEBUG probes, recovery upload byT+15,45minute reserve and explicit residual single-dongle risk. Both preceding September20 allowances are consumed. No new production action or publication has occurred; this procedure needs its own approval. HA remains last verified restored to original app0.2.3-ordered/radio4.6.0.
+
+Fresh-context GPT-6 Astra/high review is complete; HFXO-INDEPENDENT-REVIEW-20260920.md records its accepted success-interpretation correction and no remaining actionable procedure finding. Linked-source worker candidate_boot_failure completed its bounded review. No active worker assignment remains. Prepared changes are saved locally, not pushed. Next meaningful action: obtain approval of the concrete two-upload diagnostic, then refresh access/baseline/staging before the approved window; do not replay either earlier trial.
+
+## Completed hardware diagnostic — September20
 
 Operator explicitly approved DIAGNOSTIC-PLAN-20260920.md after the CPC explanation. Executed once: old4.6.0 DEBUG control passed; full candidate uploaded but its probe received zero bytes/zero parsed frames; conditional CPC-only SDK2026 answered CPC4.9.1 with two valid frames; official old4.6.0 restored and probe passed. No binding/unbind, host image change, bootloader/SE update or extra flash cycle. The diagnostic authorization is consumed. See DIAGNOSTIC-RESULT-20260920.md and evidence/diagnostic-result-20260920.json.
 
@@ -10,7 +20,7 @@ HA is restored to app0.2.3-ordered/radio4.6.0. Fresh Zigbee currentLevel read an
 
 Protected logs/backups: /home/wsluser/.local/share/ha-recovery/sdk2026-diagnostic-20260920; events record completed operations. Do not replay a flash after compression. Raw DEBUG bytes/backups remain outside Git. Source clocks differ slightly; event times establish approximate duration.
 
-Next executable work is offline investigation of what the full firmware initializes beyond the working CPC-only image, particularly HFXO activation and subsequent protocol/RAIL/OpenThread startup. The existing CPC-only image is now a demonstrated hardware control; its HFXO AUTO is disabled because RAIL is absent, so its success does not uniquely identify Thread as the fault. No concrete corrective patch yet. Narrow the next diagnostic to distinguish these remaining paths with observable evidence, reusing vendor mechanisms. No new production test until a revised concrete procedure is reviewed/approved. No worker remains assigned. SDK upgrade goal and nine-contribution reassessment remain open; this diagnostic does not qualify candidate network operation or encrypted binding.
+At that milestone, the next work was offline investigation of what the full firmware initializes beyond the working CPC-only image; the current checkpoint above records the resulting preparation. The existing CPC-only image is now a demonstrated hardware control; its HFXO AUTO is disabled because RAIL is absent, so its success does not uniquely identify Thread as the fault. No concrete corrective patch yet. Narrow the next diagnostic to distinguish these remaining paths with observable evidence, reusing vendor mechanisms. No new production test until a revised concrete procedure is reviewed/approved. No worker remains assigned. SDK upgrade goal and nine-contribution reassessment remain open; this diagnostic does not qualify candidate network operation or encrypted binding.
 
 Logging lesson retained: decide what failure modes must be distinguished before testing, check sensitive data/volume/timing effects, then enable targeted private DEBUG where useful. Keep normal operation and binding outside frame tracing.
 
@@ -24,11 +34,11 @@ The later diagnostic plan was reviewed, approved and completed; use the current 
 
 Operational corrections: Supervisor's Core backup requires Core's API; the stopped-writer backup used a supported three-app backup plus a direct stopped HA config archive, with independent copies verified before flashing. No stale state was restored. Supervisor store `version` is installed version; verify `version_latest` before same-app updates. Current detailed report supersedes historical ready/pending/has-flasher statements below.
 
-## Production authority — September20
+## Historical first-trial authority — September20 (consumed)
 
 The operator explicitly replied "approved" to the pending production-trial and recovery-limits approval plus confirmation of no other HA maintenance. This authorizes the reviewed procedure, bounded optional early binding recovery, at most one terminal old-firmware/app fallback, named bulb on/off restoration alternative and ALPSTUGA Identify checks. No repeat approval is needed within this scope. Bootloader/SE changes, mass erase and unbounded retries remain excluded. Execution is beginning; private baseline/state and timestamped stage events are in /home/wsluser/.local/share/ha-recovery/sdk2026-20260920. Read those events after any interruption before acting; do not replay completed flash/bind operations. Procedure documents' historical "not authorized" text is superseded by this actual approval, not a new gate.
 
-## September20 resumption
+## Historical September20 resumption
 
 The operator said "we can now continue". Preparation resumed; concrete flashing/cutover and recovery-scope approval is still being confirmed as previously promised. Read-only preflight at07:47UTC: HA healthy/supported, Core2026.9.3/OS18.3/Supervisor2026.09.2 unchanged; radio0.2.3-ordered, Z2M2.14.1-1, Matter9.2.0 and SSH10.5.0 all started. All three GBLs, staged descriptors and active baseline descriptor match recorded hashes. Flasher1.1.0 and pip check pass, serial link still ttyUSB0, over12millionKiB free. Fresh Zigbee bulb last-seen and ALPSTUGA measurements confirm current reports. Evidence: evidence/preflight-20260920.json.
 

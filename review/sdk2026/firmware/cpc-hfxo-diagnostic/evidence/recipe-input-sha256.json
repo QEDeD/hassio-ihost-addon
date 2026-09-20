@@ -1,0 +1,13 @@
+{
+  "review/sdk2026/firmware/cpc-recovery/build-offline.sh": "45a826cd3ca160668c53cf5c7402497f79dc97407285be51d91faacb9d80ef70",
+  "review/sdk2026/firmware/cpc-recovery/build-package.sh": "0b470b8d4ee5ff989f4647a0d3918a4a275963e948cf2cc216b97bef21422946",
+  "review/sdk2026/firmware/cpc-recovery/build.sh": "7a555d8ac5c48efa490898a56bd712d56f7ea2fc021250ec4ebf9b24ece4279f",
+  "review/sdk2026/firmware/cpc-recovery/compare-storage.py": "702ec4d1377c38cd6688de04478b5568bc4983866a5036a859e0cbc94a3c1ca4",
+  "review/sdk2026/firmware/cpc-recovery/Dockerfile.offline": "41070f32224baf2e66995d97c66e0040b101463fe120e8baf7c746604f9113f5",
+  "review/sdk2026/firmware/cpc-recovery/explicit-uart.slcp.patch": "dbe6bb658fc762f64bb6849f1944c8a6482d11a4217a6af9a4a35c50e0812edd",
+  "review/sdk2026/firmware/cpc-recovery/explicit-unbind-only.patch": "bda1fad1efdff24b965b2caf13d8f8432018d22f26a14df03dcf9eaf4387a2a2",
+  "review/sdk2026/firmware/cpc-recovery/verify-offline.sh": "e9711d181c08541f784433de04428f4ebbbae72ddb5a0badf7148b37ac66d19f",
+  "review/sdk2026/firmware/cpc-recovery/verify-package.py": "5cd8d53fc398c92d342942331bec78609726923caba14fd9d171f62fe1169953",
+  "review/sdk2026/firmware/cpc-hfxo-diagnostic/Dockerfile.offline": "a26e024e10b6057c7458203405a13bc59ef6c1516da12e81eacb65a4f15097ea",
+  "review/sdk2026/firmware/cpc-hfxo-diagnostic/prepare-build.py": "dbc46e17346890ba5b68931d95401cd7a34ec672cca2989e7933edc9f9d97e5d"
+}
