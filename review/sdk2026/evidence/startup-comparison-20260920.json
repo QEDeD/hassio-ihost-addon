@@ -1,0 +1,73 @@
+{
+  "date": "2026-09-20",
+  "scope": "Offline extraction only; private logs retained outside Git; local timestamps CEST UTC+02:00. Counts are raw transport chunks, not independently parsed response counts.",
+  "startup_frame_hex": "14000e00c0114f060008000000000078000000c386",
+  "startup_frame_meaning": "CPC system PROP_VALUE_IS LAST_STATUS RESET_WATCHDOG; reset cause, not proof of a new crash",
+  "cases": [
+    {
+      "case": "full_uninstrumented",
+      "private_flash_log": "/home/wsluser/.local/share/ha-recovery/sdk2026-diagnostic-20260920/candidate-flash.log",
+      "flash_log_sha256": "549dc89324655fb3bbbcc926ef33b3bc4cb3ee2f0fd4339f8f6bdb1efbbfdbc6",
+      "final_run_local": "2026-09-20 11:00:58.337",
+      "startup_frame_local": "2026-09-20 11:00:58.399",
+      "startup_delay_ms": 62,
+      "private_probe_log": "/home/wsluser/.local/share/ha-recovery/sdk2026-diagnostic-20260920/candidate-probe.log",
+      "probe_log_sha256": "35823e304a59b41276d0ee6e43ea7b68d7b2f80debf5869bfae0aa3261e6a22e",
+      "first_probe_request_hex": "14000a00c455d30200040003000000db12",
+      "probe_write_count": 4,
+      "probe_rx_chunk_count": 0
+    },
+    {
+      "case": "hfxo_control",
+      "private_flash_log": "/home/wsluser/.local/share/ha-recovery/sdk2026-hfxo-20260920/hfxo-flash.log",
+      "flash_log_sha256": "c1f084c05dc5283ab9119a878f22f6a52398c184cb6ded3db907ea6ed072e596",
+      "final_run_local": "2026-09-20 11:46:18.143",
+      "startup_frame_local": "2026-09-20 11:46:18.200",
+      "startup_delay_ms": 57,
+      "private_probe_log": "/home/wsluser/.local/share/ha-recovery/sdk2026-hfxo-20260920/hfxo-probe.log",
+      "probe_log_sha256": "a536b10c39fc4af7ea7a9ce7b6f1a94280851ccf5d1311c6ecbc49b7055433c6",
+      "first_probe_request_hex": "14000a00c455d30200040003000000db12",
+      "probe_write_count": 2,
+      "probe_rx_chunk_count": 2
+    },
+    {
+      "case": "crypto_control",
+      "private_flash_log": "/home/wsluser/.local/share/ha-recovery/sdk2026-crypto-20260920/crypto-flash.log",
+      "flash_log_sha256": "b4e4f7836fed8b661bdbbf47d538e2e6c8f6c08988534a18762a56b163fab089",
+      "final_run_local": "2026-09-20 12:35:12.794",
+      "startup_frame_local": "2026-09-20 12:35:12.851",
+      "startup_delay_ms": 57,
+      "private_probe_log": "/home/wsluser/.local/share/ha-recovery/sdk2026-crypto-20260920/crypto-probe.log",
+      "probe_log_sha256": "e16b4986ab849f8ae3a1971ebeeceb25710c9356da3f5b0f37cc1e6358f8e2a1",
+      "first_probe_request_hex": "14000a00c455d30200040003000000db12",
+      "probe_write_count": 2,
+      "probe_rx_chunk_count": 2
+    },
+    {
+      "case": "full_startup_trace",
+      "private_flash_log": "/home/wsluser/.local/share/ha-recovery/sdk2026-startup-20260920/startup-flash.log",
+      "flash_log_sha256": "0cf761aca2a3e1070574a91cf0cf60ef4febde751309c29019e26a5d7a08d1f8",
+      "final_run_local": "2026-09-20 13:40:46.550",
+      "startup_frame_local": "2026-09-20 13:40:46.643",
+      "startup_delay_ms": 93,
+      "private_probe_log": "/home/wsluser/.local/share/ha-recovery/sdk2026-startup-20260920/startup-probe.log",
+      "probe_log_sha256": "3a9325ddcf1cf8368a32a57548f1987b34f8a0b22112431a365f9cb4f3f12ff2",
+      "first_probe_request_hex": "14000a00c455d30200040003000000db12",
+      "probe_write_count": 4,
+      "probe_rx_chunk_count": 0
+    },
+    {
+      "case": "restored_original",
+      "private_flash_log": "/home/wsluser/.local/share/ha-recovery/sdk2026-startup-20260920/rollback-flash.log",
+      "flash_log_sha256": "cfc7aaf760d7b07643d5723573bc8fdb54f42e63016b8126871434533f44f0f9",
+      "final_run_local": "2026-09-20 13:42:52.787",
+      "startup_frame_local": "2026-09-20 13:42:53.407",
+      "startup_delay_ms": 620,
+      "private_probe_log": "/home/wsluser/.local/share/ha-recovery/sdk2026-startup-20260920/rollback-probe.log",
+      "probe_log_sha256": "10070ce7587ce5ed157616b455827c8b6e15b2398f8324be79d2cef6ed0dcdca",
+      "first_probe_request_hex": "14000a00c455d30200040003000000db12",
+      "probe_write_count": 2,
+      "probe_rx_chunk_count": 2
+    }
+  ]
+}

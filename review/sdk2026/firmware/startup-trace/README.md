@@ -1,6 +1,6 @@
 # Full-image startup trace — SDK 2026.6.1
 
-Prepared offline and subsequently tested once on 2026-09-20. Diagnostic only, not a firmware fix or production release. All startup checkpoints appeared, but the later CPC probe failed; original production was restored. See ../../STARTUP-TRACE-RESULT-20260920.md for recovery verification and the remaining final snapshot. The approved trial allowance is consumed; do not repeat it.
+Prepared offline and subsequently tested once on 2026-09-20. Diagnostic only, not a firmware fix or production release. All startup checkpoints appeared, but the later CPC probe failed; original production was restored. See ../../STARTUP-TRACE-RESULT-20260920.md for completed recovery and final availability verification. The approved trial allowance is consumed; do not repeat it.
 
 ## What this observes
 

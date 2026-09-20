@@ -1,10 +1,10 @@
 # Full startup trace result — September20,2026
 
-One approved diagnostic upload and one mandatory original-firmware restoration completed. Original radio4.6.0/app0.2.3-ordered are running; representative checks and cleanup passed. Final HA availability comparison is pending because the shared API credential locked during observation; user has been asked to unlock. Do not replay this consumed flash allowance.
+One approved diagnostic upload and one mandatory original-firmware restoration completed. Original radio4.6.0/app0.2.3-ordered are running; representative checks and cleanup passed. Final HA availability comparison passed at12:15:20UTC after the user unlocked the shared API credential: no newly unavailable entities, with fresh changing ALPSTUGA measurements. Do not replay this consumed flash allowance.
 
 ## What the test established
 
-All40 startup checkpoints arrived in the expected order, including FF inside app_init. The last chunk also contained a valid CPC system frame. This instrumented run did not remain stuck in any bracketed initialization call; it reached CPC transmission after tracing's handoff. That does not prove continued receive/interrupt/main-loop health or behavior of the uninstrumented firmware.
+All40 startup checkpoints arrived in the expected order, including FF inside app_init. The last chunk also contained a valid CPC system frame. This instrumented run did not remain stuck in any bracketed initialization call; it reached CPC transmission after tracing's handoff. That does not prove continued receive/interrupt/main-loop health. Subsequent review found the same initial CPC transmission in the earlier uninstrumented full-image upload log; see BROADER-CPC-ANALYSIS-20260920.md.
 
 The final bootloader RUN was logged at13:40:46.550CEST. Checkpoints and the trailing CPC frame completed at13:40:46.643, about93ms later. The connection remained open for30seconds without issuing CPC queries. After it closed and a new probe opened, four version requests received zero bytes. Therefore this experiment cannot distinguish loss of responsiveness during the idle interval from an interaction with closing/reopening the port.
 
@@ -18,7 +18,7 @@ First writer stop11:37:54UTC; independent coherent backup verification11:38:25. 
 
 Saved coordinator identity, Zigbee PAN/extended PAN/channel/key and HA Thread dataset match. Explicit Zigbee currentLevel read returned1; ALPSTUGA Identify15seconds received Success(0), and changing measurements resumed. Temporary flasher tools were removed11:48:05 with all113 original package versions matching. Original app versions/options/startup/watchdog/update policies are verified. No stale host backup was restored.
 
-Initial newly unavailable entities were still settling at the first snapshot. A later HA API snapshot was refused because the shared credential was locked. Final availability comparison remains required; do not infer its result from successful representative checks. SSH-side logs and app checks remained available. Restored old-stack logs include startup mDNS/DUA/fragmentation warnings, CLI broken-pipe warnings and unavailable-device pings; Matter logs had no warning/error lines in the reviewed snapshot. No error-free-log claim.
+Initial newly unavailable entities were still settling at the first snapshot. A later HA API snapshot was refused because the shared credential was locked. After operator unlock, the12:15:20UTC snapshot showed no newly unavailable entities and continuing fresh reports, over31minutes after the services returned. This is a later comparison, not a claim of continuous observation during the access gap. SSH-side logs and app checks remained available. Restored old-stack logs include startup mDNS/DUA/fragmentation warnings, CLI broken-pipe warnings and unavailable-device pings; Matter logs had no warning/error lines in the reviewed snapshot. No error-free-log claim.
 
 ## Parser correction and limits
 

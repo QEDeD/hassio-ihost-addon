@@ -1,5 +1,5 @@
 {
-  "status": "original firmware/services restored; final availability comparison awaits HA credential unlock",
+  "status": "complete: original firmware/services restored and final availability verified",
   "events": [
     {
       "at": "2026-09-20T11:33:30.994441+00:00",
@@ -100,6 +100,11 @@
       "at": "2026-09-20T11:48:05.142034+00:00",
       "stage": "temporary_tools_removed",
       "original_package_versions": 113
+    },
+    {
+      "at": "2026-09-20T12:19:04.392066+00:00",
+      "stage": "recovery_closeout_verified",
+      "newly_unavailable": 0
     }
   ],
   "probes": {
@@ -186,8 +191,9 @@
     "matter_identify": "Success (0)",
     "fresh_changing_alpstuga_reports": true,
     "original_package_versions_restored": 113,
-    "final_availability_snapshot": "pending HA credential unlock",
-    "new_flash_authorization": "consumed"
+    "final_availability_snapshot": "passed: no newly unavailable entities",
+    "new_flash_authorization": "consumed",
+    "final_snapshot_at": "2026-09-20T12:15:20Z"
   },
   "artifacts": {
     "diagnostic_gbl_sha256": "e5eba832d7eecac5870f0db2d47ce9725e5c1d6c7ad4f15c1783c4e9fb59dbe6",
