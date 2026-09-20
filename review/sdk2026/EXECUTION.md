@@ -2,7 +2,18 @@
 
 Updated 2026-09-20. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
 
-## Current checkpoint — isolated crypto diagnostic prepared offline
+## Current checkpoint — crypto trial approved; preparation staged
+
+The user explicitly said "go ahead with testing" after the reviewed crypto procedure and online-evidence refresh. This approves CRYPTO-TRIAL-PLAN-20260920.md once, including mandatory original-firmware restoration; earlier statements that exact flashing approval is pending are superseded. No flash or service stop has occurred in this new window.
+
+At10:21UTC, current app versions and started states match the previous baseline; HA API/Git access passed; ALPSTUGA reports are fresh. All63 retained bundle files hash-verified. Exact crypto GBL staged at /share/codex-sdk2026-crypto-20260920/crypto-diagnostic.gbl and rehashed. Offline flasher runtime installed; all113 original SSH package versions preserved. Temporary runtime/APK group must be removed on completion or cancellation using the recorded inventory.
+
+Private run record: /home/wsluser/.local/share/ha-recovery/sdk2026-crypto-20260920 (events.jsonl, authority.json, baseline app/states/config files, staged-manifest.json and tool logs); helper /tmp/sdk2026_crypto.py. Do not reuse earlier run logs or replay recorded operations.
+
+Remaining immediate gate: the PVE storage performance and configuration task is active. A concise asynchronous question asks the user to confirm no overlapping HA VM shutdown/restart or maintenance during this window. It remains unanswered; do not infer its answer from test approval or an earlier window's confirmation. Continue with fresh stopped-writer backups, baseline probe, one crypto upload/probe and mandatory rollback only after that answer. No further approval of this same test is needed.
+
+## Prepared crypto evidence (retained)
+
 
 Operator direction (September20): before new implementation or experiments, consult relevant current vendor/HA/community documentation, source and issue reports; reuse suitable work and existing fresh research. Record version/hardware applicability and whether evidence changes the route. Latest refresh is in VENDOR-STARTUP-FINDINGS-20260920.md: no matching published startup fix established; vendor logging options have transport/debug-access and output-volume limits. Reviewed crypto diagnostic remains prepared, not newly approved.
 
