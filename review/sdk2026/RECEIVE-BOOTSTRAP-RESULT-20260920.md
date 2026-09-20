@@ -22,4 +22,4 @@ Event timestamps and durations use WSL UTC, not the differing Windows/tool clock
 
 ## Next milestone
 
-A normal, non-halting firmware candidate with only the tested initialization change is being prepared offline in firmware/receive-fix. It must independently pass package/source/linked checks and then a separately approved hardware/service trial. Encrypted CPC binding, preserved networks with the new host/firmware pair, discovery, restart persistence and recovery still require qualification. This successful diagnostic does not authorize leaving a candidate installed or broadening production changes.
+A normal, non-halting firmware candidate with only the tested initialization change is prepared offline in firmware/receive-fix. Build, four tests, package validation and independent source/linked review pass; its next step is a separately approved hardware/service trial. Encrypted CPC binding, preserved networks with the new host/firmware pair, discovery, restart persistence and recovery still require qualification. This successful diagnostic does not authorize leaving a candidate installed or broadening production changes.

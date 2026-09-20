@@ -1,0 +1,100 @@
+{
+  "status": "normal firmware offline build/tests/package and independent source/linked review passed; not staged or flashed",
+  "elf_sha256": "601c73da6feaf6e29fa9a797fe93f48e73f75fd0f88deda42444a2949ae39cc1",
+  "gbl_sha256": "713d18d799727d4b85cd2fd657617522f4adc3bb62e79d83758d782dc261f604",
+  "tests_passed": 4,
+  "independent_review": "RECEIVE-FIX-REVIEW-20260920.md",
+  "package_validation": {
+    "application_properties": {
+      "pointer": "0x26254",
+      "structure_version": "0x201",
+      "signature_type": 0,
+      "signature_location": "0xffffffff",
+      "application_type": "0x2",
+      "application_version": 1,
+      "capabilities": 0,
+      "product_id": "00000000000000000000000000000000",
+      "minimum_bootloader_version": "No such field in these properties; no GBL dependency tag emitted"
+    },
+    "page_size": 8192,
+    "program_page_bounds": [
+      "0x4000",
+      "0x2c000"
+    ],
+    "elf_segments": [
+      {
+        "physical_address": "0x4000",
+        "bytes": 308
+      },
+      {
+        "physical_address": "0x41a0",
+        "bytes": 156832
+      },
+      {
+        "physical_address": "0x2a640",
+        "bytes": 12
+      },
+      {
+        "physical_address": "0x4140",
+        "bytes": 96
+      },
+      {
+        "physical_address": "0x2a64c",
+        "bytes": 588
+      }
+    ],
+    "source_bytes": 157836,
+    "gbl_program_bytes": 157836,
+    "tags": [
+      {
+        "offset": 0,
+        "tag": "0x3a617eb",
+        "length": 8
+      },
+      {
+        "offset": 16,
+        "tag": "0xf40a0af4",
+        "length": 28
+      },
+      {
+        "offset": 52,
+        "tag": "0xfd0303fd",
+        "length": 312,
+        "address": "0x4000",
+        "end_exclusive": "0x4134"
+      },
+      {
+        "offset": 372,
+        "tag": "0xfd0303fd",
+        "length": 157532,
+        "address": "0x4140",
+        "end_exclusive": "0x2a898"
+      },
+      {
+        "offset": 157912,
+        "tag": "0xfc0404fc",
+        "length": 4
+      }
+    ],
+    "application_tag": {
+      "type": "0x2",
+      "version": "0x1",
+      "capabilities": "0x0",
+      "product_id": "00000000000000000000000000000000"
+    },
+    "source_differences": [],
+    "sha256": "713d18d799727d4b85cd2fd657617522f4adc3bb62e79d83758d782dc261f604"
+  },
+  "sources": {
+    ".gitignore": "281d8357179b3b018616f8ebdc2065945901fff730552d50f87cb291ac5fdacb",
+    "build-package.sh": "ab27cc781470e6ec7a23a8c1c221fa6c5a9743ce7c01990f94abfe68deda889e",
+    "Dockerfile.offline": "2883a20bf276f2f3bb0d3389563327067e94ad057e24d8ead1c12c73f706e7d4",
+    "Dockerfile.offline.dockerignore": "10263c722dd9e0fab1d4f94b261ba12ffa98f2a75d7344fabe62448474db724f",
+    "instrument.py": "548c4c9461a21fa6c5c04e3533345f417bc6ebf3acd9541ce3abb8b441aa0419",
+    "prepare-build.py": "d06de9541bafef69a96bf1e860666a1cdc120f5d9be6b02bee735fea934c4da9",
+    "test_instrument.py": "1ff38dad16c6bbae8ca394897f5e003167f95782cc10e589c387a6b1ec4abaff"
+  },
+  "configuration": "complete config/autogen and original app match candidate-clean; sole local UART restart change; no instrumentation",
+  "physical_evidence_scope": "RXB1 diagnostic only; normal image has not been hardware tested",
+  "test_portability_fixes": "Explicit UTF8 fixture bytes, resolved expected absolute path and POSIX relative path comparison; firmware source guards unchanged."
+}

@@ -1,0 +1,9 @@
+test_exact_rxb1_restart_and_no_diagnostics (test_instrument.FixTests.test_exact_rxb1_restart_and_no_diagnostics) ... ok
+test_only_restart_changed_and_hwfc_preserved (test_instrument.FixTests.test_only_restart_changed_and_hwfc_preserved) ... ok
+test_prepare_preserves_all_other_inputs (test_instrument.FixTests.test_prepare_preserves_all_other_inputs) ... ok
+test_rejects_source_and_anchor_drift (test_instrument.FixTests.test_rejects_source_and_anchor_drift) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.043s
+
+OK
