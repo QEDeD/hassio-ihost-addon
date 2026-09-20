@@ -18,5 +18,5 @@ assert r['elf_sha256']=='75c8b8c9989fa95ef9cfdad9622fe4400c159157436f7982f520156
 r['catalog_discrepancy']='Only missing SL_CATALOG_TOOLCHAIN_GCC_LTO_PRESENT; source review found zero consumers across exact SDK. Project still selects component; compiler and linker flags enable LTO. Exact SLC omission cause not established.'
 cm=(new/'evidence/rcp-uart-802154.cmake').read_text();assert '-flto=auto' in cm and '-fwhole-program' in cm
 r['embedded_version']=[x.decode() for x in re.findall(rb'[ -~]{8,}',(new/'artifacts/rcp-uart-802154.bin').read_bytes()) if x.startswith(b'SL-OPENTHREAD/')]
-p=root/'startup-trace/evidence';p.mkdir(exist_ok=True);(p/'comparison.json').write_text(json.dumps(r,indent=2)+'\n')
+p=root/'startup-trace/evidence';p.mkdir(exist_ok=True);(p/'comparison.json').write_text(json.dumps(r,indent=2)+'\n',newline='\n')
 print(json.dumps(r,indent=2))
