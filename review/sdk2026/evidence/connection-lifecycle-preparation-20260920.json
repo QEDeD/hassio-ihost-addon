@@ -1,0 +1,60 @@
+{
+  "prepared_at": "2026-09-20T12:39:00.202979+00:00",
+  "scope": "Offline preparation plus read-only HA preflight; no service stop, reset or flash",
+  "ha_preflight": {
+    "at": "2026-09-20T12:38:04.797264+00:00",
+    "entities": 840,
+    "unavailable": 76,
+    "apps": {
+      "local_codex_ihost_otbr_focused": {
+        "version": "0.2.3-ordered",
+        "state": "started",
+        "boot": "auto",
+        "watchdog": false,
+        "auto_update": false,
+        "options_sha256": "1701255b55f254aa14be462a59d76c5cd251c0b3976f218afda08249caa2dd5b"
+      },
+      "45df7312_zigbee2mqtt": {
+        "version": "2.14.1-1",
+        "state": "started",
+        "boot": "auto",
+        "watchdog": true,
+        "auto_update": false,
+        "options_sha256": "6e0a067587629f641bd37df2d04964e99976408b5f19ae60cc856bd7f13cabf1"
+      },
+      "core_matter_server": {
+        "version": "9.2.0",
+        "state": "started",
+        "boot": "auto",
+        "watchdog": false,
+        "auto_update": false,
+        "options_sha256": "80df0c5ec67f955da5ad82df37fc0472c4b7c6cc7c2f4b94d65e819f4422f0d1"
+      },
+      "core_ssh": {
+        "version": "10.5.0",
+        "state": "started",
+        "boot": "auto",
+        "watchdog": false,
+        "auto_update": true,
+        "options_sha256": "f19afe4c19928363b2119a0798020e5f95f3c9ae54f84549e2f067dd80aef1ea"
+      }
+    },
+    "newly_unavailable_since_recovery": 5,
+    "qualification": "Five newly unavailable entities belong to one stue_vaeg_spisebord bulb; logs show reports through12:28:11UTC, then failed availability pings at12:33:41/49 on original firmware. Power state/cause not established. Matter fresh; all four apps started. No new test has begun."
+  },
+  "files": {
+    "firmware/connection-lifecycle/capture-launch.py": "0ba7ce82e3ddb441e7db0cc4e968fc482cbb98191d1e9c0eeeac876417c268a4",
+    "firmware/connection-lifecycle/lifecycle.py": "2e7db146e3e1b109f850f4498bc6c4ea081f252aa7123935c47c74a913397bfb",
+    "firmware/connection-lifecycle/probe-reopened.py": "31314680e1442b9dcfd9730fd4e744fe4b9a0202b1dba573b84fdb7f7788b759",
+    "firmware/connection-lifecycle/test_lifecycle.py": "9341666039bedb839786da756f386affbab34f0e00e914b9138a352e006b4bfd",
+    "firmware/package/output/rcp-sdk2026-application-only.gbl": "b5deda18cba9f07f03f5faeb5d6969e51110bf0bd8450dd00bb3cf14047a9d50",
+    "recovery/rollback/donglee_mg21_multipan_beta_4.6.0_115200.gbl": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787"
+  },
+  "validation": {
+    "tests_passed": 11,
+    "runtime": "existing local SSH10.5.0 image Python3.14 virtual environment; no radio mappings",
+    "entry_points": "capture and reopened help succeeded without serial access",
+    "review": "fresh-context independent review; parser-error and transport-loss attribution corrected and regression tested",
+    "pinned_flasher": "1.1.0"
+  }
+}

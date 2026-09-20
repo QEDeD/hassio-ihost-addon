@@ -2,7 +2,16 @@
 
 Updated 2026-09-20. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
 
-## Current checkpoint — startup trace obtained; recovery closeout verified; broader analysis complete
+## Current checkpoint — lifecycle test prepared; firmware approval pending
+
+September20 operator approved continued investigation and HA configuration testing for3hours, recorded12:21–15:21UTC. This does not silently lift the saved separate firmware-flash approval boundary. A concrete one-candidate-upload/mandatory-original-restoration lifecycle procedure is prepared and was submitted for approval. No response yet; no new flash/reset/service stop or HA configuration mutation. Previous image allowances remain consumed. Original production remains running. Do not replay any completed window.
+
+Bounded offline IRQ/vector/masking/peripheral audit found no concrete defect. Same-connection test adapter reuses pinned flasher1.1.0 and original full GBL, queries at0.25s and30s, then separately reopens with sequence2. Fresh GPT-6 Astra/high review caught parser/loss attribution gaps; corrected with explicit observation failure and regression tests. All11 host tests and both CLI entry-point checks pass. Read CONNECTION-LIFECYCLE-TRIAL-20260920.md, CONNECTION-LIFECYCLE-REVIEW-20260920.md and evidence/connection-lifecycle-preparation-20260920.json. No new firmware built. Next: if explicitly approved, refresh maintenance/baseline, stage exact artifacts, execute one bounded trial and mandatory restoration. Otherwise preparation is complete; no further broad source exploration warranted.
+
+Read-only12:38UTC preflight: all original apps started, fresh Matter reports. Five newly unavailable entities belong to one known intermittent stue_vaeg_spisebord bulb, with last report12:28UTC then failed pings12:33UTC on original firmware. Its power state/cause is unknown, not a result of a new test. Use fresh baseline and separate computer-desk bulb acceptance. Private evidence /home/wsluser/.local/share/ha-recovery/sdk2026-lifecycle-preparation-20260920. Do not reinstall temporary HA tools merely for analysis; none installed this turn. Source and independent-review agents finished; no active assignments.
+
+## Previous checkpoint — startup trace and recovery closeout complete
+
 
 September20 approved one-image startup diagnostic and mandatory original4.6.0 restoration executed once. Allowance consumed: never replay flashes. All40markers through final app_init checkpoint plus CRC-valid CPC RESET_WATCHDOG startup notification captured within93ms of RUN; later reopened probe zeroRX. The same notification occurs on original4.6.0 control, so it does not identify a new watchdog fault. No queries were sent during the held-open30second interval; next offline discriminator is same-connection requests, plus first completion-ISR/main-loop analysis. Read STARTUP-TRACE-RESULT-20260920.md and evidence/startup-trace-result-20260920.json.
 
