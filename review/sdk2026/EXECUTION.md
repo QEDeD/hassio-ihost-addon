@@ -1,4 +1,4 @@
-# SDK 2026.6.1 upgrade — current execution record
+# SDK 2026.6.1 upgrade â€” current execution record
 
 Updated 2026-09-20 after successful bootstrap diagnostic and verified recovery. Read this file and the saved goal after compression. Historical reports preserve evidence, not current authority. The full previous record is in [the archive](EXECUTION-HISTORY-THROUGH-LIFECYCLE-20260920.md).
 
@@ -10,14 +10,17 @@ The operator wants execution to continue, not another goal-writing exercise. The
 
 ## Authority and limits
 
-- September20 approvals covered the original diagnostic and then the selected follow-up receive diagnostic, each with mandatory original restoration. Both trials are complete and those permissions are consumed. The historical window was14:54–16:24UTC with latest writer stop15:39UTC; it does not authorize another experiment.
+**Current approval, September20:** Operator: “Okay, let's go ahead. You are allowed to proceed including permission to deploy everything to HA (including testing firmware)”. This approves the normal corrected firmware/full-app deployment, encrypted binding, representative operation/restart checks and retaining the upgrade if acceptance passes. It supersedes the earlier consumed-diagnostic-only gate. No new generic deployment approval is required. The bounds below still prohibit arbitrary erase, bootloader/SE change or unbounded retries. Current successor procedure: FULL-FUNCTIONAL-TRIAL-20260920.md.
+
+
+- September20 approvals covered the original diagnostic and then the selected follow-up receive diagnostic, each with mandatory original restoration. Both trials are complete and those permissions are consumed. The historical window was14:54â€“16:24UTC with latest writer stop15:39UTC; it does not authorize another experiment.
 - This is not unlimited flashing, binding/unbinding, erasure, bootloader or Secure Engine authority. A new experiment must have a concrete information gain, reviewed artifacts/procedure and a sufficient recovery reserve. Completed trial commands must never be replayed as if unconsumed.
 - Only the main agent performs production mutations. Stop the relevant writers, preserve fresh coherent independent backups, use one serial owner and perform the specified restoration. Never interrupt an active upload to meet a deadline or overwrite advanced state with an older backup.
 - Offline preparation continues autonomously. Public upstream comments/PR publication retain their separate limits; existing permitted Git pushes and approved registry uploads must not be conflated with unrestricted publication.
 
-## Current checkpoint — corrected diagnostic passed; production restored
+## Current checkpoint â€” corrected diagnostic passed; production restored
 
-Latest selected `go ahead` approved the exact RXB1 bootstrap trial. It completed once; that permission is now consumed. No replay or extra flash is authorized. Read RECEIVE-BOOTSTRAP-RESULT-20260920.md and evidence/receive-bootstrap-result-20260920.json.
+Latest selected `go ahead` approved the exact RXB1 bootstrap trial. It completed once; that permission is now consumed. That diagnostic is not to be replayed; the new full-functional deployment is separately approved above. Read RECEIVE-BOOTSTRAP-RESULT-20260920.md and evidence/receive-bootstrap-result-20260920.json.
 
 Candidate9b88fe804f87897091fee0a140dc68440ea26c170a36cae706ac38245b5dde60 replied4.9.1 on the first query in8.44ms; no retry needed. Valid929byteRXB1 record:289051 loops, two receive callbacks, one validU-frame, two TX completions, resize2OK/0failed, CRCerrors0, no UART overflow. This supports the initial DMA descriptor correction but is not normal-firmware/full-service qualification or a reliability benchmark.
 
@@ -29,7 +32,7 @@ Private authoritative events/backups: /home/wsluser/.local/share/ha-recovery/sdk
 
 The next artifact is normal non-halting full firmware in firmware/receive-fix with only the RXB1-tested bootstrap driver correction. Original app/configuration/security retained; all diagnostic counters/hooks/SysTick/UART takeover removed. Parent exact-target build and4tests pass; independent source/linked review passes in RECEIVE-FIX-REVIEW-20260920.md. Application-only package checks also pass. ELF601c73da6feaf6e29fa9a797fe93f48e73f75fd0f88deda42444a2949ae39cc1; GBL713d18d799727d4b85cd2fd657617522f4adc3bb62e79d83758d782dc261f604. See evidence/receive-fix-preparation-20260920.json. Local packaging container stopped; no production staging or flash.
 
-1. Preparation complete: update the concrete full functional trial using existing reviewed recovery work and TRIAL-PROCEDURE.md corrections; avoid another diagnostic matrix. Prefer a normal CPC-response gate early in the same proposed functional window, before encrypted binding, rather than another automatic diagnostic flash/restore cycle. New firmware/full-app cutover requires approval of that concrete scope, not reuse of the consumed one-diagnostic approval.
+1. Preparation complete: update the concrete full functional trial using existing reviewed recovery work and TRIAL-PROCEDURE.md corrections; avoid another diagnostic matrix. Prefer a normal CPC-response gate early in the same proposed functional window, before encrypted binding, rather than another automatic diagnostic flash/restore cycle. The full firmware/app scope now has explicit approval; finalize and independently review the successor procedure before execution.
 2. Qualify normal CPC replies without instrumentation, encrypted CPC binding, network preservation/normal Zigbee+Thread/Matter operation, discovery, restart persistence and recovery. Existing wider restart synchronization caveats remain until tested.
 3. Reassess the nine prepared contributions as the upgrade qualifies; retain SDK2026.6.1 target. No spare/debugger assumed. Parent owns all live mutations; bounded implementation/review workers have finished.
 
@@ -44,3 +47,5 @@ Earlier trials: RECEIVE-SNAPSHOT-RESULT-20260920.md, POST-STARTUP-RESULT-2026092
 - Host/token/DNS/key handling work remains useful: recovery/token-schema/RESULT-20260919.md, recovery/thread-state/README.md, dns-tests/README.md, recovery/CONSUMER-COMPATIBILITY.md, recovery/UPSTREAM-REASSESSMENT-20260919.md. Final published app/recovery identities: evidence/final-images-20260919.json and evidence/published-images-20260919.json. Full integration trial/recovery route: TRIAL-PROCEDURE.md; historical approval scope must be checked before binding.
 - Live access follows HA repository docs/runbooks/ha-access-and-dashboard-deploy.md and scripts/ha-unlock --check-access. Remote temporary Python is removed; use ha-api and SSH ha apps CLI. Original package inventory must be preserved when temporarily installing the pinned offline flasher. Never install the entire cached APK glob.
 - Scope any new availability claim to its actual baseline. Channel25 migration and phone synchronization are complete. Hardware identification and bootloader evidence are already recorded; do not ask for a label photo again.
+
+Current live gate: shared credential cache locked at access check; operator asked to run ha-unlock --check-access. No downtime or new production mutation has begun. Fresh-context review assigned to review_full_functional_trial.
