@@ -1,6 +1,6 @@
 # Proposed full-image startup trace window — 2026-09-20
 
-**Prepared, not approved or executed.** The user's current instruction authorizes preparation and Git push. Earlier hardware allowances are consumed. This document is the exact new procedure to approve.
+**Approved and executed once on September20.** The diagnostic and mandatory restoration completed; flash allowance consumed. See STARTUP-TRACE-RESULT-20260920.md for current recovery verification and the remaining final availability check. Procedure below is retained evidence, not permission to repeat.
 
 ## Outcome and scope
 

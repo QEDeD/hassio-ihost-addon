@@ -2,7 +2,17 @@
 
 Updated 2026-09-20. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
 
-## Current checkpoint — full startup trace prepared; production unchanged
+## Current checkpoint — startup trace obtained; production restored; final snapshot pending
+
+September20 approved one-image startup diagnostic and mandatory original4.6.0 restoration executed once. Allowance consumed: never replay flashes. All40markers through final app_init checkpoint plus CRC-valid CPC RESET_WATCHDOG startup notification captured within93ms of RUN; later reopened probe zeroRX. The same notification occurs on original4.6.0 control, so it does not identify a new watchdog fault. No queries were sent during the held-open30second interval; next offline discriminator is same-connection requests, plus first completion-ISR/main-loop analysis. Read STARTUP-TRACE-RESULT-20260920.md and evidence/startup-trace-result-20260920.json.
+
+Original app0.2.3-ordered/radio4.6.0 restored, both CPC queries pass. Radio/Z2M back11:43:52/58UTC; original policies verified. Zigbee explicit read1, Matter Identify Success(0), fresh reports, unchanged saved network identities/key/channel25/Thread dataset. Latest stopped host stores exactly unchanged. Temporary tools removed11:48:05; all113 original package versions restored. Five-minute final HA availability snapshot is still pending because shared API credential locked; user asked to run ha-unlock --check-access. Do not claim full availability recovery until compared. No need to flash/restart again for this check. Prior initial snapshot contained settling unavailable entities.
+
+Authoritative private events/backups/logs/helpers: /home/wsluser/.local/share/ha-recovery/sdk2026-startup-20260920; HA /share/codex-sdk2026-startup-20260920. SSH still works; temporary remote Python is removed, so old t.api helper no longer works until explicitly needed/reinstalled. Routine HA reads use repository ha-api after user unlock. Read events before action after interruption. No binding/unbind/candidate host/network change/erase/bootloader/SE change. Offline parser corrected for actual serialx RUN log wording;5tests pass, original raw capture/firmware unchanged. Source worker candidate_boot_failure completed; no active assignment.
+
+Next action: after unlock, obtain final HA state, compare baseline availability and changing Matter reports, perform at most the approved one additional non-actuating read if needed, then finalize result/continuity and publish changes. SDK upgrade goal remains incomplete; no further flash authorized. Existing authorization for this test and its recovery remains valid for closeout; do not ask for it again.
+
+## Previous checkpoint — full startup trace prepared; production unchanged
 
 September20 user authorized preparation of observable full-image startup evidence and Git push. Preparation is complete; no new HA access, staging, service stop or flash occurred. Original app0.2.3-ordered/radio4.6.0 remains the last verified production state from CRYPTO-TRIAL-RESULT-20260920.md. All previous physical-test allowances are consumed.
 

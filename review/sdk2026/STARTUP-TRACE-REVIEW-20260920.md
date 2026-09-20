@@ -1,6 +1,6 @@
 # Full startup trace review — 2026-09-20
 
-Status: offline preparation reviewed; no physical capture validated and no new flash authorized. Production remains last verified original app 0.2.3-ordered / radio 4.6.0.
+Historical preparation review below. The later approved physical test is recorded in STARTUP-TRACE-RESULT-20260920.md; its allowance is consumed and production restored. The parser fixture limitation discovered in that test is documented there.
 
 ## Route and evidence
 

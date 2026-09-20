@@ -1,6 +1,6 @@
 # Full-image startup trace — SDK 2026.6.1
 
-Prepared offline on 2026-09-20. Diagnostic only, not a firmware fix or production release. No HA changes or physical test performed during preparation. New hardware trial requires approval of ../../STARTUP-TRACE-TRIAL-20260920.md.
+Prepared offline and subsequently tested once on 2026-09-20. Diagnostic only, not a firmware fix or production release. All startup checkpoints appeared, but the later CPC probe failed; original production was restored. See ../../STARTUP-TRACE-RESULT-20260920.md for recovery verification and the remaining final snapshot. The approved trial allowance is consumed; do not repeat it.
 
 ## What this observes
 
@@ -16,7 +16,7 @@ Before CPC init, tracing uses the vendor USART HAL. After CPC init, tracing reus
 
 `capture-launch.py` changes only the reviewed universal-silabs-flasher 1.1.0 RUN wait from 2 to 30 seconds. The exact gecko_bootloader module SHA256 and original timeout are checked before any CLI action. Upload, reset, XMODEM and bootloader error handling remain vendor code. Every RUN performed by that invocation gets the longer wait, including any launch while probing. Use it only for the approved diagnostic upload; use the ordinary pinned flasher for control, later CPC probe and rollback.
 
-Keep DEBUG output private: it includes firmware upload bytes and arbitrary RX, not just checkpoints. `parse-markers.py PRIVATE_LOG` prints only fixed-format received markers after the last logged standalone bootloader RUN command. It excludes transmitted firmware contents, rejects logs without RUN and handles split RX chunks. Check the raw log privately for complete upload/RUN and resets; the sanitized list alone is insufficient evidence.
+Keep DEBUG output private: it includes firmware upload bytes and arbitrary RX, not just checkpoints. `parse-markers.py PRIVATE_LOG` prints only fixed-format received markers after the last logged standalone bootloader RUN command. It excludes transmitted firmware contents, rejects logs without RUN and handles split RX chunks. After the physical test, the parser was corrected to recognize the observed serialx `Immediately writing <GeckoBootloaderOption.RUN_FIRMWARE: b'2'>` record; the retained output/evidence copy is the original pretrial snapshot, not the current parser. Check the raw log privately for complete upload/RUN and resets; the sanitized list alone is insufficient evidence.
 
 - A before-marker without its matching after-marker brackets the vendor call **and the tracing/capture machinery**. It does not uniquely prove the call failed.
 - No 00 leaves early startup, UART setup, local trace failure and capture/launch failure unresolved.

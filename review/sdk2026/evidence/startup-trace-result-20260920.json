@@ -1,0 +1,196 @@
+{
+  "status": "original firmware/services restored; final availability comparison awaits HA credential unlock",
+  "events": [
+    {
+      "at": "2026-09-20T11:33:30.994441+00:00",
+      "stage": "temporary_tools_installed"
+    },
+    {
+      "at": "2026-09-20T11:36:50.020869+00:00",
+      "stage": "ready_for_approved_window"
+    },
+    {
+      "at": "2026-09-20T11:37:54.716238+00:00",
+      "stage": "first_writer_stop"
+    },
+    {
+      "at": "2026-09-20T11:38:20.460629+00:00",
+      "stage": "writers_stopped"
+    },
+    {
+      "at": "2026-09-20T11:38:25.870639+00:00",
+      "stage": "independent_coherent_backups_verified",
+      "elapsed": 31.154393
+    },
+    {
+      "at": "2026-09-20T11:38:53.361559+00:00",
+      "stage": "core_matter_restarted"
+    },
+    {
+      "at": "2026-09-20T11:39:31.244404+00:00",
+      "stage": "baseline_probe_begin"
+    },
+    {
+      "at": "2026-09-20T11:39:32.300660+00:00",
+      "stage": "baseline_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T11:39:42.911388+00:00",
+      "stage": "startup_flash_begin",
+      "sha256": "e5eba832d7eecac5870f0db2d47ce9725e5c1d6c7ad4f15c1783c4e9fb59dbe6",
+      "elapsed": 108.195144
+    },
+    {
+      "at": "2026-09-20T11:41:15.053326+00:00",
+      "stage": "startup_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T11:41:15.857624+00:00",
+      "stage": "startup_probe_begin"
+    },
+    {
+      "at": "2026-09-20T11:41:20.842493+00:00",
+      "stage": "startup_probe_end",
+      "exit": 1
+    },
+    {
+      "at": "2026-09-20T11:41:55.692852+00:00",
+      "stage": "latest_radio_stores_preserved_unchanged"
+    },
+    {
+      "at": "2026-09-20T11:41:56.377184+00:00",
+      "stage": "rollback_flash_begin",
+      "sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+      "elapsed": 241.660935
+    },
+    {
+      "at": "2026-09-20T11:42:53.293109+00:00",
+      "stage": "rollback_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T11:43:21.861388+00:00",
+      "stage": "rollback_probe_begin"
+    },
+    {
+      "at": "2026-09-20T11:43:22.938312+00:00",
+      "stage": "rollback_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T11:43:52.229592+00:00",
+      "stage": "local_codex_ihost_otbr_focused_restarted"
+    },
+    {
+      "at": "2026-09-20T11:43:58.541379+00:00",
+      "stage": "45df7312_zigbee2mqtt_restarted"
+    },
+    {
+      "at": "2026-09-20T11:43:59.013935+00:00",
+      "stage": "original_policies_restored",
+      "elapsed": 364.297689
+    },
+    {
+      "at": "2026-09-20T11:44:48.970835+00:00",
+      "stage": "representative_requests_completed"
+    },
+    {
+      "at": "2026-09-20T11:48:05.142034+00:00",
+      "stage": "temporary_tools_removed",
+      "original_package_versions": 113
+    }
+  ],
+  "probes": {
+    "baseline": {
+      "exit": 0,
+      "bytes": 5346,
+      "raw_rx_chunks": 2,
+      "parsed_frames": 2,
+      "parse_errors": 0,
+      "detections": [
+        "2026-09-20 13:39:33.430 core-ssh universal_silabs_flasher.flasher INFO Detected ApplicationType.CPC, version '4.6.0' at 115200 baudrate (bootloader baudrate None)"
+      ]
+    },
+    "startup": {
+      "exit": 1,
+      "bytes": 6753,
+      "raw_rx_chunks": 0,
+      "parsed_frames": 0,
+      "parse_errors": 0,
+      "detections": []
+    },
+    "rollback": {
+      "exit": 0,
+      "bytes": 5346,
+      "raw_rx_chunks": 2,
+      "parsed_frames": 2,
+      "parse_errors": 0,
+      "detections": [
+        "2026-09-20 13:43:24.195 core-ssh universal_silabs_flasher.flasher INFO Detected ApplicationType.CPC, version '4.6.0' at 115200 baudrate (bootloader baudrate None)"
+      ]
+    }
+  },
+  "markers": {
+    "count": 40,
+    "markers": [
+      "@S00",
+      "@S09",
+      "@S0A",
+      "@S01",
+      "@S02",
+      "@S03",
+      "@S04",
+      "@S05",
+      "@S06",
+      "@S07",
+      "@S08",
+      "@S0B",
+      "@S0C",
+      "@S0D",
+      "@S0E",
+      "@S0F",
+      "@S10",
+      "@S11",
+      "@S12",
+      "@S13",
+      "@S14",
+      "@S15",
+      "@S16",
+      "@S17",
+      "@S18",
+      "@S19",
+      "@S1A",
+      "@S1B",
+      "@S1C",
+      "@S1D",
+      "@S1E",
+      "@S1F",
+      "@S20",
+      "@S21",
+      "@S22",
+      "@S23",
+      "@S24",
+      "@S25",
+      "@S26",
+      "@SFF"
+    ],
+    "expected_sequence": true,
+    "parser_corrected_for_actual_serialx_RUN_format": true
+  },
+  "acceptance": {
+    "original_versions_options_policies_restored": true,
+    "network_identities_and_keys_match": true,
+    "zigbee_currentLevel": 1,
+    "matter_identify": "Success (0)",
+    "fresh_changing_alpstuga_reports": true,
+    "original_package_versions_restored": 113,
+    "final_availability_snapshot": "pending HA credential unlock",
+    "new_flash_authorization": "consumed"
+  },
+  "artifacts": {
+    "diagnostic_gbl_sha256": "e5eba832d7eecac5870f0db2d47ce9725e5c1d6c7ad4f15c1783c4e9fb59dbe6",
+    "rollback_gbl_sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787"
+  }
+}
