@@ -1,0 +1,224 @@
+{
+  "status": "single diagnostic trial complete; original restored; upgrade not complete",
+  "private_evidence_directory": "/home/wsluser/.local/share/ha-recovery/sdk2026-poststartup-20260920",
+  "remote_evidence_directory": "/share/codex-sdk2026-poststartup-20260920",
+  "candidate_sha256": "76c560b9a0d78bfa9aa2cc8a5555144971434975859d714ff3cb12da16e8bb12",
+  "rollback_sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+  "times": {
+    "preflight_started": "2026-09-20T15:02:37.340792+00:00",
+    "exact_bundle_uploaded_verified": "2026-09-20T15:03:10.660595+00:00",
+    "missing_packages_installed_original_versions_preserved": "2026-09-20T15:03:14.624377+00:00",
+    "preflight_ready": "2026-09-20T15:04:02.687098+00:00",
+    "first_writer_stop": "2026-09-20T15:04:26.939093+00:00",
+    "writers_stopped": "2026-09-20T15:04:52.088418+00:00",
+    "independent_coherent_backups_verified": "2026-09-20T15:04:57.467381+00:00",
+    "core_matter_restarted": "2026-09-20T15:05:24.995402+00:00",
+    "baseline_probe_begin": "2026-09-20T15:05:25.478320+00:00",
+    "baseline_probe_end": "2026-09-20T15:05:26.569026+00:00",
+    "candidate_flash_begin": "2026-09-20T15:05:38.268985+00:00",
+    "candidate_flash_end": "2026-09-20T15:06:17.519439+00:00",
+    "rollback_flash_begin": "2026-09-20T15:06:36.722627+00:00",
+    "rollback_flash_end": "2026-09-20T15:07:30.912579+00:00",
+    "rollback_probe_begin": "2026-09-20T15:07:59.481783+00:00",
+    "rollback_probe_end": "2026-09-20T15:08:00.532816+00:00",
+    "local_codex_ihost_otbr_focused_restarted": "2026-09-20T15:08:32.237549+00:00",
+    "45df7312_zigbee2mqtt_restarted": "2026-09-20T15:08:44.138041+00:00",
+    "original_policies_restored": "2026-09-20T15:08:44.674653+00:00",
+    "representative_requests_completed": "2026-09-20T15:09:05.100345+00:00",
+    "temporary_tools_removed_original_packages_equal": "2026-09-20T15:09:48.749160+00:00",
+    "recovery_closeout": "2026-09-20T15:13:46.320766+00:00"
+  },
+  "radio_service_downtime_seconds": 257.199,
+  "snapshot": {
+    "format_version": 1,
+    "build_id": 1347375921,
+    "core_hz": 80000000,
+    "systick_reload": 7999999,
+    "delivered_ticks": 40,
+    "snapshot_valid": 127,
+    "takeover_status": 7,
+    "phase": 1,
+    "cpc_enter": 299612,
+    "cpc_exit": 299611,
+    "tasklets_done": 299611,
+    "drivers_done": 299611,
+    "full_loop_done": 299611,
+    "txc_enter": 1,
+    "txc_exit": 1,
+    "rx_callback_enter": 2,
+    "rx_callback_exit": 2,
+    "tx_ready": 1,
+    "cpc_rxd_frame": 1,
+    "cpc_rxd_valid_uframe": 0,
+    "cpc_txd_completed": 1,
+    "cpc_driver_error": 0,
+    "cpc_driver_packet_dropped": 0,
+    "cpc_invalid_header_checksum": 0,
+    "cpc_invalid_payload_checksum": 1,
+    "entry_basepri": 0,
+    "entry_primask": 0,
+    "entry_faultmask": 0,
+    "scb_icsr": 2063,
+    "scb_shcsr": 985088,
+    "scb_cfsr": 0,
+    "scb_hfsr": 0,
+    "nvic_iser0": 2250249224,
+    "nvic_iser1": 125,
+    "nvic_ispr0": 0,
+    "nvic_ispr1": 0,
+    "nvic_iabr0": 0,
+    "nvic_iabr1": 0,
+    "priority_uart_tx": 80,
+    "priority_ldma": 80,
+    "priority_rtcc": 80,
+    "priority_systick": 0,
+    "usart_en": 1,
+    "usart_status": 8675,
+    "usart_ien": 1,
+    "usart_if": 8222,
+    "usart_ctrl": 1073741824,
+    "usart_ctrlx": 0,
+    "usart_clkdiv": 5296,
+    "usart_routeen": 16,
+    "usart_rxroute": 1,
+    "usart_txroute": 65537,
+    "read_channel": 0,
+    "write_channel": 1,
+    "ldma_en": 1,
+    "ldma_ctrl": 0,
+    "ldma_status": 134217728,
+    "ldma_ien": 3,
+    "ldma_if": 4,
+    "ldma_chstatus": 1,
+    "ldma_chbusy": 0,
+    "ldma_chdone": 7,
+    "ldma_reqdis": 0,
+    "rx_channel_ctrl": 50331648,
+    "rx_request_select": 262144,
+    "rx_channel_dst": 536890932,
+    "tx_channel_ctrl": 805306368,
+    "tx_request_select": 262146,
+    "tx_channel_dst": 1342537788,
+    "cmu_sysclkctrl": 1026,
+    "bus_clock_ungated": 1
+  },
+  "capture": {
+    "post_launch_bytes": 680,
+    "sha256": "f68b38cf35b4a66f35ac7b65b68902104730e12622e90cf64cb34381d42bc74a",
+    "valid_snapshot": true
+  },
+  "host_crc_checks": [
+    {
+      "bytes": 17,
+      "declared_payload_with_fcs": 10,
+      "length_matches": true,
+      "header_crc_received": 54101,
+      "header_crc_computed": 54101,
+      "payload_crc_received": 4827,
+      "payload_crc_computed": 4827,
+      "payload_bytes": 8
+    },
+    {
+      "bytes": 17,
+      "declared_payload_with_fcs": 10,
+      "length_matches": true,
+      "header_crc_received": 54101,
+      "header_crc_computed": 54101,
+      "payload_crc_received": 4827,
+      "payload_crc_computed": 4827,
+      "payload_bytes": 8
+    }
+  ],
+  "recovery": {
+    "observation_seconds": 301.6,
+    "newly_unavailable_entities": [],
+    "original_apps_versions_options_policies": {
+      "local_codex_ihost_otbr_focused": true,
+      "45df7312_zigbee2mqtt": true,
+      "core_matter_server": true,
+      "core_ssh": true
+    },
+    "alpstuga_reports": [
+      {
+        "entity_id": "sensor.alpstuga_air_quality_monitor_temperature",
+        "state": "24.81",
+        "last_updated": "2026-09-20T15:12:38.256465+00:00"
+      },
+      {
+        "entity_id": "sensor.alpstuga_air_quality_monitor_humidity",
+        "state": "47.14",
+        "last_updated": "2026-09-20T15:13:37.736016+00:00"
+      },
+      {
+        "entity_id": "sensor.alpstuga_air_quality_monitor_carbon_dioxide",
+        "state": "650.0",
+        "last_updated": "2026-09-20T15:13:37.737942+00:00"
+      }
+    ]
+  },
+  "identity_checks": {
+    "coordinator_ieee": true,
+    "pan_id": true,
+    "extended_pan_id": true,
+    "channel": true,
+    "network_key": true,
+    "thread_dataset": true
+  },
+  "original_package_versions_equal": true,
+  "private_file_hashes": {
+    "candidate-flash.log": {
+      "sha256": "2a2e73f0665f2b1bf53889d1fee7fdf660a4cbc24ea0e0e0660284806ed7c5b9",
+      "bytes": 1880288
+    },
+    "rollback-flash.log": {
+      "sha256": "a3a12206e8704e182af2d56a5d192db171d92a9af90fa5126719cb126e010831",
+      "bytes": 2869393
+    },
+    "baseline-probe.log": {
+      "sha256": "901cb3f5790580f3c19e3a52fd90a65860636460ae2e72982934e78c7cc74ab7",
+      "bytes": 5346
+    },
+    "rollback-probe.log": {
+      "sha256": "ceb397b92aa0570faf7799a070193305695373c4db761365dea836d1b91c3e64",
+      "bytes": 5346
+    },
+    "decoded-snapshot.json": {
+      "sha256": "3ebc2386bd7e40cb1109f8449828849e00778eca8130b1df31da349beae4ad68",
+      "bytes": 1679
+    },
+    "capture-summary.json": {
+      "sha256": "38ffaf3dda2d4e4c972098a6f18f50687f4c7fda3bddd1299ca08dc530043825",
+      "bytes": 137
+    },
+    "host-query-crc-verification.json": {
+      "sha256": "e5597648b76f20df1d0b21f6f340bff3a6dac2aa5dc45ecce4c6e005e53872ce",
+      "bytes": 503
+    },
+    "recovery-closeout.json": {
+      "sha256": "4563ba545600560567911c1d79181ff38965437bd5234614fb4930232da1b8b8",
+      "bytes": 774
+    },
+    "restored-identities.json": {
+      "sha256": "36483c43aea1aa55997662ed31940739311f6433dc094ab9b65caf407cc5efa7",
+      "bytes": 144
+    },
+    "packages-before.txt": {
+      "sha256": "7bd6c5772a5c250650c456ddd1fa81b463f1d6c3f87904caa73dceb3ab160636",
+      "bytes": 2285
+    },
+    "packages-final.txt": {
+      "sha256": "7bd6c5772a5c250650c456ddd1fa81b463f1d6c3f87904caa73dceb3ab160636",
+      "bytes": 2285
+    },
+    "events.jsonl": {
+      "sha256": "6a2883f558a191afebc908dd588fd8bd3ed1c087b5cba481407b15456d29db7b",
+      "bytes": 2310
+    }
+  },
+  "limits": [
+    "The diagnostic changes timing/layout; findings describe this instrumented full build.",
+    "Snapshot phase CPC_ENTER is one sample, not evidence of a stuck loop.",
+    "Received payload bytes were not exported; the source of corruption/validation mismatch remains unproved.",
+    "No further flash or binding/erase/bootloader/SE change is covered by the consumed one-diagnostic approval."
+  ]
+}
