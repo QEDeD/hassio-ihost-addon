@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-20",
+  "firmware_rebuild": "two separate compile runs produced identical final ELF",
+  "capture_tests": 5,
+  "capture_test_runtime": "actual universal-silabs-flasher1.1.0 / serialx1.10.0, network-disabled container without devices",
+  "package_regressions": [
+    "HFXO default basename passed",
+    "crypto default basename passed"
+  ],
+  "package_negative_checks": [
+    "wrong expected ELF hash rejected",
+    "path traversal basename rejected"
+  ],
+  "production_tested": false,
+  "new_flash_authorized": false
+}

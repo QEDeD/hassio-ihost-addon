@@ -1,0 +1,11 @@
+**
+!review/
+!review/sdk2026/
+!review/sdk2026/recipe/
+!review/sdk2026/recipe/pin-debian-snapshot.sh
+!review/sdk2026/firmware/
+!review/sdk2026/firmware/build-offline.sh
+!review/sdk2026/firmware/verify-offline.sh
+!review/sdk2026/firmware/startup-trace/
+!review/sdk2026/firmware/startup-trace/*.py
+!review/sdk2026/firmware/startup-trace/*.c

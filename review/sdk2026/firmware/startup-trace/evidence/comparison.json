@@ -1,0 +1,36 @@
+{
+  "config": {
+    "baseline_files": 35,
+    "changed": [],
+    "added": []
+  },
+  "autogen": {
+    "baseline_files": 24,
+    "changed": [
+      "sl_component_catalog.h",
+      "sl_event_handler.c"
+    ],
+    "added": []
+  },
+  "source": {
+    "baseline_files": 4,
+    "changed": [
+      "app.c"
+    ],
+    "added": [
+      "startup_trace.c"
+    ]
+  },
+  "linked_checks": [
+    "PRIMASK saved/masked/restored",
+    "TX DMA enabled/active checked after CPC init",
+    "100000-iteration bounded waits retained",
+    "TXC peripheral and pending interrupt cleared",
+    "FF followed by trace_active=false before processing"
+  ],
+  "elf_sha256": "75c8b8c9989fa95ef9cfdad9622fe4400c159157436f7982f520156d51eee009",
+  "catalog_discrepancy": "Only missing SL_CATALOG_TOOLCHAIN_GCC_LTO_PRESENT; source review found zero consumers across exact SDK. Project still selects component; compiler and linker flags enable LTO. Exact SLC omission cause not established.",
+  "embedded_version": [
+    "SL-OPENTHREAD/3.1.1.0_GitHub-fb274efe6; EFR32; Sep 20 2026 00:00:00"
+  ]
+}
