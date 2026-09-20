@@ -1,3 +1,5 @@
+Current qualification, September20: exact normalGBL713d18d799727d4b85cd2fd657617522f4adc3bb62e79d83758d782dc261f604 is accepted and running on the production ZBDongle-E with host0.3.1-sdk2026. CPC binding/encrypted operation, existing networks and controlled app restart passed. See ../../FULL-FUNCTIONAL-RESULT-20260920.md for scope/limits. The preparation chronology below describes the earlier unflashed state, not current production status.
+
 # Normal full-firmware receive initialization candidate
 
 This recipe builds the original full SDK2026.6.1 application with only the reviewed no-flow UART DMA bootstrap correction. It derives from the pinned original `../build-offline.sh` and retains its target, compiler/link settings, application configuration, UART pins/baud/flow control, HFXO settings, security and storage layout. Existing recipes/artifacts are unchanged.

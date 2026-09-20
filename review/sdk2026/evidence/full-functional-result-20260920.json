@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-20",
+  "status": "accepted-live",
+  "host_version": "0.3.1-sdk2026",
+  "host_index_digest": "sha256:f34bcbad0113df786aba81619b8ccf2b580bb1ac56ed8f3b3c23acc99c5c0844",
+  "firmware_sha256": "713d18d799727d4b85cd2fd657617522f4adc3bb62e79d83758d782dc261f604",
+  "cpc_version": "4.9.1",
+  "zigbeed_version": "9.1.1",
+  "ezsp": 19,
+  "encrypted_cpc": true,
+  "single_binding_success": true,
+  "binding_key_unchanged_across_restart": true,
+  "channel": 25,
+  "zigbee_registered_devices": 30,
+  "zigbee_membership_preserved": true,
+  "matter_devices_available": 4,
+  "zigbee_read_before_after_restart": true,
+  "matter_identify_before_after_restart": true,
+  "fresh_matter_reports_before_after_restart": true,
+  "full_live_thread_dataset_equal_across_restart": true,
+  "normal_observation_seconds": 616.607865,
+  "initial_service_interruption_seconds": 291.856736,
+  "restart_service_interruption_seconds": 181.799951,
+  "original_ssh_packages_restored": 113,
+  "final_health": {
+    "new_unavailable_radio_entities": [],
+    "other_new_unavailable": [
+      "binary_sensor.rikkes_iphone_camera_motion",
+      "switch.opvaskemaskine_silence_on_demand"
+    ],
+    "thread_role": "router",
+    "post_restart_security_warnings": 1,
+    "unexpected_post_restart_detach": 0
+  },
+  "warnings": {
+    "initial_link_accept_security": 8,
+    "post_restart_link_accept_security": 1,
+    "scope": "brief startup/router-promotion episodes; no observed attachment loop or lost representative traffic"
+  },
+  "recovery_not_exercised": true,
+  "power_cycle_not_tested": true,
+  "long_term_reliability_not_established": true,
+  "private_evidence": "/home/wsluser/.local/share/ha-recovery/sdk2026-functional-20260920"
+}
