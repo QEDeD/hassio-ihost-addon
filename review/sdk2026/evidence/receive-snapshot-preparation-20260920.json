@@ -1,0 +1,111 @@
+{
+  "status": "offline build/parser/package and independent linked review passed; locally staged; not flashed",
+  "elf_sha256": "546011d16476c54cda50e3401b4740b4d38df78856877f61929f6a1aff051825",
+  "gbl_sha256": "5d2ce0a0de6f2c4e0c0a495f34fc8614862c295877e8367c89ba102551f912dc",
+  "field_count": 101,
+  "wire_bytes": 929,
+  "same_generated_config_as_tested_snapshot": true,
+  "same_capture_adapter_source_after_newline_normalization": true,
+  "sources": {
+    ".gitignore": "7555d474e8b7890828f57797ed20c4957ce96ef1f1f70ed5caf613c7fa249160",
+    "build-package.sh": "6228c66e76555d900ecaacd09643755267d4a87f701977258ab9aeaaa1082715",
+    "capture-launch.py": "de091e1f634d99cc6fa63109daf813539ec919afb8c6a32c6115cbcb7afc3605",
+    "Dockerfile.offline": "876c1f5129c35789620b03f67e7ceabfcbd510ebb48938301c57e55229eb1dfe",
+    "Dockerfile.offline.dockerignore": "1816fe28b8fbab90fdd67ab5c303af5ad6014f05a26a5a4c27bd68fe0dbed67b",
+    "fields.json": "fb89a275f50f9ffa6956e7bdda44eed00face72a88feb767b4691196b239155d",
+    "instrument.py": "da385909e815f01fbdef0653df1b6606f0b5458eeddb685c33942df173112777",
+    "prepare-build.py": "d06de9541bafef69a96bf1e860666a1cdc120f5d9be6b02bee735fea934c4da9",
+    "README.md": "4edbe8b99f40198c77068417a5c040dab70326df86312f4e63a693196b94f62b",
+    "snapshot.c": "88cbde34faec48c9cfd689668b9ca36335a75e7024df8ac9668e25588e305f22",
+    "snapshot.h": "f1d0320e371526c9ede53dd87a7a7a6a03759d7d5bbe124327c03c1ac3da78c0",
+    "snapshot.py": "6cf7558eca241f88752543f05d0003e258ab3814b1fa5a4bebfcee18bb66dfbd",
+    "test_snapshot.py": "f8c09c56783431ea929ac139457c3725baec9e41382d78aa8bdab4cff22fda23"
+  },
+  "package_validation": {
+    "application_properties": {
+      "pointer": "0x26af4",
+      "structure_version": "0x201",
+      "signature_type": 0,
+      "signature_location": "0xffffffff",
+      "application_type": "0x2",
+      "application_version": 1,
+      "capabilities": 0,
+      "product_id": "00000000000000000000000000000000",
+      "minimum_bootloader_version": "No such field in these properties; no GBL dependency tag emitted"
+    },
+    "page_size": 8192,
+    "program_page_bounds": [
+      "0x4000",
+      "0x2c000"
+    ],
+    "elf_segments": [
+      {
+        "physical_address": "0x4000",
+        "bytes": 308
+      },
+      {
+        "physical_address": "0x41a0",
+        "bytes": 159068
+      },
+      {
+        "physical_address": "0x2aefc",
+        "bytes": 12
+      },
+      {
+        "physical_address": "0x4140",
+        "bytes": 96
+      },
+      {
+        "physical_address": "0x2af08",
+        "bytes": 648
+      }
+    ],
+    "source_bytes": 160132,
+    "gbl_program_bytes": 160132,
+    "tags": [
+      {
+        "offset": 0,
+        "tag": "0x3a617eb",
+        "length": 8
+      },
+      {
+        "offset": 16,
+        "tag": "0xf40a0af4",
+        "length": 28
+      },
+      {
+        "offset": 52,
+        "tag": "0xfd0303fd",
+        "length": 312,
+        "address": "0x4000",
+        "end_exclusive": "0x4134"
+      },
+      {
+        "offset": 372,
+        "tag": "0xfd0303fd",
+        "length": 159828,
+        "address": "0x4140",
+        "end_exclusive": "0x2b190"
+      },
+      {
+        "offset": 160208,
+        "tag": "0xfc0404fc",
+        "length": 4
+      }
+    ],
+    "application_tag": {
+      "type": "0x2",
+      "version": "0x1",
+      "capabilities": "0x0",
+      "product_id": "00000000000000000000000000000000"
+    },
+    "source_differences": [],
+    "sha256": "5d2ce0a0de6f2c4e0c0a495f34fc8614862c295877e8367c89ba102551f912dc"
+  },
+  "independent_review": "RECEIVE-SNAPSHOT-REVIEW-20260920.md",
+  "build_log": {
+    "repository_copy": "trailing whitespace normalized; full command output retained",
+    "original_sha256": "8cbcaac66c91e38e2ae187c7184713e46beb0f8e0635a8576a922607c375be4e",
+    "original_private_path": "/home/wsluser/.local/share/ha-recovery/sdk2026-receive-20260920/receive-build-original.log"
+  }
+}

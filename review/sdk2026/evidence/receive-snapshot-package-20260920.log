@@ -1,0 +1,82 @@
+rcp-uart-802154.out: OK
+{
+  "application_properties": {
+    "pointer": "0x26af4",
+    "structure_version": "0x201",
+    "signature_type": 0,
+    "signature_location": "0xffffffff",
+    "application_type": "0x2",
+    "application_version": 1,
+    "capabilities": 0,
+    "product_id": "00000000000000000000000000000000",
+    "minimum_bootloader_version": "No such field in these properties; no GBL dependency tag emitted"
+  },
+  "page_size": 8192,
+  "program_page_bounds": [
+    "0x4000",
+    "0x2c000"
+  ],
+  "elf_segments": [
+    {
+      "physical_address": "0x4000",
+      "bytes": 308
+    },
+    {
+      "physical_address": "0x41a0",
+      "bytes": 159068
+    },
+    {
+      "physical_address": "0x2aefc",
+      "bytes": 12
+    },
+    {
+      "physical_address": "0x4140",
+      "bytes": 96
+    },
+    {
+      "physical_address": "0x2af08",
+      "bytes": 648
+    }
+  ],
+  "source_bytes": 160132,
+  "gbl_program_bytes": 160132,
+  "tags": [
+    {
+      "offset": 0,
+      "tag": "0x3a617eb",
+      "length": 8
+    },
+    {
+      "offset": 16,
+      "tag": "0xf40a0af4",
+      "length": 28
+    },
+    {
+      "offset": 52,
+      "tag": "0xfd0303fd",
+      "length": 312,
+      "address": "0x4000",
+      "end_exclusive": "0x4134"
+    },
+    {
+      "offset": 372,
+      "tag": "0xfd0303fd",
+      "length": 159828,
+      "address": "0x4140",
+      "end_exclusive": "0x2b190"
+    },
+    {
+      "offset": 160208,
+      "tag": "0xfc0404fc",
+      "length": 4
+    }
+  ],
+  "application_tag": {
+    "type": "0x2",
+    "version": "0x1",
+    "capabilities": "0x0",
+    "product_id": "00000000000000000000000000000000"
+  },
+  "source_differences": [],
+  "sha256": "5d2ce0a0de6f2c4e0c0a495f34fc8614862c295877e8367c89ba102551f912dc"
+}

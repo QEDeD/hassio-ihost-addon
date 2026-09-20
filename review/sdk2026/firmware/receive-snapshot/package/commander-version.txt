@@ -1,0 +1,10 @@
+
+Simplicity Commander 1v25p0b1995
+
+JLink DLL version: 8.94
+Qt 5.14.2 Copyright (C) 2017 The Qt Company Ltd.
+EMDLL Version: 0v21p0b1995
+mbed TLS version: 2.16.6
+
+
+DONE
