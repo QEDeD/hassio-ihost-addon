@@ -63,9 +63,9 @@ class CaptureTests(unittest.IsolatedAsyncioTestCase):
     def test_only_rx_and_split_markers(self):
         text = "\n".join([
             "x serialx.descriptor_transport DEBUG Received b'\\r\\n@S77\\r\\n'",
-            "x serialx.descriptor_transport DEBUG Sending b'2'",
+            "x serialx.descriptor_transport DEBUG Immediately writing <GeckoBootloaderOption.RUN_FIRMWARE: b'2'>",
             "x serialx.descriptor_transport DEBUG Received b'\\r\\n@S66\\r\\n'",
-            "x serialx.descriptor_transport DEBUG Sending b'2'",
+            "x serialx.descriptor_transport DEBUG Immediately writing <GeckoBootloaderOption.RUN_FIRMWARE: b'2'>",
             "x serialx.descriptor_transport DEBUG Sending b'\\r\\n@S99\\r\\n'",
             "x serialx.descriptor_transport DEBUG Received b'noise\\r\\n@S'",
             "x serialx.descriptor_transport DEBUG Received b'00\\r\\n\\r\\n@S01\\r\\n'",

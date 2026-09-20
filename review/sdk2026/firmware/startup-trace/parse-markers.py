@@ -11,8 +11,9 @@ def extract(text):
     received = bytearray()
     launched = False
     for line in text.splitlines():
-        sent = re.search(r"\bserialx\.[^ ]+ DEBUG Sending (b.*)$", line)
-        if sent and ast.literal_eval(sent.group(1)) == b"2":
+        run = re.search(r"\bserialx\.[^ ]+ DEBUG Immediately writing "
+                        r"<GeckoBootloaderOption\.RUN_FIRMWARE: b'2'>$", line)
+        if run:
             # The upload's final RUN supersedes any application launch during probe.
             received.clear()
             launched = True
