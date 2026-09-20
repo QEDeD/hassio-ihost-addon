@@ -1,0 +1,321 @@
+{
+  "status": "completed_original_system_restored",
+  "date": "2026-09-20",
+  "diagnostic_gbl_sha256": "fcd9addc9323d92f23013056e93689e43213709f896c99a733348398d3283cb8",
+  "rollback_gbl_sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+  "probes": {
+    "baseline": {
+      "exit": 0,
+      "raw_rx_chunks": 2,
+      "parsed_frames": 2,
+      "version": "4.6.0"
+    },
+    "hfxo": {
+      "exit": 0,
+      "raw_rx_chunks": 2,
+      "parsed_frames": 2,
+      "version": "4.9.1"
+    },
+    "rollback": {
+      "exit": 0,
+      "raw_rx_chunks": 2,
+      "parsed_frames": 2,
+      "version": "4.6.0"
+    }
+  },
+  "radio_services_restored_after_seconds": 324.697101,
+  "closed_after_seconds": 632.795543,
+  "observation_seconds": 308.098222,
+  "new_unavailable_final": 0,
+  "preserved_identity_checks": {
+    "coordinator_ieee": true,
+    "pan_id": true,
+    "extended_pan_id": true,
+    "channel": true,
+    "security_level": true,
+    "network_key": true,
+    "thread_dataset_data": true,
+    "channel25": true
+  },
+  "latest_host_stores_unchanged": true,
+  "backup_verifications": {
+    "initial-apps.tar": {
+      "source": "/backup/7856edfb.tar",
+      "sha256": "34d97a61e992f1ca797a5804b4cb0b4efbe5eb5b17558dae4853faf54435b147",
+      "bytes": 5406720,
+      "members": 4,
+      "coverage_verified": true
+    },
+    "initial-ha-config.tar.gz": {
+      "source": "/backup/sdk2026-hfxo-config-20260920.tar.gz",
+      "sha256": "27364a3aee51aea22886780bfecd16182f15c3fde1875fda9a1a68793eed9d44",
+      "bytes": 33278245,
+      "members": 4366,
+      "coverage_verified": true
+    }
+  },
+  "private_evidence_directory": "/home/wsluser/.local/share/ha-recovery/sdk2026-hfxo-20260920",
+  "log_checksums": {
+    "rollback-probe.log": {
+      "sha256": "0dca57586a53d053812afd372ee65cee9ab321a81c365c80fbe657e951bd9338",
+      "bytes": 5346
+    },
+    "observation-core_matter_server.log": {
+      "sha256": "70d103505764afb30a2fb2c48a88bf296a40b730b8294a82d8f8b4af4358e78e",
+      "bytes": 23501
+    },
+    "hfxo-flash.log": {
+      "sha256": "c1f084c05dc5283ab9119a878f22f6a52398c184cb6ded3db907ea6ed072e596",
+      "bytes": 757909
+    },
+    "restored-z2m.log": {
+      "sha256": "e4d04c611fdf36c7d6a0ad5a9b598a9c24c16bc18da3a2c13a81dfd52ee2106e",
+      "bytes": 31339
+    },
+    "observation-2-45df7312_zigbee2mqtt.log": {
+      "sha256": "313c331efb5df56fb235808a144b3cb45258e4a0879ebfe6fc0a69e8daf5ba51",
+      "bytes": 52810
+    },
+    "baseline-probe.log": {
+      "sha256": "cf31f1e4569551da1689c5e779683f6f34a5cc8a71a444f68ed0ee552fecee75",
+      "bytes": 5346
+    },
+    "hfxo-probe.log": {
+      "sha256": "a536b10c39fc4af7ea7a9ce7b6f1a94280851ccf5d1311c6ecbc49b7055433c6",
+      "bytes": 5342
+    },
+    "baseline-z2m.log": {
+      "sha256": "1b5d907341cd9b0f1ac96454f0c1ec794f1fa738945566ddd2c11e1c698eb6f8",
+      "bytes": 71176
+    },
+    "final-local_codex_ihost_otbr_focused.log": {
+      "sha256": "b9d8088017efe1055b1fc50700b88c2ce00f55fd3134cebf36074e72a39f399e",
+      "bytes": 292976
+    },
+    "final-45df7312_zigbee2mqtt.log": {
+      "sha256": "5088d26990d0b5904de88b6f2f7313f75f5230bbc885f69ee140e081a44323ce",
+      "bytes": 54365
+    },
+    "observation-local_codex_ihost_otbr_focused.log": {
+      "sha256": "d745346513562941f9c7919a40ec457cb1bedf9d6652967639124b4535496b4c",
+      "bytes": 38924
+    },
+    "observation-2-core_matter_server.log": {
+      "sha256": "ce50fb9b8b892234bbfdd95fd3b2c9041674ed00af8e3236a250c4fc4982e2fe",
+      "bytes": 23946
+    },
+    "tool-cleanup.log": {
+      "sha256": "201d7940f57264f5928781b10a079533a09e2391ebf117df589c6342c08ae897",
+      "bytes": 802
+    },
+    "rollback-flash.log": {
+      "sha256": "744a965e48f0638cf880bbd6cddf6f22f469a351708b1c37396a46d4219064f8",
+      "bytes": 2855680
+    },
+    "observation-2-local_codex_ihost_otbr_focused.log": {
+      "sha256": "b10074a4da5d74203f721452210e8724301996e492e523d46d3aa35644d360b2",
+      "bytes": 145202
+    },
+    "tool-install.log": {
+      "sha256": "74869558307226fb62960c8a710bbbc37124f927b624c81e6486b90cc2539685",
+      "bytes": 6712
+    },
+    "matter-observation-2.log": {
+      "sha256": "f0a23b8b4ed4e5b51592c184fcf1bd5ab6e4194852912c2413f8a2669fa6bc85",
+      "bytes": 23732
+    },
+    "z2m-after-remaining-read.log": {
+      "sha256": "542cb0c3bf9112f21029293482c96b6b54a2bed9be8a3eb9140fba9f361587e5",
+      "bytes": 54484
+    },
+    "observation-45df7312_zigbee2mqtt.log": {
+      "sha256": "2a1878f4175845ba8cef749c5ecf040c93c5062c37689486d4eb21b8a59cb6cc",
+      "bytes": 42182
+    },
+    "final-core_matter_server.log": {
+      "sha256": "67c89ddcdaee015dd47390ee8d994168803e178d59753798bcfe3403f98f34c0",
+      "bytes": 25764
+    }
+  },
+  "events": [
+    {
+      "at": "2026-09-20T09:39:06.927920+00:00",
+      "stage": "preparation_begin"
+    },
+    {
+      "at": "2026-09-20T09:40:40.279207+00:00",
+      "stage": "tools_and_firmware_staged",
+      "verified_bundle_files": 58,
+      "diagnostic_sha256": "fcd9addc9323d92f23013056e93689e43213709f896c99a733348398d3283cb8"
+    },
+    {
+      "at": "2026-09-20T09:43:23.682003+00:00",
+      "stage": "downtime_begin"
+    },
+    {
+      "at": "2026-09-20T09:44:06.508828+00:00",
+      "stage": "prestop_policy_request_rejected",
+      "detail": "Wrong path returned403; all radio services remained started; earlier downtime marker preceded actual stop"
+    },
+    {
+      "at": "2026-09-20T09:44:06.768245+00:00",
+      "stage": "policies_set",
+      "slug": "45df7312_zigbee2mqtt"
+    },
+    {
+      "at": "2026-09-20T09:44:07.012387+00:00",
+      "stage": "policies_set",
+      "slug": "local_codex_ihost_otbr_focused"
+    },
+    {
+      "at": "2026-09-20T09:44:07.012533+00:00",
+      "stage": "actual_downtime_begin"
+    },
+    {
+      "at": "2026-09-20T09:44:08.128829+00:00",
+      "stage": "stopped",
+      "slug": "45df7312_zigbee2mqtt"
+    },
+    {
+      "at": "2026-09-20T09:44:11.446415+00:00",
+      "stage": "stopped",
+      "slug": "local_codex_ihost_otbr_focused"
+    },
+    {
+      "at": "2026-09-20T09:44:14.739821+00:00",
+      "stage": "stopped",
+      "path": "/addons/core_matter_server/stop"
+    },
+    {
+      "at": "2026-09-20T09:44:32.674171+00:00",
+      "stage": "stopped",
+      "path": "/core/stop"
+    },
+    {
+      "at": "2026-09-20T09:44:36.227629+00:00",
+      "stage": "archives_created"
+    },
+    {
+      "at": "2026-09-20T09:45:15.050326+00:00",
+      "stage": "independent_backups_verified"
+    },
+    {
+      "at": "2026-09-20T09:45:42.625861+00:00",
+      "stage": "restarted",
+      "path": "/core/start"
+    },
+    {
+      "at": "2026-09-20T09:45:42.870396+00:00",
+      "stage": "restarted",
+      "path": "/addons/core_matter_server/start"
+    },
+    {
+      "at": "2026-09-20T09:45:42.872142+00:00",
+      "stage": "baseline_probe_begin"
+    },
+    {
+      "at": "2026-09-20T09:45:44.055714+00:00",
+      "stage": "baseline_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T09:45:58.363031+00:00",
+      "stage": "hfxo_flash_begin",
+      "sha256": "fcd9addc9323d92f23013056e93689e43213709f896c99a733348398d3283cb8"
+    },
+    {
+      "at": "2026-09-20T09:46:18.417183+00:00",
+      "stage": "hfxo_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T09:46:46.462714+00:00",
+      "stage": "hfxo_probe_begin"
+    },
+    {
+      "at": "2026-09-20T09:46:47.669557+00:00",
+      "stage": "hfxo_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T09:47:21.880015+00:00",
+      "stage": "latest_host_stores_preserved",
+      "unchanged": true
+    },
+    {
+      "at": "2026-09-20T09:47:22.470702+00:00",
+      "stage": "rollback_flash_begin",
+      "sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787"
+    },
+    {
+      "at": "2026-09-20T09:48:12.259076+00:00",
+      "stage": "rollback_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T09:48:40.347094+00:00",
+      "stage": "rollback_probe_begin"
+    },
+    {
+      "at": "2026-09-20T09:48:41.379361+00:00",
+      "stage": "rollback_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T09:49:22.812049+00:00",
+      "stage": "restored_service_started",
+      "slug": "local_codex_ihost_otbr_focused"
+    },
+    {
+      "at": "2026-09-20T09:49:31.709634+00:00",
+      "stage": "restored_service_started",
+      "slug": "45df7312_zigbee2mqtt"
+    },
+    {
+      "at": "2026-09-20T09:49:32.202217+00:00",
+      "stage": "original_policies_restored"
+    },
+    {
+      "at": "2026-09-20T09:49:32.524919+00:00",
+      "stage": "restored-zigbee-read-call",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T09:49:32.844841+00:00",
+      "stage": "restored-matter-identify-call",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T09:50:06.173396+00:00",
+      "stage": "initial_recovery_checks",
+      "identities_preserved": true
+    },
+    {
+      "at": "2026-09-20T09:50:52.934162+00:00",
+      "stage": "matter_identify_after_subscription",
+      "completed": true,
+      "earlier_request": "Empty response before integration resubscribed; no earlier command completion claimed"
+    },
+    {
+      "at": "2026-09-20T09:52:35.131728+00:00",
+      "stage": "remaining_lamp_read_requested",
+      "purpose": "Non-actuating verification of newly unavailable device; no settings changed"
+    },
+    {
+      "at": "2026-09-20T09:53:10.678858+00:00",
+      "stage": "tools_cleaned_and_original_configuration_verified",
+      "original_package_count": 113
+    },
+    {
+      "at": "2026-09-20T09:54:39.808076+00:00",
+      "stage": "window_closed",
+      "observation_seconds": 308,
+      "temporary_tools_removed": true
+    }
+  ],
+  "limitations": [
+    "Inherited SYSCLK/HFXO guard can bypass crystal reinitialization",
+    "No binding or candidate network operation",
+    "Short restored-system observation, not long-term reliability proof"
+  ]
+}

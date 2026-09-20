@@ -1,6 +1,6 @@
 # Proposed crystal-startup diagnostic window — September20
 
-Status: prepared offline; not approved or executed. Previous diagnostic approval is consumed. This proposal adds exactly one new firmware test and a mandatory return to the working system.
+Status: explicitly approved and executed September20; original system restored and verified. See HFXO-TRIAL-RESULT-20260920.md. This allowance is consumed. The procedure below is retained as evidence, not authority to repeat it.
 
 ## Purpose and authorized scope to request
 

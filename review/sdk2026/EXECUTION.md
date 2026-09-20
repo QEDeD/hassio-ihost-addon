@@ -2,7 +2,21 @@
 
 Updated 2026-09-20. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
 
-## Current checkpoint — narrower diagnostic prepared, September20
+## Current checkpoint — HFXO diagnostic completed and production restored
+
+September20 HFXO-TRIAL-PLAN was explicitly approved and executed once; no overlapping maintenance confirmed. Baseline4.6.0, new HFXO-enabled CPC-only4.9.1 and restored4.6.0 each returned both version replies (2 raw RX/2 parsed frames). Diagnostic flash09:45:58–09:46:18UTC; mandatory old-firmware flash09:47:22–09:48:12. Both completed once; allowance consumed. No binding/unbind/candidate host/bootloader/SE update or stale state restoration. Do not replay either flash.
+
+Production is restored to app0.2.3-ordered/radio4.6.0. Zigbee read returned1; ALPSTUGA Identify and fresh changed measurements passed. Saved identities/key/channel25/Thread dataset data match; stopped host stores unchanged. Initial availability recovery included a final lamp that answered a non-actuating read and returned online. After308seconds observation no newly unavailable entities remained. Original app configuration/policies and113 SSH packages restored; temporary tooling removed. Services restarted after about5m25s; complete closeout09:54:39UTC,10m33s after actual first stop. Old-stack reassembly/ping/CLI warnings are recorded, not an error-free claim.
+
+See HFXO-TRIAL-RESULT-20260920.md and evidence/hfxo-result-20260920.json. Protected authoritative events/raw logs/backups: /home/wsluser/.local/share/ha-recovery/sdk2026-hfxo-20260920. Reviewed recipe/evidence remain in firmware/cpc-hfxo-diagnostic. Work saved locally, not published. No active worker assignment remains.
+
+Next executable work is offline analysis of whether protocol-crypto/RADIOAES mask initialization can be isolated without pulling in RAIL/Thread startup. If not, evaluate bounded full-image startup checkpoints rather than repeated broad variants. HFXO-enabled startup now reaches communication, but inherited-clock early return means not every crystal wait is proven. No speculative tuning or new physical test is authorized. SDK upgrade/binding/network acceptance and nine-contribution reassessment remain open; diagnostic success is not upgrade completion.
+
+## Approved window start record — September20
+
+Operator approved the proposed single-new-image diagnostic followed by restoration, and explicitly confirmed no overlapping HA/PVE maintenance. Execute HFXO-TRIAL-PLAN-20260920.md once within its bounds. Tools and new image hash-verified/staged; baseline app options/descriptor unchanged, Zigbee read returned1 and ALPSTUGA reports fresh. Private authoritative operations/events: /home/wsluser/.local/share/ha-recovery/sdk2026-hfxo-20260920; HA logs/new image: /share/codex-sdk2026-hfxo-20260920. Read events after interruption; never replay a recorded flash. No binding, unbind, candidate host, bootloader/SE update or additional image cycle. Mandatory old4.6.0 restoration and verification even if diagnostic replies. Approval of this exact test supersedes its preparation document's unapproved status; no broader authority is implied.
+
+## Prepared diagnostic checkpoint — September20
 
 The user requested evidence analysis, a critically reviewed next route and implementation. Offline preparation now provides a CPC-only variant with one functional configuration change: HFXO_EN=1. It reuses the hardware-proven recovery recipe, SDK source, patches and build-package inventory unchanged. Generated source/config/catalog/startup comparisons and linked-code checks confirm the intended crystal initialization, unchanged SYSCLK/PCLK and UART/security/storage settings. Application-only GBL SHA256 fcd9addc9323d92f23013056e93689e43213709f896c99a733348398d3283cb8; exact ELF fa14fd55f8e16ef6729572eb4d1dbc63c0b17762b6da640bf34352cbb4f3f913. Strict package checks pass, as do original-package regression and invalid-input rejection checks.
 

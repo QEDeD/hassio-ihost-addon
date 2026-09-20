@@ -1,6 +1,6 @@
 # CPC diagnostic with external crystal initialization
 
-Status: built and packaged offline on September 20, 2026. Not installed on HA or flashed. This is a diagnostic, not a corrective firmware release.
+Status: built, packaged and hardware-tested September20,2026. Both CPC version queries passed; original4.6.0 was then restored and production checks passed. See ../../HFXO-TRIAL-RESULT-20260920.md. This remains diagnostic firmware, not a corrective release or qualified production image.
 
 The hardware-proven CPC-only SDK2026 image answers version queries; the full multiprotocol image does not. This variant explicitly enables HFXO (the external high-frequency crystal) in that CPC-only image, using the vendor clock-manager setting. Its purpose is to establish whether this additional initialization can finish on the existing ZBDongle-E.
 
