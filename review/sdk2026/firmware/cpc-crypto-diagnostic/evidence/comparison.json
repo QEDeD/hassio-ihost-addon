@@ -1,0 +1,64 @@
+{
+  "source": {
+    "files_before": 8,
+    "files_after": 8,
+    "added": [],
+    "removed": [],
+    "changed": []
+  },
+  "config": {
+    "files_before": 17,
+    "files_after": 17,
+    "added": [],
+    "removed": [],
+    "changed": []
+  },
+  "autogen": {
+    "files_before": 19,
+    "files_after": 19,
+    "added": [],
+    "removed": [],
+    "changed": [
+      "sl_component_catalog.h",
+      "sl_event_handler.c"
+    ]
+  },
+  "generated_diffs": {
+    "sl_component_catalog.h": [
+      "--- proven/sl_component_catalog.h\n",
+      "+++ crypto/sl_component_catalog.h\n",
+      "@@ -25,5 +25,6 @@\n",
+      " #define SL_CATALOG_SL_CORE_PRESENT",
+      " #define SL_CATALOG_SL_MAIN_PRESENT",
+      " #define SL_CATALOG_SLEEPTIMER_PRESENT",
+      "+#define SL_CATALOG_SLI_PROTOCOL_CRYPTO_PRESENT",
+      " ",
+      " #endif // SL_COMPONENT_CATALOG_H"
+    ],
+    "sl_event_handler.c": [
+      "--- proven/sl_event_handler.c\n",
+      "+++ crypto/sl_event_handler.c\n",
+      "@@ -8,6 +8,7 @@\n",
+      " #include \"sl_mbedtls.h\"",
+      " #include \"psa/crypto.h\"",
+      " #include \"sl_se_manager.h\"",
+      "+#include \"sli_protocol_crypto.h\"",
+      " #include \"nvm3_default.h\"",
+      " ",
+      " void sli_driver_permanent_allocation(void)",
+      "@@ -50,6 +51,8 @@\n",
+      "   sl_mbedtls_init();",
+      "   psa_crypto_init();",
+      "   sl_se_init();",
+      "+  sli_protocol_crypto_init();",
+      "+  sli_aes_seed_mask();",
+      " }",
+      " ",
+      " void sl_stack_init(void)"
+    ]
+  },
+  "same_source-sha256.txt": true,
+  "same_patched-source-sha256.txt": true,
+  "same_package-evidence/installed-packages.txt": true,
+  "elf_sha256": "ffdea6681bc996038cd2cdd4f6bdffcb7d294a748dc7b24b17eaff114b6c99a8"
+}

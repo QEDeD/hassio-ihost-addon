@@ -1,0 +1,36 @@
+{
+  "configuration": {
+    "sl_cpc_security_config.h": {
+      "SL_CPC_SECURITY_ENABLED": "1",
+      "SL_CPC_SECURITY_BINDING_KEY_METHOD": "SL_CPC_SECURITY_BINDING_KEY_ECDH"
+    },
+    "sl_cpc_drv_uart_usart_vcom_config.h": {
+      "SL_CPC_DRV_UART_VCOM_PERIPHERAL": "USART0",
+      "SL_CPC_DRV_UART_VCOM_TX_PORT": "gpioPortB",
+      "SL_CPC_DRV_UART_VCOM_TX_PIN": "1",
+      "SL_CPC_DRV_UART_VCOM_RX_PORT": "gpioPortB",
+      "SL_CPC_DRV_UART_VCOM_RX_PIN": "0",
+      "SL_CPC_DRV_UART_VCOM_BAUDRATE": "115200",
+      "SL_CPC_DRV_UART_VCOM_FLOW_CONTROL_TYPE": "usartHwFlowControlNone"
+    },
+    "sl_clock_manager_oscillator_config.h": {
+      "SL_CLOCK_MANAGER_HFXO_CTUNE": "128"
+    },
+    "nvm3_default_config.h": {
+      "NVM3_DEFAULT_NVM_SIZE": "40960"
+    },
+    "psa_crypto_config.h": {
+      "SL_PSA_ITS_USER_MAX_FILES": "128",
+      "SL_PSA_ITS_SUPPORT_V3_DRIVER": "1",
+      "SL_PSA_ITS_SUPPORT_V2_DRIVER": "0",
+      "SL_PSA_ITS_SUPPORT_V1_DRIVER": "0"
+    }
+  },
+  "psa_total_files": 129,
+  "application_origin": "0x4000",
+  "nvm_base": "0xb4000",
+  "nvm_size": 40960,
+  "network_stacks_absent": true,
+  "automatic_unbind_removed": true,
+  "remote_unbind_intentionally_permitted": true
+}

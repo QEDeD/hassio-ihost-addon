@@ -1,0 +1,16 @@
+**
+!review/
+!review/sdk2026/
+!review/sdk2026/recipe/
+!review/sdk2026/recipe/pin-debian-snapshot.sh
+!review/sdk2026/firmware/
+!review/sdk2026/firmware/cpc-recovery/
+!review/sdk2026/firmware/cpc-recovery/build-offline.sh
+!review/sdk2026/firmware/cpc-recovery/explicit-unbind-only.patch
+!review/sdk2026/firmware/cpc-recovery/explicit-uart.slcp.patch
+!review/sdk2026/firmware/cpc-recovery/verify-offline.sh
+!review/sdk2026/firmware/cpc-hfxo-diagnostic/
+!review/sdk2026/firmware/cpc-hfxo-diagnostic/prepare-build.py
+
+!review/sdk2026/firmware/cpc-crypto-diagnostic/
+!review/sdk2026/firmware/cpc-crypto-diagnostic/prepare-build.py

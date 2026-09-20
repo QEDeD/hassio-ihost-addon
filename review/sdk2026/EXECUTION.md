@@ -2,7 +2,17 @@
 
 Updated 2026-09-20. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
 
-## Current checkpoint — HFXO diagnostic completed and production restored
+## Current checkpoint — isolated crypto diagnostic prepared offline
+
+The user requested evidence analysis, a critically evaluated route and implementation. The next vendor component, sli_protocol_crypto, can be isolated without adding RAIL/Thread. Built and packaged against the physically proven HFXO+CPC baseline. All retained source/configuration files match; generated changes are only its catalog entry/header and two init calls after PSA/SE. No prerequisite defect found. Linked code confirms radio-AES status wait and checked four-byte randomness request. The diagnostic retains an entropy-error assertion absent from the full optimized firmware; a failed test would need interpretation before attributing the original silence to it.
+
+ELF ffdea6681bc996038cd2cdd4f6bdffcb7d294a748dc7b24b17eaff114b6c99a8; application-only GBL a7684fe05c9d31fccb311ba9f895769087a040f6525d2163c8c6311ebffe91ee. Existing strict package checks pass; no bootloader/SE/NVM programming pages. Runtime NVM writes remain possible. See firmware/cpc-crypto-diagnostic/README.md and evidence, CRYPTO-COMPONENT-REVIEW-20260920.md, and CRYPTO-NEXT-STEPS-20260920.md.
+
+CRYPTO-TRIAL-PLAN-20260920.md proposes one new-image flash then mandatory old-firmware restoration, within the established backup/logging/recovery limits. No HA access/staging/mutation or publication this turn. Production remains last verified original4.6.0/app0.2.3-ordered. All prior physical-test allowances are consumed. New concrete procedure approval is required before any new flash; this generic preparation request does not supply it.
+
+Fresh-context GPT-6 Astra/high review is complete: CRYPTO-INDEPENDENT-REVIEW-20260920.md supports the one bounded window, with an accepted information-yield wording correction and stronger stopping rule. Without a concrete corrective mechanism, prioritize observable full-image startup checkpoints next, not another routine component-by-component outage. A failed diagnostic requires wait/entropy/fault evidence before attributing the full-image cause. No active worker remains. Next action: obtain exact approval of CRYPTO-TRIAL-PLAN-20260920.md, then refresh baseline/staging and execute once. Work is saved locally, not pushed. Goal and nine-contribution reassessment remain open.
+
+## Completed HFXO checkpoint — production restored
 
 September20 HFXO-TRIAL-PLAN was explicitly approved and executed once; no overlapping maintenance confirmed. Baseline4.6.0, new HFXO-enabled CPC-only4.9.1 and restored4.6.0 each returned both version replies (2 raw RX/2 parsed frames). Diagnostic flash09:45:58–09:46:18UTC; mandatory old-firmware flash09:47:22–09:48:12. Both completed once; allowance consumed. No binding/unbind/candidate host/bootloader/SE update or stale state restoration. Do not replay either flash.
 

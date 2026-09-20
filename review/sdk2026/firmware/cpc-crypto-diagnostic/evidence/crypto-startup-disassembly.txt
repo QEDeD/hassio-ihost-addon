@@ -1,0 +1,227 @@
+00011ffc <sl_service_init>:
+   11ffc:	b508      	push	{r3, lr}
+   11ffe:	f7f2 fecd 	bl	4d9c <sl_cpc_init>
+   12002:	f7fa ff85 	bl	cf10 <sl_mbedtls_init>
+   12006:	f7f6 fdc1 	bl	8b8c <psa_crypto_init>
+   1200a:	f7ff f84e 	bl	110aa <sl_se_init>
+   1200e:	f7ff fa4a 	bl	114a6 <sli_protocol_crypto_init>
+   12012:	e8bd 4008 	ldmia.w	sp!, {r3, lr}
+   12016:	f000 bd49 	b.w	12aac <sli_aes_seed_mask>
+
+00012aac <sli_aes_seed_mask>:
+   12aac:	b508      	push	{r3, lr}
+   12aae:	f7ff fcad 	bl	1240c <sli_radioaes_acquire>
+   12ab2:	e8bd 4008 	ldmia.w	sp!, {r3, lr}
+   12ab6:	f7ff bce7 	b.w	12488 <sli_radioaes_release>
+
+000114a6 <sli_protocol_crypto_init>:
+   114a6:	2000      	movs	r0, #0
+   114a8:	4770      	bx	lr
+
+0001240c <sli_radioaes_acquire>:
+   1240c:	4a1a      	ldr	r2, [pc, #104]	@ (12478 <sli_radioaes_acquire+0x6c>)
+   1240e:	b538      	push	{r3, r4, r5, lr}
+   12410:	f8d2 3280 	ldr.w	r3, [r2, #640]	@ 0x280
+   12414:	f043 0301 	orr.w	r3, r3, #1
+   12418:	f8c2 3280 	str.w	r3, [r2, #640]	@ 0x280
+   1241c:	4b17      	ldr	r3, [pc, #92]	@ (1247c <sli_radioaes_acquire+0x70>)
+   1241e:	685b      	ldr	r3, [r3, #4]
+   12420:	f3c3 0308 	ubfx	r3, r3, #0, #9
+   12424:	b17b      	cbz	r3, 12446 <sli_radioaes_acquire+0x3a>
+   12426:	f04f 42a8 	mov.w	r2, #1409286144	@ 0x54000000
+   1242a:	6bd3      	ldr	r3, [r2, #60]	@ 0x3c
+   1242c:	f013 0f43 	tst.w	r3, #67	@ 0x43
+   12430:	d1fb      	bne.n	1242a <sli_radioaes_acquire+0x1e>
+   12432:	4b13      	ldr	r3, [pc, #76]	@ (12480 <sli_radioaes_acquire+0x74>)
+   12434:	681b      	ldr	r3, [r3, #0]
+   12436:	b91b      	cbnz	r3, 12440 <sli_radioaes_acquire+0x34>
+   12438:	218e      	movs	r1, #142	@ 0x8e
+   1243a:	4812      	ldr	r0, [pc, #72]	@ (12484 <sli_radioaes_acquire+0x78>)
+   1243c:	f7fe f89e 	bl	1057c <assertEFM>
+   12440:	2414      	movs	r4, #20
+   12442:	4620      	mov	r0, r4
+   12444:	bd38      	pop	{r3, r4, r5, pc}
+   12446:	f04f 43a8 	mov.w	r3, #1409286144	@ 0x54000000
+   1244a:	6bdc      	ldr	r4, [r3, #60]	@ 0x3c
+   1244c:	f014 0443 	ands.w	r4, r4, #67	@ 0x43
+   12450:	d1fb      	bne.n	1244a <sli_radioaes_acquire+0x3e>
+   12452:	4d0b      	ldr	r5, [pc, #44]	@ (12480 <sli_radioaes_acquire+0x74>)
+   12454:	682b      	ldr	r3, [r5, #0]
+   12456:	b943      	cbnz	r3, 1246a <sli_radioaes_acquire+0x5e>
+   12458:	2104      	movs	r1, #4
+   1245a:	4628      	mov	r0, r5
+   1245c:	f7fd fdef 	bl	1003e <psa_generate_random>
+   12460:	b118      	cbz	r0, 1246a <sli_radioaes_acquire+0x5e>
+   12462:	2148      	movs	r1, #72	@ 0x48
+   12464:	4807      	ldr	r0, [pc, #28]	@ (12484 <sli_radioaes_acquire+0x78>)
+   12466:	f7fe f889 	bl	1057c <assertEFM>
+   1246a:	682b      	ldr	r3, [r5, #0]
+   1246c:	3301      	adds	r3, #1
+   1246e:	f043 4300 	orr.w	r3, r3, #2147483648	@ 0x80000000
+   12472:	602b      	str	r3, [r5, #0]
+   12474:	e7e5      	b.n	12442 <sli_radioaes_acquire+0x36>
+   12476:	bf00      	nop
+   12478:	50008000 	.word	0x50008000
+   1247c:	e000ed00 	.word	0xe000ed00
+   12480:	20001ad8 	.word	0x20001ad8
+   12484:	000135ce 	.word	0x000135ce
+
+00012488 <sli_radioaes_release>:
+   12488:	4b01      	ldr	r3, [pc, #4]	@ (12490 <sli_radioaes_release+0x8>)
+   1248a:	2000      	movs	r0, #0
+   1248c:	685b      	ldr	r3, [r3, #4]
+   1248e:	4770      	bx	lr
+   12490:	e000ed00 	.word	0xe000ed00
+
+0001003e <psa_generate_random>:
+   1003e:	f7f8 bae5 	b.w	860c <psa_generate_random_internal>
+
+0000860c <psa_generate_random_internal>:
+    860c:	b537      	push	{r0, r1, r2, r4, r5, lr}
+    860e:	4d0d      	ldr	r5, [pc, #52]	@ (8644 <psa_generate_random_internal+0x38>)
+    8610:	460c      	mov	r4, r1
+    8612:	786b      	ldrb	r3, [r5, #1]
+    8614:	2b02      	cmp	r3, #2
+    8616:	d112      	bne.n	863e <psa_generate_random_internal+0x32>
+    8618:	782b      	ldrb	r3, [r5, #0]
+    861a:	2b07      	cmp	r3, #7
+    861c:	d10f      	bne.n	863e <psa_generate_random_internal+0x32>
+    861e:	2300      	movs	r3, #0
+    8620:	460a      	mov	r2, r1
+    8622:	9301      	str	r3, [sp, #4]
+    8624:	4601      	mov	r1, r0
+    8626:	ab01      	add	r3, sp, #4
+    8628:	1d28      	adds	r0, r5, #4
+    862a:	f008 ff73 	bl	11514 <mbedtls_psa_external_get_random>
+    862e:	b920      	cbnz	r0, 863a <psa_generate_random_internal+0x2e>
+    8630:	9b01      	ldr	r3, [sp, #4]
+    8632:	42a3      	cmp	r3, r4
+    8634:	bf18      	it	ne
+    8636:	f06f 0093 	mvnne.w	r0, #147	@ 0x93
+    863a:	b003      	add	sp, #12
+    863c:	bd30      	pop	{r4, r5, pc}
+    863e:	f06f 0088 	mvn.w	r0, #136	@ 0x88
+    8642:	e7fa      	b.n	863a <psa_generate_random_internal+0x2e>
+    8644:	200011dc 	.word	0x200011dc
+
+00011514 <mbedtls_psa_external_get_random>:
+   11514:	b5f0      	push	{r4, r5, r6, r7, lr}
+   11516:	461c      	mov	r4, r3
+   11518:	2300      	movs	r3, #0
+   1151a:	b08b      	sub	sp, #44	@ 0x2c
+   1151c:	6023      	str	r3, [r4, #0]
+   1151e:	460f      	mov	r7, r1
+   11520:	4616      	mov	r6, r2
+   11522:	f7ff fdc2 	bl	110aa <sl_se_init>
+   11526:	b970      	cbnz	r0, 11546 <mbedtls_psa_external_get_random+0x32>
+   11528:	4668      	mov	r0, sp
+   1152a:	f001 faa4 	bl	12a76 <sl_se_init_command_context>
+   1152e:	4605      	mov	r5, r0
+   11530:	b948      	cbnz	r0, 11546 <mbedtls_psa_external_get_random+0x32>
+   11532:	4632      	mov	r2, r6
+   11534:	4639      	mov	r1, r7
+   11536:	4668      	mov	r0, sp
+   11538:	f7fb fb2a 	bl	cb90 <sl_se_get_random>
+   1153c:	b910      	cbnz	r0, 11544 <mbedtls_psa_external_get_random+0x30>
+   1153e:	6026      	str	r6, [r4, #0]
+   11540:	b00b      	add	sp, #44	@ 0x2c
+   11542:	bdf0      	pop	{r4, r5, r6, r7, pc}
+   11544:	6025      	str	r5, [r4, #0]
+   11546:	f06f 0092 	mvn.w	r0, #146	@ 0x92
+   1154a:	e7f9      	b.n	11540 <mbedtls_psa_external_get_random+0x2c>
+
+0000cb90 <sl_se_get_random>:
+    cb90:	2300      	movs	r3, #0
+    cb92:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
+    cb96:	b08e      	sub	sp, #56	@ 0x38
+    cb98:	460e      	mov	r6, r1
+    cb9a:	4617      	mov	r7, r2
+    cb9c:	4604      	mov	r4, r0
+    cb9e:	9301      	str	r3, [sp, #4]
+    cba0:	2800      	cmp	r0, #0
+    cba2:	d069      	beq.n	cc78 <sl_se_get_random+0xe8>
+    cba4:	b10a      	cbz	r2, cbaa <sl_se_get_random+0x1a>
+    cba6:	2900      	cmp	r1, #0
+    cba8:	d066      	beq.n	cc78 <sl_se_get_random+0xe8>
+    cbaa:	f037 0803 	bics.w	r8, r7, #3
+    cbae:	f007 0a03 	and.w	sl, r7, #3
+    cbb2:	d028      	beq.n	cc06 <sl_se_get_random+0x76>
+    cbb4:	f04f 63e0 	mov.w	r3, #117440512	@ 0x7000000
+    cbb8:	f04f 0900 	mov.w	r9, #0
+    cbbc:	6023      	str	r3, [r4, #0]
+    cbbe:	2301      	movs	r3, #1
+    cbc0:	f8c4 9004 	str.w	r9, [r4, #4]
+    cbc4:	f8c4 9008 	str.w	r9, [r4, #8]
+    cbc8:	9608      	str	r6, [sp, #32]
+    cbca:	9309      	str	r3, [sp, #36]	@ 0x24
+    cbcc:	f048 5300 	orr.w	r3, r8, #536870912	@ 0x20000000
+    cbd0:	930a      	str	r3, [sp, #40]	@ 0x28
+    cbd2:	aa08      	add	r2, sp, #32
+    cbd4:	ab02      	add	r3, sp, #8
+    cbd6:	ca07      	ldmia	r2, {r0, r1, r2}
+    cbd8:	f8c4 9020 	str.w	r9, [r4, #32]
+    cbdc:	e883 0007 	stmia.w	r3, {r0, r1, r2}
+    cbe0:	4619      	mov	r1, r3
+    cbe2:	4620      	mov	r0, r4
+    cbe4:	f005 ff51 	bl	12a8a <sli_se_mailbox_command_add_output>
+    cbe8:	4641      	mov	r1, r8
+    cbea:	4620      	mov	r0, r4
+    cbec:	f005 fbda 	bl	123a4 <sli_se_mailbox_command_add_parameter>
+    cbf0:	4620      	mov	r0, r4
+    cbf2:	f005 ff2d 	bl	12a50 <sli_se_execute_and_wait>
+    cbf6:	4605      	mov	r5, r0
+    cbf8:	b128      	cbz	r0, cc06 <sl_se_get_random+0x76>
+    cbfa:	4642      	mov	r2, r8
+    cbfc:	4649      	mov	r1, r9
+    cbfe:	4630      	mov	r0, r6
+    cc00:	f005 fa45 	bl	1208e <memset>
+    cc04:	e003      	b.n	cc0e <sl_se_get_random+0x7e>
+    cc06:	f1ba 0f00 	cmp.w	sl, #0
+    cc0a:	d104      	bne.n	cc16 <sl_se_get_random+0x86>
+    cc0c:	2500      	movs	r5, #0
+    cc0e:	4628      	mov	r0, r5
+    cc10:	b00e      	add	sp, #56	@ 0x38
+    cc12:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
+    cc16:	f04f 63e0 	mov.w	r3, #117440512	@ 0x7000000
+    cc1a:	f04f 0900 	mov.w	r9, #0
+    cc1e:	6023      	str	r3, [r4, #0]
+    cc20:	ab01      	add	r3, sp, #4
+    cc22:	f8c4 9004 	str.w	r9, [r4, #4]
+    cc26:	f8c4 9008 	str.w	r9, [r4, #8]
+    cc2a:	930b      	str	r3, [sp, #44]	@ 0x2c
+    cc2c:	2301      	movs	r3, #1
+    cc2e:	930c      	str	r3, [sp, #48]	@ 0x30
+    cc30:	4b12      	ldr	r3, [pc, #72]	@ (cc7c <sl_se_get_random+0xec>)
+    cc32:	aa0e      	add	r2, sp, #56	@ 0x38
+    cc34:	930d      	str	r3, [sp, #52]	@ 0x34
+    cc36:	ab05      	add	r3, sp, #20
+    cc38:	e912 0007 	ldmdb	r2, {r0, r1, r2}
+    cc3c:	f8c4 9020 	str.w	r9, [r4, #32]
+    cc40:	e883 0007 	stmia.w	r3, {r0, r1, r2}
+    cc44:	4619      	mov	r1, r3
+    cc46:	4620      	mov	r0, r4
+    cc48:	f005 ff1f 	bl	12a8a <sli_se_mailbox_command_add_output>
+    cc4c:	2104      	movs	r1, #4
+    cc4e:	4620      	mov	r0, r4
+    cc50:	f005 fba8 	bl	123a4 <sli_se_mailbox_command_add_parameter>
+    cc54:	4620      	mov	r0, r4
+    cc56:	f005 fefb 	bl	12a50 <sli_se_execute_and_wait>
+    cc5a:	4605      	mov	r5, r0
+    cc5c:	b108      	cbz	r0, cc62 <sl_se_get_random+0xd2>
+    cc5e:	463a      	mov	r2, r7
+    cc60:	e7cc      	b.n	cbfc <sl_se_get_random+0x6c>
+    cc62:	9a01      	ldr	r2, [sp, #4]
+    cc64:	4446      	add	r6, r8
+    cc66:	00eb      	lsls	r3, r5, #3
+    cc68:	3501      	adds	r5, #1
+    cc6a:	fa22 f303 	lsr.w	r3, r2, r3
+    cc6e:	45aa      	cmp	sl, r5
+    cc70:	f806 3b01 	strb.w	r3, [r6], #1
+    cc74:	d1f7      	bne.n	cc66 <sl_se_get_random+0xd6>
+    cc76:	e7c9      	b.n	cc0c <sl_se_get_random+0x7c>
+    cc78:	2521      	movs	r5, #33	@ 0x21
+    cc7a:	e7c8      	b.n	cc0e <sl_se_get_random+0x7e>
+    cc7c:	20000004 	.word	0x20000004
+
+0001057c <assertEFM>:
+   1057c:	e7fe      	b.n	1057c <assertEFM>

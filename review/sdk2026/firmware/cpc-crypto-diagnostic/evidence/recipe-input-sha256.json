@@ -1,0 +1,15 @@
+{
+  "review/sdk2026/recipe/pin-debian-snapshot.sh": "f286748eb1c7f46540715806f9609a27fc8c19e1ce6d80eeba56fdfc8c784243",
+  "review/sdk2026/firmware/cpc-recovery/build-offline.sh": "45a826cd3ca160668c53cf5c7402497f79dc97407285be51d91faacb9d80ef70",
+  "review/sdk2026/firmware/cpc-recovery/verify-offline.sh": "e9711d181c08541f784433de04428f4ebbbae72ddb5a0badf7148b37ac66d19f",
+  "review/sdk2026/firmware/cpc-recovery/explicit-uart.slcp.patch": "dbe6bb658fc762f64bb6849f1944c8a6482d11a4217a6af9a4a35c50e0812edd",
+  "review/sdk2026/firmware/cpc-recovery/explicit-unbind-only.patch": "bda1fad1efdff24b965b2caf13d8f8432018d22f26a14df03dcf9eaf4387a2a2",
+  "review/sdk2026/firmware/cpc-recovery/build-package.sh": "0b470b8d4ee5ff989f4647a0d3918a4a275963e948cf2cc216b97bef21422946",
+  "review/sdk2026/firmware/cpc-recovery/verify-package.py": "5cd8d53fc398c92d342942331bec78609726923caba14fd9d171f62fe1169953",
+  "review/sdk2026/firmware/cpc-hfxo-diagnostic/prepare-build.py": "dbc46e17346890ba5b68931d95401cd7a34ec672cca2989e7933edc9f9d97e5d",
+  "review/sdk2026/firmware/cpc-crypto-diagnostic/prepare-build.py": "f4613865089a661c88e6e7d0b799983d0ac4e699c98d37e0bb24679cfbb44be0",
+  "review/sdk2026/firmware/cpc-crypto-diagnostic/Dockerfile.offline": "2c061323b28cded89ca4e6219983ea281a95db06c72356b5b6d9ebd8b7c10ba0",
+  "review/sdk2026/firmware/cpc-crypto-diagnostic/Dockerfile.offline.dockerignore": "472cd7138ec74db22cf67d3736b0899d1ba527e0dc9d7f30b8e7229b2ee6d76d",
+  "review/sdk2026/firmware/cpc-crypto-diagnostic/build.sh": "27890adba09a5e0dd92f92510db4f4bcbc31fa44d27fb7321b8f3db51e5bc252",
+  "review/sdk2026/firmware/cpc-crypto-diagnostic/build-package.sh": "475694422b9efaa073f16242a8ff4282b3a4d0a436fb64555bdf5490ad5999b7"
+}

@@ -1,0 +1,13 @@
+{
+  "build_exit": 0,
+  "package_validation": "passed",
+  "source_config_unchanged": true,
+  "generated_changes": [
+    "protocol_crypto_catalog_entry",
+    "protocol_crypto_header_and_two_init_calls"
+  ],
+  "radio_thread_init_symbols_absent": true,
+  "shell_syntax": "passed",
+  "prepare_script_compiles": true,
+  "gbl_sha256": "a7684fe05c9d31fccb311ba9f895769087a040f6525d2163c8c6311ebffe91ee"
+}
