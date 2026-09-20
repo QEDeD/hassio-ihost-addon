@@ -1,0 +1,168 @@
+{
+  "date": "2026-09-20",
+  "outcome": "Candidate failed CPC response gate; approved single terminal fallback restored original services. Upgrade incomplete.",
+  "candidate_flash_exit": 0,
+  "candidate_cpc_probe_exit": 1,
+  "candidate_bootloader_cpc_probe_exit": 1,
+  "binding_attempted": false,
+  "candidate_network_start": false,
+  "rollback_flash_exit": 0,
+  "rollback_cpc_version": "4.6.0",
+  "restored_app": "0.2.3-ordered",
+  "host_network_stores_unchanged_before_fallback": true,
+  "zigbee_identity_key_channel_comparison": {
+    "coordinator_ieee": true,
+    "pan_id": true,
+    "extended_pan_id": true,
+    "channel": true,
+    "network_key": true
+  },
+  "saved_ha_thread_datasets_unchanged": true,
+  "fresh_recovery_reports": [
+    {
+      "entity_id": "sensor.stue_loft_computerbord_bulb_01_last_seen",
+      "state": "2026-09-20T08:14:59+00:00",
+      "last_reported": "2026-09-20T08:14:59.972293+00:00"
+    },
+    {
+      "entity_id": "sensor.alpstuga_air_quality_monitor_temperature",
+      "state": "23.53",
+      "last_reported": "2026-09-20T08:19:15.661717+00:00"
+    },
+    {
+      "entity_id": "sensor.alpstuga_air_quality_monitor_carbon_dioxide",
+      "state": "557.0",
+      "last_reported": "2026-09-20T08:19:15.665829+00:00"
+    }
+  ],
+  "zigbee_read_verified": true,
+  "matter_identify_completed": true,
+  "original_policies_restored": true,
+  "original_ssh_package_count_restored": 113,
+  "temporary_flasher_removed": true,
+  "backup_method": "Stopped three-app Supervisor backup plus stopped Core configuration tar; verified independent copies. Supervisor Core backup requires reachable Core API and failed before archive creation.",
+  "private_evidence_directory": "/home/wsluser/.local/share/ha-recovery/sdk2026-20260920",
+  "timeline": [
+    {
+      "at": "2026-09-20T08:04:08.390086+00:00",
+      "stage": "baseline-saved"
+    },
+    {
+      "at": "2026-09-20T08:04:43.684058+00:00",
+      "stage": "downtime-start"
+    },
+    {
+      "at": "2026-09-20T08:04:44.945103+00:00",
+      "stage": "stopped"
+    },
+    {
+      "at": "2026-09-20T08:04:48.396192+00:00",
+      "stage": "stopped"
+    },
+    {
+      "at": "2026-09-20T08:04:51.854250+00:00",
+      "stage": "stopped"
+    },
+    {
+      "at": "2026-09-20T08:05:10.198226+00:00",
+      "stage": "core-stopped"
+    },
+    {
+      "at": "2026-09-20T08:06:01.365477+00:00",
+      "stage": "coherent-apps-backup-created"
+    },
+    {
+      "at": "2026-09-20T08:06:09.834385+00:00",
+      "stage": "coherent-ha-config-created"
+    },
+    {
+      "at": "2026-09-20T08:06:37.282087+00:00",
+      "stage": "independent-copy-verified"
+    },
+    {
+      "at": "2026-09-20T08:06:38.070918+00:00",
+      "stage": "independent-copy-verified"
+    },
+    {
+      "at": "2026-09-20T08:06:38.384669+00:00",
+      "stage": "coherent-backups-verified"
+    },
+    {
+      "at": "2026-09-20T08:07:05.116284+00:00",
+      "stage": "core-and-matter-restarted-radio-remains-stopped"
+    },
+    {
+      "at": "2026-09-20T08:08:11.597467+00:00",
+      "stage": "candidate-store-selected"
+    },
+    {
+      "at": "2026-09-20T08:08:21.275478+00:00",
+      "stage": "candidate-host-installed-stopped"
+    },
+    {
+      "at": "2026-09-20T08:08:48.010379+00:00",
+      "stage": "candidate-flash-started"
+    },
+    {
+      "at": "2026-09-20T08:09:25.064924+00:00",
+      "stage": "candidate-flash-command-finished"
+    },
+    {
+      "at": "2026-09-20T08:10:45.733712+00:00",
+      "stage": "candidate-boot-check-finished"
+    },
+    {
+      "at": "2026-09-20T08:11:15.872020+00:00",
+      "stage": "prefallback-latest-host-state-saved"
+    },
+    {
+      "at": "2026-09-20T08:11:16.017406+00:00",
+      "stage": "terminal-old-firmware-flash-started"
+    },
+    {
+      "at": "2026-09-20T08:12:12.131716+00:00",
+      "stage": "terminal-old-firmware-flash-finished"
+    },
+    {
+      "at": "2026-09-20T08:12:54.250301+00:00",
+      "stage": "old-radio-cpc-response-verified"
+    },
+    {
+      "at": "2026-09-20T08:13:20.698868+00:00",
+      "stage": "old-host-restored-stopped"
+    },
+    {
+      "at": "2026-09-20T08:13:35.168678+00:00",
+      "stage": "old-radio-app-started"
+    },
+    {
+      "at": "2026-09-20T08:13:41.276436+00:00",
+      "stage": "zigbee2mqtt-started"
+    },
+    {
+      "at": "2026-09-20T08:14:59.504461+00:00",
+      "stage": "original-startup-policies-restored"
+    },
+    {
+      "at": "2026-09-20T08:14:59.856367+00:00",
+      "stage": "restored-zigbee-read-requested"
+    },
+    {
+      "at": "2026-09-20T08:15:00.293248+00:00",
+      "stage": "restored-matter-identify-completed"
+    },
+    {
+      "at": "2026-09-20T08:16:11.989433+00:00",
+      "stage": "temporary-flasher-cleaned"
+    },
+    {
+      "at": "2026-09-20T08:16:12.436518+00:00",
+      "stage": "fallback-operational-checks-passed"
+    }
+  ],
+  "limits": [
+    "Probe failure does not by itself identify boot, UART or CPC protocol root cause.",
+    "Successful recovery was before binding or candidate network startup; it does not prove recovery after new binding/storage writes.",
+    "Successful firmware upload is not independent flash readback verification."
+  ]
+}

@@ -2,6 +2,18 @@
 
 Updated 2026-09-20. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
 
+## Current checkpoint — trial rolled back, September20
+
+The approved trial ran and encountered a candidate CPC-response failure before binding. The single terminal fallback succeeded. Production is restored to radio4.6.0/app0.2.3-ordered with fresh Zigbee/Matter reports, explicit Zigbee read and ALPSTUGA Identify success, original options/startup policies and network identities preserved. No candidate host start or binding occurred. Temporary flasher runtime/packages have been removed; the retained offline bundle must be restaged if a later trial is approved. No second candidate cycle is authorized under the consumed trial allowance. See TRIAL-RESULT-20260920.md and evidence/trial-result-20260920.json; private events and exact command results are under /home/wsluser/.local/share/ha-recovery/sdk2026-20260920.
+
+Next executable work is offline firmware startup/transport diagnosis using the failed and known-working artifacts. Probe failure does not establish the cause. The bounded candidate_boot_failure review is complete; findings are integrated in TRIAL-RESULT-20260920.md. No concrete defect established. Next compare working rollback HFXO and bootloader/security initialization against candidate startup. Main owns integration; no worker remains assigned. Do not repeat flashing, binding or request the already-consumed trial approval. Prepare any revised hardware procedure only when new evidence justifies it. Upgrade goal remains incomplete; recovery alone is not completion.
+
+Operational corrections: Supervisor's Core backup requires Core's API; the stopped-writer backup used a supported three-app backup plus a direct stopped HA config archive, with independent copies verified before flashing. No stale state was restored. Supervisor store `version` is installed version; verify `version_latest` before same-app updates. Current detailed report supersedes historical ready/pending/has-flasher statements below.
+
+## Production authority — September20
+
+The operator explicitly replied "approved" to the pending production-trial and recovery-limits approval plus confirmation of no other HA maintenance. This authorizes the reviewed procedure, bounded optional early binding recovery, at most one terminal old-firmware/app fallback, named bulb on/off restoration alternative and ALPSTUGA Identify checks. No repeat approval is needed within this scope. Bootloader/SE changes, mass erase and unbounded retries remain excluded. Execution is beginning; private baseline/state and timestamped stage events are in /home/wsluser/.local/share/ha-recovery/sdk2026-20260920. Read those events after any interruption before acting; do not replay completed flash/bind operations. Procedure documents' historical "not authorized" text is superseded by this actual approval, not a new gate.
+
 ## September20 resumption
 
 The operator said "we can now continue". Preparation resumed; concrete flashing/cutover and recovery-scope approval is still being confirmed as previously promised. Read-only preflight at07:47UTC: HA healthy/supported, Core2026.9.3/OS18.3/Supervisor2026.09.2 unchanged; radio0.2.3-ordered, Z2M2.14.1-1, Matter9.2.0 and SSH10.5.0 all started. All three GBLs, staged descriptors and active baseline descriptor match recorded hashes. Flasher1.1.0 and pip check pass, serial link still ttyUSB0, over12millionKiB free. Fresh Zigbee bulb last-seen and ALPSTUGA measurements confirm current reports. Evidence: evidence/preflight-20260920.json.
@@ -18,7 +30,7 @@ The operator explicitly resumed execution on 2026-09-19. Their earlier statement
 
 Read this record and the saved goal after compression. Summaries are navigation aids, not authority. Reconcile conflicting summaries against actual operator instructions and update this record. Resume from verified evidence; do not replace execution with another goal-writing exercise or repeat completed checks without a concrete reason.
 
-Current status: execution resumed. September19 read-only checks establish HA has rebooted and is reachable with the original app versions and fresh representative Zigbee/Matter reports. Local Docker has been started for offline checks. All child agents are completed. The live SSH-app flasher is staged and validated without radio access; production flashing/cutover still requires concrete approval. The operator subsequently explicitly approved both exact GitHub registry uploads. They are published and independently verified from HA. Production approval is now the remaining authority gate; no radio changes or candidate installation have occurred.
+Current status: September20 trial completed with successful fallback; candidate CPC nonresponse is unresolved. Follow the current checkpoint above. Historical September19 preparation is retained below as evidence, not the next action.
 
 Resume from the remaining route below. Preserve the distinction between completed SSH tool staging and unstarted radio upgrade. Revalidate the baseline/artifacts immediately before any approved cutover; do not repeat unchanged offline tests.
 

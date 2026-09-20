@@ -1,6 +1,8 @@
-# SDK2026 single-dongle trial — operational draft
+# SDK2026 single-dongle trial — executed September20
 
-Prepared for concrete production approval, 2026-09-19. Not authorized to execute until the operator approves this procedure. Use EXECUTION.md for artifact status and current authority. The operator resumed preparation; production actions below are proposed, not authorized. No spare is available.
+**This procedure was approved and executed September20; its single-candidate/single-fallback allowance is consumed. See TRIAL-RESULT-20260920.md. Do not replay it without a revised approved trial.**
+
+Historical pre-execution procedure, prepared 2026-09-19. Not authorized to execute until the operator approves this procedure. Use EXECUTION.md for artifact status and current authority. The operator resumed preparation; production actions below are proposed, not authorized. No spare is available.
 
 ## Intended result and limits
 
