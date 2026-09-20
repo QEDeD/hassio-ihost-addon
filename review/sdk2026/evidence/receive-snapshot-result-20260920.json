@@ -1,0 +1,264 @@
+{
+  "trial": "receive-snapshot-20260920",
+  "candidate_sha256": "5d2ce0a0de6f2c4e0c0a495f34fc8614862c295877e8367c89ba102551f912dc",
+  "original_sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+  "capture": {
+    "post_launch_bytes": 950,
+    "sha256": "807bc994451f6c9d9b90900d4d341961439b482cf4653315c4d9c1f3ea3d8725",
+    "valid_snapshot": true
+  },
+  "snapshot": {
+    "format_version": 1,
+    "build_id": 1381520177,
+    "core_hz": 80000000,
+    "systick_reload": 7999999,
+    "delivered_ticks": 40,
+    "snapshot_valid": 127,
+    "takeover_status": 7,
+    "phase": 1,
+    "cpc_enter": 287756,
+    "cpc_exit": 287756,
+    "tasklets_done": 287756,
+    "drivers_done": 287756,
+    "full_loop_done": 287756,
+    "txc_enter": 1,
+    "txc_exit": 1,
+    "rx_callback_enter": 2,
+    "rx_callback_exit": 2,
+    "tx_ready": 1,
+    "cpc_rxd_frame": 1,
+    "cpc_rxd_valid_uframe": 0,
+    "cpc_txd_completed": 1,
+    "cpc_driver_error": 0,
+    "cpc_driver_packet_dropped": 0,
+    "cpc_invalid_header_checksum": 0,
+    "cpc_invalid_payload_checksum": 1,
+    "entry_basepri": 0,
+    "entry_primask": 0,
+    "entry_faultmask": 0,
+    "scb_icsr": 2063,
+    "scb_shcsr": 985088,
+    "scb_cfsr": 0,
+    "scb_hfsr": 0,
+    "nvic_iser0": 2250249224,
+    "nvic_iser1": 125,
+    "nvic_ispr0": 0,
+    "nvic_ispr1": 0,
+    "nvic_iabr0": 0,
+    "nvic_iabr1": 0,
+    "priority_uart_tx": 80,
+    "priority_ldma": 80,
+    "priority_rtcc": 80,
+    "priority_systick": 0,
+    "usart_en": 1,
+    "usart_status": 8675,
+    "usart_ien": 1,
+    "usart_if": 8222,
+    "usart_ctrl": 1073741824,
+    "usart_ctrlx": 0,
+    "usart_clkdiv": 5296,
+    "usart_routeen": 16,
+    "usart_rxroute": 1,
+    "usart_txroute": 65537,
+    "read_channel": 0,
+    "write_channel": 1,
+    "ldma_en": 1,
+    "ldma_ctrl": 0,
+    "ldma_status": 134217728,
+    "ldma_ien": 3,
+    "ldma_if": 4,
+    "ldma_chstatus": 1,
+    "ldma_chbusy": 0,
+    "ldma_chdone": 7,
+    "ldma_reqdis": 0,
+    "rx_channel_ctrl": 50331648,
+    "rx_request_select": 262144,
+    "rx_channel_dst": 536891156,
+    "tx_channel_ctrl": 805306368,
+    "tx_request_select": 262146,
+    "tx_channel_dst": 1342537788,
+    "cmu_sysclkctrl": 1026,
+    "bus_clock_ungated": 1,
+    "first_bad_seen": 1,
+    "first_bad_header_length": 10,
+    "first_bad_driver_length": 10,
+    "first_bad_fcs": 21913,
+    "first_bad_crc": 16055,
+    "first_bad_control": 196,
+    "first_bad_uart_if": 8194,
+    "rx_header_callbacks": 1,
+    "rx_payload_callbacks": 1,
+    "first_header_uart_if": 8194,
+    "first_payload_uart_if": 8194,
+    "resize_calls": 2,
+    "resize_ok": 0,
+    "resize_already": 0,
+    "resize_fail": 2,
+    "resize_last_requested": 7,
+    "resize_last_received": 4294967295,
+    "recovery_dispatches": 0,
+    "recovery_runs": 0,
+    "header_expected": 1,
+    "next_rx_size": 7,
+    "recovery_flags": 0,
+    "rx_link": 536874496,
+    "desc0_ctrl": 50336000,
+    "desc0_dst": 536891708,
+    "desc0_link": 536874496,
+    "desc1_ctrl": 50336000,
+    "desc1_dst": 536891148,
+    "desc1_link": 536874480,
+    "head_index": 0
+  },
+  "events": [
+    {
+      "at": "2026-09-20T15:34:43.487314+00:00",
+      "stage": "preflight_started"
+    },
+    {
+      "at": "2026-09-20T15:34:45.553768+00:00",
+      "stage": "exact_bundle_uploaded_verified"
+    },
+    {
+      "at": "2026-09-20T15:34:53.818420+00:00",
+      "stage": "preflight_ready",
+      "original_packages": 113
+    },
+    {
+      "at": "2026-09-20T15:35:24.627460+00:00",
+      "stage": "first_writer_stop"
+    },
+    {
+      "at": "2026-09-20T15:35:50.534539+00:00",
+      "stage": "writers_stopped"
+    },
+    {
+      "at": "2026-09-20T15:35:56.088779+00:00",
+      "stage": "independent_coherent_backups_verified",
+      "elapsed": 31.461311
+    },
+    {
+      "at": "2026-09-20T15:36:17.816868+00:00",
+      "stage": "core_matter_restarted"
+    },
+    {
+      "at": "2026-09-20T15:36:19.223785+00:00",
+      "stage": "baseline_probe_begin"
+    },
+    {
+      "at": "2026-09-20T15:36:20.386863+00:00",
+      "stage": "baseline_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T15:36:33.010550+00:00",
+      "stage": "candidate_flash_begin",
+      "sha256": "5d2ce0a0de6f2c4e0c0a495f34fc8614862c295877e8367c89ba102551f912dc",
+      "elapsed": 68.383084
+    },
+    {
+      "at": "2026-09-20T15:37:12.051090+00:00",
+      "stage": "candidate_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T15:37:34.708085+00:00",
+      "stage": "rollback_flash_begin",
+      "sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+      "elapsed": 130.080614
+    },
+    {
+      "at": "2026-09-20T15:38:31.619769+00:00",
+      "stage": "rollback_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T15:38:57.430773+00:00",
+      "stage": "rollback_probe_begin"
+    },
+    {
+      "at": "2026-09-20T15:38:58.558332+00:00",
+      "stage": "rollback_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T15:39:41.613242+00:00",
+      "stage": "local_codex_ihost_otbr_focused_restarted"
+    },
+    {
+      "at": "2026-09-20T15:39:47.939204+00:00",
+      "stage": "45df7312_zigbee2mqtt_restarted"
+    },
+    {
+      "at": "2026-09-20T15:39:48.439540+00:00",
+      "stage": "original_policies_restored",
+      "elapsed": 263.812072
+    },
+    {
+      "at": "2026-09-20T15:40:23.204753+00:00",
+      "stage": "representative_requests_completed"
+    },
+    {
+      "at": "2026-09-20T15:40:26.179312+00:00",
+      "stage": "temporary_tools_removed_original_packages_equal",
+      "count": 113
+    },
+    {
+      "at": "2026-09-20T15:47:02.200113+00:00",
+      "stage": "recovery_closeout",
+      "observation_seconds": 382.833448,
+      "newly_unavailable_radio_entities": 0,
+      "unrelated_dishwasher_controls": 2
+    }
+  ],
+  "independent_request_crc": {
+    "header": "0xd355",
+    "payload": "0x12db",
+    "length": 17,
+    "declared_payload_with_crc": 10
+  },
+  "recovery": {
+    "observation_seconds": 382.833448,
+    "apps": {
+      "local_codex_ihost_otbr_focused": {
+        "started": true,
+        "original_settings": true
+      },
+      "45df7312_zigbee2mqtt": {
+        "started": true,
+        "original_settings": true
+      },
+      "core_matter_server": {
+        "started": true,
+        "original_settings": true
+      },
+      "core_ssh": {
+        "started": true,
+        "original_settings": true
+      }
+    },
+    "radio_recovery_passed": true,
+    "newly_unavailable_radio_entities": 0,
+    "unrelated_dishwasher_controls": 2,
+    "identities": {
+      "coordinator_ieee": true,
+      "pan_id": true,
+      "extended_pan_id": true,
+      "channel": true,
+      "network_key": true,
+      "thread_dataset": true
+    },
+    "original_package_versions_preserved": 113,
+    "zigbee_read_currentLevel": 1,
+    "matter_identify": "Success(0)",
+    "fresh_temperature_humidity_co2_report_utc": "2026-09-20T15:45:48Z"
+  },
+  "private_evidence_sha256": {
+    "candidate-flash.log": "ffd698515b3b825c621fadee22d7e627d352cb41ea5b062ca65e1eae35ad2d7e",
+    "rollback-flash.log": "b8c4cc3c661ac1540bc6ee9517eec3be19ce8fbb4a18eed109f6f4c13fba6b66",
+    "decoded-snapshot.json": "6825b99d521b053faaa9fdc8cd4b9e9922512ff9b690d8eaaba802c47cdb03b6",
+    "recovery-closeout.json": "d242fa35a054695cf4e49ac0aec00c62955d952432304eb19500f3f656c215aa",
+    "events.jsonl": "82e7165e2685cf05f9beb650cec768a05f9c5abeafbd75d28003adc4cba00d4c"
+  },
+  "clock_note": "Trial events and observation interval use WSL UTC. Windows/tool wall clock was about 7m45s behind WSL at closeout; do not mix their timestamps."
+}
