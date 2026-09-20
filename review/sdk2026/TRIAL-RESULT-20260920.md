@@ -51,3 +51,7 @@ The candidate_boot_failure worker reported the following inspection findings; no
 - NVM, RAIL/OpenThread and SE entropy initialization precede the main CPC processing loop. Silence does not identify which stage failed.
 
 References: firmware/candidate-clean/evidence/disassembly.txt.gz; candidate-clean/config/sl_clock_manager_oscillator_config.h; candidate-clean/config/btl_interface_cfg_s2c1.h; candidate-clean/autogen/sl_event_handler.c; both hashed GBLs. Next useful comparison is the exact working rollback's HFXO and bootloader/security initialization against these paths, reusing its vendor board recipe. Do not select a different tuning value, erase storage or change bootloader/SE without evidence.
+
+## Completed follow-up analysis
+
+The previously proposed exact rollback comparison is now complete. See [FAILURE-ANALYSIS-20260920.md](FAILURE-ANALYSIS-20260920.md) for integrated evidence, remaining hypotheses, corrected backup/update/logging mechanics, and the selected diagnostic route. No concrete firmware defect was established; no further production operation occurred.

@@ -4,6 +4,17 @@
 
 Historical pre-execution procedure, prepared 2026-09-19. Not authorized to execute until the operator approves this procedure. Use EXECUTION.md for artifact status and current authority. The operator resumed preparation; production actions below are proposed, not authorized. No spare is available.
 
+## Corrections established during execution
+
+This is a historical executed procedure, not the procedure for another trial. In any successor:
+
+- Replace maintenance step2's stopped-Core Supervisor configuration backup with the demonstrated stopped three-app Supervisor backup plus a separate direct stopped HA configuration archive, independently copied and verified before flashing. Core cannot answer Supervisor's backup preparation request while stopped. The direct archive is not a Supervisor-restorable Core backup.
+- Verify store `version_latest` for the selected update; `version` remains the installed version until update completion.
+- Add private DEBUG capture for the bounded pre-binding CPC version probe. INFO-only failure cannot distinguish silence from parsing/protocol failure. Do not extend frame tracing into binding or normal traffic.
+- The temporary flasher runtime was removed after recovery and requires restaging for any approved successor.
+
+See FAILURE-ANALYSIS-20260920.md and TRIAL-RESULT-20260920.md for evidence and the consumed authority boundary.
+
 ## Intended result and limits
 
 Keep the existing Zigbee and Thread/Matter networks operating on channel25 through the same app slug and endpoints, using SDK2026.6.1 radio firmware and encrypted CPC. Technical acceptance requires preserved identities and fresh representative traffic after a controlled app restart. It does not establish improved long-term reliability. Avoid a deliberate successful-candidate downgrade solely to test reversibility: that adds another storage transition on the only radio.
