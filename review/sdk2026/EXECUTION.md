@@ -4,6 +4,8 @@ Updated 2026-09-20. This is the current plan and evidence index. Dated reports r
 
 ## Current checkpoint — isolated crypto diagnostic prepared offline
 
+Operator direction (September20): before new implementation or experiments, consult relevant current vendor/HA/community documentation, source and issue reports; reuse suitable work and existing fresh research. Record version/hardware applicability and whether evidence changes the route. Latest refresh is in VENDOR-STARTUP-FINDINGS-20260920.md: no matching published startup fix established; vendor logging options have transport/debug-access and output-volume limits. Reviewed crypto diagnostic remains prepared, not newly approved.
+
 The user requested evidence analysis, a critically evaluated route and implementation. The next vendor component, sli_protocol_crypto, can be isolated without adding RAIL/Thread. Built and packaged against the physically proven HFXO+CPC baseline. All retained source/configuration files match; generated changes are only its catalog entry/header and two init calls after PSA/SE. No prerequisite defect found. Linked code confirms radio-AES status wait and checked four-byte randomness request. The diagnostic retains an entropy-error assertion absent from the full optimized firmware; a failed test would need interpretation before attributing the original silence to it.
 
 ELF ffdea6681bc996038cd2cdd4f6bdffcb7d294a748dc7b24b17eaff114b6c99a8; application-only GBL a7684fe05c9d31fccb311ba9f895769087a040f6525d2163c8c6311ebffe91ee. Existing strict package checks pass; no bootloader/SE/NVM programming pages. Runtime NVM writes remain possible. See firmware/cpc-crypto-diagnostic/README.md and evidence, CRYPTO-COMPONENT-REVIEW-20260920.md, and CRYPTO-NEXT-STEPS-20260920.md.
