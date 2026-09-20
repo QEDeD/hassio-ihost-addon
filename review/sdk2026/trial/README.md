@@ -1,3 +1,5 @@
+> Historical preparation record. The exact final normal image was subsequently accepted in production on 20 September 2026: see [EXECUTION.md](../EXECUTION.md) and [accepted result](../FULL-FUNCTIONAL-RESULT-20260920.md). Outstanding physical gates below describe the pre-trial state; they are not new tasks or authority to repeat binding.
+
 # Explicit one-attempt CPC binding for the same-app trial
 
 Preparation only. `entrypoint.py` is a narrow trial-wrapper extension, not a CPC/s6 service and not production authorization. Its only new mode is `local_service_mode: bind-ecdh`. It delegates ordinary `prepare`/`run` to the original `state_guard.py`; a normal run is refused after an incomplete binding attempt. No shared runtime, original contribution branch, or EXECUTION record is changed here.

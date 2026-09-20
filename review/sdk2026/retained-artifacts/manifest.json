@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-20",
+  "source_record_commit": "4554a605397b38e056b63c711823623ec1d237c7",
+  "purpose": "Non-secret build outputs copied unchanged for durable Git retention; original outputs retained. Not authorization to flash.",
+  "files": [
+    {
+      "file": "receive-fix-sdk2026-application-only.gbl",
+      "bytes": 157924,
+      "sha256": "713d18d799727d4b85cd2fd657617522f4adc3bb62e79d83758d782dc261f604",
+      "original_path": "review/sdk2026/firmware/receive-fix/package/receive-fix-sdk2026-application-only.gbl",
+      "uncompressed_bytes": 157924,
+      "uncompressed_sha256": "713d18d799727d4b85cd2fd657617522f4adc3bb62e79d83758d782dc261f604"
+    },
+    {
+      "file": "rcp-uart-802154.out.gz",
+      "bytes": 1448942,
+      "sha256": "617f449c5054b02335b11c4d9c3d8d821179207eb17013b2b4ef723e45dff862",
+      "original_path": "review/sdk2026/firmware/receive-fix/output/artifacts/rcp-uart-802154.out",
+      "uncompressed_bytes": 3315992,
+      "uncompressed_sha256": "601c73da6feaf6e29fa9a797fe93f48e73f75fd0f88deda42444a2949ae39cc1"
+    },
+    {
+      "file": "rcp-uart-802154.map.gz",
+      "bytes": 79303,
+      "sha256": "9d70b2f6565e069fc674cbb6e1d07b590a048ac4cd23b82c15ad3f2134906608",
+      "original_path": "review/sdk2026/firmware/receive-fix/output/artifacts/rcp-uart-802154.map",
+      "uncompressed_bytes": 733782,
+      "uncompressed_sha256": "df5db831532e826b64519e0804cca0c3d0a2eb57b14bbcf32b14533b6c4cc5a2"
+    },
+    {
+      "file": "independent-validation.json",
+      "bytes": 1702,
+      "sha256": "9d02992f958859b7c31aa7e6fc9e30368ba49980a5e4e0acfe708a3ce1225d7d",
+      "original_path": "review/sdk2026/firmware/receive-fix/package/independent-validation.json",
+      "uncompressed_bytes": 1702,
+      "uncompressed_sha256": "9d02992f958859b7c31aa7e6fc9e30368ba49980a5e4e0acfe708a3ce1225d7d"
+    }
+  ]
+}
