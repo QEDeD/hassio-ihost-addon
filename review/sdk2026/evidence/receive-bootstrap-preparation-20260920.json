@@ -1,0 +1,111 @@
+{
+  "status": "offline tests/build/package and fresh independent source/linked review passed; not staged on HA or flashed",
+  "elf_sha256": "8b5046f9d4cc7dedaecbdd4a3acd4cf2d57257834ab44164874b9ac049da31bd",
+  "gbl_sha256": "9b88fe804f87897091fee0a140dc68440ea26c170a36cae706ac38245b5dde60",
+  "field_count": 101,
+  "wire_bytes": 929,
+  "build_id": "0x52584231",
+  "generated_config_identical_to_tested_receive_snapshot": true,
+  "tests_passed": 9,
+  "package_validation": {
+    "application_properties": {
+      "pointer": "0x26af4",
+      "structure_version": "0x201",
+      "signature_type": 0,
+      "signature_location": "0xffffffff",
+      "application_type": "0x2",
+      "application_version": 1,
+      "capabilities": 0,
+      "product_id": "00000000000000000000000000000000",
+      "minimum_bootloader_version": "No such field in these properties; no GBL dependency tag emitted"
+    },
+    "page_size": 8192,
+    "program_page_bounds": [
+      "0x4000",
+      "0x2c000"
+    ],
+    "elf_segments": [
+      {
+        "physical_address": "0x4000",
+        "bytes": 308
+      },
+      {
+        "physical_address": "0x41a0",
+        "bytes": 159068
+      },
+      {
+        "physical_address": "0x2aefc",
+        "bytes": 12
+      },
+      {
+        "physical_address": "0x4140",
+        "bytes": 96
+      },
+      {
+        "physical_address": "0x2af08",
+        "bytes": 648
+      }
+    ],
+    "source_bytes": 160132,
+    "gbl_program_bytes": 160132,
+    "tags": [
+      {
+        "offset": 0,
+        "tag": "0x3a617eb",
+        "length": 8
+      },
+      {
+        "offset": 16,
+        "tag": "0xf40a0af4",
+        "length": 28
+      },
+      {
+        "offset": 52,
+        "tag": "0xfd0303fd",
+        "length": 312,
+        "address": "0x4000",
+        "end_exclusive": "0x4134"
+      },
+      {
+        "offset": 372,
+        "tag": "0xfd0303fd",
+        "length": 159828,
+        "address": "0x4140",
+        "end_exclusive": "0x2b190"
+      },
+      {
+        "offset": 160208,
+        "tag": "0xfc0404fc",
+        "length": 4
+      }
+    ],
+    "application_tag": {
+      "type": "0x2",
+      "version": "0x1",
+      "capabilities": "0x0",
+      "product_id": "00000000000000000000000000000000"
+    },
+    "source_differences": [],
+    "sha256": "9b88fe804f87897091fee0a140dc68440ea26c170a36cae706ac38245b5dde60"
+  },
+  "sources": {
+    ".gitignore": "281d8357179b3b018616f8ebdc2065945901fff730552d50f87cb291ac5fdacb",
+    "build-package.sh": "2a331b6a18d778319edb3cc85977e009e5dd6893326219738faf7812a6d2e763",
+    "capture-launch.py": "de091e1f634d99cc6fa63109daf813539ec919afb8c6a32c6115cbcb7afc3605",
+    "Dockerfile.offline": "bbc8790816efd8b14e9b348012509259819626c27969ab5e7ef7d8f5d161eaf7",
+    "Dockerfile.offline.dockerignore": "943bc3f8d06b3c6360b0e3e0c7b1c46b493acfa7cf2f2ccb2e6ffb8892af90ca",
+    "fields.json": "fb89a275f50f9ffa6956e7bdda44eed00face72a88feb767b4691196b239155d",
+    "instrument.py": "713eccbba496bc55426bc46843f472cbd768f96bac04f826a3dede8b583f8b93",
+    "prepare-build.py": "d06de9541bafef69a96bf1e860666a1cdc120f5d9be6b02bee735fea934c4da9",
+    "snapshot.c": "02afbbd46395ed94ee9a5e97e69dd3e3a46abe06cf8bfd3703be5397f030f376",
+    "snapshot.h": "f1d0320e371526c9ede53dd87a7a7a6a03759d7d5bbe124327c03c1ac3da78c0",
+    "snapshot.py": "f9d588aa6829e8198a7176bb00b586c5738c78ed562a865b80ede6b759708f81",
+    "test_instrument.py": "e329068713fadd8b95381be05c222c6811571200bab68c251400416e1f22d1b6",
+    "test_snapshot.py": "84ca37978d8d22f126e46f049af92b45a47f89175fd546cd78fbe9c4c1d787ba"
+  },
+  "notes": [
+    "Initial test invocation omitted required SDK_CPC_UART_SOURCE; corrected invocation with exact retained source passed all9 tests.",
+    "No real radio access in local Docker compilation or packaging."
+  ],
+  "independent_review": "RECEIVE-BOOTSTRAP-REVIEW-20260920.md"
+}

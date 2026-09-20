@@ -27,10 +27,14 @@ Private authoritative events: /home/wsluser/.local/share/ha-recovery/sdk2026-rec
 
 ## Current direction and next actions
 
-1. Investigate initial DMA descriptor-load ordering: live LINK/DONEIEN edits immediately follow asynchronous LINKLOAD; initial RAM descriptors have linking disabled. Exact linked full firmware reaches edits faster than passing control. A lost LINK edit could explain hardware/software buffer divergence, but no pre-request register capture proves it. Verify vendor synchronization contract and safe descriptor reuse before proposing a correction; no arbitrary delay/CRC change.
-2. Parent owns result, continuity and production. Worker candidate_boot_failure is completing bounded source/contract analysis in RECEIVE-DMA-START-ANALYSIS-20260920.md; no worker builds or live mutations. Other reviews are complete; reuse them.
-3. Prepare the smallest evidence-supported correction or distinguishing observation, compile exact target and review material deltas. Request further flashing authority only once its concrete artifacts, information gain and recovery procedure are ready. No repeat startup/component matrix without a new discriminator.
-4. Once CPC responsiveness is fixed, return to encrypted binding, network-state compatibility, Zigbee/Thread/Matter checks, persistence and nine-contribution reassessment. No spare/debugger assumed.
+A source-grounded candidate correction is prepared in firmware/receive-bootstrap: static initial descriptor flags are populated before DMA load, leaving the reusable two-descriptor ring unchanged. It removes a plausible asynchronous load/live-register edit hazard, but original causation and real behavior remain unproved. Read RECEIVE-DMA-START-ANALYSIS-20260920.md.
+
+All9 local tests, exact-target build, generated-config comparison, independent application-only package validation and fresh source/linked review pass. ELF8b5046f9d4cc7dedaecbdd4a3acd4cf2d57257834ab44164874b9ac049da31bd; GBL9b88fe804f87897091fee0a140dc68440ea26c170a36cae706ac38245b5dde60. RXB1 schema remains101words/929bytes. Sources and validation: evidence/receive-bootstrap-preparation-20260920.json; review: RECEIVE-BOOTSTRAP-REVIEW-20260920.md. Candidate not staged on HA or flashed; local container stopped. Both bounded workers are complete.
+
+1. Obtain approval for concrete RECEIVE-BOOTSTRAP-TRIAL-20260920.md and a fresh sufficient recovery window; current consumed approval does not cover this new variant. Then stage exact bundle to fresh paths, verify live baseline/access and clocks, and execute one candidate capture followed by mandatory original restoration. Never reuse consumed helper paths/actions.
+2. Acceptance is at least one matched CPC version reply within the existing one-query/conditional-retry operation plus no resize or payload-CRC failures. Do not demand a second reply when first attempt succeeds. Startup announcement alone is insufficient. Keep wider restart synchronization and diagnostic timing limitations explicit.
+3. If this succeeds, prepare normal non-halting firmware and the next concrete functional trial; if it fails, classify from retained counters before selecting a new hypothesis. No automatic extra flash or broad component matrix.
+4. Once CPC responsiveness is fixed, return to encrypted binding, network-state compatibility, Zigbee/Thread/Matter checks, persistence and nine-contribution reassessment. No spare/debugger assumed. Parent owns production mutations.
 
 Earlier completed trials: POST-STARTUP-RESULT-20260920.md and CONNECTION-LIFECYCLE-RESULT-20260920.md. Their historical findings/approvals must not supersede this checkpoint.
 

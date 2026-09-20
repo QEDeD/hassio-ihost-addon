@@ -1,0 +1,13 @@
+**
+!review/
+!review/sdk2026/
+!review/sdk2026/recipe/
+!review/sdk2026/recipe/pin-debian-snapshot.sh
+!review/sdk2026/firmware/
+!review/sdk2026/firmware/build-offline.sh
+!review/sdk2026/firmware/verify-offline.sh
+!review/sdk2026/firmware/receive-bootstrap/
+!review/sdk2026/firmware/receive-bootstrap/*.py
+!review/sdk2026/firmware/receive-bootstrap/*.c
+!review/sdk2026/firmware/receive-bootstrap/*.h
+!review/sdk2026/firmware/receive-bootstrap/fields.json

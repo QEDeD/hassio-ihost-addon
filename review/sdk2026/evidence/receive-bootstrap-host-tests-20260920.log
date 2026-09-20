@@ -1,0 +1,14 @@
+test_bootstrap_descriptor_invariants (test_instrument.BootstrapTests.test_bootstrap_descriptor_invariants) ... ok
+test_guard_rejects_changed_start_order_and_live_edits (test_instrument.BootstrapTests.test_guard_rejects_changed_start_order_and_live_edits) ... ok
+test_only_restart_changes_beyond_receive_diagnostic (test_instrument.BootstrapTests.test_only_restart_changes_beyond_receive_diagnostic) ... ok
+test_pinned_source_and_drift_rejection (test_instrument.BootstrapTests.test_pinned_source_and_drift_rejection) ... ok
+test_fixed_record_and_crc (test_snapshot.Tests.test_fixed_record_and_crc) ... ok
+test_no_launch_and_overflow_rejected (test_snapshot.Tests.test_no_launch_and_overflow_rejected) ... ok
+test_previous_build_rejected_with_valid_crc (test_snapshot.Tests.test_previous_build_rejected_with_valid_crc) ... ok
+test_split_raw_rx_and_final_launch_selection (test_snapshot.Tests.test_split_raw_rx_and_final_launch_selection) ... ok
+test_truncation_duplicate_and_wrong_count (test_snapshot.Tests.test_truncation_duplicate_and_wrong_count) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.012s
+
+OK
