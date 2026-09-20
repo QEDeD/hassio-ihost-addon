@@ -1,5 +1,9 @@
 # Proposed connection-lifecycle diagnostic — 2026-09-20
 
+**Approved and executed once September20:** Diagnostic received no replies in any phase; original production restored and closeout verified. See CONNECTION-LIFECYCLE-RESULT-20260920.md. This procedure is retained evidence, not an instruction to repeat.
+
+**Approval history:** operator clarified the current3hour permission covers HA configuration and firmware flashing. Execute this reviewed sequence once with mandatory restoration. The preparation-only wording below is historical, not a remaining approval gate.
+
 ## Authority and objective
 
 Operator approved investigation and HA configuration testing for three hours, recorded from12:21UTC through15:21UTC on September20. This is preparation authority, including relevant bounded HA configuration checks; it is not interpreted as lifting the expressly retained firmware-flashing approval boundary. No new upload/reset/service stop has occurred. Obtain approval of this concrete single-window procedure before flashing. No spare assumed.

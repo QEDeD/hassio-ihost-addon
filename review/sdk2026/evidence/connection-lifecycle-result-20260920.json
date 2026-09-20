@@ -1,0 +1,337 @@
+{
+  "status": "complete: diagnostic unanswered in every phase; original firmware/services restored and recovery verified",
+  "events": [
+    {
+      "at": "2026-09-20T12:54:38.299066+00:00",
+      "stage": "authority_confirmed",
+      "scope": "Reviewed candidate once plus mandatory rollback; user clarified HA configuration permission also includes dongle firmware within current3h window",
+      "expires": "2026-09-20T15:21:00Z"
+    },
+    {
+      "at": "2026-09-20T12:56:25.237485+00:00",
+      "stage": "tool_inventory_mismatch_detected",
+      "changed": [
+        "libcrypto3",
+        "libssl3",
+        "xz-libs"
+      ],
+      "radio_services_still_running": true
+    },
+    {
+      "at": "2026-09-20T12:57:06.471382+00:00",
+      "stage": "ssh_app_restart_requested_to_restore_image",
+      "api_exit": 1
+    },
+    {
+      "at": "2026-09-20T12:57:36.566924+00:00",
+      "stage": "ssh_app_restart_cli_returned",
+      "exit": 255
+    },
+    {
+      "at": "2026-09-20T12:57:49.382490+00:00",
+      "stage": "ssh_original_image_restored",
+      "original_packages": 113
+    },
+    {
+      "at": "2026-09-20T12:58:31.896568+00:00",
+      "stage": "temporary_tools_installed_and_verified",
+      "original_packages": 113,
+      "added": 12
+    },
+    {
+      "at": "2026-09-20T12:59:20.477899+00:00",
+      "stage": "baseline_read_requested"
+    },
+    {
+      "at": "2026-09-20T13:00:10.526716+00:00",
+      "stage": "ready_for_approved_window",
+      "zigbee_current_level": 1
+    },
+    {
+      "at": "2026-09-20T13:00:11.133812+00:00",
+      "stage": "first_writer_stop"
+    },
+    {
+      "at": "2026-09-20T13:00:34.380779+00:00",
+      "stage": "writers_stopped"
+    },
+    {
+      "at": "2026-09-20T13:00:42.355702+00:00",
+      "stage": "independent_coherent_backups_verified",
+      "elapsed": 31.221884
+    },
+    {
+      "at": "2026-09-20T13:01:06.612707+00:00",
+      "stage": "core_matter_restarted"
+    },
+    {
+      "at": "2026-09-20T13:01:23.546423+00:00",
+      "stage": "baseline_probe_begin"
+    },
+    {
+      "at": "2026-09-20T13:01:24.631610+00:00",
+      "stage": "baseline_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T13:01:37.822547+00:00",
+      "stage": "candidate_flash_begin",
+      "sha256": "b5deda18cba9f07f03f5faeb5d6969e51110bf0bd8450dd00bb3cf14047a9d50",
+      "elapsed": 86.688728
+    },
+    {
+      "at": "2026-09-20T13:02:45.261771+00:00",
+      "stage": "candidate_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T13:03:02.387427+00:00",
+      "stage": "reopened_probe_begin"
+    },
+    {
+      "at": "2026-09-20T13:03:04.745096+00:00",
+      "stage": "reopened_probe_end",
+      "exit": 1
+    },
+    {
+      "at": "2026-09-20T13:03:37.047293+00:00",
+      "stage": "rollback_flash_begin",
+      "sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+      "elapsed": 205.913469
+    },
+    {
+      "at": "2026-09-20T13:04:34.127524+00:00",
+      "stage": "rollback_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T13:04:34.831164+00:00",
+      "stage": "latest_radio_stores_verified_unchanged",
+      "files": 7
+    },
+    {
+      "at": "2026-09-20T13:05:02.681088+00:00",
+      "stage": "rollback_probe_begin"
+    },
+    {
+      "at": "2026-09-20T13:05:03.685438+00:00",
+      "stage": "rollback_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T13:05:29.154583+00:00",
+      "stage": "local_codex_ihost_otbr_focused_restarted"
+    },
+    {
+      "at": "2026-09-20T13:05:38.277482+00:00",
+      "stage": "45df7312_zigbee2mqtt_restarted"
+    },
+    {
+      "at": "2026-09-20T13:05:38.786289+00:00",
+      "stage": "original_policies_restored",
+      "elapsed": 327.652469
+    },
+    {
+      "at": "2026-09-20T13:06:13.503775+00:00",
+      "stage": "representative_requests_completed"
+    },
+    {
+      "at": "2026-09-20T13:07:46.412356+00:00",
+      "stage": "restored_apps_and_representative_responses_verified"
+    },
+    {
+      "at": "2026-09-20T13:08:22.245724+00:00",
+      "stage": "temporary_tools_removed_original_packages_verified",
+      "packages": 113
+    },
+    {
+      "at": "2026-09-20T13:11:04.058577+00:00",
+      "stage": "recovery_closeout_verified",
+      "observation_seconds": 325.272172,
+      "newly_unavailable_radio_devices": 0,
+      "other_unavailable_entities": 1
+    }
+  ],
+  "observations": [
+    {
+      "event": "launch_observation_begin",
+      "expected_baudrate": 115200,
+      "expected_rtscts": false,
+      "expected_xonxoff": false,
+      "monotonic": 72278.917397046
+    },
+    {
+      "endpoint": 0,
+      "event": "non_version_frame",
+      "monotonic": 72278.979996076
+    },
+    {
+      "event": "query_begin",
+      "monotonic": 72279.168569784,
+      "phase": "early",
+      "sequence": 0
+    },
+    {
+      "event": "query_end",
+      "monotonic": 72281.274338514,
+      "phase": "early",
+      "result": "timeout",
+      "rx_bytes": 0,
+      "sequence": 0
+    },
+    {
+      "event": "query_begin",
+      "monotonic": 72308.945356929,
+      "phase": "pre_close",
+      "sequence": 1
+    },
+    {
+      "event": "query_end",
+      "monotonic": 72311.050438229,
+      "phase": "pre_close",
+      "result": "timeout",
+      "rx_bytes": 0,
+      "sequence": 1
+    },
+    {
+      "event": "launch_observation_complete",
+      "monotonic": 72311.050612305,
+      "results": [
+        {
+          "phase": "early",
+          "result": "timeout",
+          "rx_bytes": 0,
+          "sequence": 0
+        },
+        {
+          "phase": "pre_close",
+          "result": "timeout",
+          "rx_bytes": 0,
+          "sequence": 1
+        }
+      ]
+    },
+    {
+      "event": "query_begin",
+      "monotonic": 72329.562928042,
+      "phase": "reopened",
+      "sequence": 2
+    },
+    {
+      "event": "query_end",
+      "monotonic": 72331.667555953,
+      "phase": "reopened",
+      "result": "timeout",
+      "rx_bytes": 0,
+      "sequence": 2
+    }
+  ],
+  "query_timing": [
+    {
+      "event": "query_begin",
+      "monotonic": 72279.168569784,
+      "phase": "early",
+      "sequence": 0,
+      "seconds_since_launch": 0.251
+    },
+    {
+      "event": "query_end",
+      "monotonic": 72281.274338514,
+      "phase": "early",
+      "result": "timeout",
+      "rx_bytes": 0,
+      "sequence": 0,
+      "seconds_since_launch": 2.357
+    },
+    {
+      "event": "query_begin",
+      "monotonic": 72308.945356929,
+      "phase": "pre_close",
+      "sequence": 1,
+      "seconds_since_launch": 30.028
+    },
+    {
+      "event": "query_end",
+      "monotonic": 72311.050438229,
+      "phase": "pre_close",
+      "result": "timeout",
+      "rx_bytes": 0,
+      "sequence": 1,
+      "seconds_since_launch": 32.133
+    },
+    {
+      "event": "query_begin",
+      "monotonic": 72329.562928042,
+      "phase": "reopened",
+      "sequence": 2,
+      "seconds_since_launch": 50.646
+    },
+    {
+      "event": "query_end",
+      "monotonic": 72331.667555953,
+      "phase": "reopened",
+      "result": "timeout",
+      "rx_bytes": 0,
+      "sequence": 2,
+      "seconds_since_launch": 52.75
+    }
+  ],
+  "identity_checks": {
+    "coordinator_ieee": true,
+    "pan_id": true,
+    "extended_pan_id": true,
+    "channel": true,
+    "network_key": true,
+    "thread_dataset": true
+  },
+  "baseline_probe": {
+    "exit": 0,
+    "bytes": 5346,
+    "raw_rx_chunks": 2,
+    "parsed_frames": 2,
+    "parse_errors": 0,
+    "detections": [
+      "2026-09-20 15:01:25.325 core-ssh universal_silabs_flasher.flasher INFO Detected ApplicationType.CPC, version '4.6.0' at 115200 baudrate (bootloader baudrate None)"
+    ]
+  },
+  "rollback_probe": {
+    "exit": 0,
+    "bytes": 5346,
+    "raw_rx_chunks": 2,
+    "parsed_frames": 2,
+    "parse_errors": 0,
+    "detections": [
+      "2026-09-20 15:05:03.685 core-ssh universal_silabs_flasher.flasher INFO Detected ApplicationType.CPC, version '4.6.0' at 115200 baudrate (bootloader baudrate None)"
+    ]
+  },
+  "original_packages_restored": 113,
+  "private_log_hashes": {
+    "candidate-flash.log": "4e78f8b8540975104dae7f759a2133fbc0e22a2c7e9ffce19086a0e4057f1720",
+    "reopened-probe.log": "58b0f4d792848f8a541668fcf5455a3249f912c01648801d55f02695ee56065e",
+    "rollback-flash.log": "46cf3e6c4b489a1f7d2690ff1b1a7ff664f2807623bfc391b47f264aa7b50cb9",
+    "baseline-probe.log": "435318dee71b9d066cca6ef8e918c0e76dc5d10d62abe85902f90de99c5a5009",
+    "rollback-probe.log": "090dca10a703ce49a7a258bd41aa135f4487eff0ef0f8fcd6d6f27857a0a5304"
+  },
+  "private_evidence_root": "/home/wsluser/.local/share/ha-recovery/sdk2026-lifecycle-20260920",
+  "limitations": [
+    "Initial notification is not a response to any version query.",
+    "Firmware reception, transmission completion and sustained processing remain indistinguishable.",
+    "Early query changes previously passive startup; this test does not reproduce all timing histories.",
+    "One mobile_app camera-motion sensor became unavailable during recovery; no attribution to radio established."
+  ],
+  "final_availability": {
+    "at": "2026-09-20T13:11:04.058467+00:00",
+    "observation_seconds": 325.272172,
+    "newly_unavailable": [
+      "binary_sensor.rikkes_iphone_camera_motion"
+    ],
+    "newly_unavailable_zigbee_matter": 0,
+    "other_entity_platform": "mobile_app"
+  },
+  "startup_notification": {
+    "hex": "14000e00c0114f060008000000000078000000c386",
+    "local_time_CEST": "2026-09-20 15:02:13.236",
+    "only_raw_rx_after_final_run": true
+  },
+  "stopped_radio_files_equal": 7
+}
