@@ -1,0 +1,259 @@
+{
+  "date": "2026-09-20",
+  "status": "diagnostic_passed_original_restored",
+  "events": [
+    {
+      "at": "2026-09-20T10:20:34.874816+00:00",
+      "stage": "files_staged_verified",
+      "bundle_files": 63
+    },
+    {
+      "at": "2026-09-20T10:21:17.138052+00:00",
+      "stage": "tools_installed_verified",
+      "original_packages": 113
+    },
+    {
+      "at": "2026-09-20T10:31:05.130868+00:00",
+      "stage": "maintenance_clear",
+      "confirmation": "Operator: PVE task will not do anything to PVE or HA today"
+    },
+    {
+      "at": "2026-09-20T10:32:09.205850+00:00",
+      "stage": "baseline_zigbee_read_requested"
+    },
+    {
+      "at": "2026-09-20T10:32:24.791178+00:00",
+      "stage": "preflight_complete",
+      "serial_owner_scope": "SSH namespace only; supervised radio owner stopped before probe"
+    },
+    {
+      "at": "2026-09-20T10:32:53.229018+00:00",
+      "stage": "downtime_begin"
+    },
+    {
+      "at": "2026-09-20T10:32:54.480812+00:00",
+      "stage": "writer_stopped",
+      "app": "45df7312_zigbee2mqtt"
+    },
+    {
+      "at": "2026-09-20T10:32:58.010246+00:00",
+      "stage": "writer_stopped",
+      "app": "local_codex_ihost_otbr_focused"
+    },
+    {
+      "at": "2026-09-20T10:33:01.554329+00:00",
+      "stage": "writer_stopped",
+      "app": "core_matter_server"
+    },
+    {
+      "at": "2026-09-20T10:33:19.601909+00:00",
+      "stage": "core_stopped"
+    },
+    {
+      "at": "2026-09-20T10:33:19.908113+00:00",
+      "stage": "apps_backup_created",
+      "slug": "4eb0c8a9"
+    },
+    {
+      "at": "2026-09-20T10:33:23.316745+00:00",
+      "stage": "config_archive_created"
+    },
+    {
+      "at": "2026-09-20T10:33:57.919836+00:00",
+      "stage": "independent_backups_verified"
+    },
+    {
+      "at": "2026-09-20T10:34:29.374937+00:00",
+      "stage": "core_matter_restarted"
+    },
+    {
+      "at": "2026-09-20T10:34:32.469633+00:00",
+      "stage": "baseline_probe_begin"
+    },
+    {
+      "at": "2026-09-20T10:34:33.645500+00:00",
+      "stage": "baseline_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T10:34:52.301076+00:00",
+      "stage": "crypto_flash_begin",
+      "sha256": "a7684fe05c9d31fccb311ba9f895769087a040f6525d2163c8c6311ebffe91ee"
+    },
+    {
+      "at": "2026-09-20T10:35:12.520298+00:00",
+      "stage": "crypto_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T10:35:40.555322+00:00",
+      "stage": "crypto_probe_begin"
+    },
+    {
+      "at": "2026-09-20T10:35:41.619174+00:00",
+      "stage": "crypto_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T10:36:07.613328+00:00",
+      "stage": "prefallback_stores_verified",
+      "unchanged": true
+    },
+    {
+      "at": "2026-09-20T10:36:08.314708+00:00",
+      "stage": "rollback_flash_begin",
+      "sha256": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787"
+    },
+    {
+      "at": "2026-09-20T10:36:57.913001+00:00",
+      "stage": "rollback_flash_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T10:37:23.254264+00:00",
+      "stage": "rollback_probe_begin"
+    },
+    {
+      "at": "2026-09-20T10:37:24.266378+00:00",
+      "stage": "rollback_probe_end",
+      "exit": 0
+    },
+    {
+      "at": "2026-09-20T10:37:57.276005+00:00",
+      "stage": "baseline_service_started",
+      "app": "local_codex_ihost_otbr_focused"
+    },
+    {
+      "at": "2026-09-20T10:38:09.125566+00:00",
+      "stage": "baseline_service_started",
+      "app": "45df7312_zigbee2mqtt"
+    },
+    {
+      "at": "2026-09-20T10:38:10.100842+00:00",
+      "stage": "policies_restored_observation_begin"
+    },
+    {
+      "at": "2026-09-20T10:38:54.700028+00:00",
+      "stage": "acceptance_requested",
+      "request": "restored-zigbee-read-call.json"
+    },
+    {
+      "at": "2026-09-20T10:38:55.292639+00:00",
+      "stage": "acceptance_requested",
+      "request": "restored-matter-identify-call.json"
+    },
+    {
+      "at": "2026-09-20T10:39:45.697973+00:00",
+      "stage": "temporary_tools_removed",
+      "original_packages_restored": 113
+    },
+    {
+      "at": "2026-09-20T10:40:04.037429+00:00",
+      "stage": "observation_check",
+      "new_unavailable": 6
+    },
+    {
+      "at": "2026-09-20T10:40:27.053453+00:00",
+      "stage": "remaining_lamp_read_requested"
+    },
+    {
+      "at": "2026-09-20T10:41:16.632282+00:00",
+      "stage": "observation_check",
+      "new_unavailable": 0
+    },
+    {
+      "at": "2026-09-20T10:44:00.786548+00:00",
+      "stage": "window_complete",
+      "observation_seconds": 349,
+      "new_unavailable": 0
+    }
+  ],
+  "probes": {
+    "baseline": {
+      "exit": 0,
+      "raw_rx_chunks": 2,
+      "parsed_frames": 2,
+      "detections": [
+        "2026-09-20 12:34:35.361 core-ssh universal_silabs_flasher.flasher INFO Detected ApplicationType.CPC, version '4.6.0' at 115200 baudrate (bootloader baudrate None)"
+      ]
+    },
+    "crypto": {
+      "exit": 0,
+      "bytes": 5342,
+      "raw_rx_chunks": 2,
+      "parsed_frames": 2,
+      "parse_errors": 0,
+      "detections": [
+        "2026-09-20 12:35:41.959 core-ssh universal_silabs_flasher.flasher INFO Detected ApplicationType.CPC, version '4.9.1' at 115200 baudrate (bootloader baudrate None)"
+      ]
+    },
+    "rollback": {
+      "exit": 0,
+      "bytes": 5346,
+      "raw_rx_chunks": 2,
+      "parsed_frames": 2,
+      "parse_errors": 0,
+      "detections": [
+        "2026-09-20 12:37:26.792 core-ssh universal_silabs_flasher.flasher INFO Detected ApplicationType.CPC, version '4.6.0' at 115200 baudrate (bootloader baudrate None)"
+      ]
+    }
+  },
+  "acceptance": {
+    "observation_seconds": 349.06834,
+    "new_unavailable": [],
+    "original_apps_policies_match": true,
+    "network_identities_match": true,
+    "zigbee_read_currentLevel": 1,
+    "remaining_lamp_zclVersion": 8,
+    "matter_identify_status": "Success (0)",
+    "reports": {
+      "sensor.alpstuga_air_quality_monitor_temperature": {
+        "value": "24.29",
+        "last_updated": "2026-09-20T10:43:19.796468+00:00"
+      },
+      "sensor.alpstuga_air_quality_monitor_humidity": {
+        "value": "47.16",
+        "last_updated": "2026-09-20T10:43:49.487134+00:00"
+      },
+      "sensor.alpstuga_air_quality_monitor_carbon_dioxide": {
+        "value": "580.0",
+        "last_updated": "2026-09-20T10:43:19.800174+00:00"
+      }
+    },
+    "original_packages_restored": 113
+  },
+  "private_evidence_directory": "/home/wsluser/.local/share/ha-recovery/sdk2026-crypto-20260920",
+  "firmware": {
+    "crypto": "a7684fe05c9d31fccb311ba9f895769087a040f6525d2163c8c6311ebffe91ee",
+    "rollback": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787"
+  },
+  "limits": [
+    "No encrypted binding or full-image operation tested",
+    "No root cause established",
+    "Serial open/flush/reset-line and inherited-HFXO caveats retained",
+    "Old-stack startup/reassembly/DUA/CLI warnings observed; not an error-free log"
+  ],
+  "log_hashes": {
+    "crypto-probe.log": "e16b4986ab849f8ae3a1971ebeeceb25710c9356da3f5b0f37cc1e6358f8e2a1",
+    "restored-core_matter_server.log": "b4469523616b720b9fcfe3b51c075f0224c1592a82644c93a01348ec321682b0",
+    "rollback-probe.log": "7ac447c8ab3c63be8bbe83090331d9e5bb264a496ccc1849718f749033fe84a9",
+    "observation-core_matter_server.log": "413c0d9110223bce58bf9ec152d6b9a83d024583b7b20bf378e2feef60ebd667",
+    "restored-45df7312_zigbee2mqtt.log": "0be364f326790ea7fe45b5ef9d661c37a9ecd41b64806e3ad2d44138f324d9be",
+    "observation-2-45df7312_zigbee2mqtt.log": "083620f4904317d318c4088c01eaf443fdec2763e490bf6c51968b0328f2e2cb",
+    "baseline-probe.log": "3a603420817705b40c63828e8afa61fd56e17b0e1b18291adf9416370641536d",
+    "baseline-z2m.log": "e4b851a037f0143a2596df2947f0d1d280c8217b9fb8ebfce66577d643c856b2",
+    "final-local_codex_ihost_otbr_focused.log": "f198d3a61f48e6ad10499a73f732a83b49754691aba496ed5e17503f0e1852d1",
+    "final-45df7312_zigbee2mqtt.log": "39570a63cf8d5a1db234fd39ed80c1b90bf1de8541cec6ee19a5eee8ac35e066",
+    "observation-local_codex_ihost_otbr_focused.log": "afdb593f1bfa92ee4555c109603552ff84b1300230dab03d7a1dd0e73fcec564",
+    "observation-2-core_matter_server.log": "c2d075751c2cc429365dbe8b90eda23e8f47b9baffbcd4d5be75b26be632ea51",
+    "tool-cleanup.log": "16cd2af3215a169aaef5c9142d319b79ab6f9e7aeed7e1d465757b98860aec32",
+    "rollback-flash.log": "55c48f9e3c0d99c37daa3dd7e728bad5ad68cad2dcb1dd57042b58da7cdfed1a",
+    "remaining-lamp-read.log": "806de4bbf461cc9f23ed4bc9461d209d744c648db50e0151d5e81383efc9d207",
+    "observation-2-local_codex_ihost_otbr_focused.log": "d9801e564e5a44f4a47e1572879d0eabcc7f5cae1771fdb33870f5c0dcd58e99",
+    "restored-local_codex_ihost_otbr_focused.log": "207df9cb7e3144f2865f82a6f507ebce28f0c5683fcdd31e370d14b6dc5c2291",
+    "tool-install.log": "f09234d1d91177d1d3268419f92b45e43aa3074049980abf31608b5eabcd7037",
+    "crypto-flash.log": "b4e4f7836fed8b661bdbbf47d538e2e6c8f6c08988534a18762a56b163fab089",
+    "observation-45df7312_zigbee2mqtt.log": "d65365e41424435cc5e50471e215b92977ebdf0ecaccf5872a289ead79a6fa8f",
+    "final-core_matter_server.log": "b129fd76b1a6666dc73244760eae491b66b3e152fd810bc9adc5c805ac27777f"
+  }
+}

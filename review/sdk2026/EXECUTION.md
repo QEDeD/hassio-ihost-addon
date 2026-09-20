@@ -2,15 +2,15 @@
 
 Updated 2026-09-20. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
 
-## Current checkpoint — crypto trial approved; preparation staged
+## Current checkpoint — crypto diagnostic passed; original production restored
 
-The user explicitly said "go ahead with testing" after the reviewed crypto procedure and online-evidence refresh. This approves CRYPTO-TRIAL-PLAN-20260920.md once, including mandatory original-firmware restoration; earlier statements that exact flashing approval is pending are superseded. No flash or service stop has occurred in this new window.
+User approved the one-image crypto diagnostic and confirmed no PVE/HA maintenance today. Executed exactly once; authorization consumed. Completed10:44:00UTC. Old4.6.0 control, crypto4.9.1 diagnostic and restored4.6.0 each returned both queries with2RX/2frames. No binding/unbind/candidate host, channel/clock tuning, erase, bootloader/SE update or extra flash.
 
-At10:21UTC, current app versions and started states match the previous baseline; HA API/Git access passed; ALPSTUGA reports are fresh. All63 retained bundle files hash-verified. Exact crypto GBL staged at /share/codex-sdk2026-crypto-20260920/crypto-diagnostic.gbl and rehashed. Offline flasher runtime installed; all113 original SSH package versions preserved. Temporary runtime/APK group must be removed on completion or cancellation using the recorded inventory.
+Production is restored to original app0.2.3-ordered/radio4.6.0. Independent coherent backups verified before flash; stopped host stores unchanged, saved Zigbee identities/key/channel25 and HA Thread dataset preserved. Zigbee read1 and ALPSTUGA Identify Success(0) verified. Remaining lamp answered non-actuating read8. Fresh changing Matter reports and no newly unavailable entities after349seconds observation. Original app policies/descriptor and113 SSH package versions restored; temporary flasher removed. Old-stack startup/reassembly/DUA/CLI warnings remain documented, not an error-free claim. Services returned after about5m16s; total window about11m08s.
 
-Private run record: /home/wsluser/.local/share/ha-recovery/sdk2026-crypto-20260920 (events.jsonl, authority.json, baseline app/states/config files, staged-manifest.json and tool logs); helper /tmp/sdk2026_crypto.py. Do not reuse earlier run logs or replay recorded operations.
+Read CRYPTO-TRIAL-RESULT-20260920.md and evidence/crypto-result-20260920.json. Private authoritative events/logs/backups: /home/wsluser/.local/share/ha-recovery/sdk2026-crypto-20260920; HA /share/codex-sdk2026-crypto-20260920. Never replay completed flashes after compression.
 
-Remaining immediate gate: the PVE storage performance and configuration task is active. A concise asynchronous question asks the user to confirm no overlapping HA VM shutdown/restart or maintenance during this window. It remains unanswered; do not infer its answer from test approval or an earlier window's confirmation. Continue with fresh stopped-writer backups, baseline probe, one crypto upload/probe and mandatory rollback only after that answer. No further approval of this same test is needed.
+Next authorized action is offline investigation of retrievable full-image startup evidence, reusing vendor UART/assertion/crash facilities and current online work. Successful isolated startup does not prove RAIL/Thread defective; platform/optimization/layout/inherited-clock differences remain. Worker candidate_boot_failure completed bounded source review: current full image has no enabled pre-CPC serial logging, and useful existing RAM assertion fields require a debug path not established. Validate an early serial output/handoff and startup capture route before proposing another outage; avoid further routine component-only windows. No active worker remains. New physical test requires its own concrete approval. Goal and nine-contribution reassessment remain open. Work local only, not pushed.
 
 ## Prepared crypto evidence (retained)
 

@@ -1,6 +1,6 @@
 # Proposed protocol-crypto diagnostic window — September20
 
-Status: explicitly approved by the user ("go ahead with testing"); preparation staged September20. Not yet executed; fresh no-overlapping-maintenance confirmation is pending. The earlier HFXO diagnostic passed and its allowance is consumed. This procedure proposes one new diagnostic image followed by mandatory original-firmware restoration.
+Status: explicitly approved and executed September20. Diagnostic passed and original production restored; allowance consumed. See CRYPTO-TRIAL-RESULT-20260920.md. The procedure below is retained evidence, not permission to repeat.
 
 ## Purpose and authorized scope to request
 
@@ -55,4 +55,4 @@ Linked-code caveat: the vendor initializer skips crystal reinitialization when i
 
 Use Supervisor /addons/<slug>/options for policies; verify actual state after any failed request. Record downtime immediately before the first real stop. Wait until HA has loaded the Matter entity and its subscription has recovered before the single Identify acceptance request; API acceptance alone is insufficient. Compare availability against baseline and permit one non-actuating read of a newly unavailable device to distinguish stale availability from failed delivery, without changing its power/settings. Record existing old-stack fragment/reassembly/CLI warnings separately; do not require an unrealistically clean log or dismiss a new repeated failure.
 
-Fresh-context GPT-6 Astra/high review is complete; see CRYPTO-INDEPENDENT-REVIEW-20260920.md. Its interpretation/stopping-rule refinements are incorporated in the general route. No material unresolved procedure finding remains. The later user approval covers this exact procedure once. Staging has occurred; no flash or publication has occurred. See EXECUTION.md for the pending maintenance confirmation.
+Fresh-context GPT-6 Astra/high review is complete; see CRYPTO-INDEPENDENT-REVIEW-20260920.md. Its interpretation/stopping-rule refinements are incorporated in the general route. No material unresolved procedure finding remains. The later user approval and no-maintenance confirmation covered this procedure once. It has completed; see the result and EXECUTION.md. No repeat flash is authorized.
