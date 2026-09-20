@@ -1,0 +1,132 @@
+{
+  "checked_at_utc": "2026-09-20T07:47:09.640642+00:00",
+  "scope": "Read-only resumed preflight; no radio probe, service stop, configuration change or device command.",
+  "supervisor": {
+    "version": "2026.09.2",
+    "healthy": true,
+    "supported": true
+  },
+  "core": {
+    "version": "2026.9.3",
+    "state": null
+  },
+  "os": {
+    "version": "18.3"
+  },
+  "apps": {
+    "local_codex_ihost_otbr_focused": {
+      "version": "0.2.3-ordered",
+      "state": "started",
+      "boot": "auto",
+      "watchdog": false,
+      "auto_update": false
+    },
+    "45df7312_zigbee2mqtt": {
+      "version": "2.14.1-1",
+      "state": "started",
+      "boot": "auto",
+      "watchdog": true,
+      "auto_update": false
+    },
+    "core_matter_server": {
+      "version": "9.2.0",
+      "state": "started",
+      "boot": "auto",
+      "watchdog": false,
+      "auto_update": false
+    },
+    "core_ssh": {
+      "version": "10.5.0",
+      "state": "started",
+      "boot": "auto",
+      "watchdog": false,
+      "auto_update": true
+    }
+  },
+  "hashes": {
+    "/share/codex-sdk2026-stage-20260919/bundle/firmware/candidate.gbl": "b5deda18cba9f07f03f5faeb5d6969e51110bf0bd8450dd00bb3cf14047a9d50",
+    "/share/codex-sdk2026-stage-20260919/bundle/firmware/recovery.gbl": "22c4d75097b5cda0e8d60634cc1753d9615069398055b81b8c5a219e64f49897",
+    "/share/codex-sdk2026-stage-20260919/bundle/firmware/rollback.gbl": "40fd84de70686326e76b4836c765255f7b50a26a22c1c17ca40af770eadea787",
+    "/share/codex-sdk2026-stage-20260919/candidate-config.json": "6de7e93a17015c62f3195db59024e693bdc29cf0f3bb64944d27a8d51af50631",
+    "/share/codex-sdk2026-stage-20260919/recovery-config.json": "6637c0f91c942abee7a4d1f3a41f9dfd7708f2bb6dab40f95d80f2ee0fccaaae",
+    "/local_apps/codex_ihost_otbr_focused/config.json": "ce1e51ff7913a377f7f43903dbe411cf3ef6b711e00514fe28adb9ac28f3a50b"
+  },
+  "flasher_version": "1.1.0",
+  "flasher_pip_check": "No broken requirements found.",
+  "serial_target": "/dev/ttyUSB0",
+  "free_space": "/dev/sda8             32284132  18323648  12609532  59% /ssl",
+  "representative_entities": [
+    {
+      "entity_id": "sensor.alpstuga_air_quality_monitor_thread_routing_role",
+      "state": "leader",
+      "last_updated": "2026-09-19T16:59:07.646020+00:00",
+      "last_reported": "2026-09-19T16:59:07.646020+00:00"
+    },
+    {
+      "entity_id": "sensor.alpstuga_air_quality_monitor_temperature",
+      "state": "23.27",
+      "last_updated": "2026-09-20T07:46:35.201711+00:00",
+      "last_reported": "2026-09-20T07:46:35.201711+00:00"
+    },
+    {
+      "entity_id": "sensor.alpstuga_air_quality_monitor_humidity",
+      "state": "48.93",
+      "last_updated": "2026-09-20T07:46:05.453523+00:00",
+      "last_reported": "2026-09-20T07:46:05.453523+00:00"
+    },
+    {
+      "entity_id": "sensor.alpstuga_air_quality_monitor_carbon_dioxide",
+      "state": "583.0",
+      "last_updated": "2026-09-20T07:47:04.907541+00:00",
+      "last_reported": "2026-09-20T07:47:04.907541+00:00"
+    },
+    {
+      "entity_id": "sensor.alpstuga_air_quality_monitor_pm2_5",
+      "state": "4.0",
+      "last_updated": "2026-09-20T07:46:05.457231+00:00",
+      "last_reported": "2026-09-20T07:46:05.457231+00:00"
+    },
+    {
+      "entity_id": "sensor.alpstuga_air_quality_monitor_air_quality",
+      "state": "good",
+      "last_updated": "2026-09-19T16:59:07.648025+00:00",
+      "last_reported": "2026-09-19T16:59:07.648025+00:00"
+    },
+    {
+      "entity_id": "button.stue_loft_computerbord_bulb_01_identify",
+      "state": "unknown",
+      "last_updated": "2026-09-20T04:30:41.787780+00:00",
+      "last_reported": "2026-09-20T04:30:41.787780+00:00"
+    },
+    {
+      "entity_id": "light.stue_loft_computerbord_bulb_01",
+      "state": "off",
+      "last_updated": "2026-09-20T04:30:41.789206+00:00",
+      "last_reported": "2026-09-20T04:30:41.789206+00:00"
+    },
+    {
+      "entity_id": "select.stue_loft_computerbord_bulb_01_power_on_behavior",
+      "state": "on",
+      "last_updated": "2026-09-20T04:30:41.771128+00:00",
+      "last_reported": "2026-09-20T04:30:41.771128+00:00"
+    },
+    {
+      "entity_id": "sensor.stue_loft_computerbord_bulb_01_color_options",
+      "state": "{'execute_if_off': False}",
+      "last_updated": "2026-09-20T04:30:41.782384+00:00",
+      "last_reported": "2026-09-20T04:30:41.782384+00:00"
+    },
+    {
+      "entity_id": "update.stue_loft_computerbord_bulb_01",
+      "state": "off",
+      "last_updated": "2026-09-20T04:30:41.772066+00:00",
+      "last_reported": "2026-09-20T04:30:41.772066+00:00"
+    },
+    {
+      "entity_id": "sensor.stue_loft_computerbord_bulb_01_last_seen",
+      "state": "2026-09-20T07:46:49+00:00",
+      "last_updated": "2026-09-20T07:46:49.482990+00:00",
+      "last_reported": "2026-09-20T07:46:49.482990+00:00"
+    }
+  ]
+}

@@ -1,6 +1,12 @@
 # SDK 2026.6.1 upgrade — execution record
 
-Updated 2026-09-19. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
+Updated 2026-09-20. This is the current plan and evidence index. Dated reports retain their evidence; superseded recommendations in them do not override this record.
+
+## September20 resumption
+
+The operator said "we can now continue". Preparation resumed; concrete flashing/cutover and recovery-scope approval is still being confirmed as previously promised. Read-only preflight at07:47UTC: HA healthy/supported, Core2026.9.3/OS18.3/Supervisor2026.09.2 unchanged; radio0.2.3-ordered, Z2M2.14.1-1, Matter9.2.0 and SSH10.5.0 all started. All three GBLs, staged descriptors and active baseline descriptor match recorded hashes. Flasher1.1.0 and pip check pass, serial link still ttyUSB0, over12millionKiB free. Fresh Zigbee bulb last-seen and ALPSTUGA measurements confirm current reports. Evidence: evidence/preflight-20260920.json.
+
+The test bulb is now off. An explicitly proposed alternative in recovery/ACCEPTANCE-20260919.md briefly turns that named lamp on at retained brightness/color, verifies on, restores off and verifies off; it requires approval. No control command was issued during preflight. Other HA task snapshot is notLoaded with last turn completed; no live task is running in that snapshot. Its planned work remains unconfirmed; earlier contact rejection remains unresolved and no coordination message was retried. Before approved downtime, confirm no conflicting maintenance, refresh relevant baseline if delayed, and make coherent stopped-writer backups with independent copies. No candidate installation, flashing, binding or service stop has occurred.
 
 ## Operator scheduling decision — September 19 evening
 
