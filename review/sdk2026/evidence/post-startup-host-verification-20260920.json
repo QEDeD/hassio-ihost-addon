@@ -1,0 +1,18 @@
+{
+  "scope": "offline host verification, final71-field schema; physical behavior unverified",
+  "host_tests": 14,
+  "snapshot_parser_tests": 4,
+  "actual_serialx_log_extraction": {
+    "after_final_run_bytes": 21,
+    "sha256": "12e4f52187f0f2237b0ad0f8ea55652fede60c7b982359cc6399862bed5cd5be",
+    "exact_known_startup_notification": true
+  },
+  "files": {
+    "firmware/connection-lifecycle/lifecycle.py": "a9c666a0bf2120888b55a3ecdd3e5bea56289d38e0d629bf4b560125c560b0c4",
+    "firmware/connection-lifecycle/test_lifecycle.py": "5f8aba4606c6135b8158394e609d7b8a430828c6c0f192f6b9a714d60ee44826",
+    "firmware/post-startup-snapshot/capture-launch.py": "1d0e3f1b55f259d57fb52e3c4e1ca5e9a7e420d24721067f6b304a16bbdecee4",
+    "firmware/post-startup-snapshot/snapshot.py": "ae01fdad760a62629d804b071a9f3ae174be7596f534a653c8b9f56818166fdb",
+    "firmware/post-startup-snapshot/test_snapshot.py": "631773c437433c7d7bd51681aa3d2d66c44b56d7a7b9e38663d7d1e3e3fa772a",
+    "firmware/post-startup-snapshot/fields.json": "ed8aadd5a2aea4ec2612ebf6e90cda170dbea38201d3979258250482d337417b"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "purpose": "offline terminal snapshot; no SDK mutation",
+  "build_id": "504F5331",
+  "field_count": 71,
+  "driver_input_sha256": "2fe944161fbec7240c5ac83ebf76a445d7f9a7a6282ef3b135e77a567634f6d5",
+  "rx_return_hooks": 6,
+  "files": {
+    "generated/autogen/sl_event_handler.c": "231caa447bd10fef23c31fcf258082faa7434ce8fa12773bef0bbfb47374e78f",
+    "source/app.c": "3afe07cc37935ed979103f08eab7cfb704e9b2024e50c74c2bab1f07570c57d7",
+    "generated/config/sl_cpc_config.h": "400d0ab29879b153015acc40e51fa1d2827fa8d8512ea62d070f77e85ab5de5e",
+    "source/sl_cpc_drv_uart_snapshot.c": "66679c11daf1f7b2bde20e5ef1bd2d8877a9b88b690eeb93b0ed5265afeb39fc",
+    "source/snapshot_fields.h": "5c1ddeeceecb81f4a45ab1653a166ce28ed9c8469c5096910bd0471bd8fbf0c1",
+    "source/snapshot.c": "dbc2da0208ba3d86037fde111648346c6b785142da80dcaeb1c4ba71c1c72763",
+    "source/snapshot.h": "c7ba0a99d07d112fea5941e6f893c749bf3f822fd44cfc7c33381d0c3c2403d2",
+    "generated/cmake_gcc/rcp-uart-802154.cmake": "2ca5f8b6d8f9b2cb0e7a0e6865f1fff1acef0b1c937442f6ebecec50659f6c1b"
+  }
+}

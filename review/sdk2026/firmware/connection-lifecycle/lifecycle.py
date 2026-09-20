@@ -116,7 +116,19 @@ async def query(protocol, phase):
     return result
 
 
-def install_launch_observation():
+def install_launch_observation(*, schedule=None, capture_seconds=None, deadline_seconds=36, capture_bytes_limit=0):
+    # Defaults preserve the physically tested lifecycle experiment. A terminal
+    # diagnostic can select only the early query and retain passive capture.
+    if schedule is not None:
+        schedule = tuple(schedule)
+        if not schedule or any(not 0 <= delay < deadline_seconds for delay, phase in schedule):
+            raise ValueError("Query schedule outside observation deadline")
+    if not 0 < deadline_seconds <= 36:
+        raise ValueError("Observation deadline must be bounded by 36 seconds")
+    if capture_seconds is not None and not 0 < capture_seconds < deadline_seconds:
+        raise ValueError("Capture duration outside observation deadline")
+    if not isinstance(capture_bytes_limit, int) or not 0 <= capture_bytes_limit <= 65536:
+        raise ValueError("Raw capture limit must be 0..65536 bytes")
     verify_sources()
     cls = g.GeckoBootloaderProtocol
     if getattr(cls, "_lifecycle_installed", False):
@@ -124,8 +136,13 @@ def install_launch_observation():
     original_run, original_rx, original_lost = cls.run_firmware, cls.data_received, cls.connection_lost
 
     def receive(self, data):
-        original_rx(self, data)  # preserve bootloader-menu failure detection
         observer = getattr(self, "_lifecycle_observer", None)
+        if observer is not None and capture_bytes_limit:
+            if len(self._lifecycle_capture) + len(data) > capture_bytes_limit:
+                observer.fail("raw_capture_overflow")
+            else:
+                self._lifecycle_capture.extend(data)
+        original_rx(self, data)  # preserve bootloader-menu failure detection
         if observer is not None:
             observer.data_received(data)
 
@@ -144,19 +161,26 @@ def install_launch_observation():
         self._lifecycle_ran = True
         observer = CheckedCPC()
         observer._transport = self._transport  # same writer; never connect another reader
+        self._lifecycle_capture = bytearray()
         self._lifecycle_observer = observer
         started = time.monotonic()
         event("launch_observation_begin", expected_baudrate=115200, expected_xonxoff=False, expected_rtscts=False)
 
         async def observations():
             results = []
-            for delay, phase in [(EARLY_SECONDS, "early"), (LATE_SECONDS, "pre_close")]:
+            for delay, phase in (schedule if schedule is not None else [(EARLY_SECONDS, "early"), (LATE_SECONDS, "pre_close")]):
                 await asyncio.sleep(max(0, started + delay - time.monotonic()))
                 if self._transport is None:
                     raise ConnectionError("Launch connection lost")
                 if self._state_machine.state == g.State.IN_MENU:
                     raise g.NoFirmwareError("Bootloader menu returned")
                 results.append(await query(observer, phase))
+            if capture_seconds is not None:
+                await asyncio.sleep(max(0, started + capture_seconds - time.monotonic()))
+            if self._transport is None:
+                raise ConnectionError("Launch connection lost")
+            if observer.failure is not None:
+                raise ObservationError(observer.failure)
             if self._state_machine.state == g.State.IN_MENU:
                 raise g.NoFirmwareError("Bootloader menu returned")
             self._lifecycle_results = results
@@ -164,7 +188,7 @@ def install_launch_observation():
 
         tasks = [asyncio.create_task(original_run(self)), asyncio.create_task(observations())]
         try:
-            async with asyncio.timeout(36):
+            async with asyncio.timeout(deadline_seconds):
                 await asyncio.gather(*tasks)
         except asyncio.CancelledError:
             if self._transport is None:

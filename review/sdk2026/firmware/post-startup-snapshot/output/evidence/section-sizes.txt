@@ -1,0 +1,29 @@
+/sdk2026-firmware/generated/cmake_gcc/build/base/rcp-uart-802154.out  :
+section                        size         addr
+.vectors                        308        16384
+.bootloader_reset_section         4    536870912
+.stack                         2752    536870920
+.bss                          13336    536873672
+.noinit                         152    536887008
+text_application_ram             96    536887168
+.text                        158516        16800
+.ARM.exidx                        8       175316
+.copy.table                      12       175324
+.zero.table                       0       175336
+.data                           648    536887264
+.memory_manager_heap          48536    536887912
+.nvm                          40960   4294205440
+.ARM.attributes                  54            0
+.comment                         69            0
+.debug_line_str               34485            0
+.debug_info                 1812881            0
+.debug_abbrev                161792            0
+.debug_loclists              267811            0
+.debug_aranges                  520            0
+.debug_rnglists               26123            0
+.debug_line                  247906            0
+.debug_str                   347847            0
+.debug_frame                  23844            0
+Total                       3188660
+
+

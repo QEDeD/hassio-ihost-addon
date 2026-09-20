@@ -53,6 +53,60 @@ class Tests(unittest.IsolatedAsyncioTestCase):
         p._upload_status = "complete" if uploaded else None
         p._transport = Wire(p, mode)
         return p
+    def terminal_adapter(self, capture_seconds=.08):
+        g.GeckoBootloaderProtocol.run_firmware = self.original_run
+        g.GeckoBootloaderProtocol.data_received = self.original_rx
+        g.GeckoBootloaderProtocol.connection_lost = self.original_lost
+        del g.GeckoBootloaderProtocol._lifecycle_installed
+        with patch.object(g, "RUN_APPLICATION_DELAY", 2.0):
+            self.original_run, self.original_rx, self.original_lost = m.install_launch_observation(
+                schedule=((.005, "early"),), capture_seconds=capture_seconds, deadline_seconds=1, capture_bytes_limit=8192)
+
+    async def test_terminal_capture_keeps_connection_without_late_request(self):
+        self.terminal_adapter()
+        p = self.protocol()
+        loop = asyncio.get_running_loop()
+        loop.call_later(.045, p.data_received, b"\r\n@D01:00000001:00000002\r\n")
+        started = loop.time()
+        await p.run_firmware()
+        self.assertGreaterEqual(loop.time() - started, .075)
+        self.assertEqual(len(p._transport.writes), 2)
+        self.assertEqual([r["phase"] for r in p._lifecycle_results], ["early"])
+        self.assertEqual(p._lifecycle_results[0]["result"], "reply")
+
+    async def test_fragmented_terminal_report_after_unanswered_query(self):
+        from pathlib import Path
+        import importlib.util
+        folder = Path(__file__).parent.parent / "post-startup-snapshot"
+        spec = importlib.util.spec_from_file_location("snapshot", folder / "snapshot.py")
+        snapshot = importlib.util.module_from_spec(spec); spec.loader.exec_module(snapshot)
+        import binascii
+        fields = snapshot.field_names()
+        values = [{"format_version":1,"build_id":0x504F5331}.get(name,i) for i,name in enumerate(fields)]
+        body = ("@POST1:%04X:" % len(values) + ":".join("%08X" % v for v in values)).encode()
+        raw = b"\r\n" + body + (":%04X\r\n" % binascii.crc_hqx(body,0)).encode()
+        self.terminal_adapter(capture_seconds=.25)
+        p = self.protocol("silence")
+        loop = asyncio.get_running_loop()
+        # Query times out at ~125ms with shortened test timeouts; then dump.
+        for i,offset in enumerate(range(0,len(raw),19)):
+            loop.call_later(.15+i*.001, p.data_received, raw[offset:offset+19])
+        await p.run_firmware()
+        self.assertEqual(p._lifecycle_results[0]["result"],"timeout")
+        self.assertEqual(len(p._transport.writes),3) # RUN + two early attempts only
+        self.assertEqual(bytes(p._lifecycle_capture),STARTUP+raw)
+        self.assertEqual(snapshot.decode(bytes(p._lifecycle_capture))["build_id"],0x504F5331)
+
+    async def test_disconnect_during_passive_capture_is_not_success(self):
+        self.terminal_adapter()
+        p = self.protocol()
+        wire = p._transport
+        asyncio.get_running_loop().call_later(.045, p.connection_lost, None)
+        with self.assertRaises((ConnectionError, m.ObservationError)):
+            await p.run_firmware()
+        self.assertIsNone(p._lifecycle_observer)
+        self.assertEqual(len(wire.writes), 2)
+
     async def test_same_wire_split_replies_and_distinct_sequences(self):
         p = self.protocol()
         await p.run_firmware()

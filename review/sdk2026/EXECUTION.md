@@ -15,7 +15,13 @@ The operator wants execution to continue, not another goal-writing exercise. The
 - Only the main agent performs production mutations. Stop the relevant writers, preserve fresh coherent independent backups, use one serial owner and perform the specified restoration. Never interrupt an active upload to meet a deadline or overwrite advanced state with an older backup.
 - Offline preparation continues autonomously. Public upstream comments/PR publication retain their separate limits; existing permitted Git pushes and approved registry uploads must not be conflated with unrestricted publication.
 
-## Current checkpoint — lifecycle trial completed; original production restored
+## Current work - terminal diagnostic prepared, not flashed
+
+Focused review selected a RAM-counter/phase snapshot after four nominal seconds, followed by exclusive terminal UART output and mandatory original restoration. No continuous UART logging or stacked-PC shim. The first build caught nonexistent MG21 CLKEN0 assumptions; exact vendor CONFIG1 ungated-bus evidence corrected them. Final build/package and independent linked review pass, plus14host/4parser tests. ELF955146b29036c1ddde18f25d8db4a23622af584358eb0fa3966aa6deb88ca5de; GBL76c560b9a0d78bfa9aa2cc8a5555144971434975859d714ff3cb12da16e8bb12. Read POST-STARTUP-DIAGNOSTIC-REVIEW-20260920.md and POST-STARTUP-DIAGNOSTIC-TRIAL-20260920.md; exact files are in firmware/post-startup-snapshot/ and evidence/post-startup-preparation-20260920.json.
+
+HA access relocked; passphrase prompt cancelled and operator unlock requested asynchronously. Offline preparation continued. No live configuration, service or firmware changed. Next: after unlock, verify current authority/time, fresh live baseline/maintenance status, stage exact files and execute the prepared new procedure only with recovery reserve. Latest writer-stop start14:36UTC preserves45minutes before permission ends15:21UTC; do not rush or imply late unlock extends authority. Use new private event paths and fresh coherent backups. The remaining investigation is hardware observation, not another broad plan. All source/review agent assignments are complete.
+
+## Latest production checkpoint - lifecycle trial completed; original production restored
 
 September20 operator clarified the current3hour test authorization includes HA configuration and dongle firmware (recorded12:21–15:21UTC). Do not revive the resolved claim that firmware is excluded. The reviewed one-candidate/mandatory-original sequence has now run once; its completed commands must not be replayed. Broader testing remains bounded by actual scope/time/recovery exclusions, not unlimited flashing or binding/erase/bootloader/SE permission.
 
@@ -38,7 +44,7 @@ The operator asked whether another reflection is useful. The answer is a bounded
 4. Execute only when the concrete test is ready within valid authority and enough recovery time remains. Otherwise continue preparation without rushing a flash or pausing the goal. Use new trial paths/event records, fresh baseline/backups and exact artifact identities.
 5. Interpret results against passing controls. Once CPC responsiveness is fixed, return to encrypted binding, network-state compatibility, normal Zigbee/Thread/Matter behavior, restart persistence and the nine-contribution reassessment.
 
-Assignments: candidate_boot_failure is reviewing a bounded diagnostic/retrieval proposal offline. Main agent owns integration, continuity and all live actions. No live diagnostic is running.
+Assignments complete: candidate_boot_failure implemented the bounded diagnostic; review_terminal_snapshot independently reviewed design, source and linked artifact. Main agent owns integration and all live actions. No live diagnostic is running. Steps1-3 above are now complete for the first terminal snapshot; proceed from step4 and the current-work checkpoint.
 
 ## Evidence and reusable artifacts
 

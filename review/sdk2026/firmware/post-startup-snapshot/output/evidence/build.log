@@ -1,0 +1,380 @@
+OFFLINE ONLY — NOT FOR FLASHING
+6.0.22
+The sdk /opt/silabs/sdks/simplicity_sdk_2026.6.1/ ( com.silabs.sdk.stack.simplicity_sdk:2026.6.1._1763566131 )  is now trusted. 
+arm-none-eabi-gcc (Arm GNU Toolchain 14.2.Rel1 (Build arm-14.52)) 14.2.1 20241119
+Copyright (C) 2024 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Found valid project type for cmake
+Generation location: /sdk2026-firmware/generated
+Generation: Starting AC generation for pintool in project rcp-uart-802154: Sun Sep 20 14:22:17 UTC 2026
+Generation: Starting AC generation for ucProject in project rcp-uart-802154: Sun Sep 20 14:22:17 UTC 2026
+Generation: AC content generated for pintool in project rcp-uart-802154. Elapsed time: 2ms
+Generation: Starting AC generation for ProjectPostBuild in project rcp-uart-802154: Sun Sep 20 14:22:18 UTC 2026
+Generation: AC content generated for ProjectPostBuild in project rcp-uart-802154. Elapsed time: 12ms
+Generation: Starting AC generation for ProjectPostBuild in project rcp-uart-802154: Sun Sep 20 14:22:18 UTC 2026
+Generation: AC content generated for ProjectPostBuild in project rcp-uart-802154. Elapsed time: 16ms
+Generation: Starting AC generation for ProjectPostBuild in project rcp-uart-802154: Sun Sep 20 14:22:18 UTC 2026
+Generation: AC content generated for ProjectPostBuild in project rcp-uart-802154. Elapsed time: 11ms
+Generation: AC content generated for ucProject in project rcp-uart-802154. Elapsed time: 993ms
+Generation: Starting project generation for rcp-uart-802154: Sun Sep 20 14:22:18 UTC 2026
+Generation: Projects generated rcp-uart-802154.cmake, rcp-uart-802154.cmake, rcp-uart-802154.cmake
+Generation: Project generation completed for rcp-uart-802154: Elapsed time: 958ms
+Total generation time: 1980 ms
+
+Generation for OpenThread Zigbee CMP - RCP UART to /sdk2026-firmware/generated has completed.
+Open ./README-MP-RCP.md to get started.
+Preset CMake variables:
+
+  CMAKE_CONFIGURATION_TYPES="base"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="/sdk2026-firmware/generated/cmake_gcc/toolchain.cmake"
+
+-- The C compiler identification is GNU 14.2.1
+-- The CXX compiler identification is GNU 14.2.1
+-- The ASM compiler identification is GNU
+-- Found assembler: /opt/toolchains/gcc-arm-none-eabi/bin/arm-none-eabi-gcc
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /opt/toolchains/gcc-arm-none-eabi/bin/arm-none-eabi-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /opt/toolchains/gcc-arm-none-eabi/bin/arm-none-eabi-g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.1s)
+-- Build files have been written to: /sdk2026-firmware/generated/cmake_gcc/build
+[1/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/bootloader/platform/bootloader/api/btl_interface_storage.c.obj
+[2/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/bootloader/platform/bootloader/api/btl_interface.c.obj
+[3/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/bootloader/platform/bootloader/app_properties/app_properties.c.obj
+[4/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/bootloader/platform/bootloader/core/flash/btl_internal_flash.c.obj
+[5/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/bootloader/platform/bootloader/core/smp_switch/btl_smp_switch_flash_api.c.obj
+[6/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/bootloader/platform/bootloader/storage/internal_flash/btl_storage_internal_flash_raw.c.obj
+[7/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/common_15_4/plugin/security_manager/security_manager.c.obj
+[8/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/cpc/src/sl_cpc_crc.c.obj
+[9/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/cpc/src/sl_cpc.c.obj
+[10/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/cpc/src/sl_cpc_dispatcher.c.obj
+[11/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/cpc/src/sl_cpc_hdlc.c.obj
+[12/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/source/sl_cpc_drv_uart_snapshot.c.obj
+[13/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/cpc/src/sl_cpc_instance.c.obj
+[14/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/cpc/src/sl_cpc_memory.c.obj
+[15/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/cpc/src/sl_cpc_security.c.obj
+[16/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/cpc/src/sl_cpc_system_secondary.c.obj
+[17/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/cpc/src/sli_cpc_assert.c.obj
+[18/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/cpc/src/sl_cpc_system_secondary_efr.c.obj
+[19/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/aes.c.obj
+[20/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/asn1parse.c.obj
+[21/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/asn1write.c.obj
+[22/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/base64.c.obj
+[23/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/bignum.c.obj
+[24/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/bignum_core.c.obj
+[25/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/bignum_mod.c.obj
+[26/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/bignum_mod_raw.c.obj
+[27/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/block_cipher.c.obj
+[28/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ccm.c.obj
+[29/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/cipher_wrap.c.obj
+[30/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/cipher.c.obj
+[31/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/cmac.c.obj
+[32/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/constant_time.c.obj
+[33/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ctr_drbg.c.obj
+[34/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ecdh.c.obj
+[35/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ecjpake.c.obj
+[36/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ecdsa.c.obj
+[37/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ecp_curves.c.obj
+[38/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ecp.c.obj
+[39/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ecp_curves_new.c.obj
+[40/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/entropy_poll.c.obj
+[41/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/entropy.c.obj
+[42/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/hmac_drbg.c.obj
+[43/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/md.c.obj
+[44/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/memory_buffer_alloc.c.obj
+[45/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/oid.c.obj
+[46/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/pem.c.obj
+[47/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/pk_ecc.c.obj
+[48/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/pk.c.obj
+[49/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/pk_wrap.c.obj
+[50/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/pkparse.c.obj
+[51/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/platform.c.obj
+[52/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/pkwrite.c.obj
+[53/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/platform_util.c.obj
+[54/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_aead.c.obj
+[55/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_cipher.c.obj
+[56/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto.c.obj
+[57/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_client.c.obj
+[58/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_driver_wrappers_no_static.c.obj
+[59/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_ecp.c.obj
+[60/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_ffdh.c.obj
+[61/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_hash.c.obj
+[62/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_mac.c.obj
+[63/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_pake.c.obj
+[64/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_se.c.obj
+[65/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_rsa.c.obj
+[66/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_slot_management.c.obj
+[67/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_crypto_storage.c.obj
+[68/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/sha256.c.obj
+[69/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/psa_util.c.obj
+[70/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/sha3.c.obj
+[71/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_cache.c.obj
+[72/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_ciphersuites.c.obj
+[73/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_client.c.obj
+[74/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_cookie.c.obj
+[75/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_debug_helpers_generated.c.obj
+[76/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_ticket.c.obj
+[77/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_msg.c.obj
+[78/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_tls.c.obj
+/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_tls.c:2801:13: warning: 'mbedtls_ssl_get_hostname_pointer' defined but not used [-Wunused-function]
+ 2801 | const char *mbedtls_ssl_get_hostname_pointer(const mbedtls_ssl_context *ssl)
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[79/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_tls12_client.c.obj
+[80/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_tls13_client.c.obj
+[81/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_tls12_server.c.obj
+[82/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_tls13_generic.c.obj
+[83/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_tls13_keys.c.obj
+[84/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/ssl_tls13_server.c.obj
+[85/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/threading.c.obj
+[86/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/x509_create.c.obj
+[87/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/x509.c.obj
+[88/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/x509_crl.c.obj
+[89/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/x509_crt.c.obj
+[90/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/x509_csr.c.obj
+[91/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/x509write.c.obj
+[92/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/x509write_crt.c.obj
+[93/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/mbedtls/library/x509write_csr.c.obj
+[94/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/alarm.c.obj
+[95/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/crypto.c.obj
+[96/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/entropy.c.obj
+[97/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/diag.c.obj
+[98/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/memory.c.obj
+[99/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/misc.c.obj
+[100/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/ieee802154-packet-utils.cpp.obj
+[101/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/radio_channel_switching.cpp.obj
+[102/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/radio.cpp.obj
+[103/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/radio_coex.c.obj
+[104/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/radio_csl.cpp.obj
+[105/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/radio_energy_scan.cpp.obj
+[106/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/radio_extension.c.obj
+[107/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/radio_instance.cpp.obj
+[108/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/radio_interface.cpp.obj
+[109/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/radio_power_manager.cpp.obj
+[110/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/settings.cpp.obj
+[111/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/radio_security.cpp.obj
+[112/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/sl_gp_interface.c.obj
+[113/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/startup-gcc.c.obj
+[114/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/soft_source_match_table.c.obj
+[115/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/efr32/system.c.obj
+[116/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/ncp/ncp_coex.cpp.obj
+[117/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/ncp/ncp_dispatcher.cpp.obj
+[118/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/ncp/ncp_init.cpp.obj
+[119/322] Building ASM object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform/service/legacy_hal/src/faults.s.obj
+[120/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/platform-abstraction/ncp/ncp_cpc.cpp.obj
+[121/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/src/legacy_hal/crash_handler.c.obj
+[122/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/examples/platforms/utils/debug_uart.c.obj
+[123/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread/src/legacy_hal/diagnostic.c.obj
+[124/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/examples/platforms/utils/mac_frame.cpp.obj
+[125/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/examples/platforms/utils/link_metrics.cpp.obj
+[126/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/examples/platforms/utils/uart_rtt.c.obj
+[127/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/examples/platforms/utils/settings_ram.c.obj
+[128/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/api/error_api.cpp.obj
+[129/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/api/diags_api.cpp.obj
+[130/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/api/instance_api.cpp.obj
+[131/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/api/link_raw_api.cpp.obj
+[132/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/api/logging_api.cpp.obj
+[133/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/api/random_noncrypto_api.cpp.obj
+[134/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/binary_search.cpp.obj
+[135/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/api/tasklet_api.cpp.obj
+[136/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/error.cpp.obj
+[137/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/frame_builder.cpp.obj
+[138/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/log.cpp.obj
+[139/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/random.cpp.obj
+[140/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/string.cpp.obj
+[141/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/tasklet.cpp.obj
+[142/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/timer.cpp.obj
+[143/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/common/uptime.cpp.obj
+[144/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/crypto/aes_ecb.cpp.obj
+[145/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/crypto/aes_ccm.cpp.obj
+[146/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/crypto/crypto_platform_psa.cpp.obj
+[147/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/crypto/crypto_platform_mbedtls.cpp.obj
+[148/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/crypto/storage.cpp.obj
+[149/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/diags/factory_diags.cpp.obj
+[150/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/instance/instance.cpp.obj
+[151/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/mac/link_raw.cpp.obj
+[152/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/mac/mac_header_ie.cpp.obj
+[153/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/mac/mac_frame.cpp.obj
+[154/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/mac/mac_types.cpp.obj
+[155/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/mac/sub_mac.cpp.obj
+[156/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/mac/sub_mac_callbacks.cpp.obj
+[157/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/mac/sub_mac_csl_receiver.cpp.obj
+[158/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/radio/radio.cpp.obj
+[159/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/radio/radio_callbacks.cpp.obj
+[160/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/radio/radio_platform.cpp.obj
+[161/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/thread/link_quality.cpp.obj
+[162/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/utils/parse_cmdline.cpp.obj
+[163/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/core/utils/power_calibration.cpp.obj
+[164/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/hdlc/hdlc.cpp.obj
+[165/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/logger.cpp.obj
+[166/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel.c.obj
+[167/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_buffer.cpp.obj
+[168/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/radio_spinel.cpp.obj
+[169/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_decoder.cpp.obj
+[170/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_driver.cpp.obj
+[171/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_helper.cpp.obj
+[172/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_encoder.cpp.obj
+[173/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/lib/spinel/spinel_prop_codec.cpp.obj
+[174/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/changed_props_set.cpp.obj
+[175/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/multipan_platform.cpp.obj
+[176/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/ncp_base.cpp.obj
+[177/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/ncp_base_dispatcher.cpp.obj
+[178/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/ncp_base_ftd.cpp.obj
+[179/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/ncp_base_mtd.cpp.obj
+[180/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/ncp_base_radio.cpp.obj
+[181/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/ncp_hdlc.cpp.obj
+[182/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/ncp_spi.cpp.obj
+[183/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/platform/border_routing.cpp.obj
+[184/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/platform/dns.cpp.obj
+[185/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/platform/dnssd.cpp.obj
+[186/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/platform/mdns_socket.cpp.obj
+[187/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/platform/infra_if.cpp.obj
+[188/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/common/src/sl_assert.c.obj
+[189/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/common/src/sl_core_cortexm.c.obj
+[190/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/openthread_stack/util/third_party/openthread/src/ncp/platform/trel.cpp.obj
+[191/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/common/src/sl_syscalls.c.obj
+[192/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/common/src/sl_slist.c.obj
+[193/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/Device/SiliconLabs/EFR32MG21/Source/startup_efr32mg21.c.obj
+[194/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/Device/SiliconLabs/EFR32MG21/Source/system_efr32mg21.c.obj
+[195/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/driver/gpio/src/sl_gpio.c.obj
+[196/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emdrv/nvm3/src/nvm3_cache.c.obj
+[197/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emdrv/nvm3/src/nvm3.c.obj
+[198/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emdrv/nvm3/src/nvm3_default_common_linker.c.obj
+[199/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emdrv/nvm3/src/nvm3_hal_flash.c.obj
+[200/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emdrv/nvm3/src/nvm3_lock.c.obj
+[201/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emdrv/nvm3/src/nvm3_object.c.obj
+[202/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emdrv/nvm3/src/nvm3_utils.c.obj
+[203/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emdrv/nvm3/src/nvm3_page.c.obj
+[204/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emlib/src/em_burtc.c.obj
+[205/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emlib/src/em_cmu.c.obj
+[206/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emlib/src/em_emu.c.obj
+[207/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emlib/src/em_gpio.c.obj
+[208/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emlib/src/em_msc.c.obj
+[209/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emlib/src/em_rmu.c.obj
+[210/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emlib/src/em_prs.c.obj
+[211/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emlib/src/em_system.c.obj
+[212/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emlib/src/em_rtcc.c.obj
+[213/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/emlib/src/em_timer.c.obj
+[214/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/peripheral/src/sl_hal_gpio.c.obj
+[215/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/peripheral/src/sl_hal_ldma.c.obj
+[216/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/peripheral/src/sl_hal_prs.c.obj
+[217/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/peripheral/src/sl_hal_syscfg.c.obj
+[218/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/peripheral/src/sl_hal_system.c.obj
+[219/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/peripheral/src/sl_hal_timer.c.obj
+[220/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/peripheral/src/sl_hal_usart.c.obj
+[221/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/se_manager/src/sl_se_manager_attestation.c.obj
+[222/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/se_manager/src/sl_se_manager.c.obj
+[223/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/se_manager/src/sl_se_manager_entropy.c.obj
+[224/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/se_manager/src/sl_se_manager_cipher.c.obj
+[225/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/se_manager/src/sl_se_manager_hash.c.obj
+[226/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/se_manager/src/sl_se_manager_key_derivation.c.obj
+[227/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/se_manager/src/sl_se_manager_key_handling.c.obj
+[228/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/se_manager/src/sl_se_manager_signature.c.obj
+[229/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/se_manager/src/sl_se_manager_util.c.obj
+[230/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/se_manager/src/sli_se_manager_mailbox.c.obj
+[231/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_mbedtls_support/src/mbedtls_ccm.c.obj
+[232/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_mbedtls_support/src/mbedtls_cmac.c.obj
+[233/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_mbedtls_support/src/mbedtls_ecdsa_ecdh.c.obj
+[234/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_mbedtls_support/src/mbedtls_sha.c.obj
+[235/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_mbedtls_support/src/se_aes.c.obj
+[236/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_mbedtls_support/src/sl_entropy_hardware.c.obj
+[237/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_mbedtls_support/src/se_jpake.c.obj
+[238/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_mbedtls_support/src/sl_mbedtls.c.obj
+[239/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_mbedtls_support/src/sl_psa_crypto.c.obj
+[240/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_mbedtls_support/src/sli_psa_crypto.c.obj
+[241/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_protocol_crypto/src/sli_protocol_crypto_radioaes.c.obj
+[242/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_protocol_crypto/src/sli_radioaes_management.c.obj
+[243/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sl_psa_its_nvm3.c.obj
+[244/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_psa_driver_common.c.obj
+[245/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_psa_driver_init.c.obj
+[246/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_psa_trng.c.obj
+[247/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_driver_aead.c.obj
+[248/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_driver_builtin_keys.c.obj
+[249/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_driver_cipher.c.obj
+[250/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_driver_key_derivation.c.obj
+[251/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_driver_mac.c.obj
+[252/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_driver_key_management.c.obj
+[253/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_opaque_driver_aead.c.obj
+[254/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_driver_signature.c.obj
+[255/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_opaque_driver_cipher.c.obj
+[256/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_opaque_driver_mac.c.obj
+[257/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_opaque_key_derivation.c.obj
+[258/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_transparent_driver_aead.c.obj
+[259/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_transparent_driver_cipher.c.obj
+[260/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_transparent_driver_hash.c.obj
+[261/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_transparent_driver_mac.c.obj
+[262/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_transparent_key_derivation.c.obj
+[263/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/security/sl_component/sl_psa_driver/src/sli_se_version_dependencies.c.obj
+[264/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/clock_manager/src/sl_clock_manager.c.obj
+[265/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/clock_manager/src/sl_clock_manager_init.c.obj
+[266/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/clock_manager/src/sl_clock_manager_hal_s2.c.obj
+[267/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/device_init/src/sl_device_init_emu_s2.c.obj
+[268/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/clock_manager/src/sl_clock_manager_init_hal_s2.c.obj
+[269/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/device_manager/devices/sl_device_peripheral_hal_efr32xg21.c.obj
+[270/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/device_manager/dma/sl_device_dma_s2.c.obj
+[271/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/device_manager/src/sl_device_clock.c.obj
+[272/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/device_manager/src/sl_device_dma.c.obj
+[273/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/device_manager/src/sl_device_gpio.c.obj
+[274/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/device_manager/src/sl_device_peripheral.c.obj
+[275/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/dma_manager/src/sl_dma_manager.c.obj
+[276/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/dma_manager/src/sl_dma_manager_hal_ldma.c.obj
+[277/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/interrupt_manager/src/sl_interrupt_manager_cortexm.c.obj
+[278/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/memory_manager/src/sl_memory_manager.c.obj
+[279/322] Building CXX object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/memory_manager/src/sl_memory_manager_cpp.cpp.obj
+[280/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/memory_manager/src/sl_memory_manager_pool.c.obj
+[281/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/memory_manager/src/sl_memory_manager_dynamic_reservation.c.obj
+[282/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/memory_manager/src/sl_memory_manager_pool_common.c.obj
+[283/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/memory_manager/src/sl_memory_manager_region.c.obj
+[284/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/memory_manager/src/sl_memory_manager_retarget.c.obj
+[285/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/memory_manager/src/sli_memory_manager_common.c.obj
+[286/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/mpu/src/sl_mpu_s2.c.obj
+[287/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sl_main/src/sl_main_init_memory.c.obj
+[288/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sl_main/src/sl_main_init.c.obj
+[289/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sl_main/src/sl_main_process_action.c.obj
+[290/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sleeptimer/src/sl_sleeptimer_hal_burtc.c.obj
+[291/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sleeptimer/src/sl_sleeptimer.c.obj
+[292/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sleeptimer/src/sl_sleeptimer_hal_prortc.c.obj
+[293/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sleeptimer/src/sl_sleeptimer_hal_rtcc.c.obj
+[294/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/util/silicon_labs/silabs_core/queue/circular_queue.c.obj
+[295/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/platform_core/platform/service/sleeptimer/src/sl_sleeptimer_hal_timer.c.obj
+[296/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/coexistence/common/coexistence-pwm.c.obj
+[297/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/coexistence/common/coexistence.c.obj
+[298/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/coexistence/hal/efr32/coexistence-directional-priority.c.obj
+[299/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/coexistence/hal/efr32/coexistence-hal.c.obj
+[300/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/coexistence/protocol/ieee802154_uc/coexistence-ot.c.obj
+[301/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/coexistence/protocol/ieee802154_uc/coexistence-802154.c.obj
+[302/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_built_in_phys/efr32xg21/sl_rail_ble_config.c.obj
+[303/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_built_in_phys/efr32xg21/sl_rail_ieee802154_config.c.obj
+[304/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_built_in_phys/sl_rail_util_built_in_phys.c.obj
+[305/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_ieee802154/sl_rail_util_ieee802154_fast_channel_switching.c.obj
+[306/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_dma/sl_rail_util_dma.c.obj
+[307/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_pa_conversions/sl_rail_util_pa_tables.c.obj
+[308/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_pa_conversions/sl_rail_util_pa_conversions.c.obj
+[309/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_pti/sl_rail_util_pti.c.obj
+In file included from /opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_pti/sl_rail_util_pti.c:37:
+/sdk2026-firmware/generated/cmake_gcc/../config/sl_rail_util_pti_config.h:56:2: warning: #warning "RAIL PTI peripheral not configured" [-Wcpp]
+   56 | #warning "RAIL PTI peripheral not configured"
+      |  ^~~~~~~
+[310/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_rf_path/sl_rail_util_rf_path.c.obj
+[311/322] Building C object CMakeFiles/slc.dir/base/opt/silabs/sdks/simplicity_sdk_2026.6.1/rail_library/plugin/sl_rail_util_rssi/sl_rail_util_rssi.c.obj
+[312/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/source/app.c.obj
+[313/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/generated/autogen/coexistence_event.c.obj
+[314/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/generated/autogen/sl_dma_manager_instances.c.obj
+[315/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/generated/autogen/sl_cpc_instance_handles.c.obj
+[316/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/generated/autogen/sl_ot_init.c.obj
+[317/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/generated/autogen/sl_rail_util_ieee802154_phy_select.c.obj
+[318/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/generated/autogen/sl_event_handler.c.obj
+[319/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/generated/main.c.obj
+[320/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/generated/autogen/sl_rail_util_ieee802154_stack_event.c.obj
+[321/322] Building C object CMakeFiles/slc.dir/base/sdk2026-firmware/source/snapshot.c.obj
+[322/322] Linking C executable base/rcp-uart-802154.out
+lto-wrapper: warning: using serial compilation of 4 LTRANS jobs
+lto-wrapper: note: see the '-flto' option documentation for more information

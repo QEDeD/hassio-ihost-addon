@@ -1,0 +1,26 @@
+{
+  "elf_sha256": "955146b29036c1ddde18f25d8db4a23622af584358eb0fa3966aa6deb88ca5de",
+  "gbl_sha256": "76c560b9a0d78bfa9aa2cc8a5555144971434975859d714ff3cb12da16e8bb12",
+  "systick_vector": "0x173f5",
+  "systick_handler": "0x173f4",
+  "configuration_changes": [
+    "sl_cpc_config.h"
+  ],
+  "only_config_change": "SL_CPC_DEBUG_CORE_EVENT_COUNTERS 0 -> 1",
+  "host_tests": 14,
+  "parser_tests": 4,
+  "production_tested": false,
+  "files": {
+    "snapshot.c": "dbc2da0208ba3d86037fde111648346c6b785142da80dcaeb1c4ba71c1c72763",
+    "snapshot.h": "c7ba0a99d07d112fea5941e6f893c749bf3f822fd44cfc7c33381d0c3c2403d2",
+    "fields.json": "ed8aadd5a2aea4ec2612ebf6e90cda170dbea38201d3979258250482d337417b",
+    "instrument.py": "640adf0985b1666d3a392f3c61f231059b21da40af665b762a97816197b64ba2",
+    "prepare-build.py": "d06de9541bafef69a96bf1e860666a1cdc120f5d9be6b02bee735fea934c4da9",
+    "Dockerfile.offline": "8726da924fb6d410fd6cb17949a5a8d8f7927161805be6a4eb27d50f22e97bc6",
+    "Dockerfile.offline.dockerignore": "61c1d82fe5a2b711a6f23f6ff89058c121fe4ced3821757deceef0cdca24261e",
+    "build-package.sh": "a489333bbd216a9b4f7300a66414f4e5b0ea7e853bc515e5d24138a9357f32ea",
+    "capture-launch.py": "1d0e3f1b55f259d57fb52e3c4e1ca5e9a7e420d24721067f6b304a16bbdecee4",
+    "snapshot.py": "ae01fdad760a62629d804b071a9f3ae174be7596f534a653c8b9f56818166fdb",
+    "test_snapshot.py": "631773c437433c7d7bd51681aa3d2d66c44b56d7a7b9e38663d7d1e3e3fa772a"
+  }
+}
